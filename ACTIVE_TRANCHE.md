@@ -126,21 +126,22 @@ This tranche is not about:
 19. COMPLETE: excise Boss Waves product-path legacy rollback/shadow branches and inventory remaining `simulators.run_executor.py` consumers
 20. COMPLETE: repair Boss Waves replacement stat evolution with an explicit primitive/display split: QE `state::wall.hp` carries wall-health ratio contributors and Boss Waves derives pre-fort Wall HP from QE `state::tower.hp` times wall-health ratio times non-fort wall-health multipliers before Table 2 applies fortification exactly once, QE `state::wall.regen` is a start-of-run wall-regen percent-points primitive combined with QE `state::tower.regen` for displayed Wall Regen, Table 1 re-derives row-owned wall HP / wall regen contributors from evolving workshop/perk state, and the operator table displays transformed final Wall Pool / Wall Regen rows; Death Wave remains outside wall HP / wall regen derivation
 21. COMPLETE: close Boss Waves wall-surface semantics and recertify the corrected live replacement path: `state::wall.hp` is final only as a transformed primitive input for row-derived pre-fort Wall HP / fortified Wall Pool, `state::wall.regen` is final only as a transformed percent-points primitive for displayed Wall Regen HP/sec, parity/shadow validation now includes the post-survivability-fix large-wall-surface case, and Streamlit no longer silently falls back from missing `operator_rows` / `download_rows` to `rows`
-22. NEXT: broader max-waves legacy disposition planning; do not delete `simulators.run_executor.py` until every remaining active consumer is classified and retired or replaced
+22. COMPLETE: retire and delete the broader legacy executor after final symbol-role inventory found no active non-test consumer; `simulators/run_executor.py` and its direct defender tests are removed, and Boss Waves certification now uses the replacement kernel only
+23. NEXT: continue targeted performance/residue work from the replacement-owned product path; no legacy executor coexistence remains to protect
 
 ### Current blockers inside the active program
 
 1. Boss Waves table, summary, CSV/export, and active diagnostics are now replacement-owned by default through `app.pipeline`.
-2. Boss Waves product payloads no longer expose legacy rollback/shadow/reference behavior; legacy Boss Waves comparison support is test/reference-only.
+2. Boss Waves product payloads no longer expose legacy rollback/shadow/reference behavior; legacy Boss Waves comparison support has been retired with the deleted executor.
 3. Boss Waves replacement stat evolution is repaired for the live product path: exact start-of-run tower HP / wall-health ratio contributors / wall regen percent-points / tower regen / fortification / defense / thorns / Plasma Cannon primitives are QE-sourced as inputs only, final operator-row Wall Pool / Wall Regen are transformed staged outputs, row-facing wall HP / wall regen are re-derived from Table 1 workshop/perk state where owned primitives exist, fortification is applied exactly once for Wall Pool, wall HP is derived as tower HP times wall-health ratio times non-fort wall-health multipliers, wall regen is derived as tower regen times wall regen percent-points divided by 100, and Death Wave is enemy-health-only.
 4. Boss Waves-local wall-surface semantics are closed for the product path: `state::wall.hp` and `state::wall.regen` remain QE primitive surfaces, not final displayed product fields; the final displayed fields are `operator_rows.wall_hp`, `operator_rows.wall_pool_hp_used`, and `operator_rows.wall_regen`, with diagnostics and the field map carrying the primitive/display contract.
-5. Broader `simulators.run_executor.py` deletion remains blocked by active test/reference consumers and broader max-waves legacy tests.
+5. `simulators/run_executor.py` is removed. Final inventory found no active product or active non-product consumer; remaining mentions are Bible/reconciliation historical authority text, root governance, boundary-test guard strings, or replacement certification notes.
 6. The repaired Stats contract must remain workshop-led: no reintroduction of Canonical Overview as a primary panel and no resolved-section-heavy default workflow.
 7. Delta fallback remains guarded by live-path tests and is not a sanctioned default; do not weaken that gate while resuming performance work.
 
 ### Boss Waves cutover plan
 
-This plan is historical governance for staged Boss Waves cutover. Phase 2A table/summary and Phase 2B CSV/export/diagnostics cutover are implemented, and the subsequent excision tranche removed Boss Waves legacy rollback/shadow branches from product payload behavior. It does not authorize broad `simulators.run_executor.py` deletion, UI-local truth, or compatibility shims.
+This plan is historical governance for staged Boss Waves cutover. Phase 2A table/summary and Phase 2B CSV/export/diagnostics cutover are implemented, the subsequent excision tranche removed Boss Waves legacy rollback/shadow branches from product payload behavior, and the final legacy executor retirement tranche deleted `simulators/run_executor.py`. It does not authorize UI-local truth or compatibility shims.
 
 #### Cutover scope map
 
@@ -150,8 +151,8 @@ This plan is historical governance for staged Boss Waves cutover. Phase 2A table
 | Summary source | replacement-owned `summary` from explicit `avg` summary lane and replacement overlay rows | replacement summary derived from explicit `avg` summary lane and replacement overlay rows | switched in Phase 2A; product path is replacement-only |
 | CSV/export source | replacement-owned `download_rows` from field-map-governed export columns | replacement export rows plus field-map-governed export columns | switched in Phase 2B; product path is replacement-only |
 | Diagnostics source | replacement-owned diagnostics covering source selection, replacement model, v21 TTK model, lane policy, and replacement outputs | replacement diagnostics covering source selection, replacement model, v21 TTK model, lane policy, and replacement outputs | switched in Phase 2B; product path is replacement-only |
-| Fixture/testing ownership | legacy `tests/simulators/test_run_executor.py`, app pipeline contract tests, staged `tests/simulators/test_evaluator_kernel.py`, and shadow parity tests | staged-kernel tests plus explicit app-level cutover tests and parity/shadow regression tests | maintain both until legacy demotion/removal is separately approved |
-| Legacy comparison / shadow mode | test/reference-only bounded validation against `simulators.run_executor.py` where needed | parity/reference harnesses compare product-facing fields through the field map | not exposed by Boss Waves product payload |
+| Fixture/testing ownership | app pipeline contract tests, staged `tests/simulators/test_evaluator_kernel.py`, and replacement certification tests | staged-kernel tests plus explicit app-level cutover and replacement certification tests | legacy executor defender tests removed |
+| Legacy comparison / shadow mode | removed with `simulators/run_executor.py` | replacement certification harnesses validate product-facing fields through the field map and kernel contracts | not exposed by Boss Waves product payload |
 | Rollback switch / fallback path | none in Boss Waves product payload after legacy excision | rollback would require a new approved tranche, not an in-product branch | removed from product behavior |
 
 #### Required Boss Waves field map artifact
@@ -216,24 +217,23 @@ The field map must cover at minimum: `display_wave`, effective attack wave, effe
 
 #### Operational rollback strategy
 
-The in-product Boss Waves legacy rollback seam was retired by the legacy-excision tranche. Any future rollback to `simulators.run_executor.py` would require a new approved tranche that reintroduces a product source-selection seam intentionally, with tests and governance updates. Current failure triggers are handled as replacement-path bugs or semantic blockers, not by silent fallback.
+The in-product Boss Waves legacy rollback seam was retired by the legacy-excision tranche, and `simulators/run_executor.py` has since been deleted. Any future rollback would require a new approved implementation path, not a silent product fallback. Current failure triggers are handled as replacement-path bugs or semantic blockers.
 
 #### Legacy disposition plan
 
-- Legacy Boss Waves runtime code remains only as broader max-waves legacy and test/reference support until separate disposition.
+- Legacy Boss Waves runtime code has been removed from the active repository.
 - Boss Waves product behavior is replacement-only; no legacy rollback/shadow/reference branch is exposed by `app.pipeline.build_boss_wave_payload(...)`.
-- Legacy comparison support may remain in tests/reference harnesses until all broader disposition evidence is complete.
-- Legacy demotion/removal is a separate Phase 4 tranche and requires:
-  - green parity/shadow evidence after replacement primary sourcing
+- Legacy comparison support has been retired; replacement certification tests now guard the staged kernel and product payload contract.
+- Legacy executor removal required and received:
+  - green replacement certification evidence after replacement primary sourcing
   - green app-level product tests for table, summary, export, and diagnostics
   - proof that no active consumer depends on legacy row-engine-only outputs
   - governance sync that no longer describes legacy as the active product source
 
-#### Remaining blockers before legacy disposition / broader cutover
+#### Remaining blockers after legacy executor removal
 
-1. Broader `simulators.run_executor.py` removal remains blocked by active test/reference consumers and broader max-waves legacy tests.
-2. A separate legacy disposition tranche must decide whether remaining legacy max-waves entrypoints become reference-only or are removed.
-4. Any legacy demotion/removal still requires a fresh full-suite run and parity/shadow confirmation on that branch.
+1. Historical Bible and reconciliation-review references still mention the old executor as prior active reality; they are not active runtime consumers and were not edited in this deletion tranche.
+2. Future max-waves work should build from `qe.run_plan`, `simulators.evaluator_kernel`, and remaining simulator owners rather than recreating the deleted row-engine.
 
 ### Exit criteria
 
@@ -257,7 +257,8 @@ The v49 current-stage program is complete only when all of the following are tru
 - `pytest -q tests/app/test_stats_dashboard_contract.py`
 - `pytest -q tests/app/test_pipeline_functional.py`
 - `pytest -q tests/app/test_pipeline_ui_contracts.py`
-- `pytest -q tests/simulators/test_run_executor.py`
+- `pytest -q tests/simulators/test_evaluator_kernel.py`
+- `pytest -q tests/simulators/test_boss_waves_parity_shadow.py`
 - targeted pytest selection for touched owner surfaces
 - broader `pytest -q` when a phase claims closure
 - UI-level Streamlit harness verification of the repaired Stats/Boss Waves surface
@@ -321,7 +322,7 @@ The v49 current-stage program is complete only when all of the following are tru
   - run 3: **934.96 ms**
 - rebuilt-worktree verification after the 2026-04-15 final product-correctness hardening tranche:
   - `python -m pytest -q` -> **399 passed**
-  - `python -m pytest -q tests/app/test_pipeline_functional.py tests/simulators/test_run_executor.py tests/app/test_stats_dashboard_contract.py tests/shared/test_import_boundaries.py tests/app/test_pipeline_ui_contracts.py` -> **165 passed**
+  - legacy-era targeted gate with `tests/simulators/test_run_executor.py` is superseded by replacement-era gates using `tests/simulators/test_evaluator_kernel.py` and `tests/simulators/test_boss_waves_parity_shadow.py`
   - `python -m app.run_stats` -> **passed**
 - live product acceptance verification after the 2026-04-15 final product-correctness hardening tranche:
   - Streamlit harness preset switching -> **passed**
@@ -358,7 +359,7 @@ The v49 current-stage program is complete only when all of the following are tru
   - `tests/app/test_pipeline_ui_contracts.py`
   - `tests/qe/test_generic_perk_multiplier_resolution.py`
   - `tests/qe/test_routing_checkpoint_consumer_bundle.py`
-  - `tests/simulators/test_run_executor.py`
+  - `tests/simulators/test_evaluator_kernel.py`
   - `tests/shared/test_import_boundaries.py`
 - `python -m app.run_stats` completed successfully on **2026-04-12**
 - UI-level Streamlit harness verification passed on **2026-04-12** with:
@@ -368,7 +369,7 @@ The v49 current-stage program is complete only when all of the following are tru
   - sanctioned Boss Waves run showing `Max surviving wave = 130`, `First failed wave = 140`, `Rows = 14`
 - refreshed full suite passed on **2026-04-12** (`390 passed`)
 - refreshed Boss Waves semantic/product recertification suites passed on **2026-04-13**:
-  - `pytest -q tests/simulators/test_run_executor.py` (`15 passed`)
+  - legacy-era `pytest -q tests/simulators/test_run_executor.py` (`15 passed`) is superseded after executor deletion by replacement kernel and certification tests
   - `pytest -q tests/app/test_pipeline_functional.py` (`29 passed`)
   - `pytest -q tests/app/test_pipeline_ui_contracts.py` (`19 passed`)
   - `python -m app.run_stats`
@@ -378,7 +379,7 @@ The v49 current-stage program is complete only when all of the following are tru
   - `pytest -q tests/app/test_pipeline_functional.py` -> `29 passed`
   - `pytest -q tests/qe/test_generic_perk_multiplier_resolution.py` -> `8 passed`
   - `pytest -q tests/qe/test_routing_checkpoint_consumer_bundle.py` -> `4 passed`
-  - `pytest -q tests/simulators/test_run_executor.py` -> `15 passed`
+  - legacy-era `pytest -q tests/simulators/test_run_executor.py` -> `15 passed` before executor deletion
   - `pytest -q tests/shared/test_import_boundaries.py` -> `51 passed`
   - `pytest -q tests/app/test_pipeline_ui_contracts.py` -> `19 passed`
 - repaired current-worktree full suite passed on **2026-04-11** (`390 passed`) in **24.34s**

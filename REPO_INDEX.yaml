@@ -368,11 +368,6 @@ simulators:
     status: active_candidate
     layer: simulators/
 
-  simulators/run_executor.py:
-    status: active_candidate
-    layer: simulators/
-    note: broader max-waves legacy/reference executor; no longer consumed by the Boss Waves product path, but retained until remaining test/reference and broader legacy consumers are retired or replaced
-
   simulators/runtime_consumer_executor.py:
     status: active_candidate
     layer: simulators/

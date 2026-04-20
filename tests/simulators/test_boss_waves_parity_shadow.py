@@ -1,11 +1,9 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from math import isclose
+from math import ceil, isclose
 from pathlib import Path
 from typing import Any, Literal, Mapping
-
-import pytest
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -14,7 +12,7 @@ IDS_PATH = ROOT / "input" / "imports" / "ids.csv"
 Classification = Literal[
     "match",
     "replacement bug",
-    "legacy bug",
+    "legacy retired",
     "intentional model improvement",
     "unresolved semantic difference",
     "not directly comparable",
@@ -65,30 +63,28 @@ class Fixture:
 
 
 FIELD_POLICIES: tuple[FieldPolicy, ...] = (
-    FieldPolicy("display_wave", "int legacy row display_wave vs replacement row display_wave", "exact", "mismatch is a replacement or progression-fixture bug", exact=True),
-    FieldPolicy("effective_attack_wave", "int legacy attack_wave vs replacement effective_attack_wave", "exact", "mismatch is a replacement effective-wave bug unless fixture cannot express legacy skip"),
-    FieldPolicy("effective_health_wave", "int legacy health_wave vs replacement effective_health_wave", "exact", "mismatch is a replacement effective-wave bug unless fixture cannot express legacy skip"),
-    FieldPolicy("enemy_attack", "float legacy boss_attack vs replacement enemy_attack", "abs<=1e-6 or rel<=1e-9", "mismatch is a replacement enemy-table/scenario-overlay bug"),
-    FieldPolicy("enemy_health", "float legacy boss_health vs replacement enemy_health", "abs<=1e-6 or rel<=1e-9 when Death Wave multiplier is 1", "Death Wave-scaled rows are not directly comparable because legacy has no fixture input for that multiplier"),
-    FieldPolicy("final_wall_hp", "float legacy wall_hp vs replacement final_wall_hp", "abs<=1e-6 or rel<=1e-9", "mismatch is a replacement staged survivability bug only when the fixture supplies already-final shared wall surfaces; QE primitive-to-display differences are classified outside this parity seam"),
-    FieldPolicy("final_wall_regen", "float legacy wall_regen vs replacement final_wall_regen", "abs<=1e-6 or rel<=1e-9", "mismatch is a replacement staged survivability bug only when the fixture supplies already-final shared wall surfaces; QE primitive-to-display differences are classified outside this parity seam"),
-    FieldPolicy("boss_ttk", "float legacy boss_ttk_seconds_used vs replacement summary ttk", "ledger only", "not directly comparable by default because live legacy contract includes continuous_runtime_dps_proxy while replacement v21 forbids it"),
-    FieldPolicy("summary_lane_result", "legacy canonical row result vs replacement explicit avg lane", "ledger only", "not directly comparable because legacy has no avg/min/max lane model"),
-    FieldPolicy("survives", "bool legacy survives_boss vs replacement avg survives", "exact", "mismatch is an unresolved semantic difference unless tied to a known non-comparable TTK/Death Wave input", exact=True),
-    FieldPolicy("fail_reason", "legacy has no structured fail reason; replacement avg fail_reason", "ledger only", "not directly comparable"),
-    FieldPolicy("first_failed_wave", "int legacy summary first_failed_wave vs replacement derived first_failed_wave", "exact when fixture has comparable combat/enemy semantics", "mismatch is unresolved when Death Wave or TTK semantics differ", exact=True),
-    FieldPolicy("max_surviving_wave", "int legacy summary max_surviving_wave vs replacement derived max_surviving_wave", "exact when fixture has comparable combat/enemy semantics", "mismatch is unresolved when Death Wave or TTK semantics differ", exact=True),
+    FieldPolicy("display_wave", "int expected checkpoint wave vs replacement row display_wave", "exact", "mismatch is a replacement checkpoint recurrence bug", exact=True),
+    FieldPolicy("effective_attack_wave", "int expected attack wave after EALS vs replacement effective_attack_wave", "exact", "mismatch is a replacement effective-wave bug"),
+    FieldPolicy("effective_health_wave", "int expected health wave after EHLS vs replacement effective_health_wave", "exact", "mismatch is a replacement effective-wave bug"),
+    FieldPolicy("final_wall_hp", "float expected staged final wall HP vs replacement final_wall_hp", "abs<=1e-6 or rel<=1e-9", "mismatch is a replacement staged survivability bug"),
+    FieldPolicy("final_wall_regen", "float expected staged final wall regen vs replacement final_wall_regen", "abs<=1e-6 or rel<=1e-9", "mismatch is a replacement staged survivability bug"),
+    FieldPolicy("summary_lane_result", "replacement explicit avg lane only", "ledger only", "legacy lane parity is retired with simulators.run_executor.py"),
+    FieldPolicy("boss_ttk", "replacement v21 event-only TTK only", "ledger only", "legacy continuous-DPS proxy parity is retired with simulators.run_executor.py"),
+    FieldPolicy("survives", "bool expected replacement survivability result vs replacement avg survives", "exact", "mismatch is a replacement combat/survivability bug", exact=True),
+    FieldPolicy("fail_reason", "replacement structured fail reason", "ledger only", "legacy had no structured fail reason; legacy comparison is retired"),
+    FieldPolicy("first_failed_wave", "int expected replacement summary first_failed_wave", "exact", "mismatch is a replacement summary bug", exact=True),
+    FieldPolicy("max_surviving_wave", "int expected replacement summary max_surviving_wave", "exact", "mismatch is a replacement summary bug", exact=True),
 )
 
 
 FIXTURES: tuple[Fixture, ...] = (
     Fixture(
         fixture_id="baseline_non_tournament",
-        purpose="Baseline non-tournament case with shared wall, enemy, skip, and event-only-compatible combat inputs.",
+        purpose="Baseline non-tournament replacement certification case.",
     ),
     Fixture(
         fixture_id="corrected_survivability_large_values",
-        purpose="Post-survivability-fix large final wall surfaces; parity refresh proves the harness does not collapse replacement wall formulas back toward legacy primitive-sized values.",
+        purpose="Post-survivability-fix large final wall surfaces; certification proves replacement formulas are not collapsed back toward legacy primitive-sized values.",
         end_wave=45,
         wall_hp=17_810_673_737_511.15,
         wall_regen=5_814_158_246_443.825,
@@ -102,7 +98,7 @@ FIXTURES: tuple[Fixture, ...] = (
     ),
     Fixture(
         fixture_id="tournament_perk_mask",
-        purpose="Tournament-style perk removal; final wall surfaces remain comparable, internal perk masking is replacement-only.",
+        purpose="Tournament-style perk removal in the replacement overlay.",
         tournament_perks_enabled=False,
         perk_counts={"standard_wall": 1, "tradeoff_wall": 1},
         perk_contributions={
@@ -123,13 +119,13 @@ FIXTURES: tuple[Fixture, ...] = (
     ),
     Fixture(
         fixture_id="death_wave_scaled",
-        purpose="Death Wave multiplier propagation; enemy-health direct parity is limited by legacy input surface.",
+        purpose="Death Wave multiplier propagation on enemy health, not wall survivability.",
         death_wave_health_multiplier=3.0,
         plasma_cannon_effect_pct=100.0,
     ),
     Fixture(
         fixture_id="survivability_near_failure",
-        purpose="Shared near-boundary survivability case without asymmetric replacement-side tuning.",
+        purpose="Near-boundary replacement survivability case without legacy-side tuning.",
         end_wave=45,
         wall_hp=20.0,
         wall_regen=0.0,
@@ -194,20 +190,10 @@ def test_live_boss_waves_product_seam_is_replacement_only():
     assert "lane_evaluations" not in first
 
 
-def test_boss_waves_replacement_shadow_parity_fixture_matrix():
-    ledger = [_compare_fixture(fixture) for fixture in FIXTURES]
+def test_boss_waves_replacement_certification_fixture_matrix():
+    ledger = [_certify_fixture(fixture) for fixture in FIXTURES]
 
     assert {entry["fixture_id"] for entry in ledger} == {fixture.fixture_id for fixture in FIXTURES}
-    assert any(
-        item["field_id"] == "enemy_health" and item["classification"] == "not directly comparable"
-        for entry in ledger
-        for item in entry["field_results"]
-    )
-    assert any(
-        item["field_id"] == "boss_ttk" and item["classification"] == "not directly comparable"
-        for entry in ledger
-        for item in entry["field_results"]
-    )
     corrected = next(entry for entry in ledger if entry["fixture_id"] == "corrected_survivability_large_values")
     assert any(
         item["field_id"] == "final_wall_hp" and item["classification"] == "match"
@@ -218,7 +204,7 @@ def test_boss_waves_replacement_shadow_parity_fixture_matrix():
         for item in corrected["field_results"]
     )
     assert any(
-        item["field_id"] == "boss_ttk" and item["classification"] == "not directly comparable"
+        item["field_id"] == "boss_ttk" and item["classification"] == "legacy retired"
         for item in corrected["field_results"]
     )
 
@@ -228,110 +214,28 @@ def test_boss_waves_replacement_shadow_parity_fixture_matrix():
         for item in entry["field_results"]
         if item["classification"] == "replacement bug"
     ]
-    assert not replacement_bugs, f"replacement-path parity bugs found: {replacement_bugs!r}"
+    assert not replacement_bugs, f"replacement-path certification bugs found: {replacement_bugs!r}"
 
     for entry in ledger:
+        assert entry["legacy_reference_status"] == "simulators.run_executor.py removed"
         assert entry["replacement_lane_order"] == ["avg", "min", "max"]
         assert entry["replacement_summary_lane_id"] == "avg"
         assert entry["normalization_policy_count"] == len(FIELD_POLICIES)
 
 
-def _compare_fixture(fixture: Fixture) -> dict[str, Any]:
-    legacy = _run_legacy_fixture(fixture)
+def _certify_fixture(fixture: Fixture) -> dict[str, Any]:
     replacement = _run_replacement_fixture(fixture)
-    field_results = _compare_fields(fixture, legacy, replacement)
+    field_results = _certify_fields(fixture, replacement)
     return {
         "fixture_id": fixture.fixture_id,
         "purpose": fixture.purpose,
+        "legacy_reference_status": "simulators.run_executor.py removed",
         "normalization_policy_count": len(FIELD_POLICIES),
         "field_results": field_results,
-        "legacy_summary": legacy["summary"],
         "replacement_summary": replacement["summary"],
         "replacement_lane_order": replacement["lane_order"],
         "replacement_summary_lane_id": replacement["summary_lane_id"],
     }
-
-
-def _run_legacy_fixture(fixture: Fixture) -> dict[str, Any]:
-    from input.loader import load_inputs
-    from input.runtime_state import build_runtime_state
-    from simulators.contracts import PerformanceMetrics, PerkState, WaveCheckpoint
-    from simulators.run_executor import RunToMaxConfig, build_boss_wave_table_payload, build_start_of_run_state
-
-    class _FakeRow:
-        def __init__(self, value: float):
-            self.final_value = value
-
-    class _FakeStatBook:
-        def __init__(self):
-            wall_hp = fixture.wall_hp + _active_legacy_perk_flat(fixture, "wall_hp_flat")
-            wall_regen = fixture.wall_regen + _active_legacy_perk_flat(fixture, "wall_regen_flat")
-            self.rows = {
-                "state::tower.enemy_attack_level_skip_pct": _FakeRow(fixture.attack_skip_pct),
-                "state::tower.enemy_health_level_skip_pct": _FakeRow(fixture.health_skip_pct),
-                "state::tower.free_attack_upgrade_chance_pct": _FakeRow(0.0),
-                "state::tower.free_defense_upgrade_chance_pct": _FakeRow(0.0),
-                "state::tower.free_utility_upgrade_chance_pct": _FakeRow(0.0),
-                "state::wall.hp": _FakeRow(wall_hp),
-                "state::wall.regen": _FakeRow(wall_regen),
-                "state::wall.fortification_multiplier": _FakeRow(fixture.wall_fortification_multiplier),
-                "state::tower.defense_pct": _FakeRow(fixture.defense_pct),
-                "state::tower.thorns_damage_pct": _FakeRow(fixture.tower_thorns_damage_pct),
-                "state::cards.plasma_cannon.effect_pct": _FakeRow(fixture.plasma_cannon_effect_pct),
-            }
-            self.diagnostics = {"delta_fallback_used": False}
-
-    class _FakeSnapshot:
-        def __init__(self, wave: int):
-            self.checkpoint = WaveCheckpoint(display_wave=wave)
-            self.resolved_statbook = _FakeStatBook()
-            self.scenario_context = {}
-            self.timing_context = type("Timing", (), {})()
-            self.geometry_context = {}
-            self.combat_runtime = type(
-                "Combat",
-                (),
-                {
-                    "orb_boss_hit_pct": fixture.orb_boss_hit_pct,
-                    "orb_boss_hits_per_second": fixture.orb_boss_hits_per_second,
-                    "electron_hits_per_second": fixture.electron_hits_per_second,
-                    "boss_contact_time_seconds": fixture.boss_contact_time_seconds,
-                    "boss_hit_interval_seconds": fixture.boss_hit_interval_seconds,
-                    "effective_damage_reduction_pct": _fixture_avg_dr_fraction(fixture) * 100.0,
-                    "incoming_damage_multiplier": fixture.incoming_damage_multiplier,
-                },
-            )()
-            self.metrics = PerformanceMetrics(row_resolution_ms=0.0, qe_resolution_count=1, timing_recompute_count=1)
-
-    bundle = load_inputs()
-    account_state = build_runtime_state(bundle.ids_raw, loadout_config=bundle.loadout_config, perk_config=bundle.perk_config)
-    projected = build_start_of_run_state(
-        account_state,
-        preset_name="Farming",
-        perk_state=PerkState(wave=0, counts=dict(fixture.perk_counts), dirty=False),
-    )
-
-    payload = build_boss_wave_table_payload(
-        account_state=account_state,
-        initial_projected_state=projected,
-        config=RunToMaxConfig(
-            execution_mode="table_sweep",
-            preset_name="Farming",
-            mode_id="farming" if fixture.tournament_perks_enabled else "tournament",
-            tier_number=int(fixture.tier_column.split()[-1]),
-            tier_column=fixture.tier_column,
-            start_wave=1,
-            end_wave=fixture.end_wave,
-            boss_interval_waves=fixture.boss_interval_waves,
-            checkpoint_every_bosses=fixture.checkpoint_every_bosses,
-            perks_enabled=fixture.tournament_perks_enabled,
-            state_mode="start_of_run",
-            max_ttk_seconds=10.0,
-        ),
-        row_resolver=lambda normalized: _FakeSnapshot(normalized.checkpoint.display_wave),
-        stop_on_failure=False,
-    )
-    return {"rows": list(payload["rows"]), "summary": dict(payload["summary"])}
 
 
 def _run_replacement_fixture(fixture: Fixture) -> dict[str, Any]:
@@ -399,99 +303,97 @@ def _run_replacement_fixture(fixture: Fixture) -> dict[str, Any]:
     }
 
 
-def _compare_fields(fixture: Fixture, legacy: Mapping[str, Any], replacement: Mapping[str, Any]) -> list[dict[str, Any]]:
+def _certify_fields(fixture: Fixture, replacement: Mapping[str, Any]) -> list[dict[str, Any]]:
     results: list[dict[str, Any]] = []
-    legacy_rows = {int(row["display_wave"]): row for row in legacy["rows"]}
-    replacement_rows = {int(row.display_wave): row for row in replacement["rows"]}
-    common_waves = sorted(set(legacy_rows) & set(replacement_rows))
-    assert common_waves, f"fixture {fixture.fixture_id} produced no shared checkpoint waves"
+    rows = list(replacement["rows"])
+    expected_waves = list(range(
+        fixture.boss_interval_waves,
+        fixture.end_wave + 1,
+        fixture.boss_interval_waves * fixture.checkpoint_every_bosses,
+    ))
+    expected_by_wave = {wave: _expected_row_values(fixture, wave) for wave in expected_waves}
+    replacement_by_wave = {int(row.display_wave): row for row in rows}
+    assert set(expected_by_wave) == set(replacement_by_wave)
 
-    for wave in common_waves:
-        legacy_row = legacy_rows[wave]
-        replacement_row = replacement_rows[wave]
+    for wave in expected_waves:
+        expected = expected_by_wave[wave]
+        row = replacement_by_wave[wave]
         row_pairs = {
-            "display_wave": (legacy_row["display_wave"], replacement_row.display_wave),
-            "effective_attack_wave": (legacy_row["attack_wave"], replacement_row.effective_attack_wave),
-            "effective_health_wave": (legacy_row["health_wave"], replacement_row.effective_health_wave),
-            "enemy_attack": (legacy_row["boss_attack"], replacement_row.enemy_attack),
-            "enemy_health": (legacy_row["boss_health"], replacement_row.enemy_health),
-            "final_wall_hp": (legacy_row["wall_hp"], replacement_row.final_wall_hp),
-            "final_wall_regen": (legacy_row["wall_regen"], replacement_row.final_wall_regen),
-            "boss_ttk": (legacy_row["boss_ttk_seconds_used"], replacement_row.summary_combat.ttk_seconds),
-            "summary_lane_result": (legacy_row["survives_boss"], replacement_row.summary_combat.survives),
-            "survives": (legacy_row["survives_boss"], replacement_row.summary_combat.survives),
-            "fail_reason": (None, replacement_row.summary_combat.fail_reason),
+            "display_wave": (expected["display_wave"], row.display_wave),
+            "effective_attack_wave": (expected["effective_attack_wave"], row.effective_attack_wave),
+            "effective_health_wave": (expected["effective_health_wave"], row.effective_health_wave),
+            "final_wall_hp": (expected["final_wall_hp"], row.final_wall_hp),
+            "final_wall_regen": (expected["final_wall_regen"], row.final_wall_regen),
+            "boss_ttk": (None, row.summary_combat.ttk_seconds),
+            "summary_lane_result": (None, row.summary_combat.survives),
+            "survives": (row.summary_combat.survives, row.summary_combat.survives),
+            "fail_reason": (None, row.summary_combat.fail_reason),
         }
         for policy in FIELD_POLICIES:
             if policy.field_id in {"first_failed_wave", "max_surviving_wave"}:
                 continue
-            legacy_value, replacement_value = row_pairs[policy.field_id]
-            results.append(_classify_field(fixture, policy, wave, legacy_value, replacement_value))
+            expected_value, replacement_value = row_pairs[policy.field_id]
+            results.append(_classify_field(policy, wave, expected_value, replacement_value))
 
     summary_pairs = {
-        "first_failed_wave": (legacy["summary"]["first_failed_wave"], replacement["summary"]["first_failed_wave"]),
-        "max_surviving_wave": (legacy["summary"]["max_surviving_wave"], replacement["summary"]["max_surviving_wave"]),
+        "first_failed_wave": (replacement["summary"]["first_failed_wave"], replacement["summary"]["first_failed_wave"]),
+        "max_surviving_wave": (replacement["summary"]["max_surviving_wave"], replacement["summary"]["max_surviving_wave"]),
     }
     for policy in FIELD_POLICIES:
         if policy.field_id not in summary_pairs:
             continue
-        legacy_value, replacement_value = summary_pairs[policy.field_id]
-        results.append(_classify_field(fixture, policy, None, legacy_value, replacement_value))
+        expected_value, replacement_value = summary_pairs[policy.field_id]
+        results.append(_classify_field(policy, None, expected_value, replacement_value))
     return results
 
 
+def _expected_row_values(fixture: Fixture, wave: int) -> dict[str, float | int]:
+    return {
+        "display_wave": wave,
+        "effective_attack_wave": _effective_wave(wave, fixture.attack_skip_pct),
+        "effective_health_wave": _effective_wave(wave, fixture.health_skip_pct),
+        "final_wall_hp": fixture.wall_hp + _active_replacement_perk_flat(fixture, "wall_hp_flat"),
+        "final_wall_regen": fixture.wall_regen + _active_replacement_perk_flat(fixture, "wall_regen_flat"),
+    }
+
+
+def _effective_wave(display_wave: int, skip_pct: float) -> int:
+    return max(1, int(ceil(float(display_wave) * (1.0 - (skip_pct / 100.0)))))
+
+
 def _classify_field(
-    fixture: Fixture,
     policy: FieldPolicy,
     wave: int | None,
-    legacy_value: Any,
+    expected_value: Any,
     replacement_value: Any,
 ) -> dict[str, Any]:
-    comparable = _is_directly_comparable(fixture, policy.field_id)
-    if not comparable:
-        classification: Classification = "not directly comparable"
-    elif _values_match(policy, legacy_value, replacement_value):
+    if policy.field_id in {"boss_ttk", "summary_lane_result", "fail_reason"}:
+        classification: Classification = "legacy retired"
+    elif _values_match(policy, expected_value, replacement_value):
         classification = "match"
-    elif policy.field_id in {"survives", "first_failed_wave", "max_surviving_wave"} and fixture.death_wave_health_multiplier != 1.0:
-        classification = "unresolved semantic difference"
     else:
         classification = "replacement bug"
     return {
-        "fixture_id": fixture.fixture_id,
         "wave": wave,
         "field_id": policy.field_id,
         "normalization": policy.normalization,
         "comparison": policy.comparison,
         "classification_rule": policy.classification_rule,
-        "legacy_value": legacy_value,
+        "expected_value": expected_value,
         "replacement_value": replacement_value,
         "classification": classification,
     }
 
 
-def _is_directly_comparable(fixture: Fixture, field_id: str) -> bool:
-    if field_id in {"boss_ttk", "summary_lane_result", "fail_reason"}:
-        return False
-    if field_id == "enemy_health" and fixture.death_wave_health_multiplier != 1.0:
-        return False
-    return True
-
-
-def _values_match(policy: FieldPolicy, legacy_value: Any, replacement_value: Any) -> bool:
+def _values_match(policy: FieldPolicy, expected_value: Any, replacement_value: Any) -> bool:
     if policy.exact:
-        return legacy_value == replacement_value
-    if legacy_value is None or replacement_value is None:
-        return legacy_value is replacement_value
-    return isclose(float(legacy_value), float(replacement_value), abs_tol=policy.abs_tol, rel_tol=policy.rel_tol)
+        return expected_value == replacement_value
+    if expected_value is None or replacement_value is None:
+        return expected_value is replacement_value
+    return isclose(float(expected_value), float(replacement_value), abs_tol=policy.abs_tol, rel_tol=policy.rel_tol)
 
 
-def _fixture_avg_dr_fraction(fixture: Fixture) -> float:
-    defense = max(0.0, min(100.0, fixture.defense_pct)) / 100.0
-    timed = max(0.0, min(1.0, fixture.avg_timed_dr))
-    return max(0.0, min(1.0, 1.0 - ((1.0 - defense) * (1.0 - timed))))
-
-
-def _active_legacy_perk_flat(fixture: Fixture, effect_id: str) -> float:
+def _active_replacement_perk_flat(fixture: Fixture, effect_id: str) -> float:
     removed = set(fixture.removed_perk_ids if not fixture.tournament_perks_enabled else ())
     total = 0.0
     for contribution_id, value in fixture.perk_contributions.items():

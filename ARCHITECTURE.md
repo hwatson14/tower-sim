@@ -92,7 +92,6 @@ The active surface should be small enough that an AI agent can navigate it in on
     incremental_parity_harness.py
     incremental_recalc_runtime.py
     incremental_subset_executor.py
-    run_executor.py             # run-level simulator executor
 
   evaluators/
     scorer.py                # scoring engine
@@ -212,7 +211,6 @@ Allowed direct files are:
 - `perk_timeline_state.py`
 - `perks.py`
 - `progression.py`
-- `run_executor.py`
 - `runtime_consumer_executor.py`
 - `scenario.py`
 - `snapshot_resolver.py`
@@ -283,8 +281,8 @@ Locked-foundation rules:
 - Simulator hot paths must use explicit requested-surface QE seams.
 - The Boss Waves replacement kernel consumes `qe.run_plan` compiled RunPlan/common-trajectory rows and explicit staged survivability contributor bundles plus scenario transforms; it must not call the legacy Boss Waves row-engine as its runtime authority.
 - Boss Waves replacement combat uses the v21 event-only boss TTK/TTD contract for this tranche; continuous additive tower/projectile DPS proxy logic is forbidden in `simulators/evaluator_kernel.py`.
-- Boss Waves product payloads are replacement-owned through `app.pipeline`; product behavior must not expose legacy rollback/shadow/reference branches or call `simulators.run_executor.py`.
-- `simulators/run_executor.py` remains a broader max-waves legacy/reference surface until its remaining consumers are separately retired or replaced; do not delete it solely because Boss Waves product behavior is replacement-only.
+- Boss Waves product payloads are replacement-owned through `app.pipeline`; product behavior must not expose legacy rollback/shadow/reference branches.
+- `simulators/run_executor.py` has been removed after final dependency inventory found no active product or active non-product consumers; do not recreate the old row-engine as a compatibility shim.
 - Ordinary row/checkpoint execution must not call `ProgressionRecalcBridge.recompute()`.
 - Simulator hot paths must not import `qe.stat_resolution` or broad report/compat resolver paths.
 - Simulator hot paths must not depend on `app.pipeline` orchestration helpers.

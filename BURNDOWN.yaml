@@ -9,10 +9,10 @@ status:
   confidence:
     high_signal_suites_green: true
     full_suite_recertified_here: true
-    full_suite_latest_result: passed_416
+    full_suite_latest_result: passed_401
     shipped_baseline_differed_before_repair: true
 verified_baseline:
-  high_signal_test_command: pytest -q tests/shared/test_import_boundaries.py tests/qe/test_compiler_routing_policy_split.py tests/simulators/test_run_executor.py tests/app/test_main_path_smoke.py tests/app/test_pipeline_functional.py
+  high_signal_test_command: pytest -q tests/shared/test_import_boundaries.py tests/qe/test_compiler_routing_policy_split.py tests/simulators/test_evaluator_kernel.py tests/simulators/test_boss_waves_parity_shadow.py tests/app/test_main_path_smoke.py tests/app/test_pipeline_functional.py
   high_signal_result:
     passed: 86
     skipped: 1
@@ -138,7 +138,7 @@ v49_program:
   - remove duplicate authority, stale residue, and bloat where they undermine truth, speed, or blind maintainability
   known_blockers:
   - the v49 interactive performance target remains open
-  - Boss Waves Phase 2A table/summary and Phase 2B export/diagnostics cutover are replacement-owned by default; stat evolution correctness and Boss Waves-local wall-surface semantics are closed with an explicit primitive/display split; legacy disposition remains pending
+  - Boss Waves Phase 2A table/summary and Phase 2B export/diagnostics cutover are replacement-owned by default; stat evolution correctness and Boss Waves-local wall-surface semantics are closed with an explicit primitive/display split; legacy executor retirement is complete
   shipped_vs_rebuilt_truth:
     latest_shipped_extract_audit_2026_04_15:
       source: tower-sim-src(9).zip
@@ -154,8 +154,8 @@ v49_program:
         failed: 0
         skipped: 0
       targeted_semantic_gate:
-        command: python -m pytest -q tests/app/test_pipeline_functional.py tests/simulators/test_run_executor.py tests/app/test_stats_dashboard_contract.py tests/shared/test_import_boundaries.py tests/app/test_pipeline_ui_contracts.py
-        passed: 165
+        command: python -m pytest -q tests/app/test_pipeline_functional.py tests/simulators/test_evaluator_kernel.py tests/simulators/test_boss_waves_parity_shadow.py tests/app/test_stats_dashboard_contract.py tests/shared/test_import_boundaries.py tests/app/test_pipeline_ui_contracts.py
+        note: replacement-era targeted gate supersedes the deleted run_executor defender suite
       python_m_app_run_stats: passed
       streamlit_harness:
         boss_waves_default_render: passed
@@ -282,8 +282,10 @@ v49_program:
       wall_surface_semantic_contract: state_wall_hp_and_state_wall_regen_are_transformed_primitives_not_final_product_display_fields
       death_wave_survivability_policy: enemy_health_only_not_wall_hp_or_wall_regen
       run_executor_consumer_inventory: complete
-      legacy_removal_started: false
-      broader_run_executor_deletion_blocked_by_active_consumers: true
+      legacy_executor_retirement: complete
+      legacy_removal_started: true
+      broader_run_executor_deletion_blocked_by_active_consumers: false
+      final_run_executor_inventory: no_active_product_or_active_non_product_consumers_only_historical_docs_and_guard_strings_remain
     cutover_plan:
       field_map_required_before_cutover: complete_for_table_summary_export_diagnostics
       rollback_seam_required_before_cutover: retired_after_boss_waves_product_legacy_excision
@@ -329,7 +331,7 @@ v49_program:
         gates:
         - Boss Waves product path is replacement-only
         - app.pipeline no longer exposes legacy rollback shadow or reference payload behavior
-        - remaining simulators.run_executor.py consumers inventoried
+        - remaining simulators.run_executor.py consumers inventoried and retired
         - broader max-waves legacy deletion deferred until remaining consumers are retired or replaced
       - id: phase_3
         name: Stabilization and monitoring
@@ -355,15 +357,17 @@ v49_program:
         - Streamlit requires operator_rows and download_rows and does not silently substitute rows
       - id: phase_4
         name: Legacy demotion or removal planning
-        status: pending
+        status: complete_for_run_executor_retirement
         gates:
         - no active consumer depends on legacy max-waves or Boss Waves row-engine outputs
-        - governance and tests identify legacy as removable or reference-only
+        - simulators/run_executor.py removed
+        - direct legacy executor defender tests removed
+        - replacement certification tests no longer import legacy executor
         - removal or demotion tests pass
       operational_rollback:
         owner: none_in_current_product_path
-        seam: retired_from_boss_waves_product_payload
-        action: any future rollback to simulators.run_executor.py requires a new approved tranche; no silent product fallback exists
+        seam: retired_from_boss_waves_product_payload_and_legacy_executor_deleted
+        action: any future rollback requires a new approved implementation path; no silent product fallback or run_executor compatibility shim exists
         verification:
         - app-level Boss Waves replacement-only tests pass
         - parity/reference tests pass where retained

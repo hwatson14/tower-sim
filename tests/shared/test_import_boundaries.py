@@ -224,7 +224,6 @@ _SIMULATORS_FILE_ALLOWLIST = {
     "perk_timeline_generator.py",
     "perk_timeline_state.py",
     "progression.py",
-    "run_executor.py",
     "runtime_consumer_executor.py",
     "scenario.py",
     "snapshot_resolver.py",
@@ -819,6 +818,12 @@ def test_governance_docs_do_not_reference_absent_legacy_runtime_paths():
     assert not (ROOT / "run_stats.py").exists(), "Unexpected root run_stats.py present; update governance checks."
     assert not _repo_index_contains_key("root", "run_stats.py"), (
         "REPO_INDEX.yaml root section still tracks missing run_stats.py entry"
+    )
+    assert not (ROOT / "simulators" / "run_executor.py").exists(), (
+        "Unexpected simulators/run_executor.py present; legacy executor retirement must update governance checks."
+    )
+    assert not _repo_index_contains_key("simulators", "simulators/run_executor.py"), (
+        "REPO_INDEX.yaml simulators section still tracks deleted simulators/run_executor.py entry"
     )
 
     for stale_section in ("archive", "engine_shims", "models_shims"):
