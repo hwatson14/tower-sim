@@ -16,7 +16,7 @@ replacement_input_sources:
   owner: app.pipeline assembles inputs only
   mechanics_owner: [qe.run_plan, simulators.evaluator_kernel]
   primitive_resolution_owner: qe.routing.resolve_checkpoint_surfaces
-  primitive_layer_policy: QE state::wall.hp and state::wall.regen are replacement start-of-run primitive inputs; final displayed Wall Pool and Wall Regen are operator-row fields after Table 1 row re-derivation and Table 2 scenario finalization.
+  primitive_layer_policy: QE state::wall.hp carries wall-health ratio contributors; displayed pre-fort Wall HP is derived from QE state::tower.hp times wall-health ratio times non-fort wall-health multipliers before Table 1 row re-derivation, and evaluator TTD applies state::wall.fortification_multiplier exactly once for Wall Pool. QE state::wall.regen is a start-of-run wall-regen percent-points primitive and displayed Wall Regen is derived from QE state::tower.regen times state::wall.regen / 100 before Table 1 row re-derivation and Table 2 scenario finalization.
   table1_builder: qe.run_plan.build_common_trajectory
   table2_builder: simulators.evaluator_kernel.build_scenario_overlay_table
   legacy_row_engine_dependency_for_default_product_surfaces: none

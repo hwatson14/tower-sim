@@ -114,6 +114,8 @@ BOSS_WAVE_REPLACEMENT_PRIMITIVE_SURFACE_IDS: tuple[str, ...] = (
     'state::tower.free_attack_upgrade_chance_pct',
     'state::tower.free_defense_upgrade_chance_pct',
     'state::tower.free_utility_upgrade_chance_pct',
+    'state::tower.hp',
+    'state::tower.regen',
     'state::wall.hp',
     'state::wall.regen',
     'state::wall.fortification_multiplier',
@@ -443,7 +445,7 @@ def build_boss_wave_payload(
         'perk_timeline': tuple(dict(row or {}) for row in perk_timeline) if bool(resolved_context.get('perks_enabled')) else (),
     }
     perk_counts = perk_state_at_wave(perk_timeline, 0) if bool(resolved_context.get('perks_enabled', True)) else {}
-    operator_rows, selected_summary, primitive_inputs = _build_replacement_operator_table_and_summary(
+    operator_rows, selected_summary, primitive_inputs, primitive_semantics_ledger = _build_replacement_operator_table_and_summary(
         active_source=source_id,
         config=config,
         account_state=account_state,
@@ -467,6 +469,7 @@ def build_boss_wave_payload(
         summary=selected_summary,
         stop_on_failure=bool(stop_on_failure),
         primitive_inputs=primitive_inputs,
+        primitive_semantics_ledger=primitive_semantics_ledger,
     )
     active_owner = 'simulators.evaluator_kernel.evaluate_overlay_row'
     tower_damage_mode = 'v21_event_only_replacement_for_operator_table'
@@ -537,7 +540,7 @@ def _build_replacement_operator_table_and_summary(
     perk_timeline: tuple[dict[str, object], ...],
     scenario_runtime_inputs: dict[str, float],
     stop_on_failure: bool,
-) -> tuple[list[dict[str, object]], dict[str, object], dict[str, float]]:
+) -> tuple[list[dict[str, object]], dict[str, object], dict[str, float], dict[str, object]]:
     from qe.run_plan import (
         CommonTrajectoryInputs,
         SurvivabilityContributorBundle,
@@ -565,6 +568,9 @@ def _build_replacement_operator_table_and_summary(
     category_track_order = default_category_track_order(workshop_levels, track_max_levels)
     wall_hp_level = _boss_wave_optional_workshop_level(workshop_levels, 'Wall Health', primitive_name='state::wall.hp')
     wall_regen_level = _boss_wave_optional_workshop_level(workshop_levels, 'Health Regen', primitive_name='state::wall.regen')
+    wall_fortification_multiplier = float(primitives['wall_fortification_multiplier'])
+    if wall_fortification_multiplier <= 0.0:
+        raise ValueError("Boss Waves replacement input state::wall.fortification_multiplier must be positive")
     wall_hp_value = float(primitives['wall_hp'])
     wall_regen_value = float(primitives['wall_regen'])
     survivability = SurvivabilityContributorBundle(
@@ -572,13 +578,13 @@ def _build_replacement_operator_table_and_summary(
         workshop_wall_hp=wall_hp_value if wall_hp_level and wall_hp_level > 0 else 0.0,
         wall_hp_workshop_track='Wall Health' if wall_hp_level and wall_hp_level > 0 else None,
         wall_hp_workshop_baseline_level=wall_hp_level if wall_hp_level and wall_hp_level > 0 else None,
-        wall_hp_workshop_value_per_level=(wall_hp_value / float(wall_hp_level)) if wall_hp_level and wall_hp_level > 0 else 0.0,
+        wall_hp_workshop_value_per_level=float(primitives['wall_hp_per_workshop_level_pre_fort']) if wall_hp_level and wall_hp_level > 0 else 0.0,
         base_wall_regen=0.0 if wall_regen_level and wall_regen_level > 0 else wall_regen_value,
         workshop_wall_regen=wall_regen_value if wall_regen_level and wall_regen_level > 0 else 0.0,
         wall_regen_workshop_track='Health Regen' if wall_regen_level and wall_regen_level > 0 else None,
         wall_regen_workshop_baseline_level=wall_regen_level if wall_regen_level and wall_regen_level > 0 else None,
         wall_regen_workshop_value_per_level=(wall_regen_value / float(wall_regen_level)) if wall_regen_level and wall_regen_level > 0 else 0.0,
-        wall_fortification_multiplier=float(primitives['wall_fortification_multiplier']),
+        wall_fortification_multiplier=wall_fortification_multiplier,
         tower_defense_pct=tower_defense_pct,
         timed_dr_by_lane={'min': 0.0, 'avg': 0.0, 'max': 0.0},
         source_policy='explicit_staged_contributors_v1',
@@ -643,7 +649,15 @@ def _build_replacement_operator_table_and_summary(
         )
         if bool(stop_on_failure) and not bool(operator_rows[-1].get('survives_boss')):
             break
-    return operator_rows, _replacement_summary_from_operator_rows(operator_rows), dict(primitives)
+    semantic_ledger = _boss_wave_primitive_semantics_ledger(
+        primitives=primitives,
+        workshop_levels=workshop_levels,
+        track_max_levels=track_max_levels,
+        lab_levels=getattr(account_state, 'labs', {}) or {},
+        row_input_wall_hp=wall_hp_value,
+        row_input_wall_regen=wall_regen_value,
+    )
+    return operator_rows, _replacement_summary_from_operator_rows(operator_rows), dict(primitives), semantic_ledger
 
 
 def _resolve_boss_wave_replacement_primitives(
@@ -653,6 +667,8 @@ def _resolve_boss_wave_replacement_primitives(
     perks_enabled: bool,
     scenario_runtime_inputs: dict[str, float],
 ) -> dict[str, float]:
+    from qe.run_plan import derive_wall_hp_from_qe_primitives, derive_wall_regen_hp_per_second
+
     response = resolve_checkpoint_surfaces(
         account_state,
         requested_surface_ids=BOSS_WAVE_REPLACEMENT_PRIMITIVE_SURFACE_IDS,
@@ -662,14 +678,33 @@ def _resolve_boss_wave_replacement_primitives(
         scenario_runtime_inputs=ScenarioRuntimeInputs.from_mapping(scenario_runtime_inputs),
     )
     statbook = query_response_to_statbook(response, notes='Boss Waves replacement primitive resolution.')
+    tower_hp = _required_statbook_float(statbook, 'state::tower.hp')
+    tower_regen = _required_statbook_float(statbook, 'state::tower.regen')
+    wall_hp_row = _required_statbook_row(statbook, 'state::wall.hp')
+    wall_hp_derivation = derive_wall_hp_from_qe_primitives(
+        tower_hp=tower_hp,
+        wall_hp_contributors=tuple(dict(row or {}) for row in (getattr(wall_hp_row, 'contributors', None) or ())),
+    )
+    wall_regen_pct_points = _required_statbook_float(statbook, 'state::wall.regen')
     return {
         'attack_skip_chance': _required_statbook_fraction(statbook, 'state::tower.enemy_attack_level_skip_pct'),
         'health_skip_chance': _required_statbook_fraction(statbook, 'state::tower.enemy_health_level_skip_pct'),
         'free_attack_upgrade_chance': _required_statbook_fraction(statbook, 'state::tower.free_attack_upgrade_chance_pct'),
         'free_defense_upgrade_chance': _required_statbook_fraction(statbook, 'state::tower.free_defense_upgrade_chance_pct'),
         'free_utility_upgrade_chance': _required_statbook_fraction(statbook, 'state::tower.free_utility_upgrade_chance_pct'),
-        'wall_hp': _required_statbook_float(statbook, 'state::wall.hp'),
-        'wall_regen': _required_statbook_float(statbook, 'state::wall.regen'),
+        'tower_hp': tower_hp,
+        'tower_regen': tower_regen,
+        'wall_hp_qe_surface': _required_statbook_float(statbook, 'state::wall.hp'),
+        'wall_hp': float(wall_hp_derivation['wall_hp_pre_fort']),
+        'wall_hp_percent_points': float(wall_hp_derivation['wall_hp_percent_points']),
+        'wall_hp_ratio': float(wall_hp_derivation['wall_hp_ratio']),
+        'wall_hp_multiplier': float(wall_hp_derivation['wall_hp_multiplier']),
+        'wall_hp_per_workshop_level_pre_fort': float(wall_hp_derivation['wall_hp_per_workshop_level_pre_fort']),
+        'wall_regen': derive_wall_regen_hp_per_second(
+            tower_regen_hp_per_second=tower_regen,
+            wall_regen_percent_points=wall_regen_pct_points,
+        ),
+        'wall_regen_percent_points': wall_regen_pct_points,
         'wall_fortification_multiplier': _required_statbook_float(statbook, 'state::wall.fortification_multiplier'),
         'tower_defense_pct': _required_statbook_float(statbook, 'state::tower.defense_pct'),
         'tower_thorns_damage_pct': _required_statbook_float(statbook, 'state::tower.thorns_damage_pct'),
@@ -718,16 +753,193 @@ def _boss_wave_perk_counts_by_wave(perk_timeline: tuple[dict[str, object], ...])
     return out
 
 
+def _boss_wave_primitive_semantics_ledger(
+    *,
+    primitives: dict[str, float],
+    workshop_levels: dict[str, int],
+    track_max_levels: dict[str, int],
+    lab_levels: dict[str, object],
+    row_input_wall_hp: float,
+    row_input_wall_regen: float,
+) -> dict[str, object]:
+    fort = float(primitives['wall_fortification_multiplier'])
+    return {
+        'request_path': {
+            'account_source': 'PipelineRunRequest.ids -> load_inputs -> build_runtime_state',
+            'preset_name': 'Farming-or-requested-preset',
+            'state_mode': 'start_of_run',
+            'primitive_resolution_owner': 'qe.routing.resolve_checkpoint_surfaces',
+            'table1_owner': 'qe.run_plan',
+            'table2_owner': 'simulators.evaluator_kernel',
+            'product_render_owner': 'app.streamlit_inspector consumes operator_rows',
+        },
+        'primitives': {
+            'state::wall.hp': {
+                'boss_waves_source': 'qe.routing.resolve_checkpoint_surfaces(state::wall.hp)',
+                'canonical_truth_source': 'kb wall_hp = tower_hp * wall_health_ratio; qe.run_plan.derive_wall_hp_from_qe_primitives',
+                'semantic_meaning': 'QE wall HP surface currently carries wall-health ratio contributors; Boss Waves derives pre-fort HP from tower HP and those contributor semantics',
+                'exact_value': float(primitives['wall_hp_qe_surface']),
+                'primitive_vs_displayed': 'partial_primitive_input_not_displayed_directly',
+                'fortification_transform': 'not_used_as_final_wall_pool',
+                'state_phase': 'start_of_run',
+                'row_evolution': 'Table 1 starts from derived pre-fort wall HP and evolves by owned Wall Health workshop state',
+                'owner_layer': 'QE publishes tower_hp and wall-health contributors; app assembles primitive bundle; run_plan derives and row-rederives; evaluator applies fortification once',
+                'classification': 'transformed',
+                'row_input_value': float(row_input_wall_hp),
+                'tower_hp': float(primitives['tower_hp']),
+                'wall_hp_percent_points': float(primitives['wall_hp_percent_points']),
+                'wall_hp_ratio': float(primitives['wall_hp_ratio']),
+                'wall_hp_multiplier': float(primitives['wall_hp_multiplier']),
+            },
+            'state::wall.regen': {
+                'boss_waves_source': 'qe.routing.resolve_checkpoint_surfaces(state::wall.regen)',
+                'canonical_truth_source': 'formula_surface_policy state::wall.regen',
+                'semantic_meaning': 'QE-published wall regen percent-points primitive; Boss Waves combines it with resolved tower regen for displayed HP/sec',
+                'exact_value': float(primitives['wall_regen_percent_points']),
+                'primitive_vs_displayed': 'partial_primitive_input_not_displayed_directly',
+                'fortification_transform': 'not_fortification_scaled',
+                'state_phase': 'start_of_run',
+                'row_evolution': 'Table 1 can rederive if an owned wall-regen workshop primitive changes',
+                'owner_layer': 'QE publishes tower_regen and wall_regen percent primitive; app assembles primitive bundle; run_plan row-rederives; evaluator applies scenario wall_regen transforms',
+                'classification': 'transformed',
+                'row_input_value': float(row_input_wall_regen),
+            },
+            'state::tower.regen': {
+                'boss_waves_source': 'qe.routing.resolve_checkpoint_surfaces(state::tower.regen)',
+                'canonical_truth_source': 'qe.routing.resolve_checkpoint_surfaces(state::tower.regen)',
+                'semantic_meaning': 'QE-published resolved tower regen HP/sec used as the base for wall regen',
+                'exact_value': float(primitives['tower_regen']),
+                'primitive_vs_displayed': 'primitive_input_transform_for_wall_regen',
+                'fortification_transform': 'none',
+                'state_phase': 'start_of_run',
+                'row_evolution': 'static until owned row-evolved tower regen primitives exist',
+                'owner_layer': 'QE publishes; Boss Waves primitive assembly combines with wall regen percent points',
+                'classification': 'equivalent',
+            },
+            'state::wall.fortification_multiplier': {
+                'boss_waves_source': 'qe.routing.resolve_checkpoint_surfaces(state::wall.fortification_multiplier)',
+                'canonical_truth_source': 'qe.materializer._scale_wall_fortification_lab_value',
+                'semantic_meaning': 'multiplicative wall fortification factor applied once to pre-fort wall HP for Boss Waves wall pool',
+                'exact_value': fort,
+                'primitive_vs_displayed': 'primitive_input_transform_for_wall_pool',
+                'fortification_transform': 'applied_once_in_evaluator_ttd',
+                'state_phase': 'start_of_run',
+                'row_evolution': 'static until an owned row-evolved fortification primitive exists',
+                'owner_layer': 'QE publishes; evaluator consumes',
+                'classification': 'equivalent',
+            },
+            'state::tower.defense_pct': _primitive_ledger_entry(
+                source='qe.routing.resolve_checkpoint_surfaces(state::tower.defense_pct)',
+                value=float(primitives['tower_defense_pct']),
+                meaning='QE-published tower defense percent; runtime effective_damage_reduction_pct may override displayed DR Used',
+                owner='QE publishes; evaluator consumes damage reduction',
+            ),
+            'state::tower.thorns_damage_pct': _primitive_ledger_entry(
+                source='qe.routing.resolve_checkpoint_surfaces(state::tower.thorns_damage_pct)',
+                value=float(primitives['tower_thorns_damage_pct']),
+                meaning='QE-published thorns percent used by v21 event-only thorns contact TTK source',
+                owner='QE publishes; evaluator consumes combat input',
+            ),
+            'state::cards.plasma_cannon.effect_pct': _primitive_ledger_entry(
+                source='qe.routing.resolve_checkpoint_surfaces(state::cards.plasma_cannon.effect_pct)',
+                value=float(primitives['plasma_cannon_effect_pct']),
+                meaning='QE-published Plasma Cannon opening reduction percent used by v21 event-only TTK',
+                owner='QE publishes; evaluator consumes combat input',
+            ),
+        },
+        'workshop_levels': {
+            'Wall Health': _workshop_ledger_entry(workshop_levels, track_max_levels, 'Wall Health', 'row-evolved pre-fort wall HP contributor basis'),
+            'Health Regen': _workshop_ledger_entry(workshop_levels, track_max_levels, 'Health Regen', 'row-evolved wall regen contributor basis when owned semantics are present'),
+            'Wall Fortification': {
+                'boss_waves_source': "input.runtime_state.AccountState.labs['Wall Fortification']",
+                'canonical_truth_source': 'input.runtime_state.build_runtime_state lab snapshot',
+                'semantic_meaning': 'lab level provenance for state::wall.fortification_multiplier',
+                'exact_value': int(lab_levels.get('Wall Fortification') or 0),
+                'primitive_vs_displayed': 'primitive_provenance_input',
+                'fortification_transform': 'lab level is converted by QE into state::wall.fortification_multiplier',
+                'state_phase': 'start_of_run',
+                'owner_layer': 'input publishes lab level; QE materializer scales to fortification multiplier',
+                'classification': 'equivalent' if lab_levels.get('Wall Fortification') is not None else 'unresolved',
+            },
+        },
+        'fortification_double_application_check': {
+            'state_wall_hp_includes_fortification': True,
+            'row_input_wall_hp': float(row_input_wall_hp),
+            'fortification_multiplier': fort,
+            'reconstructed_wall_pool': float(row_input_wall_hp) * fort,
+            'qe_state_wall_hp_surface': float(primitives['wall_hp_qe_surface']),
+            'policy': 'derive pre-fort wall HP from tower_hp and wall-health ratio contributors; evaluator multiplies by fortification once for displayed Wall Pool',
+        },
+        'wall_hp_formula_check': {
+            'tower_hp': float(primitives['tower_hp']),
+            'wall_hp_percent_points': float(primitives['wall_hp_percent_points']),
+            'wall_hp_ratio': float(primitives['wall_hp_ratio']),
+            'wall_hp_multiplier': float(primitives['wall_hp_multiplier']),
+            'displayed_wall_hp_pre_fort': float(row_input_wall_hp),
+            'reconstructed_displayed_wall_hp_pre_fort': float(primitives['tower_hp']) * float(primitives['wall_hp_ratio']) * float(primitives['wall_hp_multiplier']),
+            'policy': 'displayed pre-fort Wall HP = resolved tower HP * wall health ratio * non-fort wall health multipliers',
+        },
+        'wall_regen_formula_check': {
+            'tower_regen': float(primitives['tower_regen']),
+            'wall_regen_percent_points': float(primitives['wall_regen_percent_points']),
+            'wall_regen_multiplier': float(primitives['wall_regen_percent_points']) / 100.0,
+            'displayed_wall_regen': float(row_input_wall_regen),
+            'reconstructed_displayed_wall_regen': float(primitives['tower_regen']) * (float(primitives['wall_regen_percent_points']) / 100.0),
+            'policy': 'displayed Wall Regen = resolved tower regen HP/sec * QE wall regen percent-points primitive / 100',
+        },
+    }
+
+
+def _primitive_ledger_entry(*, source: str, value: float, meaning: str, owner: str) -> dict[str, object]:
+    return {
+        'boss_waves_source': source,
+        'canonical_truth_source': source,
+        'semantic_meaning': meaning,
+        'exact_value': float(value),
+        'primitive_vs_displayed': 'primitive_input',
+        'fortification_transform': 'none',
+        'state_phase': 'start_of_run',
+        'row_evolution': 'static unless scenario/runtime transform applies',
+        'owner_layer': owner,
+        'classification': 'equivalent',
+    }
+
+
+def _workshop_ledger_entry(
+    workshop_levels: dict[str, int],
+    track_max_levels: dict[str, int],
+    track_name: str,
+    meaning: str,
+) -> dict[str, object]:
+    return {
+        'boss_waves_source': f'input.runtime_state.AccountState.workshop[{track_name!r}].preset_levels',
+        'canonical_truth_source': 'input.runtime_state.build_runtime_state account snapshot',
+        'semantic_meaning': meaning,
+        'exact_value': int(workshop_levels.get(track_name, 0)),
+        'max_level': int(track_max_levels.get(track_name, 0)),
+        'primitive_vs_displayed': 'row_evolution_input',
+        'fortification_transform': 'provenance_only' if track_name == 'Wall Fortification' else 'none',
+        'state_phase': 'start_of_run_seed_then_row_evolved_by_freeups',
+        'owner_layer': 'input publishes account state; app assembles; run_plan evolves',
+        'classification': 'equivalent' if track_name in workshop_levels else 'unresolved',
+    }
+
+
 def _required_statbook_float(statbook, surface_id: str) -> float:
-    row = (getattr(statbook, 'rows', {}) or {}).get(surface_id)
-    if row is None:
-        raise ValueError(f"Boss Waves replacement input requires QE surface {surface_id!r}")
+    row = _required_statbook_row(statbook, surface_id)
     if str(getattr(row, 'status', '') or '').strip() != 'resolved':
         raise ValueError(f"Boss Waves replacement input requires resolved QE surface {surface_id!r}")
     value = getattr(row, 'final_value', None)
     if value is None:
         raise ValueError(f"Boss Waves replacement input requires non-null QE surface {surface_id!r}")
     return float(value)
+
+
+def _required_statbook_row(statbook, surface_id: str):
+    row = (getattr(statbook, 'rows', {}) or {}).get(surface_id)
+    if row is None:
+        raise ValueError(f"Boss Waves replacement input requires QE surface {surface_id!r}")
+    return row
 
 
 def _required_statbook_fraction(statbook, surface_id: str) -> float:
@@ -821,6 +1033,7 @@ def _build_replacement_diagnostics(
     summary: dict[str, object],
     stop_on_failure: bool,
     primitive_inputs: dict[str, float] | None = None,
+    primitive_semantics_ledger: dict[str, object] | None = None,
 ) -> dict[str, object]:
     lane_order = ['avg', 'min', 'max']
     first_row = operator_rows[0] if operator_rows else {}
@@ -883,10 +1096,11 @@ def _build_replacement_diagnostics(
             'layer': 'primitive_start_of_run_inputs_not_final_displayed_rows',
             'values': dict(primitive_inputs or {}),
         },
+        'replacement_primitive_semantics_ledger': dict(primitive_semantics_ledger or {}),
         'replacement_display_derivation': {
-            'wall_pool': 'operator_rows.wall_pool_hp_used = table2.final_wall_hp * table1.wall_fortification_multiplier * scenario.wall_fortification_multiplier',
-            'wall_regen': 'operator_rows.wall_regen = table2.final_wall_regen after Table 1 contributor re-derivation and Table 2 scenario transforms',
-            'wall_hp': 'operator_rows.wall_hp = table2.final_wall_hp; not shown as the primary Wall Pool product column',
+            'wall_pool': 'operator_rows.wall_pool_hp_used = table2.final_wall_hp_pre_fort * table1.wall_fortification_multiplier * scenario.wall_fortification_multiplier; pre-fort wall HP is derived from tower_hp * wall_health_ratio * wall_health_multipliers',
+            'wall_regen': 'operator_rows.wall_regen = resolved tower_regen * wall_regen_percent_points / 100, after Table 1 contributor re-derivation and Table 2 scenario transforms',
+            'wall_hp': 'operator_rows.wall_hp = table2.final_wall_hp_pre_fort; not shown as the primary Wall Pool product column',
         },
         'replacement_outputs': {
             'operator_row_count': len(operator_rows),

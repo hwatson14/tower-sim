@@ -3,7 +3,7 @@ from __future__ import annotations
 import hashlib
 import json
 from dataclasses import asdict, dataclass, field, is_dataclass, replace
-from math import floor
+from math import floor, isfinite
 from typing import Any, Mapping
 
 
@@ -138,6 +138,71 @@ class DependencyPolicyConfig:
         "compiled_perk_state",
         "survivability_contributors",
     )
+
+
+def derive_wall_regen_hp_per_second(
+    *,
+    tower_regen_hp_per_second: float,
+    wall_regen_percent_points: float,
+) -> float:
+    tower_regen = float(tower_regen_hp_per_second)
+    wall_regen_pct = float(wall_regen_percent_points)
+    if not isfinite(tower_regen) or tower_regen < 0.0:
+        raise ValueError("tower_regen_hp_per_second must be a finite non-negative value")
+    if not isfinite(wall_regen_pct) or wall_regen_pct < 0.0:
+        raise ValueError("wall_regen_percent_points must be a finite non-negative value")
+    return tower_regen * (wall_regen_pct / 100.0)
+
+
+def derive_wall_hp_from_qe_primitives(
+    *,
+    tower_hp: float,
+    wall_hp_contributors: tuple[Mapping[str, Any], ...],
+) -> Mapping[str, float]:
+    resolved_tower_hp = float(tower_hp)
+    if not isfinite(resolved_tower_hp) or resolved_tower_hp < 0.0:
+        raise ValueError("tower_hp must be a finite non-negative value")
+    ratio_percent_points = 0.0
+    multiplier = 1.0
+    saw_ratio = False
+    for contributor in wall_hp_contributors:
+        if not bool(contributor.get("active", True)):
+            continue
+        value = float(contributor.get("value") or 0.0)
+        if not isfinite(value):
+            raise ValueError("wall HP contributor values must be finite")
+        contributor_id = str(contributor.get("contributor_id") or "")
+        stage = str(contributor.get("composition_stage") or "")
+        input_value_type = str(contributor.get("input_value_type") or "")
+        if contributor_id == "lab__wall__fortification__multiplier":
+            continue
+        if "wall_health_regen_mult" in contributor_id or (
+            "wall_health__pct" in contributor_id and "@@unique" in contributor_id
+        ):
+            multiplier *= value
+            continue
+        if stage == "additive_pre_cap":
+            ratio_percent_points += value
+            saw_ratio = True
+            continue
+        if stage == "multiplicative":
+            multiplier *= value
+            continue
+        if input_value_type in {"percent_display", "resolved_value"}:
+            ratio_percent_points += value
+            saw_ratio = True
+            continue
+        raise ValueError(f"unsupported wall HP contributor semantics for {contributor_id!r}")
+    if not saw_ratio:
+        raise ValueError("wall HP derivation requires at least one ratio contributor")
+    ratio = ratio_percent_points / 100.0
+    return {
+        "wall_hp_pre_fort": resolved_tower_hp * ratio * multiplier,
+        "wall_hp_ratio": ratio,
+        "wall_hp_percent_points": ratio_percent_points,
+        "wall_hp_multiplier": multiplier,
+        "wall_hp_per_workshop_level_pre_fort": resolved_tower_hp * 0.001 * multiplier,
+    }
 
 
 @dataclass(frozen=True)

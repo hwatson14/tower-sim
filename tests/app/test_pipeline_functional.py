@@ -281,9 +281,10 @@ def _install_fake_boss_wave_app_dependencies(monkeypatch, pipeline_mod):
 
 def _install_fake_boss_wave_replacement_primitives(monkeypatch, pipeline_mod, *, omit_surface: str | None = None):
     class _FakeRow:
-        def __init__(self, value):
+        def __init__(self, value, contributors=None):
             self.final_value = value
             self.status = 'resolved'
+            self.contributors = list(contributors or [])
 
     rows = {
         'state::tower.enemy_attack_level_skip_pct': _FakeRow(0.0),
@@ -291,7 +292,34 @@ def _install_fake_boss_wave_replacement_primitives(monkeypatch, pipeline_mod, *,
         'state::tower.free_attack_upgrade_chance_pct': _FakeRow(0.0),
         'state::tower.free_defense_upgrade_chance_pct': _FakeRow(0.0),
         'state::tower.free_utility_upgrade_chance_pct': _FakeRow(0.0),
-        'state::wall.hp': _FakeRow(1000.0),
+        'state::tower.hp': _FakeRow(500.0),
+        'state::tower.regen': _FakeRow(100.0),
+        'state::wall.hp': _FakeRow(
+            1000.0,
+            contributors=[
+                {
+                    'active': True,
+                    'value': 100.0,
+                    'composition_stage': 'additive_pre_cap',
+                    'contributor_id': 'workshop__wall__health__flat',
+                    'input_value_type': 'resolved_value',
+                },
+                {
+                    'active': True,
+                    'value': 2.0,
+                    'composition_stage': 'multiplicative',
+                    'contributor_id': 'enhancement.wall_health_+.account_state',
+                    'input_value_type': 'resolved_value',
+                },
+                {
+                    'active': True,
+                    'value': 2.0,
+                    'composition_stage': 'multiplicative',
+                    'contributor_id': 'lab__wall__fortification__multiplier',
+                    'input_value_type': 'resolved_value',
+                },
+            ],
+        ),
         'state::wall.regen': _FakeRow(25.0),
         'state::wall.fortification_multiplier': _FakeRow(2.0),
         'state::tower.defense_pct': _FakeRow(90.0),
@@ -418,6 +446,33 @@ def test_build_boss_wave_payload_fails_closed_on_unmapped_required_input_primiti
         )
 
 
+def test_build_boss_wave_payload_fails_closed_on_missing_wall_regen_base_primitive(monkeypatch):
+    from app import pipeline as pipeline_mod
+    from app.models import PipelineRunRequest
+
+    _install_fake_boss_wave_app_dependencies(monkeypatch, pipeline_mod)
+    _install_fake_boss_wave_replacement_primitives(monkeypatch, pipeline_mod, omit_surface='state::tower.regen')
+
+    request = PipelineRunRequest(ids=ROOT / 'input' / 'imports' / 'ids.csv', out=ROOT / 'out')
+    with pytest.raises(ValueError, match="requires QE surface 'state::tower.regen'"):
+        pipeline_mod.build_boss_wave_payload(
+            request,
+            preset_name='Farming',
+            tier_number=14,
+            end_wave=30,
+            boss_wave_step=1,
+            stop_on_failure=True,
+            scenario_runtime_inputs={
+                'orb_boss_hit_pct': 2.5,
+                'orb_boss_hits_per_second': 5.0,
+                'electron_hits_per_second': 5.0,
+                'boss_contact_time_seconds': 1.0,
+                'effective_damage_reduction_pct': 90.0,
+                'incoming_damage_multiplier': 1.0,
+            },
+        )
+
+
 def test_build_boss_wave_payload_fails_closed_on_missing_export_mapping(monkeypatch):
     from app import pipeline as pipeline_mod
     from app.models import PipelineRunRequest
@@ -453,7 +508,9 @@ def test_build_boss_wave_payload_fails_closed_on_missing_export_mapping(monkeypa
 @pytest.mark.live
 def test_build_boss_wave_payload_live_path_avoids_delta_fallback():
     from app.models import PipelineRunRequest
-    from app.pipeline import build_boss_wave_payload
+    from app.pipeline import build_boss_wave_payload, build_runtime_state, load_inputs
+    from input.state_types import ScenarioRuntimeInputs
+    from qe.routing import query_response_to_statbook, resolve_checkpoint_surfaces
 
     request = PipelineRunRequest(ids=IDS_PATH, out=ROOT / 'out')
     runtime_inputs = {
@@ -463,6 +520,30 @@ def test_build_boss_wave_payload_live_path_avoids_delta_fallback():
         'boss_contact_time_seconds': 1.0,
         'effective_damage_reduction_pct': 90.0,
         'incoming_damage_multiplier': 1.0,
+    }
+    bundle = load_inputs(ids_path=request.ids, manual_inputs_path=request.manual_inputs)
+    account_state = build_runtime_state(bundle.ids_raw, loadout_config=bundle.loadout_config, perk_config=bundle.perk_config)
+    canonical_response = resolve_checkpoint_surfaces(
+        account_state,
+        requested_surface_ids=(
+            'state::wall.hp',
+            'state::tower.hp',
+            'state::wall.regen',
+            'state::tower.regen',
+            'state::wall.fortification_multiplier',
+            'state::tower.defense_pct',
+            'state::tower.thorns_damage_pct',
+            'state::cards.plasma_cannon.effect_pct',
+        ),
+        preset_name='Farming',
+        state_mode='start_of_run',
+        perks_enabled=True,
+        scenario_runtime_inputs=ScenarioRuntimeInputs.from_mapping(runtime_inputs),
+    )
+    canonical_statbook = query_response_to_statbook(canonical_response, notes='Boss Waves primitive authority reconciliation test.')
+    canonical = {
+        surface_id: float(canonical_statbook.rows[surface_id].final_value)
+        for surface_id in canonical_statbook.rows
     }
     payload = build_boss_wave_payload(
         request,
@@ -486,22 +567,57 @@ def test_build_boss_wave_payload_live_path_avoids_delta_fallback():
     primitive_inputs = diagnostics['replacement_primitive_inputs']
     assert primitive_inputs['layer'] == 'primitive_start_of_run_inputs_not_final_displayed_rows'
     primitives = primitive_inputs['values']
-    assert primitives['wall_hp'] == pytest.approx(144458899.20000002)
-    assert primitives['wall_regen'] == pytest.approx(525.0)
-    assert primitives['wall_fortification_multiplier'] == pytest.approx(10.4)
-    assert primitives['tower_defense_pct'] == pytest.approx(78.9)
-    assert primitives['tower_thorns_damage_pct'] == pytest.approx(121.0)
-    assert primitives['plasma_cannon_effect_pct'] == pytest.approx(54.0)
+    expected_wall_regen = canonical['state::tower.regen'] * (canonical['state::wall.regen'] / 100.0)
+    expected_wall_hp_pre_fort = (
+        canonical['state::tower.hp']
+        * primitives['wall_hp_ratio']
+        * primitives['wall_hp_multiplier']
+    )
+    assert primitives['tower_hp'] == pytest.approx(canonical['state::tower.hp'])
+    assert primitives['wall_hp_qe_surface'] == pytest.approx(canonical['state::wall.hp'])
+    assert primitives['wall_hp'] == pytest.approx(expected_wall_hp_pre_fort)
+    assert primitives['tower_regen'] == pytest.approx(canonical['state::tower.regen'])
+    assert primitives['wall_regen_percent_points'] == pytest.approx(canonical['state::wall.regen'])
+    assert primitives['wall_regen'] == pytest.approx(expected_wall_regen)
+    assert primitives['wall_fortification_multiplier'] == pytest.approx(canonical['state::wall.fortification_multiplier'])
+    assert primitives['tower_defense_pct'] == pytest.approx(canonical['state::tower.defense_pct'])
+    assert primitives['tower_thorns_damage_pct'] == pytest.approx(canonical['state::tower.thorns_damage_pct'])
+    assert primitives['plasma_cannon_effect_pct'] == pytest.approx(canonical['state::cards.plasma_cannon.effect_pct'])
+    ledger = diagnostics['replacement_primitive_semantics_ledger']
+    assert ledger['primitives']['state::wall.hp']['semantic_meaning'].startswith('QE wall HP surface currently carries wall-health ratio contributors')
+    assert ledger['primitives']['state::wall.hp']['fortification_transform'] == 'not_used_as_final_wall_pool'
+    assert ledger['primitives']['state::wall.hp']['classification'] == 'transformed'
+    assert ledger['primitives']['state::wall.hp']['tower_hp'] == pytest.approx(canonical['state::tower.hp'])
+    assert ledger['primitives']['state::wall.regen']['classification'] == 'transformed'
+    assert ledger['primitives']['state::wall.regen']['exact_value'] == pytest.approx(canonical['state::wall.regen'])
+    assert ledger['primitives']['state::wall.regen']['row_input_value'] == pytest.approx(expected_wall_regen)
+    assert ledger['primitives']['state::tower.regen']['exact_value'] == pytest.approx(canonical['state::tower.regen'])
+    assert ledger['workshop_levels']['Wall Health']['exact_value'] == account_state.workshop['Wall Health'].preset_levels['Farming']
+    assert ledger['workshop_levels']['Health Regen']['exact_value'] == account_state.workshop['Health Regen'].preset_levels['Farming']
+    assert ledger['workshop_levels']['Wall Fortification']['exact_value'] == account_state.labs['Wall Fortification']
+    assert ledger['workshop_levels']['Wall Fortification']['fortification_transform'] == 'lab level is converted by QE into state::wall.fortification_multiplier'
+    fort_check = ledger['fortification_double_application_check']
+    assert fort_check['state_wall_hp_includes_fortification'] is True
+    assert fort_check['reconstructed_wall_pool'] == pytest.approx(primitives['wall_hp'] * primitives['wall_fortification_multiplier'])
+    assert fort_check['qe_state_wall_hp_surface'] == pytest.approx(canonical['state::wall.hp'])
+    assert fort_check['policy'].startswith('derive pre-fort wall HP from tower_hp')
+    hp_check = ledger['wall_hp_formula_check']
+    assert hp_check['tower_hp'] == pytest.approx(canonical['state::tower.hp'])
+    assert hp_check['reconstructed_displayed_wall_hp_pre_fort'] == pytest.approx(expected_wall_hp_pre_fort)
+    regen_check = ledger['wall_regen_formula_check']
+    assert regen_check['tower_regen'] == pytest.approx(canonical['state::tower.regen'])
+    assert regen_check['wall_regen_percent_points'] == pytest.approx(canonical['state::wall.regen'])
+    assert regen_check['reconstructed_displayed_wall_regen'] == pytest.approx(expected_wall_regen)
     assert diagnostics['replacement_display_derivation']['wall_pool'].startswith('operator_rows.wall_pool_hp_used')
     assert diagnostics['replacement_model']['death_wave_health_multiplier_applies_to'] == 'enemy_health_only_not_wall_hp_or_wall_regen'
     first_row = (payload.get('rows') or [{}])[0]
     assert first_row.get('display_wave') == 9
     rows = payload.get('rows') or []
-    assert rows[0]['wall_hp'] > primitives['wall_hp']
+    assert rows[0]['wall_hp'] > fort_check['row_input_wall_hp']
     assert rows[-1]['wall_hp'] > rows[0]['wall_hp']
-    assert rows[0]['wall_pool_hp_used'] == pytest.approx(1503493725.22603)
+    assert rows[0]['wall_pool_hp_used'] == pytest.approx(185231006870115.94)
     assert rows[0]['wall_pool_hp_used'] == pytest.approx(rows[0]['wall_hp'] * primitives['wall_fortification_multiplier'])
-    assert rows[0]['wall_regen'] == pytest.approx(525.0)
+    assert rows[0]['wall_regen'] == pytest.approx(5814158246443.825)
     assert 'effective_damage_reduction_pct_used' in first_row
     assert 'boss_contact_time_seconds_used' in first_row
     assert 'boss_hit_interval_seconds_used' in first_row

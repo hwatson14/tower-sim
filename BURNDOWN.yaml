@@ -275,7 +275,7 @@ v49_program:
       phase2b_export_diagnostics_cutover: complete
       boss_waves_product_legacy_excision: complete
       stat_evolution_correctness: complete
-      survivability_row_derivation: qe_primitives_are_inputs_table1_rederived_from_workshop_and_perk_state_table2_finalized_operator_rows_display_transformed_outputs
+      survivability_row_derivation: wall_hp_derived_from_qe_tower_hp_times_wall_health_ratio_and_nonfort_multipliers_table2_applies_fortification_once_wall_regen_derived_from_tower_regen_times_wall_regen_percent_points
       death_wave_survivability_policy: enemy_health_only_not_wall_hp_or_wall_regen
       run_executor_consumer_inventory: complete
       legacy_removal_started: false
