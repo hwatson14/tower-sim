@@ -196,6 +196,79 @@ def test_table2_registry_derived_survivability_lanes_and_operator_handles():
     assert row.to_operator_row()["summary_lane_id"] == "avg"
 
 
+def test_table1_rederives_survivability_from_evolving_workshop_and_perk_state():
+    from qe.run_plan import CommonTrajectoryInputs, SurvivabilityContributorBundle, build_common_trajectory
+    from simulators.evaluator_kernel import ScenarioOverlayInputs, build_scenario_overlay_table
+
+    table1 = build_common_trajectory(
+        CommonTrajectoryInputs(
+            start_wave=1,
+            end_wave=2,
+            boss_interval_waves=1,
+            tier_column="Tier 1",
+            free_upgrade_chance_by_category={"defense": 1.0},
+            category_track_order={"defense": ("Wall Health", "Health Regen")},
+            track_max_levels={"Wall Health": 10, "Health Regen": 10},
+            workshop_levels={"Wall Health": 1, "Health Regen": 1},
+            perk_counts_by_wave={2: {"regen_perk": 1}},
+            perk_contributions_by_wave={2: {"regen_perk:wall_regen_multiplier": 2.0}},
+            survivability_contributors=SurvivabilityContributorBundle(
+                base_wall_hp=0.0,
+                workshop_wall_hp=100.0,
+                wall_hp_workshop_track="Wall Health",
+                wall_hp_workshop_baseline_level=1,
+                wall_hp_workshop_value_per_level=25.0,
+                base_wall_regen=0.0,
+                workshop_wall_regen=10.0,
+                wall_regen_workshop_track="Health Regen",
+                wall_regen_workshop_baseline_level=1,
+                wall_regen_workshop_value_per_level=5.0,
+                wall_fortification_multiplier=1.0,
+                tower_defense_pct=90.0,
+            ),
+        )
+    )
+
+    assert [row.workshop_levels for row in table1.rows] == [
+        {"Wall Health": 2, "Health Regen": 1},
+        {"Wall Health": 2, "Health Regen": 2},
+    ]
+    assert [row.survivability_contributors.workshop_wall_hp for row in table1.rows] == [125.0, 125.0]
+    assert [row.survivability_contributors.workshop_wall_regen for row in table1.rows] == [10.0, 15.0]
+    assert [row.compiled_perk_state.contributions for row in table1.rows] == [
+        {},
+        {"regen_perk:wall_regen_multiplier": 2.0},
+    ]
+
+    table2 = build_scenario_overlay_table(
+        table1,
+        scenario=ScenarioOverlayInputs("row-evolve", "Tier 1"),
+        combat=_combat(plasma_cannon_effect_pct=100.0),
+    )
+    assert [row.final_wall_hp for row in table2.rows] == [125.0, 125.0]
+    assert [row.final_wall_regen for row in table2.rows] == [10.0, 30.0]
+
+
+def test_death_wave_multiplier_does_not_feed_wall_hp_or_regen_derivation():
+    from qe.run_plan import CommonTrajectoryInputs, build_common_trajectory
+    from simulators.evaluator_kernel import ScenarioOverlayInputs, build_scenario_overlay_table
+
+    base = build_scenario_overlay_table(
+        build_common_trajectory(CommonTrajectoryInputs(start_wave=1, end_wave=10, tier_column="Tier 1", survivability_contributors=_contributors(), death_wave_health_multiplier=1.0)),
+        scenario=ScenarioOverlayInputs("base", "Tier 1"),
+        combat=_combat(plasma_cannon_effect_pct=100.0),
+    ).rows[0]
+    death_wave = build_scenario_overlay_table(
+        build_common_trajectory(CommonTrajectoryInputs(start_wave=1, end_wave=10, tier_column="Tier 1", survivability_contributors=_contributors(), death_wave_health_multiplier=10.0)),
+        scenario=ScenarioOverlayInputs("dw", "Tier 1"),
+        combat=_combat(plasma_cannon_effect_pct=100.0),
+    ).rows[0]
+
+    assert death_wave.enemy_health == pytest.approx(base.enemy_health * 10.0)
+    assert death_wave.final_wall_hp == base.final_wall_hp
+    assert death_wave.final_wall_regen == base.final_wall_regen
+
+
 def test_v21_ttk_is_event_only_and_fails_closed_without_event_horizon():
     from qe.run_plan import CommonTrajectoryInputs, build_common_trajectory
     from simulators.evaluator_kernel import KernelAmbiguityError, ScenarioOverlayInputs, build_scenario_overlay_table

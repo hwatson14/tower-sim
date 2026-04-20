@@ -456,6 +456,14 @@ def test_build_boss_wave_payload_live_path_avoids_delta_fallback():
     from app.pipeline import build_boss_wave_payload
 
     request = PipelineRunRequest(ids=IDS_PATH, out=ROOT / 'out')
+    runtime_inputs = {
+        'orb_boss_hit_pct': 2.5,
+        'orb_boss_hits_per_second': 5.0,
+        'electron_hits_per_second': 5.0,
+        'boss_contact_time_seconds': 1.0,
+        'effective_damage_reduction_pct': 90.0,
+        'incoming_damage_multiplier': 1.0,
+    }
     payload = build_boss_wave_payload(
         request,
         preset_name='Farming',
@@ -463,14 +471,7 @@ def test_build_boss_wave_payload_live_path_avoids_delta_fallback():
         end_wave=50,
         boss_wave_step=1,
         stop_on_failure=False,
-        scenario_runtime_inputs={
-            'orb_boss_hit_pct': 2.5,
-            'orb_boss_hits_per_second': 5.0,
-            'electron_hits_per_second': 5.0,
-            'boss_contact_time_seconds': 1.0,
-            'effective_damage_reduction_pct': 90.0,
-            'incoming_damage_multiplier': 1.0,
-        },
+        scenario_runtime_inputs=runtime_inputs,
     )
 
     diagnostics = payload.get('diagnostics') or {}
@@ -482,8 +483,25 @@ def test_build_boss_wave_payload_live_path_avoids_delta_fallback():
     assert 'legacy_shadow_available' not in diagnostics
     assert 'legacy_shadow_materialized' not in diagnostics
     assert diagnostics['delta_fallback_count'] == 0
+    primitive_inputs = diagnostics['replacement_primitive_inputs']
+    assert primitive_inputs['layer'] == 'primitive_start_of_run_inputs_not_final_displayed_rows'
+    primitives = primitive_inputs['values']
+    assert primitives['wall_hp'] == pytest.approx(144458899.20000002)
+    assert primitives['wall_regen'] == pytest.approx(525.0)
+    assert primitives['wall_fortification_multiplier'] == pytest.approx(10.4)
+    assert primitives['tower_defense_pct'] == pytest.approx(78.9)
+    assert primitives['tower_thorns_damage_pct'] == pytest.approx(121.0)
+    assert primitives['plasma_cannon_effect_pct'] == pytest.approx(54.0)
+    assert diagnostics['replacement_display_derivation']['wall_pool'].startswith('operator_rows.wall_pool_hp_used')
+    assert diagnostics['replacement_model']['death_wave_health_multiplier_applies_to'] == 'enemy_health_only_not_wall_hp_or_wall_regen'
     first_row = (payload.get('rows') or [{}])[0]
     assert first_row.get('display_wave') == 9
+    rows = payload.get('rows') or []
+    assert rows[0]['wall_hp'] > primitives['wall_hp']
+    assert rows[-1]['wall_hp'] > rows[0]['wall_hp']
+    assert rows[0]['wall_pool_hp_used'] == pytest.approx(1503493725.22603)
+    assert rows[0]['wall_pool_hp_used'] == pytest.approx(rows[0]['wall_hp'] * primitives['wall_fortification_multiplier'])
+    assert rows[0]['wall_regen'] == pytest.approx(525.0)
     assert 'effective_damage_reduction_pct_used' in first_row
     assert 'boss_contact_time_seconds_used' in first_row
     assert 'boss_hit_interval_seconds_used' in first_row

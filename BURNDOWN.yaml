@@ -138,7 +138,7 @@ v49_program:
   - remove duplicate authority, stale residue, and bloat where they undermine truth, speed, or blind maintainability
   known_blockers:
   - the v49 interactive performance target remains open
-  - Boss Waves Phase 2A table/summary and Phase 2B export/diagnostics cutover are replacement-owned by default; legacy disposition remains pending
+  - Boss Waves Phase 2A table/summary and Phase 2B export/diagnostics cutover are replacement-owned by default; stat evolution correctness is repaired with an explicit primitive/display split; legacy disposition remains pending
   shipped_vs_rebuilt_truth:
     latest_shipped_extract_audit_2026_04_15:
       source: tower-sim-src(9).zip
@@ -274,6 +274,9 @@ v49_program:
       phase2a_replacement_input_independence: complete
       phase2b_export_diagnostics_cutover: complete
       boss_waves_product_legacy_excision: complete
+      stat_evolution_correctness: complete
+      survivability_row_derivation: qe_primitives_are_inputs_table1_rederived_from_workshop_and_perk_state_table2_finalized_operator_rows_display_transformed_outputs
+      death_wave_survivability_policy: enemy_health_only_not_wall_hp_or_wall_regen
       run_executor_consumer_inventory: complete
       legacy_removal_started: false
       broader_run_executor_deletion_blocked_by_active_consumers: true
@@ -330,6 +333,14 @@ v49_program:
         gates:
         - replacement primary remains covered by product tests and test/reference parity where useful
         - no unresolved replacement bugs
+      - id: stat_evolution_correctness
+        name: Boss Waves replacement stat-evolution correctness
+        status: complete
+        gates:
+        - exact QE baseline anchors prove wall HP and wall regen primitive sourcing
+        - Table 1 rows carry re-derived survivability contributor bundles from evolving workshop and perk state
+        - Table 2 finalizes row-facing wall HP and wall regen from staged contributors and scenario transforms
+        - Death Wave multiplier does not feed wall HP or wall regen derivation
       - id: phase_4
         name: Legacy demotion or removal planning
         status: pending

@@ -443,12 +443,13 @@ def build_boss_wave_payload(
         'perk_timeline': tuple(dict(row or {}) for row in perk_timeline) if bool(resolved_context.get('perks_enabled')) else (),
     }
     perk_counts = perk_state_at_wave(perk_timeline, 0) if bool(resolved_context.get('perks_enabled', True)) else {}
-    operator_rows, selected_summary = _build_replacement_operator_table_and_summary(
+    operator_rows, selected_summary, primitive_inputs = _build_replacement_operator_table_and_summary(
         active_source=source_id,
         config=config,
         account_state=account_state,
         preset_name=preset_name,
         perk_counts=perk_counts,
+        perk_timeline=tuple(dict(row or {}) for row in perk_timeline),
         scenario_runtime_inputs=scenario_runtime_inputs,
         stop_on_failure=bool(stop_on_failure),
     )
@@ -465,6 +466,7 @@ def build_boss_wave_payload(
         download_rows=download_rows,
         summary=selected_summary,
         stop_on_failure=bool(stop_on_failure),
+        primitive_inputs=primitive_inputs,
     )
     active_owner = 'simulators.evaluator_kernel.evaluate_overlay_row'
     tower_damage_mode = 'v21_event_only_replacement_for_operator_table'
@@ -532,13 +534,15 @@ def _build_replacement_operator_table_and_summary(
     account_state,
     preset_name: str,
     perk_counts: dict[str, int],
+    perk_timeline: tuple[dict[str, object], ...],
     scenario_runtime_inputs: dict[str, float],
     stop_on_failure: bool,
-) -> tuple[list[dict[str, object]], dict[str, object]]:
+) -> tuple[list[dict[str, object]], dict[str, object], dict[str, float]]:
     from qe.run_plan import (
         CommonTrajectoryInputs,
         SurvivabilityContributorBundle,
         build_common_trajectory,
+        default_category_track_order,
     )
     from simulators.evaluator_kernel import (
         CombatInputs,
@@ -557,14 +561,29 @@ def _build_replacement_operator_table_and_summary(
     effective_dr_pct = _optional_runtime_float(scenario_runtime_inputs, 'effective_damage_reduction_pct')
     tower_defense_pct = float(effective_dr_pct if effective_dr_pct is not None else primitives['tower_defense_pct'])
     death_wave_health_multiplier = float(scenario_runtime_inputs.get('death_wave_health_multiplier', 1.0) or 1.0)
+    workshop_levels, track_max_levels = _boss_wave_workshop_level_inputs(account_state, preset_name=preset_name)
+    category_track_order = default_category_track_order(workshop_levels, track_max_levels)
+    wall_hp_level = _boss_wave_optional_workshop_level(workshop_levels, 'Wall Health', primitive_name='state::wall.hp')
+    wall_regen_level = _boss_wave_optional_workshop_level(workshop_levels, 'Health Regen', primitive_name='state::wall.regen')
+    wall_hp_value = float(primitives['wall_hp'])
+    wall_regen_value = float(primitives['wall_regen'])
     survivability = SurvivabilityContributorBundle(
-        base_wall_hp=float(primitives['wall_hp']),
-        base_wall_regen=float(primitives['wall_regen']),
+        base_wall_hp=0.0 if wall_hp_level and wall_hp_level > 0 else wall_hp_value,
+        workshop_wall_hp=wall_hp_value if wall_hp_level and wall_hp_level > 0 else 0.0,
+        wall_hp_workshop_track='Wall Health' if wall_hp_level and wall_hp_level > 0 else None,
+        wall_hp_workshop_baseline_level=wall_hp_level if wall_hp_level and wall_hp_level > 0 else None,
+        wall_hp_workshop_value_per_level=(wall_hp_value / float(wall_hp_level)) if wall_hp_level and wall_hp_level > 0 else 0.0,
+        base_wall_regen=0.0 if wall_regen_level and wall_regen_level > 0 else wall_regen_value,
+        workshop_wall_regen=wall_regen_value if wall_regen_level and wall_regen_level > 0 else 0.0,
+        wall_regen_workshop_track='Health Regen' if wall_regen_level and wall_regen_level > 0 else None,
+        wall_regen_workshop_baseline_level=wall_regen_level if wall_regen_level and wall_regen_level > 0 else None,
+        wall_regen_workshop_value_per_level=(wall_regen_value / float(wall_regen_level)) if wall_regen_level and wall_regen_level > 0 else 0.0,
         wall_fortification_multiplier=float(primitives['wall_fortification_multiplier']),
         tower_defense_pct=tower_defense_pct,
         timed_dr_by_lane={'min': 0.0, 'avg': 0.0, 'max': 0.0},
         source_policy='explicit_staged_contributors_v1',
     )
+    perk_counts_by_wave = _boss_wave_perk_counts_by_wave(perk_timeline)
     table1 = build_common_trajectory(
         CommonTrajectoryInputs(
             start_wave=int(config['start_wave']),
@@ -579,8 +598,13 @@ def _build_replacement_operator_table_and_summary(
                 'defense': float(primitives['free_defense_upgrade_chance']),
                 'utility': float(primitives['free_utility_upgrade_chance']),
             },
+            category_track_order=category_track_order,
+            track_max_levels=track_max_levels,
+            workshop_levels=workshop_levels,
             perk_counts=dict(perk_counts),
             perk_contributions={},
+            perk_counts_by_wave=perk_counts_by_wave,
+            perk_contributions_by_wave={},
             survivability_contributors=survivability,
             death_wave_health_multiplier=death_wave_health_multiplier,
         )
@@ -619,7 +643,7 @@ def _build_replacement_operator_table_and_summary(
         )
         if bool(stop_on_failure) and not bool(operator_rows[-1].get('survives_boss')):
             break
-    return operator_rows, _replacement_summary_from_operator_rows(operator_rows)
+    return operator_rows, _replacement_summary_from_operator_rows(operator_rows), dict(primitives)
 
 
 def _resolve_boss_wave_replacement_primitives(
@@ -651,6 +675,47 @@ def _resolve_boss_wave_replacement_primitives(
         'tower_thorns_damage_pct': _required_statbook_float(statbook, 'state::tower.thorns_damage_pct'),
         'plasma_cannon_effect_pct': _required_statbook_float(statbook, 'state::cards.plasma_cannon.effect_pct'),
     }
+
+
+def _boss_wave_workshop_level_inputs(account_state, *, preset_name: str) -> tuple[dict[str, int], dict[str, int]]:
+    workshop = getattr(account_state, 'workshop', {}) or {}
+    levels: dict[str, int] = {}
+    max_levels: dict[str, int] = {}
+    for track_name, entry in workshop.items():
+        preset_levels = getattr(entry, 'preset_levels', {}) or {}
+        level = preset_levels.get(preset_name)
+        max_level = getattr(entry, 'max_level', None)
+        if level is None or max_level is None:
+            continue
+        levels[str(track_name)] = int(level)
+        max_levels[str(track_name)] = int(max_level)
+    return levels, max_levels
+
+
+def _boss_wave_optional_workshop_level(
+    workshop_levels: dict[str, int],
+    track_name: str,
+    *,
+    primitive_name: str,
+) -> int | None:
+    if not workshop_levels:
+        return None
+    if track_name not in workshop_levels:
+        raise ValueError(f"Boss Waves replacement input {primitive_name!r} requires workshop track {track_name!r}")
+    return int(workshop_levels[track_name])
+
+
+def _boss_wave_perk_counts_by_wave(perk_timeline: tuple[dict[str, object], ...]) -> dict[int, dict[str, int]]:
+    counts: dict[str, int] = {}
+    out: dict[int, dict[str, int]] = {}
+    for row in sorted(perk_timeline, key=lambda item: int(item.get('wave') or 0)):
+        wave = int(row.get('wave') or 0)
+        perk_name = row.get('perk_taken') or row.get('picked_perk') or row.get('perk_name')
+        if not perk_name:
+            continue
+        counts[str(perk_name)] = counts.get(str(perk_name), 0) + 1
+        out[wave] = dict(counts)
+    return out
 
 
 def _required_statbook_float(statbook, surface_id: str) -> float:
@@ -755,6 +820,7 @@ def _build_replacement_diagnostics(
     download_rows: list[dict[str, object]],
     summary: dict[str, object],
     stop_on_failure: bool,
+    primitive_inputs: dict[str, float] | None = None,
 ) -> dict[str, object]:
     lane_order = ['avg', 'min', 'max']
     first_row = operator_rows[0] if operator_rows else {}
@@ -800,6 +866,9 @@ def _build_replacement_diagnostics(
             'contract_version': 'boss_waves_replacement_v1',
             'table1_source_basis': 'app_pipeline_qe_checkpoint_surfaces_to_run_plan',
             'table2_source_basis': 'replacement_scenario_overlay',
+            'survivability_derivation': 'baseline_qe_primitives_rederived_per_table1_row_from_workshop_levels_then_finalized_by_table2',
+            'perk_state_derivation': 'table1_compiled_perk_state_per_checkpoint_from_runtime_policy_projection',
+            'death_wave_health_multiplier_applies_to': 'enemy_health_only_not_wall_hp_or_wall_regen',
             'boss_ttk_contract': 'v21_event_only',
             'boss_kill_sources': ['plasma_cannon', 'orbs', 'electrons', 'thorns_contact'],
             'continuous_tower_dps_included': False,
@@ -809,6 +878,15 @@ def _build_replacement_diagnostics(
             'intentional_semantic_differences': {
                 'boss_ttk': 'replacement uses v21 event-only kill sources and excludes continuous tower/projectile DPS',
             },
+        },
+        'replacement_primitive_inputs': {
+            'layer': 'primitive_start_of_run_inputs_not_final_displayed_rows',
+            'values': dict(primitive_inputs or {}),
+        },
+        'replacement_display_derivation': {
+            'wall_pool': 'operator_rows.wall_pool_hp_used = table2.final_wall_hp * table1.wall_fortification_multiplier * scenario.wall_fortification_multiplier',
+            'wall_regen': 'operator_rows.wall_regen = table2.final_wall_regen after Table 1 contributor re-derivation and Table 2 scenario transforms',
+            'wall_hp': 'operator_rows.wall_hp = table2.final_wall_hp; not shown as the primary Wall Pool product column',
         },
         'replacement_outputs': {
             'operator_row_count': len(operator_rows),

@@ -2,13 +2,59 @@ from __future__ import annotations
 
 import hashlib
 import json
-from dataclasses import asdict, dataclass, field, is_dataclass
+from dataclasses import asdict, dataclass, field, is_dataclass, replace
 from math import floor
 from typing import Any, Mapping
 
 
 CATEGORY_IDS: tuple[str, str, str] = ("attack", "defense", "utility")
 RUN_PLAN_VERSION = "boss_waves.run_plan.v1"
+DEFAULT_WORKSHOP_CATEGORY_BY_TRACK: Mapping[str, str] = {
+    "Damage": "attack",
+    "Attack Speed": "attack",
+    "Critical Chance": "attack",
+    "Critical Factor": "attack",
+    "Range": "attack",
+    "Damage / Meter": "attack",
+    "Super Crit Chance": "attack",
+    "Super Crit Multi": "attack",
+    "Rend Armor Chance": "attack",
+    "Rend Armor Mult": "attack",
+    "Health": "defense",
+    "Health Regen": "defense",
+    "Defense %": "defense",
+    "Defense Absolute": "defense",
+    "Thorn Damage": "defense",
+    "Lifesteal": "defense",
+    "Knockback Chance": "defense",
+    "Knockback Force": "defense",
+    "Orb Speed": "defense",
+    "Orbs": "defense",
+    "Shockwave Size": "defense",
+    "Shockwave Frequency": "defense",
+    "Land Mine Chance": "defense",
+    "Land Mine Damage": "defense",
+    "Land Mine Radius": "defense",
+    "Death Defy": "defense",
+    "Wall Health": "defense",
+    "Wall Rebuild": "defense",
+    "Wall Regen": "defense",
+    "Wall Thorns": "defense",
+    "Wall Invincibility": "defense",
+    "Wall Fortification": "defense",
+    "Cash Bonus": "utility",
+    "Cash / Wave": "utility",
+    "Coins / Kill Bonus": "utility",
+    "Coins / Wave": "utility",
+    "Free Attack Upgrade": "utility",
+    "Free Defense Upgrade": "utility",
+    "Free Utility Upgrade": "utility",
+    "Interest / Wave": "utility",
+    "Recovery Amount": "utility",
+    "Max Recovery": "utility",
+    "Package Chance": "utility",
+    "Enemy Level Skip": "utility",
+}
 PERK_CONTRIBUTION_EFFECT_IDS: frozenset[str] = frozenset(
     {
         "wall_hp_flat",
@@ -36,7 +82,7 @@ TABLE1_COLUMN_REGISTRY: tuple[ColumnFormulaSpec, ...] = (
     ColumnFormulaSpec("free_upgrade_state", "qe", "FreeUpgradeRecurrence", ("recurrence_policy",), "stateful_recurrence", "per_checkpoint", "carry_forward"),
     ColumnFormulaSpec("workshop_levels", "qe", "mapping[str,int]", ("free_upgrade_state",), "allocation_recurrence", "per_checkpoint", "carry_forward"),
     ColumnFormulaSpec("compiled_perk_state", "qe", "CompiledPerkState", ("perk_policy",), "checkpoint_lookup", "per_checkpoint", "plan_static"),
-    ColumnFormulaSpec("survivability_contributors", "qe", "SurvivabilityContributorBundle", ("survivability_policy",), "contributor_bundle", "compile_once", "plan_static"),
+    ColumnFormulaSpec("survivability_contributors", "qe", "SurvivabilityContributorBundle", ("survivability_policy", "workshop_levels"), "row_rederived_contributor_bundle", "per_checkpoint", "row_static"),
     ColumnFormulaSpec("death_wave_health_multiplier", "qe", "float", ("survivability_policy",), "pass_through", "compile_once", "plan_static"),
 )
 TABLE1_REQUIRED_COLUMN_IDS: frozenset[str] = frozenset(spec.column_id for spec in TABLE1_COLUMN_REGISTRY)
@@ -44,7 +90,7 @@ TABLE1_KEY_CONTRACTS: Mapping[str, tuple[tuple[str, ...], str]] = {
     "wave_progression": (("recurrence_policy",), "stateful_recurrence"),
     "free_upgrade_state": (("recurrence_policy",), "stateful_recurrence"),
     "compiled_perk_state": (("perk_policy",), "checkpoint_lookup"),
-    "survivability_contributors": (("survivability_policy",), "contributor_bundle"),
+    "survivability_contributors": (("survivability_policy", "workshop_levels"), "row_rederived_contributor_bundle"),
     "death_wave_health_multiplier": (("survivability_policy",), "pass_through"),
 }
 
@@ -76,6 +122,8 @@ class RecurrencePolicyConfig:
 class PerkPolicyConfig:
     perk_counts: Mapping[str, int] = field(default_factory=dict)
     perk_contributions: Mapping[str, float] = field(default_factory=dict)
+    perk_counts_by_wave: Mapping[int, Mapping[str, int]] = field(default_factory=dict)
+    perk_contributions_by_wave: Mapping[int, Mapping[str, float]] = field(default_factory=dict)
     perk_source: str = "explicit_staged_perk_policy"
 
 
@@ -109,6 +157,12 @@ class SurvivabilityContributorBundle:
     wall_fortification_multiplier: float = 1.0
     tower_defense_pct: float = 0.0
     timed_dr_by_lane: Mapping[str, float] = field(default_factory=dict)
+    wall_hp_workshop_track: str | None = None
+    wall_hp_workshop_baseline_level: int | None = None
+    wall_hp_workshop_value_per_level: float = 0.0
+    wall_regen_workshop_track: str | None = None
+    wall_regen_workshop_baseline_level: int | None = None
+    wall_regen_workshop_value_per_level: float = 0.0
     source_policy: str = "explicit_staged_contributors_v1"
 
     @property
@@ -130,6 +184,28 @@ class SurvivabilityContributorBundle:
             "enhancement_wall_regen": float(self.enhancement_wall_regen),
             "module_flat_wall_regen": float(self.module_flat_wall_regen),
         }
+
+    def rederive_for_workshop_levels(self, workshop_levels: Mapping[str, int]) -> "SurvivabilityContributorBundle":
+        values: dict[str, float | int | str | None | Mapping[str, float]] = {}
+        if self.wall_hp_workshop_track:
+            if self.wall_hp_workshop_baseline_level is None:
+                raise ValueError("wall HP row derivation requires wall_hp_workshop_baseline_level")
+            level = int(workshop_levels.get(self.wall_hp_workshop_track, self.wall_hp_workshop_baseline_level))
+            values["workshop_wall_hp"] = max(
+                0.0,
+                float(self.workshop_wall_hp)
+                + (level - int(self.wall_hp_workshop_baseline_level)) * float(self.wall_hp_workshop_value_per_level),
+            )
+        if self.wall_regen_workshop_track:
+            if self.wall_regen_workshop_baseline_level is None:
+                raise ValueError("wall regen row derivation requires wall_regen_workshop_baseline_level")
+            level = int(workshop_levels.get(self.wall_regen_workshop_track, self.wall_regen_workshop_baseline_level))
+            values["workshop_wall_regen"] = max(
+                0.0,
+                float(self.workshop_wall_regen)
+                + (level - int(self.wall_regen_workshop_baseline_level)) * float(self.wall_regen_workshop_value_per_level),
+            )
+        return replace(self, **values)
 
 
 @dataclass(frozen=True)
@@ -187,6 +263,8 @@ class CommonTrajectoryInputs:
     workshop_levels: Mapping[str, int] = field(default_factory=dict)
     perk_counts: Mapping[str, int] = field(default_factory=dict)
     perk_contributions: Mapping[str, float] = field(default_factory=dict)
+    perk_counts_by_wave: Mapping[int, Mapping[str, int]] = field(default_factory=dict)
+    perk_contributions_by_wave: Mapping[int, Mapping[str, float]] = field(default_factory=dict)
     survivability_contributors: SurvivabilityContributorBundle | None = None
     death_wave_health_multiplier: float = 1.0
 
@@ -244,6 +322,8 @@ def compile_run_plan(inputs: CommonTrajectoryInputs) -> RunPlan:
     perk_policy = PerkPolicyConfig(
         perk_counts={str(k): int(v) for k, v in inputs.perk_counts.items()},
         perk_contributions={str(k): float(v) for k, v in inputs.perk_contributions.items()},
+        perk_counts_by_wave=_normalize_perk_count_schedule(inputs.perk_counts_by_wave),
+        perk_contributions_by_wave=_normalize_perk_contribution_schedule(inputs.perk_contributions_by_wave),
     )
     _validate_perk_policy(perk_policy)
     dependency_policy = DependencyPolicyConfig()
@@ -357,6 +437,15 @@ def allocate_free_upgrades(state: FreeUpgradeRecurrence, *, workshop_levels: Map
     )
 
 
+def default_category_track_order(workshop_levels: Mapping[str, int], track_max_levels: Mapping[str, int]) -> dict[str, tuple[str, ...]]:
+    order: dict[str, list[str]] = {category: [] for category in CATEGORY_IDS}
+    for track in workshop_levels:
+        category = DEFAULT_WORKSHOP_CATEGORY_BY_TRACK.get(str(track))
+        if category in order and str(track) in track_max_levels:
+            order[category].append(str(track))
+    return {category: tuple(tracks) for category, tracks in order.items()}
+
+
 def build_common_trajectory(inputs: CommonTrajectoryInputs | RunPlan) -> CommonTrajectoryTable:
     plan = inputs if isinstance(inputs, RunPlan) else compile_run_plan(inputs)
     checkpoint_waves = build_checkpoint_wave_grid(
@@ -368,7 +457,6 @@ def build_common_trajectory(inputs: CommonTrajectoryInputs | RunPlan) -> CommonT
     progression = WaveProgressionRecurrence(max(0, plan.scope.start_wave - 1), max(0, plan.scope.start_wave - 1), max(0, plan.scope.start_wave - 1))
     free_state = FreeUpgradeRecurrence()
     workshop_levels: Mapping[str, int] = dict(plan.recurrence_policy.workshop_levels)
-    compiled_perk_state = _compile_perk_state(plan.perk_policy)
     rows: list[CommonTrajectoryRow] = []
     previous_wave = progression.display_wave
     for index, wave in enumerate(checkpoint_waves):
@@ -390,6 +478,8 @@ def build_common_trajectory(inputs: CommonTrajectoryInputs | RunPlan) -> CommonT
             category_track_order=plan.recurrence_policy.category_track_order,
             track_max_levels=plan.recurrence_policy.track_max_levels,
         )
+        compiled_perk_state = _compile_perk_state(plan.perk_policy, display_wave=int(wave))
+        row_survivability = plan.survivability_contributors.rederive_for_workshop_levels(workshop_levels)
         rows.append(CommonTrajectoryRow(
             row_key=f"{plan.plan_id}:table1:{index}:{wave}",
             display_wave=int(wave),
@@ -401,7 +491,7 @@ def build_common_trajectory(inputs: CommonTrajectoryInputs | RunPlan) -> CommonT
             unallocated_free_upgrades_last_step=unallocated_last,
             workshop_levels=dict(workshop_levels),
             compiled_perk_state=compiled_perk_state,
-            survivability_contributors=plan.survivability_contributors,
+            survivability_contributors=row_survivability,
             death_wave_health_multiplier=plan.death_wave_health_multiplier,
             common_inputs={
                 "plan_id": plan.plan_id,
@@ -433,12 +523,18 @@ def validate_table1_registry(table: CommonTrajectoryTable) -> None:
         _validate_table1_row_contract(row)
 
 
-def _compile_perk_state(perk_policy: PerkPolicyConfig) -> CompiledPerkState:
+def _compile_perk_state(perk_policy: PerkPolicyConfig, *, display_wave: int | None = None) -> CompiledPerkState:
     _validate_perk_policy(perk_policy)
+    counts = dict(perk_policy.perk_counts)
+    contributions = dict(perk_policy.perk_contributions)
+    if display_wave is not None:
+        counts.update(_scheduled_mapping_at_wave(perk_policy.perk_counts_by_wave, int(display_wave)))
+        contributions.update(_scheduled_mapping_at_wave(perk_policy.perk_contributions_by_wave, int(display_wave)))
     payload = {
-        "counts": dict(sorted((str(k), int(v)) for k, v in perk_policy.perk_counts.items())),
-        "contributions": dict(sorted((str(k), float(v)) for k, v in perk_policy.perk_contributions.items())),
+        "counts": dict(sorted((str(k), int(v)) for k, v in counts.items())),
+        "contributions": dict(sorted((str(k), float(v)) for k, v in contributions.items())),
         "source_policy": perk_policy.perk_source,
+        "display_wave": display_wave,
     }
     identity = "perk:" + hashlib.sha256(json.dumps(payload, sort_keys=True, separators=(",", ":")).encode("utf-8")).hexdigest()[:16]
     return CompiledPerkState(payload["counts"], payload["contributions"], perk_policy.perk_source, identity)
@@ -456,6 +552,39 @@ def _validate_perk_policy(perk_policy: PerkPolicyConfig) -> None:
             raise ValueError(f"unsupported perk contribution effect {effect_id!r}")
         if effect_id.endswith("_multiplier") and float(value) < 0.0:
             raise ValueError(f"perk contribution {contribution_id!r} multiplier cannot be negative")
+    for wave, counts in perk_policy.perk_counts_by_wave.items():
+        if int(wave) < 0:
+            raise ValueError("perk_counts_by_wave cannot use negative waves")
+        for perk_id, count in counts.items():
+            if int(count) < 0:
+                raise ValueError(f"perk count for {perk_id!r} cannot be negative")
+    for wave, contributions in perk_policy.perk_contributions_by_wave.items():
+        if int(wave) < 0:
+            raise ValueError("perk_contributions_by_wave cannot use negative waves")
+        for contribution_id, value in contributions.items():
+            effect_id = _perk_contribution_effect_id(str(contribution_id))
+            if effect_id not in PERK_CONTRIBUTION_EFFECT_IDS:
+                raise ValueError(f"unsupported perk contribution effect {effect_id!r}")
+            if effect_id.endswith("_multiplier") and float(value) < 0.0:
+                raise ValueError(f"perk contribution {contribution_id!r} multiplier cannot be negative")
+
+
+def _scheduled_mapping_at_wave(schedule: Mapping[int, Mapping[str, Any]], display_wave: int) -> dict[str, Any]:
+    active: dict[str, Any] = {}
+    for wave, values in sorted(schedule.items(), key=lambda item: int(item[0])):
+        if int(wave) <= int(display_wave):
+            active = dict(values)
+        else:
+            break
+    return active
+
+
+def _normalize_perk_count_schedule(schedule: Mapping[int, Mapping[str, int]]) -> dict[int, dict[str, int]]:
+    return {int(wave): {str(k): int(v) for k, v in values.items()} for wave, values in schedule.items()}
+
+
+def _normalize_perk_contribution_schedule(schedule: Mapping[int, Mapping[str, float]]) -> dict[int, dict[str, float]]:
+    return {int(wave): {str(k): float(v) for k, v in values.items()} for wave, values in schedule.items()}
 
 
 def _perk_contribution_effect_id(contribution_id: str) -> str:
@@ -466,10 +595,18 @@ def _validate_survivability_contributors(contributors: SurvivabilityContributorB
     if contributors.source_policy != "explicit_staged_contributors_v1":
         raise ValueError("survivability contributors source_policy must be explicit_staged_contributors_v1")
     for key, value in _stable_json_value(contributors).items():
-        if key in {"timed_dr_by_lane", "source_policy"}:
+        if key in {"timed_dr_by_lane", "source_policy"} or value is None:
+            continue
+        if key.endswith("_track"):
+            if not str(value):
+                raise ValueError(f"survivability contributor {key} cannot be empty")
             continue
         if float(value) < 0.0:
             raise ValueError(f"survivability contributor {key} cannot be negative")
+    if contributors.wall_hp_workshop_track and contributors.wall_hp_workshop_baseline_level is None:
+        raise ValueError("wall HP workshop derivation requires a baseline level")
+    if contributors.wall_regen_workshop_track and contributors.wall_regen_workshop_baseline_level is None:
+        raise ValueError("wall regen workshop derivation requires a baseline level")
     for lane, value in contributors.timed_dr_by_lane.items():
         if str(lane) not in {"avg", "min", "max"}:
             raise ValueError(f"unknown timed DR lane {lane!r}")
