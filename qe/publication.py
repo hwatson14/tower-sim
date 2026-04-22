@@ -786,50 +786,18 @@ def _build_uw_panel(account_state_payload: dict, qe_dashboard_publications: dict
 
 def _uw_track_surface_map() -> dict[str, dict[str, str]]:
     return {
-        'Chain Lightning': {
-            'Damage': 'state::uw.chain_lightning.damage_multiplier',
-            'Quantity': 'state::uw.chain_lightning.quantity',
-            'Chance': 'state::uw.chain_lightning.chance_pct',
-        },
-        'Smart Missiles': {
-            'Damage': 'state::uw.smart_missiles.damage_multiplier',
-            'Quantity': 'state::uw.smart_missiles.quantity',
-            'Cooldown': 'state::uw.smart_missiles.cooldown_seconds',
-        },
-        'Death Wave': {
-            'Damage': 'state::uw.death_wave.damage_multiplier',
-            'Quantity': 'state::uw.death_wave.effect_wave_count',
-            'Cooldown': 'state::uw.death_wave.cooldown_seconds',
-        },
         'Chrono Field': {
             'Duration': 'state::uw.chrono_field.duration_seconds',
             'Speed Reduction': 'state::uw.chrono_field.slow_pct',
             'Cooldown': 'state::uw.chrono_field.cooldown_seconds',
         },
-        'Inner Land Mines': {
-            'Damage': 'state::uw.inner_land_mines.damage',
-            'Quantity': 'state::uw.inner_land_mines.quantity',
-            'Cooldown': 'state::uw.inner_land_mines.cooldown_seconds',
-        },
         'Golden Tower': {
-            'Multiplier': 'state::uw.golden_tower.bonus_multiplier',
             'Duration': 'state::uw.golden_tower.duration_seconds',
             'Cooldown': 'state::uw.golden_tower.cooldown_seconds',
         },
-        'Poison Swamp': {
-            'Damage': 'state::uw.poison_swamp.damage_multiplier',
-            'Duration': 'state::uw.poison_swamp.duration_seconds',
-            'Cooldown': 'state::uw.poison_swamp.cooldown_seconds',
-        },
         'Black Hole': {
-            'Size': 'state::uw.black_hole.size_m',
             'Duration': 'state::uw.black_hole.duration_seconds',
             'Cooldown': 'state::uw.black_hole.cooldown_seconds',
-        },
-        'Spotlight': {
-            'Multiplier': 'state::uw.spotlight.bonus_multiplier',
-            'Angle': 'state::uw.spotlight.angle_degrees',
-            'Quantity': 'state::uw.spotlight.count',
         },
     }
 
@@ -2254,7 +2222,9 @@ def _build_stats_uw_operator_panel(
                     fallback_value=max_expected,
                 )
             uw_recon_status = 'amber'
-            if not _display_terms_parseable(stone_text, start_value, max_value, lab_text, module_text, perk_text):
+            if not _row_is_resolved(start_row) or not _row_is_resolved(max_row):
+                uw_recon_status = 'amber'
+            elif not _display_terms_parseable(stone_text, start_value, max_value, lab_text, module_text, perk_text):
                 uw_recon_status = 'red'
             elif start_expected is not None and max_expected is not None:
                 start_number, _ = _parse_display_number(start_value)

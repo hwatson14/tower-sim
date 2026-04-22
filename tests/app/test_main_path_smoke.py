@@ -71,7 +71,7 @@ def test_run_stats_cli_defaults_to_current_stats_mode():
         assert flag not in src
     assert "--state-mode" not in src
     assert "--preset" not in src
-    assert "default='none'" in src
+    assert "default='max_progression_policy'" in src
 
 
 def test_run_analysis_cli_preserves_analysis_flags():

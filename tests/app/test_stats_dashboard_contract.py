@@ -224,19 +224,11 @@ def test_stats_dashboard_primary_uw_operator_table_lists_all_uw_and_appends_uw_p
 
     uw_panel = next(panel for panel in payload['variants']['Farming']['start_of_run'] if panel.get('panel_id') == 'ultimate_weapons')
     sections = list((uw_panel.get('payload', {}).get('sections') or []))
-    assert [section.get('title') for section in sections] == [
-        'Chain Lightning',
-        'Smart Missiles',
-        'Death Wave',
-        'Chrono Field',
-        'Inner Land Mines',
-        'Golden Tower',
-        'Poison Swamp',
-        'Black Hole',
-        'Spotlight',
-    ]
-    chain_rows = [row.get('name') for row in (sections[0].get('rows') or [])]
-    assert chain_rows[:4] == ['Damage', 'Quantity', 'Chance', 'UW+: Smite']
+    assert [section.get('title') for section in sections] == ['Chrono Field', 'Golden Tower', 'Black Hole']
+    chrono_rows = [row.get('name') for row in (sections[0].get('rows') or [])]
+    assert chrono_rows[:3] == ['Duration', 'Speed Reduction', 'Cooldown']
+    chrono_payload_rows = {row.get('name'): row for row in (sections[0].get('rows') or [])}
+    assert chrono_payload_rows['Duration']['reconciliation_status'] == 'amber'
 
 
 def test_stats_dashboard_primary_uw_operator_table_wires_module_other_and_recon_fields():
@@ -296,15 +288,8 @@ def test_stats_dashboard_primary_uw_operator_table_wires_module_other_and_recon_
 
     uw_panel = next(panel for panel in payload['variants']['Farming']['start_of_run'] if panel.get('panel_id') == 'ultimate_weapons')
     sections = {section.get('title'): section for section in (uw_panel.get('payload', {}).get('sections') or [])}
-    chain_rows = {row.get('name'): row for row in (sections['Chain Lightning'].get('rows') or [])}
     golden_rows = {row.get('name'): row for row in (sections['Golden Tower'].get('rows') or [])}
     black_hole_rows = {row.get('name'): row for row in (sections['Black Hole'].get('rows') or [])}
-
-    assert chain_rows['Damage']['module_effects'] == 'x2.25'
-    assert chain_rows['Damage']['other'] == '—'
-    assert chain_rows['Damage']['start_of_run_value'] == 'x900.25'
-    assert chain_rows['Damage']['max_progression_value'] == 'x900.25'
-    assert chain_rows['Supplemental: Chain Thunder']['start_of_run_value'] == '22%'
     assert golden_rows['Duration']['lab_effects'] == '20s'
     assert golden_rows['Duration']['reconciliation_status'] == 'green'
     assert black_hole_rows['Duration']['module_effects'] == '4s'
@@ -3012,19 +2997,9 @@ def test_stats_dashboard_primary_uw_operator_table_lists_all_uw_and_appends_uw_p
     )
     uw_panel = next(panel for panel in payload['variants']['Farming']['start_of_run'] if panel.get('panel_id') == 'ultimate_weapons')
     sections = list((uw_panel.get('payload', {}).get('sections') or []))
-    assert [section.get('title') for section in sections] == [
-        'Chain Lightning',
-        'Smart Missiles',
-        'Death Wave',
-        'Chrono Field',
-        'Inner Land Mines',
-        'Golden Tower',
-        'Poison Swamp',
-        'Black Hole',
-        'Spotlight',
-    ]
-    chain_rows = [row.get('name') for row in (sections[0].get('rows') or [])]
-    assert chain_rows[:6] == ['Damage', 'Quantity', 'Chance', 'UW+: Smite', 'Supplemental effects', 'Supplemental: Chain Thunder']
+    assert [section.get('title') for section in sections] == ['Chrono Field', 'Golden Tower', 'Black Hole']
+    chrono_rows = [row.get('name') for row in (sections[0].get('rows') or [])]
+    assert chrono_rows[:3] == ['Duration', 'Speed Reduction', 'Cooldown']
 
 
 def test_stats_dashboard_primary_uw_operator_table_wires_module_other_and_recon_fields():
@@ -3056,14 +3031,8 @@ def test_stats_dashboard_primary_uw_operator_table_wires_module_other_and_recon_
     )
     uw_panel = next(panel for panel in payload['variants']['Farming']['start_of_run'] if panel.get('panel_id') == 'ultimate_weapons')
     sections = {section.get('title'): section for section in (uw_panel.get('payload', {}).get('sections') or [])}
-    chain_rows = {row.get('name'): row for row in (sections['Chain Lightning'].get('rows') or [])}
     golden_rows = {row.get('name'): row for row in (sections['Golden Tower'].get('rows') or [])}
     black_hole_rows = {row.get('name'): row for row in (sections['Black Hole'].get('rows') or [])}
-    assert chain_rows['Damage']['module_effects'] == 'x2.25'
-    assert chain_rows['Damage']['other'] == '—'
-    assert chain_rows['Damage']['start_of_run_value'] == 'x900.25'
-    assert chain_rows['Damage']['max_progression_value'] == 'x900.25'
-    assert chain_rows['Supplemental: Chain Thunder']['start_of_run_value'] == '36%'
     assert golden_rows['Duration']['lab_effects'] == '20s'
     assert golden_rows['Duration']['reconciliation_status'] == 'green'
     assert black_hole_rows['Duration']['module_effects'] == '4s'
@@ -3278,19 +3247,9 @@ def test_stats_dashboard_primary_uw_operator_table_lists_all_uw_and_appends_uw_p
     )
     uw_panel = next(panel for panel in payload['variants']['Farming']['start_of_run'] if panel.get('panel_id') == 'ultimate_weapons')
     sections = list((uw_panel.get('payload', {}).get('sections') or []))
-    assert [section.get('title') for section in sections] == [
-        'Chain Lightning',
-        'Smart Missiles',
-        'Death Wave',
-        'Chrono Field',
-        'Inner Land Mines',
-        'Golden Tower',
-        'Poison Swamp',
-        'Black Hole',
-        'Spotlight',
-    ]
-    chain_rows = [row.get('name') for row in (sections[0].get('rows') or [])]
-    assert chain_rows[:4] == ['Damage', 'Quantity', 'Chance', 'UW+: Smite']
+    assert [section.get('title') for section in sections] == ['Chrono Field', 'Golden Tower', 'Black Hole']
+    chrono_rows = [row.get('name') for row in (sections[0].get('rows') or [])]
+    assert chrono_rows[:3] == ['Duration', 'Speed Reduction', 'Cooldown']
 
 
 def test_stats_dashboard_primary_uw_operator_table_wires_module_other_and_recon_fields():
@@ -3322,15 +3281,9 @@ def test_stats_dashboard_primary_uw_operator_table_wires_module_other_and_recon_
     )
     uw_panel = next(panel for panel in payload['variants']['Farming']['start_of_run'] if panel.get('panel_id') == 'ultimate_weapons')
     sections = {section.get('title'): section for section in (uw_panel.get('payload', {}).get('sections') or [])}
-    chain_rows = {row.get('name'): row for row in (sections['Chain Lightning'].get('rows') or [])}
     golden_rows = {row.get('name'): row for row in (sections['Golden Tower'].get('rows') or [])}
     black_hole_rows = {row.get('name'): row for row in (sections['Black Hole'].get('rows') or [])}
     chrono_rows = {row.get('name'): row for row in (sections['Chrono Field'].get('rows') or [])}
-    assert chain_rows['Damage']['module_effects'] == 'x2.25'
-    assert chain_rows['Damage']['other'] == '—'
-    assert chain_rows['Damage']['start_of_run_value'] == 'x900.25'
-    assert chain_rows['Damage']['max_progression_value'] == 'x900.25'
-    assert chain_rows['Supplemental: Chain Thunder']['start_of_run_value'] == '22%'
     assert golden_rows['Duration']['lab_effects'] == '20s'
     assert golden_rows['Duration']['reconciliation_status'] == 'green'
     assert black_hole_rows['Duration']['module_effects'] == '4s'

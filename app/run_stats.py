@@ -28,7 +28,7 @@ def main() -> int:
     parser.add_argument(
         '--perk-mode',
         type=str,
-        default='none',
+        default='max_progression_policy',
         choices=['none', 'max_progression_policy', 'runtime_timeline'],
         help='Explicit perk materialization mode for the run.',
     )

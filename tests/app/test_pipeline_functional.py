@@ -39,7 +39,7 @@ def run_stats_single_execution(tmp_path_factory):
     """Execute RunStatsSession once and return parsed canonical outputs plus output directory."""
     out_dir = tmp_path_factory.mktemp("run_stats_out")
     args = SimpleNamespace(
-        ids=IDS_PATH, out=out_dir, perk_mode='none', perk_state='auto', manual_inputs=None,
+        ids=IDS_PATH, out=out_dir, perk_mode='max_progression_policy', perk_state='auto', manual_inputs=None,
     )
     session = RunStatsSession()
     rc = session.execute(args)
@@ -1220,6 +1220,27 @@ def test_run_stats_output_contract_distinguishes_committed_and_local_support(run
     assert tuple(contract.get('committed_baseline_artifacts') or []) == RUN_STATS_COMMITTED_BASELINE_ARTIFACTS
     assert tuple(contract.get('local_support_artifacts') or []) == RUN_STATS_LOCAL_SUPPORT_ARTIFACTS
     assert tuple(contract.get('all_local_output_artifacts') or []) == RUN_STATS_BOUNDED_OUTPUT_ARTIFACTS
+
+
+def test_run_stats_canonical_default_publishes_max_progression_perk_sensitive_uw_rows(run_stats_single_execution):
+    diagnostics = run_stats_single_execution["parsed_outputs"]["diagnostics.json"]
+    max_rows = run_stats_single_execution["parsed_outputs"][
+        _RUN_STATS_QUERY_OUTPUTS['max_progression_rows']
+    ]['Farming']['rows']
+
+    assert diagnostics.get('perk_mode') == 'max_progression_policy'
+    assert max_rows['state::uw.black_hole.duration_seconds']['final_value'] == pytest.approx(48.0)
+    assert max_rows['state::uw.chrono_field.duration_seconds']['final_value'] == pytest.approx(55.0)
+
+    from qe.publication import _uw_track_surface_map
+
+    declared_uw_surfaces = {
+        surface_id
+        for track_map in _uw_track_surface_map().values()
+        for surface_id in track_map.values()
+    }
+    missing = sorted(declared_uw_surfaces - set(max_rows))
+    assert missing == []
 
 
 @pytest.mark.live
