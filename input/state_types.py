@@ -211,12 +211,28 @@ def _load_runtime_input_contract() -> Dict[str, Dict[str, Any]]:
 @dataclass(frozen=True)
 class ScenarioRuntimeInputs:
     orb_boss_hit_pct: Optional[float] = None
+    orb_boss_total_damage_pct: Optional[float] = None
+    orb_boss_hit_count: Optional[float] = None
+    electron_total_damage_pct: Optional[float] = None
+    electron_hit_count: Optional[float] = None
     orb_boss_hits_per_second: Optional[float] = None
     electron_hits_per_second: Optional[float] = None
-    boss_contact_time_seconds: Optional[float] = None
+    boss_time_to_contact_seconds: Optional[float] = None
     boss_hit_interval_seconds: Optional[float] = None
     effective_damage_reduction_pct: Optional[float] = None
     incoming_damage_multiplier: Optional[float] = None
+    flame_bot_damage_reduction_pct: Optional[float] = None
+    flame_bot_duration_seconds: Optional[float] = None
+    flame_bot_cooldown_seconds: Optional[float] = None
+    defense_field_damage_reduction_pct: Optional[float] = None
+    defense_field_duration_seconds: Optional[float] = None
+    defense_field_cooldown_seconds: Optional[float] = None
+    black_hole_damage_reduction_pct: Optional[float] = None
+    black_hole_duration_seconds: Optional[float] = None
+    black_hole_cooldown_seconds: Optional[float] = None
+    pbh_encounter_uptime_fraction: Optional[float] = None
+    death_wave_health_max_multiplier: Optional[float] = None
+    death_wave_health_max_wave: Optional[float] = None
     boss_wave_interval: Optional[float] = None
     enemy_level_skip_reduction_pp: Optional[float] = None
 
@@ -276,3 +292,4 @@ def _coerce_float(*, field_name: str, source_key: str, value: Any, spec: Mapping
     if max_exclusive is not None and out >= float(max_exclusive):
         raise ValueError(f'Scenario runtime input {source_key} must be < {float(max_exclusive)}.')
     return out
+

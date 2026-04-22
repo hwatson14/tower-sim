@@ -12,6 +12,7 @@ from qe.compat.legacy_surface_ids import (
 )
 from qe.contracts import normalize_surface_id_to_contract
 from qe.models import StatRow
+from qe.run_plan import derive_wall_hp_from_qe_primitives, derive_wall_regen_hp_per_second
 
 
 def _surface_id_candidates(key: str) -> tuple[str, ...]:
@@ -745,6 +746,17 @@ def publish_derived_composites(rows: Dict[str, StatRow]) -> None:
         armor_factor = armor_primary_factor * armor_assist_factor
 
     wall_health_final = _get_first(rows, ['state::wall.hp', _compat_canon('wall_hp')], 0.0)
+    tower_hp_for_wall = _get_first(rows, ['state::tower.hp', _compat_canon('tower_hp')], 0.0)
+    wall_hp_row = _row(rows, 'state::wall.hp')
+    wall_hp_derivation = None
+    if wall_hp_row is not None and tower_hp_for_wall > 0.0:
+        try:
+            wall_hp_derivation = derive_wall_hp_from_qe_primitives(
+                tower_hp=tower_hp_for_wall,
+                wall_hp_contributors=tuple(dict(contributor or {}) for contributor in (wall_hp_row.contributors or ())),
+            )
+        except ValueError:
+            wall_hp_derivation = None
     wall_health_ws = _get_first(rows, ['support_surface::ehp.wall_hp_ws'], 0.0)
     wall_health_lab_term = 0.02 * _get_first(rows, ['support_surface::ehp.wall_hp_lab_level'], 0.0)
     ehp_sac_factor = (1.0 + _get_first(rows, ['support_surface::ehp.stone_sac_pct'], 0.0) + _get_first(rows, ['support_surface::ehp.lab_sac_pct'], 0.0)) * 0.01
@@ -757,6 +769,9 @@ def publish_derived_composites(rows: Dict[str, StatRow]) -> None:
         wall_health_fort_factor = _get_first(rows, ['state::wall.fortification_multiplier'], wall_health_fort_factor)
     if wall_health_pre_fort <= 0.0 and wall_health_final > 0.0 and wall_health_fort_factor > 0.0:
         wall_health_pre_fort = wall_health_final / wall_health_fort_factor
+    if wall_hp_derivation is not None:
+        wall_health_pre_fort = float(wall_hp_derivation['wall_hp_pre_fort'])
+    wall_health_display_final = wall_health_pre_fort * wall_health_fort_factor
     wall_health_factor = _get_first(rows, ['support_surface::ehp.wall_health_factor'], 0.0)
     if wall_health_factor <= 0.0:
         wall_health_factor = wall_health_final if wall_health_final > 0.0 else (wall_health_pre_fort * wall_health_fort_factor)
@@ -867,6 +882,36 @@ def publish_derived_composites(rows: Dict[str, StatRow]) -> None:
             _contributor(rows, 'state::wall.fortification_multiplier', 'wall.hp_pre_fort'),
         ],
         'QE-published wall HP before fortification.',
+    )
+    _publish(
+        rows,
+        'derived::wall.hp_final',
+        wall_health_display_final,
+        'hp',
+        [
+            _contributor(rows, 'derived::wall.hp_pre_fort', 'wall.hp_final'),
+            _contributor(rows, 'state::wall.fortification_multiplier', 'wall.hp_final'),
+        ],
+        'QE-published final displayed Wall HP / Wall Pool after applying wall fortification once.',
+    )
+    wall_regen_pct_points = _get_first(rows, ['state::wall.regen', _compat_canon('wall_regen')], 0.0)
+    tower_regen_hp_per_second = _get_first(rows, ['state::tower.regen', _compat_canon('tower_regen')], 0.0)
+    wall_regen_hp_per_second = 0.0
+    if tower_regen_hp_per_second > 0.0 and wall_regen_pct_points >= 0.0:
+        wall_regen_hp_per_second = derive_wall_regen_hp_per_second(
+            tower_regen_hp_per_second=tower_regen_hp_per_second,
+            wall_regen_percent_points=wall_regen_pct_points,
+        )
+    _publish(
+        rows,
+        'derived::wall.regen_hp_per_second',
+        wall_regen_hp_per_second,
+        'hp_per_second',
+        [
+            _contributor(rows, 'state::tower.regen', 'wall.regen_hp_per_second'),
+            _contributor(rows, 'state::wall.regen', 'wall.regen_hp_per_second'),
+        ],
+        'QE-published final displayed Wall Regen HP/sec from tower regen and wall regen percent-points.',
     )
     _publish(rows, 'derived::ehp.wall_factor', wall_health_factor, 'scalar', ehp_contrib, 'EPH_WALL_HEALTH-like factor [EP helper support surface]')
     _publish(rows, 'derived::ehp.max_recovery_lab_term', recovery_lab_term, 'scalar', [], 'EPH_MAX_RCVR lab term [EP helper support surface]')

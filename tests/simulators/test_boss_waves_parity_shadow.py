@@ -51,9 +51,9 @@ class Fixture:
     plasma_cannon_effect_pct: float = 0.0
     tower_thorns_damage_pct: float = 100.0
     orb_boss_hit_pct: float = 100.0
-    orb_boss_hits_per_second: float = 1.0
-    electron_hits_per_second: float = 1.0
-    boss_contact_time_seconds: float | None = 1.0
+    orb_boss_hit_count: float = 1.0
+    electron_hit_count: float = 1.0
+    boss_time_to_contact_seconds: float | None = 1.0
     boss_hit_interval_seconds: float = 2.0
     incoming_damage_multiplier: float = 1.0
     tournament_perks_enabled: bool = True
@@ -92,9 +92,9 @@ FIXTURES: tuple[Fixture, ...] = (
         defense_pct=90.0,
         plasma_cannon_effect_pct=100.0,
         orb_boss_hit_pct=2.5,
-        orb_boss_hits_per_second=5.0,
-        electron_hits_per_second=5.0,
-        boss_contact_time_seconds=1.0,
+        orb_boss_hit_count=5.0,
+        electron_hit_count=5.0,
+        boss_time_to_contact_seconds=1.0,
     ),
     Fixture(
         fixture_id="tournament_perk_mask",
@@ -134,9 +134,9 @@ FIXTURES: tuple[Fixture, ...] = (
         tower_thorns_damage_pct=0.0,
         plasma_cannon_effect_pct=0.0,
         orb_boss_hit_pct=100.0,
-        orb_boss_hits_per_second=1.0,
-        electron_hits_per_second=1.0,
-        boss_contact_time_seconds=0.0,
+        orb_boss_hit_count=1.0,
+        electron_hit_count=1.0,
+        boss_time_to_contact_seconds=0.0,
         boss_hit_interval_seconds=2.0,
     ),
 )
@@ -154,10 +154,10 @@ def test_live_boss_waves_product_seam_is_replacement_only():
         boss_wave_step=1,
         stop_on_failure=False,
         scenario_runtime_inputs={
-            "orb_boss_hit_pct": 2.5,
-            "orb_boss_hits_per_second": 5.0,
-            "electron_hits_per_second": 5.0,
-            "boss_contact_time_seconds": 1.0,
+            "orb_boss_hit_pct": 100.0,
+            "orb_boss_hit_count": 1.0,
+            "electron_hit_count": 0.0,
+            "boss_time_to_contact_seconds": 1.0,
             "effective_damage_reduction_pct": 90.0,
             "incoming_damage_multiplier": 1.0,
         },
@@ -180,8 +180,9 @@ def test_live_boss_waves_product_seam_is_replacement_only():
         "boss_attack",
         "boss_health",
         "wall_hp",
+        "wall_pre_fort_hp",
         "wall_regen",
-        "boss_ttk_seconds_used",
+        "boss_ttk_seconds",
         "survives_boss",
     ):
         assert field in first
@@ -282,9 +283,9 @@ def _run_replacement_fixture(fixture: Fixture) -> dict[str, Any]:
             plasma_cannon_effect_pct=fixture.plasma_cannon_effect_pct,
             tower_thorns_damage_pct=fixture.tower_thorns_damage_pct,
             orb_boss_hit_pct=fixture.orb_boss_hit_pct,
-            orb_boss_hits_per_second=fixture.orb_boss_hits_per_second,
-            electron_hits_per_second=fixture.electron_hits_per_second,
-            boss_contact_time_seconds=fixture.boss_contact_time_seconds,
+            orb_boss_hit_count=fixture.orb_boss_hit_count,
+            electron_hit_count=fixture.electron_hit_count,
+            boss_time_to_contact_seconds=fixture.boss_time_to_contact_seconds,
             boss_hit_interval_seconds=fixture.boss_hit_interval_seconds,
             max_ttk_seconds=10.0,
         ),
@@ -406,3 +407,6 @@ def _active_replacement_perk_flat(fixture: Fixture, effect_id: str) -> float:
         if effect == effect_id:
             total += float(value)
     return total
+
+
+

@@ -167,7 +167,7 @@ def _build_boss_wave_operator_frame(frame: pd.DataFrame) -> pd.DataFrame:
     def _series(key: str) -> pd.Series:
         return frame.get(key, pd.Series([None] * len(frame), index=frame.index))
 
-    wall_pool = _series('wall_pool_hp_used')
+    wall_hp = _series('wall_hp')
     return pd.DataFrame(
         {
             'Wave': _series('display_wave'),
@@ -176,13 +176,21 @@ def _build_boss_wave_operator_frame(frame: pd.DataFrame) -> pd.DataFrame:
             'Boss HP': _series('boss_health').map(_boss_wave_compact_text),
             'Boss Atk': _series('boss_attack').map(_boss_wave_compact_text),
             'Tower DPS': _series('tower_damage_per_second').map(_boss_wave_compact_text),
-            'Wall Pool': wall_pool.map(_boss_wave_compact_text),
+            'Wall HP': wall_hp.map(_boss_wave_compact_text),
             'Wall Regen': _series('wall_regen').map(_boss_wave_compact_text),
             'Regen Gain': _series('wall_regen_gained_hp').map(_boss_wave_compact_text),
-            'DR Used': _series('effective_damage_reduction_pct_used').map(_boss_wave_percent_text),
-            'TTK (s)': _series('boss_ttk_seconds_used').map(_boss_wave_seconds_text),
-            'Contact (s)': _series('boss_contact_time_seconds_used').map(_boss_wave_seconds_text),
+            'DR Used': _series('effective_damage_reduction_pct').map(_boss_wave_percent_text),
+            'TTK (s)': _series('boss_ttk_seconds').map(_boss_wave_seconds_text),
+            'PC Dmg %': _series('boss_plasma_cannon_damage_to_boss_pct').map(_boss_wave_percent_text),
+            'Orb Dmg %': _series('boss_orb_damage_to_boss_pct').map(_boss_wave_percent_text),
+            'Electron Dmg %': _series('boss_electron_damage_to_boss_pct').map(_boss_wave_percent_text),
+            'Wall Thorns Dmg %': _series('boss_wall_thorns_damage_to_boss_pct').map(_boss_wave_percent_text),
+            'Expected Wall Thorns Dmg %': _series('boss_expected_wall_thorns_damage_from_hits_pct').map(_boss_wave_percent_text),
+            'Wall Thorns Kill (s)': _series('boss_wall_thorns_contact_kill_seconds').map(_boss_wave_seconds_text),
+            'Time to Contact (s)': _series('boss_time_to_contact_seconds').map(_boss_wave_seconds_text),
             'Boss Hits': _series('boss_hits_taken'),
+            'Hits to Player': _series('boss_hits_to_player'),
+            'Wall Thorns Hits': _series('boss_wall_thorns_hits'),
             'Damage Taken': _series('boss_total_damage_taken').map(_boss_wave_compact_text),
             'Margin': _series('boss_survival_margin_hp').map(_boss_wave_signed_compact_text),
             'Survives': _series('survives_boss').map(lambda value: 'Yes' if bool(value) else 'No'),
@@ -1667,19 +1675,36 @@ def _render_boss_waves(request: PipelineRunRequest) -> None:
     control_cols = st.columns(4)
     preset_name = control_cols[0].selectbox('Boss preset', options=['Farming', 'Tourney', 'Milestone'], index=['Farming', 'Tourney', 'Milestone'].index(request.preset) if request.preset in {'Farming', 'Tourney', 'Milestone'} else 0)
     tier_number = control_cols[1].number_input('Tier', min_value=1, max_value=18, value=14, step=1)
-    end_wave = control_cols[2].number_input('End wave', min_value=10, max_value=100000, value=500, step=10)
+    end_wave = control_cols[2].number_input('End wave', min_value=10, value=500, step=10)
     boss_wave_step = control_cols[3].number_input('Checkpoint every N bosses', min_value=1, max_value=1000, value=1, step=1)
     stop_on_failure = st.toggle('Stop on first failed boss', value=True)
 
     with st.expander('Runtime assumptions', expanded=False):
         runtime_cols = st.columns(3)
         orb_boss_hit_pct = runtime_cols[0].number_input('Orb boss hit %', min_value=0.0, max_value=100.0, value=2.5, step=0.1)
-        orb_boss_hits_per_second = runtime_cols[1].number_input('Orb boss hits / sec', min_value=0.1, max_value=100.0, value=5.0, step=0.1)
-        electron_hits_per_second = runtime_cols[2].number_input('Electron hits / sec', min_value=0.1, max_value=100.0, value=5.0, step=0.1)
+        orb_boss_total_damage_pct = runtime_cols[1].number_input('Orb boss damage (total %)', min_value=0.0, max_value=100.0, value=2.0, step=0.1)
+        electron_total_damage_pct = runtime_cols[2].number_input('Electron damage override (total %)', min_value=0.0, max_value=100.0, value=0.0, step=0.1)
         runtime_cols_2 = st.columns(3)
-        boss_contact_time_seconds = runtime_cols_2[0].number_input('Boss contact time (s)', min_value=0.0, max_value=120.0, value=1.0, step=0.1)
+        boss_time_to_contact_seconds = runtime_cols_2[0].number_input('Boss time to contact (s)', min_value=0.0, max_value=120.0, value=1.0, step=0.1)
         effective_damage_reduction_pct = runtime_cols_2[1].number_input('Effective DR %', min_value=0.0, max_value=100.0, value=90.0, step=0.1)
         incoming_damage_multiplier = runtime_cols_2[2].number_input('Incoming damage multiplier', min_value=0.0, max_value=100.0, value=1.0, step=0.1)
+        runtime_cols_3 = st.columns(3)
+        death_wave_health_max_multiplier = runtime_cols_3[0].number_input('Death Wave health max x', min_value=0.0, max_value=1000.0, value=12.5, step=0.25)
+        death_wave_health_max_wave = runtime_cols_3[1].number_input('Death Wave maxed wave', min_value=1, value=1000, step=10)
+        boss_hit_interval_seconds = runtime_cols_3[2].number_input('Boss hit interval (s)', min_value=0.1, max_value=30.0, value=2.0, step=0.1)
+        dr_cols = st.columns(3)
+        flame_bot_damage_reduction_pct = dr_cols[0].number_input('Flame Bot DR %', min_value=0.0, max_value=100.0, value=0.0, step=0.1)
+        defense_field_damage_reduction_pct = dr_cols[1].number_input('Defense Field DR %', min_value=0.0, max_value=100.0, value=0.0, step=0.1)
+        black_hole_damage_reduction_pct = dr_cols[2].number_input('BH DR %', min_value=0.0, max_value=100.0, value=0.0, step=0.1)
+        uptime_cols = st.columns(4)
+        flame_bot_duration_seconds = uptime_cols[0].number_input('FB duration (s)', min_value=0.0, max_value=120.0, value=0.0, step=0.1)
+        flame_bot_cooldown_seconds = uptime_cols[1].number_input('FB cooldown (s)', min_value=0.1, max_value=600.0, value=1.0, step=0.1)
+        defense_field_duration_seconds = uptime_cols[2].number_input('DF duration (s)', min_value=0.0, max_value=120.0, value=0.0, step=0.1)
+        defense_field_cooldown_seconds = uptime_cols[3].number_input('DF cooldown (s)', min_value=0.1, max_value=600.0, value=1.0, step=0.1)
+        bh_cols = st.columns(3)
+        black_hole_duration_seconds = bh_cols[0].number_input('BH duration (s)', min_value=0.0, max_value=120.0, value=0.0, step=0.1)
+        black_hole_cooldown_seconds = bh_cols[1].number_input('BH cooldown (s)', min_value=0.1, max_value=600.0, value=1.0, step=0.1)
+        pbh_encounter_uptime_fraction = bh_cols[2].number_input('PBH uptime', min_value=0.0, max_value=1.0, value=0.0, step=0.01)
 
     boss_payload = build_boss_wave_payload(
         request,
@@ -1690,11 +1715,24 @@ def _render_boss_waves(request: PipelineRunRequest) -> None:
         stop_on_failure=bool(stop_on_failure),
         scenario_runtime_inputs={
             'orb_boss_hit_pct': orb_boss_hit_pct,
-            'orb_boss_hits_per_second': orb_boss_hits_per_second,
-            'electron_hits_per_second': electron_hits_per_second,
-            'boss_contact_time_seconds': boss_contact_time_seconds,
+            'orb_boss_total_damage_pct': orb_boss_total_damage_pct,
+            **({'electron_total_damage_pct': electron_total_damage_pct} if electron_total_damage_pct > 0.0 else {}),
+            'boss_time_to_contact_seconds': boss_time_to_contact_seconds,
+            'boss_hit_interval_seconds': boss_hit_interval_seconds,
             'effective_damage_reduction_pct': effective_damage_reduction_pct,
             'incoming_damage_multiplier': incoming_damage_multiplier,
+            'death_wave_health_max_multiplier': death_wave_health_max_multiplier,
+            'death_wave_health_max_wave': death_wave_health_max_wave,
+            'flame_bot_damage_reduction_pct': flame_bot_damage_reduction_pct,
+            'flame_bot_duration_seconds': flame_bot_duration_seconds,
+            'flame_bot_cooldown_seconds': flame_bot_cooldown_seconds,
+            'defense_field_damage_reduction_pct': defense_field_damage_reduction_pct,
+            'defense_field_duration_seconds': defense_field_duration_seconds,
+            'defense_field_cooldown_seconds': defense_field_cooldown_seconds,
+            'black_hole_damage_reduction_pct': black_hole_damage_reduction_pct,
+            'black_hole_duration_seconds': black_hole_duration_seconds,
+            'black_hole_cooldown_seconds': black_hole_cooldown_seconds,
+            'pbh_encounter_uptime_fraction': pbh_encounter_uptime_fraction,
         },
     )
     try:
@@ -1856,3 +1894,6 @@ def main() -> None:
 
 if __name__ == '__main__':
     main()
+
+
+

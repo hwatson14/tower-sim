@@ -1,14 +1,19 @@
 from __future__ import annotations
 
 import hashlib
+import csv
 import json
 from dataclasses import asdict, dataclass, field, is_dataclass, replace
+from functools import lru_cache
 from math import floor, isfinite
+from pathlib import Path
 from typing import Any, Mapping
 
 
 CATEGORY_IDS: tuple[str, str, str] = ("attack", "defense", "utility")
 RUN_PLAN_VERSION = "boss_waves.run_plan.v1"
+ROOT = Path(__file__).resolve().parents[1]
+WORKSHOP_VALUES_PATH = ROOT / "kb" / "workshop" / "tables" / "workshop-values.csv"
 DEFAULT_WORKSHOP_CATEGORY_BY_TRACK: Mapping[str, str] = {
     "Damage": "attack",
     "Attack Speed": "attack",
@@ -61,6 +66,8 @@ PERK_CONTRIBUTION_EFFECT_IDS: frozenset[str] = frozenset(
         "wall_hp_multiplier",
         "wall_regen_flat",
         "wall_regen_multiplier",
+        "black_hole_duration_seconds_add",
+        "chrono_field_duration_seconds_add",
     }
 )
 
@@ -83,7 +90,7 @@ TABLE1_COLUMN_REGISTRY: tuple[ColumnFormulaSpec, ...] = (
     ColumnFormulaSpec("workshop_levels", "qe", "mapping[str,int]", ("free_upgrade_state",), "allocation_recurrence", "per_checkpoint", "carry_forward"),
     ColumnFormulaSpec("compiled_perk_state", "qe", "CompiledPerkState", ("perk_policy",), "checkpoint_lookup", "per_checkpoint", "plan_static"),
     ColumnFormulaSpec("survivability_contributors", "qe", "SurvivabilityContributorBundle", ("survivability_policy", "workshop_levels"), "row_rederived_contributor_bundle", "per_checkpoint", "row_static"),
-    ColumnFormulaSpec("death_wave_health_multiplier", "qe", "float", ("survivability_policy",), "pass_through", "compile_once", "plan_static"),
+    ColumnFormulaSpec("death_wave_health_multiplier", "qe", "float", ("display_wave", "death_wave_policy"), "linear_recurrence", "per_checkpoint", "row_static"),
 )
 TABLE1_REQUIRED_COLUMN_IDS: frozenset[str] = frozenset(spec.column_id for spec in TABLE1_COLUMN_REGISTRY)
 TABLE1_KEY_CONTRACTS: Mapping[str, tuple[tuple[str, ...], str]] = {
@@ -91,7 +98,7 @@ TABLE1_KEY_CONTRACTS: Mapping[str, tuple[tuple[str, ...], str]] = {
     "free_upgrade_state": (("recurrence_policy",), "stateful_recurrence"),
     "compiled_perk_state": (("perk_policy",), "checkpoint_lookup"),
     "survivability_contributors": (("survivability_policy", "workshop_levels"), "row_rederived_contributor_bundle"),
-    "death_wave_health_multiplier": (("survivability_policy",), "pass_through"),
+    "death_wave_health_multiplier": (("display_wave", "death_wave_policy"), "linear_recurrence"),
 }
 
 
@@ -152,6 +159,76 @@ def derive_wall_regen_hp_per_second(
     if not isfinite(wall_regen_pct) or wall_regen_pct < 0.0:
         raise ValueError("wall_regen_percent_points must be a finite non-negative value")
     return tower_regen * (wall_regen_pct / 100.0)
+
+
+def derive_wall_thorns_contact_damage_pct(
+    *,
+    tower_thorns_damage_pct: float,
+    wall_thorns_level: int,
+) -> float:
+    tower_thorns = float(tower_thorns_damage_pct)
+    wall_level = int(wall_thorns_level)
+    if not isfinite(tower_thorns) or tower_thorns < 0.0:
+        raise ValueError("tower_thorns_damage_pct must be finite and non-negative")
+    if wall_level < 0:
+        raise ValueError("wall_thorns_level cannot be negative")
+    return tower_thorns * (wall_level / 100.0)
+
+
+def derive_chrono_field_damage_reduction_pct(*, reduction_lab_level: int, damage_reduction_unlocked: bool = True) -> float:
+    """KB canonical Chrono Field DR lab formula: 10.5% at level 1, +0.5% per level, max 25%."""
+    level = int(reduction_lab_level)
+    if level <= 0 or not bool(damage_reduction_unlocked):
+        return 0.0
+    if level > 30:
+        raise ValueError("Chrono Field Reduction % lab level cannot exceed 30")
+    return 10.5 + ((level - 1) * 0.5)
+
+
+@lru_cache(maxsize=1)
+def _workshop_value_table() -> dict[tuple[str, int], float]:
+    if not WORKSHOP_VALUES_PATH.exists():
+        return {}
+    out: dict[tuple[str, int], float] = {}
+    with WORKSHOP_VALUES_PATH.open(newline="", encoding="utf-8") as handle:
+        reader = csv.reader(handle)
+        try:
+            header = next(reader)
+        except StopIteration:
+            return out
+        pairs: list[tuple[int, int, str]] = []
+        for index in range(0, max(0, len(header) - 1), 2):
+            level_name = str(header[index] or "").strip()
+            value_name = str(header[index + 1] or "").strip()
+            if level_name == "Level" and value_name:
+                pairs.append((index, index + 1, value_name))
+        for raw in reader:
+            for level_index, value_index, track_name in pairs:
+                if level_index >= len(raw) or value_index >= len(raw):
+                    continue
+                try:
+                    level = int(float(str(raw[level_index]).strip()))
+                    value = float(str(raw[value_index]).strip())
+                except (TypeError, ValueError):
+                    continue
+                out[(track_name, level)] = value
+    return out
+
+
+def workshop_value_for_level(track_name: str, level: int) -> float:
+    try:
+        from qe.kb_surfaces import WORKSHOP_FORMULA_VALUES
+
+        formula = WORKSHOP_FORMULA_VALUES.get(str(track_name))
+        if formula is not None:
+            return float(formula(int(level)))
+    except Exception:
+        pass
+    values = _workshop_value_table()
+    key = (str(track_name), int(level))
+    if key not in values:
+        raise ValueError(f"missing workshop value for {track_name!r} level {int(level)}")
+    return float(values[key])
 
 
 def derive_wall_hp_from_qe_primitives(
@@ -222,9 +299,20 @@ class SurvivabilityContributorBundle:
     wall_fortification_multiplier: float = 1.0
     tower_defense_pct: float = 0.0
     timed_dr_by_lane: Mapping[str, float] = field(default_factory=dict)
+    black_hole_damage_reduction_pct: float = 0.0
+    black_hole_duration_seconds: float = 0.0
+    black_hole_cooldown_seconds: float = 0.0
+    chrono_field_damage_reduction_pct: float = 0.0
+    chrono_field_duration_seconds: float = 0.0
+    chrono_field_cooldown_seconds: float = 0.0
     wall_hp_workshop_track: str | None = None
     wall_hp_workshop_baseline_level: int | None = None
     wall_hp_workshop_value_per_level: float = 0.0
+    wall_hp_static_ratio_percent_points: float = 0.0
+    wall_hp_effect_multiplier: float = 1.0
+    tower_hp_workshop_track: str | None = None
+    tower_hp_workshop_baseline_level: int | None = None
+    tower_hp_workshop_multiplier: float = 1.0
     wall_regen_workshop_track: str | None = None
     wall_regen_workshop_baseline_level: int | None = None
     wall_regen_workshop_value_per_level: float = 0.0
@@ -250,9 +338,42 @@ class SurvivabilityContributorBundle:
             "module_flat_wall_regen": float(self.module_flat_wall_regen),
         }
 
-    def rederive_for_workshop_levels(self, workshop_levels: Mapping[str, int]) -> "SurvivabilityContributorBundle":
+    def rederive_for_workshop_levels(
+        self,
+        workshop_levels: Mapping[str, int],
+        *,
+        tower_hp_multiplier: float = 1.0,
+    ) -> "SurvivabilityContributorBundle":
         values: dict[str, float | int | str | None | Mapping[str, float]] = {}
-        if self.wall_hp_workshop_track:
+        row_tower_hp_multiplier = float(tower_hp_multiplier)
+        if not isfinite(row_tower_hp_multiplier) or row_tower_hp_multiplier < 0.0:
+            raise ValueError("tower_hp_multiplier must be finite and non-negative")
+        if self.wall_hp_workshop_track and self.tower_hp_workshop_track:
+            if self.tower_hp_workshop_baseline_level is None:
+                raise ValueError("wall HP row derivation requires tower_hp_workshop_baseline_level")
+            if self.wall_hp_workshop_baseline_level is None:
+                raise ValueError("wall HP row derivation requires wall_hp_workshop_baseline_level")
+            tower_level = int(workshop_levels.get(self.tower_hp_workshop_track, self.tower_hp_workshop_baseline_level))
+            wall_level = int(workshop_levels.get(self.wall_hp_workshop_track, self.wall_hp_workshop_baseline_level))
+            tower_hp = (
+                workshop_value_for_level(self.tower_hp_workshop_track, tower_level)
+                * float(self.tower_hp_workshop_multiplier)
+                * row_tower_hp_multiplier
+            )
+            wall_ratio_percent_points = float(self.wall_hp_static_ratio_percent_points) + workshop_value_for_level(
+                self.wall_hp_workshop_track,
+                wall_level,
+            )
+            values["base_wall_hp"] = 0.0
+            values["workshop_wall_hp"] = max(
+                0.0,
+                tower_hp * (wall_ratio_percent_points / 100.0) * float(self.wall_hp_effect_multiplier),
+            )
+            values["lab_wall_hp"] = 0.0
+            values["enhancement_wall_hp"] = 0.0
+            values["module_flat_wall_hp"] = 0.0
+            values["wall_hp_multiplier"] = 1.0
+        elif self.wall_hp_workshop_track:
             if self.wall_hp_workshop_baseline_level is None:
                 raise ValueError("wall HP row derivation requires wall_hp_workshop_baseline_level")
             level = int(workshop_levels.get(self.wall_hp_workshop_track, self.wall_hp_workshop_baseline_level))
@@ -291,7 +412,8 @@ class RunPlan:
     perk_policy: PerkPolicyConfig
     dependency_policy: DependencyPolicyConfig
     survivability_contributors: SurvivabilityContributorBundle
-    death_wave_health_multiplier: float
+    death_wave_health_max_multiplier: float
+    death_wave_health_max_wave: int
     dependency_order: tuple[str, ...]
     table1_registry: tuple[ColumnFormulaSpec, ...]
 
@@ -332,6 +454,8 @@ class CommonTrajectoryInputs:
     perk_contributions_by_wave: Mapping[int, Mapping[str, float]] = field(default_factory=dict)
     survivability_contributors: SurvivabilityContributorBundle | None = None
     death_wave_health_multiplier: float = 1.0
+    death_wave_health_max_multiplier: float | None = None
+    death_wave_health_max_wave: int = 1000
 
 
 @dataclass(frozen=True)
@@ -371,9 +495,16 @@ class CommonTrajectoryTable:
 def compile_run_plan(inputs: CommonTrajectoryInputs) -> RunPlan:
     contributors = inputs.survivability_contributors or SurvivabilityContributorBundle(base_wall_hp=0.0)
     _validate_survivability_contributors(contributors)
-    death_wave_health_multiplier = float(inputs.death_wave_health_multiplier)
-    if death_wave_health_multiplier < 0.0:
-        raise ValueError("death_wave_health_multiplier cannot be negative")
+    death_wave_health_max_multiplier = float(
+        inputs.death_wave_health_max_multiplier
+        if inputs.death_wave_health_max_multiplier is not None
+        else inputs.death_wave_health_multiplier
+    )
+    death_wave_health_max_wave = int(inputs.death_wave_health_max_wave)
+    if death_wave_health_max_multiplier < 0.0:
+        raise ValueError("death_wave_health_max_multiplier cannot be negative")
+    if death_wave_health_max_wave <= 0:
+        raise ValueError("death_wave_health_max_wave must be positive")
     scope = RunScopeConfig(int(inputs.start_wave), int(inputs.end_wave), str(inputs.tier_column))
     checkpoint_policy = CheckpointPolicyConfig(max(1, int(inputs.boss_interval_waves)), max(1, int(inputs.checkpoint_every_bosses)))
     recurrence_policy = RecurrencePolicyConfig(
@@ -400,7 +531,8 @@ def compile_run_plan(inputs: CommonTrajectoryInputs) -> RunPlan:
         "perk_policy": perk_policy,
         "dependency_policy": dependency_policy,
         "survivability_contributors": contributors,
-        "death_wave_health_multiplier": death_wave_health_multiplier,
+        "death_wave_health_max_multiplier": death_wave_health_max_multiplier,
+        "death_wave_health_max_wave": death_wave_health_max_wave,
         "table1_registry": TABLE1_COLUMN_REGISTRY,
     }
     plan_id = "runplan:" + hashlib.sha256(
@@ -415,7 +547,8 @@ def compile_run_plan(inputs: CommonTrajectoryInputs) -> RunPlan:
         perk_policy=perk_policy,
         dependency_policy=dependency_policy,
         survivability_contributors=contributors,
-        death_wave_health_multiplier=death_wave_health_multiplier,
+        death_wave_health_max_multiplier=death_wave_health_max_multiplier,
+        death_wave_health_max_wave=death_wave_health_max_wave,
         dependency_order=dependency_policy.dependency_order,
         table1_registry=TABLE1_COLUMN_REGISTRY,
     )
@@ -544,7 +677,15 @@ def build_common_trajectory(inputs: CommonTrajectoryInputs | RunPlan) -> CommonT
             track_max_levels=plan.recurrence_policy.track_max_levels,
         )
         compiled_perk_state = _compile_perk_state(plan.perk_policy, display_wave=int(wave))
-        row_survivability = plan.survivability_contributors.rederive_for_workshop_levels(workshop_levels)
+        row_death_wave_health_multiplier = death_wave_health_multiplier_for_wave(
+            display_wave=int(wave),
+            max_multiplier=plan.death_wave_health_max_multiplier,
+            max_wave=plan.death_wave_health_max_wave,
+        )
+        row_survivability = plan.survivability_contributors.rederive_for_workshop_levels(
+            workshop_levels,
+            tower_hp_multiplier=row_death_wave_health_multiplier,
+        )
         rows.append(CommonTrajectoryRow(
             row_key=f"{plan.plan_id}:table1:{index}:{wave}",
             display_wave=int(wave),
@@ -557,7 +698,7 @@ def build_common_trajectory(inputs: CommonTrajectoryInputs | RunPlan) -> CommonT
             workshop_levels=dict(workshop_levels),
             compiled_perk_state=compiled_perk_state,
             survivability_contributors=row_survivability,
-            death_wave_health_multiplier=plan.death_wave_health_multiplier,
+            death_wave_health_multiplier=row_death_wave_health_multiplier,
             common_inputs={
                 "plan_id": plan.plan_id,
                 "start_progression_wave": max(0, plan.scope.start_wave - 1),
@@ -569,9 +710,34 @@ def build_common_trajectory(inputs: CommonTrajectoryInputs | RunPlan) -> CommonT
             },
         ))
         previous_wave = int(wave)
-    table = CommonTrajectoryTable("boss_waves.common_trajectory.v1", plan, tuple(rows), TABLE1_COLUMN_REGISTRY, {"row_count": len(rows), "plan_id": plan.plan_id})
+    table = CommonTrajectoryTable(
+        "boss_waves.common_trajectory.v1",
+        plan,
+        tuple(rows),
+        TABLE1_COLUMN_REGISTRY,
+        {
+            "row_count": len(rows),
+            "plan_id": plan.plan_id,
+            "death_wave_health_max_multiplier": float(plan.death_wave_health_max_multiplier),
+            "death_wave_health_max_wave": int(plan.death_wave_health_max_wave),
+        },
+    )
     validate_table1_registry(table)
     return table
+
+
+def death_wave_health_multiplier_for_wave(*, display_wave: int, max_multiplier: float, max_wave: int) -> float:
+    maximum = float(max_multiplier)
+    wave = max(0, int(display_wave))
+    maxed_wave = int(max_wave)
+    if not isfinite(maximum) or maximum < 0.0:
+        raise ValueError("death_wave_health max multiplier must be finite and non-negative")
+    if maxed_wave <= 0:
+        raise ValueError("death_wave_health max wave must be positive")
+    if maximum <= 1.0:
+        return maximum
+    progress = min(1.0, wave / float(maxed_wave))
+    return 1.0 + ((maximum - 1.0) * progress)
 
 
 def validate_table1_registry(table: CommonTrajectoryTable) -> None:

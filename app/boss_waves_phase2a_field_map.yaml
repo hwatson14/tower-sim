@@ -16,16 +16,16 @@ replacement_input_sources:
   owner: app.pipeline assembles inputs only
   mechanics_owner: [qe.run_plan, simulators.evaluator_kernel]
   primitive_resolution_owner: qe.routing.resolve_checkpoint_surfaces
-  primitive_layer_policy: QE state::wall.hp carries wall-health ratio contributors; displayed pre-fort Wall HP is derived from QE state::tower.hp times wall-health ratio times non-fort wall-health multipliers before Table 1 row re-derivation, and evaluator TTD applies state::wall.fortification_multiplier exactly once for Wall Pool. QE state::wall.regen is a start-of-run wall-regen percent-points primitive and displayed Wall Regen is derived from QE state::tower.regen times state::wall.regen / 100 before Table 1 row re-derivation and Table 2 scenario finalization.
+  primitive_layer_policy: QE state::wall.hp carries wall-health ratio contributors; displayed pre-fort Wall HP is derived from QE state::tower.hp times wall-health ratio times non-fort wall-health multipliers before Table 1 row re-derivation, and evaluator TTD applies state::wall.fortification_multiplier exactly once for Wall HP. QE state::wall.regen is a start-of-run wall-regen percent-points primitive and displayed Wall Regen is derived from QE state::tower.regen times state::wall.regen / 100 before Table 1 row re-derivation and Table 2 scenario finalization.
   boss_waves_wall_surface_semantic_contract:
     state::wall.hp:
       exact_source: qe.routing.resolve_checkpoint_surfaces(state::wall.hp)
       semantic_decision: transformed_primitive_not_final_display_value
-      primitive_vs_displayed: partial primitive input, not the final displayed Wall Pool
-      pre_post_fortification: pre-fort wall-health ratio contributor surface; evaluator applies state::wall.fortification_multiplier exactly once to row-derived Wall HP for Wall Pool
+      primitive_vs_displayed: partial primitive input, not the final displayed Wall HP
+      pre_post_fortification: pre-fort wall-health ratio contributor surface; evaluator applies state::wall.fortification_multiplier exactly once to row-derived pre-fort HP for displayed Wall HP
       start_of_run_vs_row_evolved: start-of-run QE primitive feeding Table 1 row re-derivation
-      owner_layer: QE publishes source primitive/contributors; app assembles input bundle; qe.run_plan derives row-facing pre-fort HP; simulators.evaluator_kernel finalizes Wall Pool
-      product_fields: [operator_rows.wall_hp, operator_rows.wall_pool_hp_used]
+      owner_layer: QE publishes source primitive/contributors; app assembles input bundle; qe.run_plan derives row-facing pre-fort HP; simulators.evaluator_kernel finalizes Wall HP
+      product_fields: [operator_rows.wall_pre_fort_hp, operator_rows.wall_hp]
       repo_wide_followup: QE rename or split may be considered later, but Boss Waves no longer treats this as final displayed truth
     state::wall.regen:
       exact_source: qe.routing.resolve_checkpoint_surfaces(state::wall.regen)
@@ -88,10 +88,10 @@ operator_table_fields:
     normalization: null_display_dash
     required_for: [table]
     cutover_behavior: not_exposed_in_replacement_v21_event_only_ttk
-  - product_field: Wall Pool
-    consumer_input: wall_pool_hp_used
+  - product_field: Wall HP
+    consumer_input: wall_hp
     legacy_source: legacy rows.wall_pool_hp_used
-    replacement_source: operator_rows.wall_pool_hp_used
+    replacement_source: operator_rows.wall_hp
     comparability: transformed
     normalization: numeric_display_compact
     required_for: [table]
@@ -113,25 +113,75 @@ operator_table_fields:
     required_for: [table]
     cutover_behavior: switch_now
   - product_field: DR Used
-    consumer_input: effective_damage_reduction_pct_used
-    legacy_source: legacy rows.effective_damage_reduction_pct_used
-    replacement_source: operator_rows.effective_damage_reduction_pct_used
+    consumer_input: effective_damage_reduction_pct
+    legacy_source: legacy rows.effective_damage_reduction_pct
+    replacement_source: operator_rows.effective_damage_reduction_pct
     comparability: equivalent
     normalization: percent_display
     required_for: [table]
     cutover_behavior: switch_now
   - product_field: TTK (s)
-    consumer_input: boss_ttk_seconds_used
-    legacy_source: legacy rows.boss_ttk_seconds_used
-    replacement_source: operator_rows.boss_ttk_seconds_used
+    consumer_input: boss_ttk_seconds
+    legacy_source: legacy rows.boss_ttk_seconds
+    replacement_source: operator_rows.boss_ttk_seconds
     comparability: intentional_model_improvement
     normalization: seconds_display
     required_for: [table]
     cutover_behavior: switch_now
-  - product_field: Contact (s)
-    consumer_input: boss_contact_time_seconds_used
+    semantic_note: Replacement TTK is total v21 event-only boss kill time and includes contact thorns when the boss is not killed before contact.
+  - product_field: PC Dmg %
+    consumer_input: boss_plasma_cannon_damage_to_boss_pct
+    legacy_source: none
+    replacement_source: operator_rows.boss_plasma_cannon_damage_to_boss_pct
+    comparability: not_comparable
+    normalization: percent_display
+    required_for: [table]
+    cutover_behavior: switch_now
+  - product_field: Orb Dmg %
+    consumer_input: boss_orb_damage_to_boss_pct
+    legacy_source: none
+    replacement_source: operator_rows.boss_orb_damage_to_boss_pct
+    comparability: not_comparable
+    normalization: percent_display
+    required_for: [table]
+    cutover_behavior: switch_now
+  - product_field: Electron Dmg %
+    consumer_input: boss_electron_damage_to_boss_pct
+    legacy_source: none
+    replacement_source: operator_rows.boss_electron_damage_to_boss_pct
+    comparability: not_comparable
+    normalization: percent_display
+    required_for: [table]
+    cutover_behavior: switch_now
+  - product_field: Wall Thorns Dmg %
+    consumer_input: boss_wall_thorns_damage_to_boss_pct
+    legacy_source: none
+    replacement_source: operator_rows.boss_wall_thorns_damage_to_boss_pct
+    comparability: not_comparable
+    normalization: percent_display
+    required_for: [table]
+    cutover_behavior: switch_now
+  - product_field: Expected Wall Thorns Dmg %
+    consumer_input: boss_expected_wall_thorns_damage_from_hits_pct
+    legacy_source: none
+    replacement_source: operator_rows.boss_expected_wall_thorns_damage_from_hits_pct
+    comparability: not_comparable
+    normalization: percent_display
+    required_for: [table]
+    cutover_behavior: switch_now
+    semantic_note: Applied max-HP wall-thorns percent implied by total wall-thorn hits, capped to the remaining boss HP after pre-contact sources; reconciles to Wall Thorns Dmg %.
+  - product_field: Wall Thorns Kill (s)
+    consumer_input: boss_wall_thorns_contact_kill_seconds
+    legacy_source: none
+    replacement_source: operator_rows.boss_wall_thorns_contact_kill_seconds
+    comparability: not_comparable
+    normalization: seconds_display_or_blank
+    required_for: [table]
+    cutover_behavior: switch_now
+  - product_field: Time to Contact (s)
+    consumer_input: boss_time_to_contact_seconds
     legacy_source: legacy rows.boss_contact_time_seconds_used
-    replacement_source: operator_rows.boss_contact_time_seconds_used
+    replacement_source: operator_rows.boss_time_to_contact_seconds
     comparability: equivalent
     normalization: seconds_display
     required_for: [table]
@@ -141,6 +191,22 @@ operator_table_fields:
     legacy_source: legacy rows.boss_hits_taken
     replacement_source: operator_rows.boss_hits_taken
     comparability: transformed
+    normalization: integer
+    required_for: [table]
+    cutover_behavior: switch_now
+  - product_field: Hits to Player
+    consumer_input: boss_hits_to_player
+    legacy_source: none
+    replacement_source: operator_rows.boss_hits_to_player
+    comparability: not_comparable
+    normalization: integer
+    required_for: [table]
+    cutover_behavior: switch_now
+  - product_field: Wall Thorns Hits
+    consumer_input: boss_wall_thorns_hits
+    legacy_source: none
+    replacement_source: operator_rows.boss_wall_thorns_hits
+    comparability: not_comparable
     normalization: integer
     required_for: [table]
     cutover_behavior: switch_now
@@ -254,18 +320,26 @@ export_fields:
     - {consumer_input: health_wave, legacy_source: legacy rows.health_wave, replacement_source: download_rows.health_wave, comparability: equivalent, normalization: integer, required_surface: export, cutover_behavior: switch_now}
     - {consumer_input: boss_attack, legacy_source: legacy rows.boss_attack, replacement_source: download_rows.boss_attack, comparability: transformed, normalization: float, required_surface: export, cutover_behavior: switch_now}
     - {consumer_input: boss_health, legacy_source: legacy rows.boss_health, replacement_source: download_rows.boss_health, comparability: transformed, normalization: float, required_surface: export, cutover_behavior: switch_now}
-    - {consumer_input: wall_hp, legacy_source: legacy rows.wall_hp, replacement_source: download_rows.wall_hp, comparability: transformed, normalization: float, required_surface: export, cutover_behavior: switch_now}
+    - {consumer_input: wall_pre_fort_hp, legacy_source: legacy rows.wall_hp, replacement_source: download_rows.wall_pre_fort_hp, comparability: transformed, normalization: float, required_surface: export, cutover_behavior: switch_now}
     - {consumer_input: wall_regen, legacy_source: legacy rows.wall_regen, replacement_source: download_rows.wall_regen, comparability: transformed, normalization: float, required_surface: export, cutover_behavior: switch_now}
     - {consumer_input: tower_damage_per_second, legacy_source: legacy rows.tower_damage_per_second, replacement_source: download_rows.tower_damage_per_second, comparability: intentional_semantic_difference, normalization: null_for_v21_event_only_ttk, required_surface: export, cutover_behavior: switch_now}
-    - {consumer_input: effective_damage_reduction_pct_used, legacy_source: legacy rows.effective_damage_reduction_pct_used, replacement_source: download_rows.effective_damage_reduction_pct_used, comparability: transformed, normalization: percent_float, required_surface: export, cutover_behavior: switch_now}
-    - {consumer_input: boss_ttk_seconds_used, legacy_source: legacy rows.boss_ttk_seconds_used, replacement_source: download_rows.boss_ttk_seconds_used, comparability: intentional_semantic_difference, normalization: seconds_float, required_surface: export, cutover_behavior: switch_now}
-    - {consumer_input: boss_contact_time_seconds_used, legacy_source: legacy rows.boss_contact_time_seconds_used, replacement_source: download_rows.boss_contact_time_seconds_used, comparability: equivalent, normalization: seconds_float_or_null, required_surface: export, cutover_behavior: switch_now}
-    - {consumer_input: boss_hit_interval_seconds_used, legacy_source: legacy rows.boss_hit_interval_seconds_used, replacement_source: download_rows.boss_hit_interval_seconds_used, comparability: equivalent, normalization: seconds_float, required_surface: export, cutover_behavior: switch_now}
-    - {consumer_input: incoming_damage_multiplier_used, legacy_source: legacy rows.incoming_damage_multiplier_used, replacement_source: download_rows.incoming_damage_multiplier_used, comparability: equivalent, normalization: float, required_surface: export, cutover_behavior: switch_now}
+    - {consumer_input: effective_damage_reduction_pct, legacy_source: legacy rows.effective_damage_reduction_pct, replacement_source: download_rows.effective_damage_reduction_pct, comparability: transformed, normalization: percent_float, required_surface: export, cutover_behavior: switch_now}
+    - {consumer_input: boss_ttk_seconds, legacy_source: legacy rows.boss_ttk_seconds, replacement_source: download_rows.boss_ttk_seconds, comparability: intentional_semantic_difference, normalization: seconds_float_total_v21_event_only, required_surface: export, cutover_behavior: switch_now}
+    - {consumer_input: boss_plasma_cannon_damage_to_boss_pct, legacy_source: none, replacement_source: download_rows.boss_plasma_cannon_damage_to_boss_pct, comparability: not_comparable, normalization: percent_float, required_surface: export, cutover_behavior: switch_now}
+    - {consumer_input: boss_orb_damage_to_boss_pct, legacy_source: none, replacement_source: download_rows.boss_orb_damage_to_boss_pct, comparability: not_comparable, normalization: percent_float, required_surface: export, cutover_behavior: switch_now}
+    - {consumer_input: boss_electron_damage_to_boss_pct, legacy_source: none, replacement_source: download_rows.boss_electron_damage_to_boss_pct, comparability: not_comparable, normalization: percent_float, required_surface: export, cutover_behavior: switch_now}
+    - {consumer_input: boss_wall_thorns_damage_to_boss_pct, legacy_source: none, replacement_source: download_rows.boss_wall_thorns_damage_to_boss_pct, comparability: not_comparable, normalization: percent_float, required_surface: export, cutover_behavior: switch_now}
+    - {consumer_input: boss_expected_wall_thorns_damage_from_hits_pct, legacy_source: none, replacement_source: download_rows.boss_expected_wall_thorns_damage_from_hits_pct, comparability: not_comparable, normalization: percent_float, required_surface: export, cutover_behavior: switch_now}
+    - {consumer_input: boss_wall_thorns_contact_kill_seconds, legacy_source: none, replacement_source: download_rows.boss_wall_thorns_contact_kill_seconds, comparability: not_comparable, normalization: seconds_float_or_null, required_surface: export, cutover_behavior: switch_now}
+    - {consumer_input: boss_time_to_contact_seconds, legacy_source: legacy rows.boss_contact_time_seconds_used, replacement_source: download_rows.boss_time_to_contact_seconds, comparability: equivalent, normalization: seconds_float_or_null, required_surface: export, cutover_behavior: switch_now}
+    - {consumer_input: boss_hit_interval_seconds, legacy_source: legacy rows.boss_hit_interval_seconds, replacement_source: download_rows.boss_hit_interval_seconds, comparability: equivalent, normalization: seconds_float, required_surface: export, cutover_behavior: switch_now}
+    - {consumer_input: incoming_damage_multiplier, legacy_source: legacy rows.incoming_damage_multiplier, replacement_source: download_rows.incoming_damage_multiplier, comparability: equivalent, normalization: float, required_surface: export, cutover_behavior: switch_now}
     - {consumer_input: boss_hits_taken, legacy_source: legacy rows.boss_hits_taken, replacement_source: download_rows.boss_hits_taken, comparability: transformed, normalization: integer, required_surface: export, cutover_behavior: switch_now}
+    - {consumer_input: boss_hits_to_player, legacy_source: none, replacement_source: download_rows.boss_hits_to_player, comparability: not_comparable, normalization: integer, required_surface: export, cutover_behavior: switch_now}
+    - {consumer_input: boss_wall_thorns_hits, legacy_source: none, replacement_source: download_rows.boss_wall_thorns_hits, comparability: not_comparable, normalization: integer, required_surface: export, cutover_behavior: switch_now}
     - {consumer_input: boss_total_damage_taken, legacy_source: legacy rows.boss_total_damage_taken, replacement_source: download_rows.boss_total_damage_taken, comparability: transformed, normalization: float, required_surface: export, cutover_behavior: switch_now}
     - {consumer_input: boss_survival_margin_hp, legacy_source: legacy rows.boss_survival_margin_hp, replacement_source: download_rows.boss_survival_margin_hp, comparability: transformed, normalization: float, required_surface: export, cutover_behavior: switch_now}
-    - {consumer_input: wall_pool_hp_used, legacy_source: legacy rows.wall_pool_hp_used, replacement_source: download_rows.wall_pool_hp_used, comparability: transformed, normalization: float, required_surface: export, cutover_behavior: switch_now}
+    - {consumer_input: wall_hp, legacy_source: legacy rows.wall_pool_hp_used, replacement_source: download_rows.wall_hp, comparability: transformed, normalization: float, required_surface: export, cutover_behavior: switch_now}
     - {consumer_input: wall_regen_gained_hp, legacy_source: legacy rows.wall_regen_gained_hp, replacement_source: download_rows.wall_regen_gained_hp, comparability: transformed, normalization: float, required_surface: export, cutover_behavior: switch_now}
     - {consumer_input: survives_boss, legacy_source: legacy rows.survives_boss, replacement_source: download_rows.survives_boss, comparability: transformed, normalization: boolean, required_surface: export, cutover_behavior: switch_now}
     - {consumer_input: fail_reason, legacy_source: none, replacement_source: download_rows.fail_reason, comparability: not_comparable, normalization: string_or_null, required_surface: export, cutover_behavior: switch_now}
@@ -360,3 +434,7 @@ diagnostics_fields:
     - diagnostics.source_selection
     - diagnostics.replacement_model
     - diagnostics.replacement_outputs
+
+
+
+

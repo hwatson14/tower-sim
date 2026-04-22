@@ -611,6 +611,9 @@ def test_stats_dashboard_resolved_sections_publish_wall_and_derived_rows():
             'rows': {
                 'state::wall.hp': {'display_value': '444', 'final_value': 444.0, 'value_type': 'hp', 'status': 'resolved', 'contributors': [{'source_class': 'workshop', 'value': 444.0}]},
                 'state::wall.regen': {'display_value': '555', 'final_value': 555.0, 'value_type': 'hp_per_second', 'status': 'resolved', 'contributors': [{'source_class': 'workshop', 'value': 555.0}]},
+                'derived::wall.hp_final': {'display_value': '4.44T', 'final_value': 4_440_000_000_000.0, 'value_type': 'hp', 'status': 'resolved', 'contributors': []},
+                'derived::wall.regen_hp_per_second': {'display_value': '5.55T', 'final_value': 5_550_000_000_000.0, 'value_type': 'hp_per_second', 'status': 'resolved', 'contributors': []},
+                'state::wall.thorns_damage_pct': {'display_value': '15.8%', 'final_value': 15.84, 'value_type': 'pct', 'status': 'resolved', 'contributors': []},
                 'derived::ehp': {'display_value': '666', 'final_value': 666.0, 'value_type': 'scalar', 'status': 'resolved', 'contributors': []},
             }
         }
@@ -632,10 +635,11 @@ def test_stats_dashboard_resolved_sections_publish_wall_and_derived_rows():
     wall_rows = {row.get('label'): row for row in (panels['wall_economy_resolved'].get('payload', {}).get('rows') or [])}
 
     assert panels['wall_economy_resolved'].get('payload', {}).get('owner') == 'qe'
-    assert wall_rows['Wall HP']['display_value'] == '444'
-    assert wall_rows['Wall Regen']['display_value'] == '555'
+    assert wall_rows['Wall HP']['display_value'] == '4.44T'
+    assert wall_rows['Wall Regen']['display_value'] == '5.55T'
     assert wall_rows['eHP']['display_value'] == '666'
-    assert wall_rows['Wall Thorns']['status'] == 'missing'
+    assert wall_rows['Wall Thorns']['display_value'] == '15.84%'
+    assert wall_rows['Wall Thorns']['status'] == 'resolved'
 
 
 def test_stats_dashboard_resolved_sections_publish_cards_and_uw_rows():

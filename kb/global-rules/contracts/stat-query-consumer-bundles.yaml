@@ -48,6 +48,7 @@ consumers:
     - state::wall.fortification_multiplier
     - state::tower.defense_pct
     - state::tower.thorns_damage_pct
+    - state::wall.thorns_damage_pct
     - state::tower.orb_count
     - state::tower.orb_speed_rpm
     - state::economy.cash_kill_multiplier
@@ -323,6 +324,7 @@ consumers:
     - state::wall.fortification_multiplier
     - state::tower.defense_pct
     - state::tower.thorns_damage_pct
+    - state::wall.thorns_damage_pct
     - state::tower.orb_count
     - state::tower.orb_speed_rpm
     - state::cards.plasma_cannon.effect_pct

@@ -4,6 +4,44 @@ fields:
       - orb_boss_hit_pct
       - state::combat.orb_boss_hit_pct
     min: 0.0
+  orb_boss_hit_count:
+    aliases:
+      - orb_boss_hit_count
+      - orb_boss_hits_total
+      - state::combat.orb_boss_hit_count
+    min: 0.0
+    ownership_class: scenario_runtime_input
+    owned_by: manual_or_explicit_runtime_input
+    rationale: Boss Waves v21 replacement TTK uses total orb boss hits while the boss crosses the orb line, not continuous cadence.
+  orb_boss_total_damage_pct:
+    aliases:
+      - orb_boss_total_damage_pct
+      - orb_boss_damage_total_pct
+      - state::combat.orb_boss_total_damage_pct
+    min: 0.0
+    max: 100.0
+    ownership_class: scenario_runtime_input
+    owned_by: manual_or_explicit_runtime_input
+    rationale: Boss Waves product path uses total orb damage dealt while the boss crosses the orb line, not continuous cadence.
+  electron_hit_count:
+    aliases:
+      - electron_hit_count
+      - electron_hits_total
+      - state::combat.electron_hit_count
+    min: 0.0
+    ownership_class: scenario_runtime_input
+    owned_by: manual_or_explicit_runtime_input
+    rationale: Boss Waves v21 replacement TTK uses total electron boss hits, not continuous cadence.
+  electron_total_damage_pct:
+    aliases:
+      - electron_total_damage_pct
+      - electron_boss_damage_total_pct
+      - state::combat.electron_total_damage_pct
+    min: 0.0
+    max: 100.0
+    ownership_class: scenario_runtime_input
+    owned_by: manual_or_explicit_runtime_input
+    rationale: Boss Waves product path uses total electron boss damage, not continuous cadence.
   orb_boss_hits_per_second:
     aliases:
       - orb_boss_hits_per_second
@@ -17,10 +55,10 @@ fields:
     ownership_class: scenario_runtime_input
     owned_by: manual_or_explicit_runtime_input
     rationale: Orbital Augment cadence is externally supplied runtime input until a sanctioned intrinsic cadence formula exists.
-  boss_contact_time_seconds:
+  boss_time_to_contact_seconds:
     aliases:
-      - boss_contact_time_seconds
-      - state::combat.boss_contact_time_seconds
+      - boss_time_to_contact_seconds
+      - state::combat.boss_time_to_contact_seconds
     min: 0.0
   boss_hit_interval_seconds:
     aliases:
@@ -38,6 +76,89 @@ fields:
       - incoming_damage_multiplier
       - state::combat.incoming_damage_multiplier
     min: 0.0
+  flame_bot_damage_reduction_pct:
+    aliases:
+      - flame_bot_damage_reduction_pct
+      - state::combat.flame_bot_damage_reduction_pct
+    min: 0.0
+    max: 100.0
+    ownership_class: scenario_runtime_input
+    owned_by: manual_or_explicit_runtime_input
+    rationale: Boss Waves uses Flame Bot as a timed DR source when explicit damage-reduction and uptime primitives are provided.
+  flame_bot_duration_seconds:
+    aliases:
+      - flame_bot_duration_seconds
+      - state::combat.flame_bot_duration_seconds
+    min: 0.0
+  flame_bot_cooldown_seconds:
+    aliases:
+      - flame_bot_cooldown_seconds
+      - state::combat.flame_bot_cooldown_seconds
+    min_exclusive: 0.0
+  defense_field_damage_reduction_pct:
+    aliases:
+      - defense_field_damage_reduction_pct
+      - state::combat.defense_field_damage_reduction_pct
+    min: 0.0
+    max: 100.0
+    ownership_class: scenario_runtime_input
+    owned_by: manual_or_explicit_runtime_input
+    rationale: Boss Waves uses Defense Field as a timed DR source when explicit damage-reduction and uptime primitives are provided.
+  defense_field_duration_seconds:
+    aliases:
+      - defense_field_duration_seconds
+      - state::combat.defense_field_duration_seconds
+    min: 0.0
+  defense_field_cooldown_seconds:
+    aliases:
+      - defense_field_cooldown_seconds
+      - state::combat.defense_field_cooldown_seconds
+    min_exclusive: 0.0
+  black_hole_damage_reduction_pct:
+    aliases:
+      - black_hole_damage_reduction_pct
+      - state::combat.black_hole_damage_reduction_pct
+    min: 0.0
+    max: 100.0
+    ownership_class: scenario_runtime_input
+    owned_by: manual_or_explicit_runtime_input
+    rationale: Boss Waves uses Black Hole DR only when Plasma Cannon/BH encounter state is explicitly modeled by runtime primitives.
+  black_hole_duration_seconds:
+    aliases:
+      - black_hole_duration_seconds
+      - state::combat.black_hole_duration_seconds
+    min: 0.0
+  black_hole_cooldown_seconds:
+    aliases:
+      - black_hole_cooldown_seconds
+      - state::combat.black_hole_cooldown_seconds
+    min_exclusive: 0.0
+  pbh_encounter_uptime_fraction:
+    aliases:
+      - pbh_encounter_uptime_fraction
+      - state::combat.pbh_encounter_uptime_fraction
+    min: 0.0
+    max: 1.0
+    ownership_class: scenario_runtime_input
+    owned_by: manual_or_explicit_runtime_input
+    rationale: Primordial Black Hole encounter overlap is an explicit Boss Waves runtime state until exact encounter timing is owned by a deeper simulator.
+  death_wave_health_max_multiplier:
+    aliases:
+      - death_wave_health_max_multiplier
+      - death_wave_health_multiplier
+      - state::combat.death_wave_health_max_multiplier
+    min: 0.0
+    ownership_class: scenario_runtime_input
+    owned_by: manual_or_explicit_runtime_input
+    rationale: Boss Waves Table 1 linearly interpolates Death Wave health from x1 to this max multiplier by death_wave_health_max_wave.
+  death_wave_health_max_wave:
+    aliases:
+      - death_wave_health_max_wave
+      - state::combat.death_wave_health_max_wave
+    min_exclusive: 0.0
+    ownership_class: scenario_runtime_input
+    owned_by: manual_or_explicit_runtime_input
+    rationale: Boss Waves Table 1 wave by which Death Wave health max multiplier is reached; default product assumption is 1000 when omitted.
   boss_wave_interval:
     aliases:
       - boss_wave_interval
@@ -48,3 +169,4 @@ fields:
       - enemy_level_skip_reduction_pp
       - state::combat.enemy_level_skip_reduction_pp
     min: 0.0
+

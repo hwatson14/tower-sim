@@ -326,10 +326,10 @@ sections:
         surface_id: derived::wall.hp_pre_fort
         canonical_row_id: derived::wall.hp_pre_fort
       - label: Wall HP
-        surface_id: state::wall.hp
+        surface_id: derived::wall.hp_final
         canonical_row_id: derived::wall.hp_final
       - label: Wall Regen
-        surface_id: state::wall.regen
+        surface_id: derived::wall.regen_hp_per_second
       - label: Wall Thorns
         surface_id: state::wall.thorns_damage_pct
       - label: Ultimate Weapon Damage

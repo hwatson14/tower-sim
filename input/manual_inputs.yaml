@@ -27,8 +27,9 @@ perk_config:
 perk_policy:
   seed: 42
   target_wave: 50000
-  priority_order: []
-  first_perk_choice: null
+  priority_order:
+    - "Perk Wave Requirement -20.00%"
+  first_perk_choice: "Perk Wave Requirement -20.00%"
   notes: >-
     Projected max progression perk availability is generated from IDS-backed
     Waves Required / Standard Perk Bonus / Perk Option Quantity / Ban Perks

@@ -31,6 +31,7 @@ from qe.stat_input_compiler import (
     load_perk_effects,
     load_perk_entities,
     normalize_state_mode,
+    scaled_perk_value,
     SUPPORTED_STATE_MODES,
     state_mode_support,
 )
@@ -89,18 +90,26 @@ BOSS_WAVE_REPLACEMENT_EXPORT_FIELDS: tuple[str, ...] = (
     'health_wave',
     'boss_attack',
     'boss_health',
-    'wall_hp',
+    'wall_pre_fort_hp',
     'wall_regen',
     'tower_damage_per_second',
-    'effective_damage_reduction_pct_used',
-    'boss_ttk_seconds_used',
-    'boss_contact_time_seconds_used',
-    'boss_hit_interval_seconds_used',
-    'incoming_damage_multiplier_used',
+    'effective_damage_reduction_pct',
+    'boss_ttk_seconds',
+    'boss_plasma_cannon_damage_to_boss_pct',
+    'boss_orb_damage_to_boss_pct',
+    'boss_electron_damage_to_boss_pct',
+    'boss_wall_thorns_damage_to_boss_pct',
+    'boss_expected_wall_thorns_damage_from_hits_pct',
+    'boss_wall_thorns_contact_kill_seconds',
+    'boss_time_to_contact_seconds',
+    'boss_hit_interval_seconds',
+    'incoming_damage_multiplier',
     'boss_hits_taken',
+    'boss_hits_to_player',
+    'boss_wall_thorns_hits',
     'boss_total_damage_taken',
     'boss_survival_margin_hp',
-    'wall_pool_hp_used',
+    'wall_hp',
     'wall_regen_gained_hp',
     'survives_boss',
     'fail_reason',
@@ -121,7 +130,15 @@ BOSS_WAVE_REPLACEMENT_PRIMITIVE_SURFACE_IDS: tuple[str, ...] = (
     'state::wall.fortification_multiplier',
     'state::tower.defense_pct',
     'state::tower.thorns_damage_pct',
+    'state::wall.thorns_damage_pct',
     'state::cards.plasma_cannon.effect_pct',
+    'state::module.orbital_augment.electron_count',
+    'state::module.primordial_collapse.bh_damage_reduction_pct',
+    'support_surface::ehp.black_hole_duration_seconds',
+    'support_surface::ehp.black_hole_cooldown_seconds',
+    'state::bot.flame.damage_reduction_pct',
+    'state::bot.flame.cooldown_seconds',
+    'state::bot.flame.range_m',
 )
 
 
@@ -546,7 +563,9 @@ def _build_replacement_operator_table_and_summary(
         SurvivabilityContributorBundle,
         build_common_trajectory,
         default_category_track_order,
+        workshop_value_for_level,
     )
+    from qe.kb_surfaces import ELECTRON_BOSS_REMAINING_HP_PCT
     from simulators.evaluator_kernel import (
         CombatInputs,
         ScenarioOverlayInputs,
@@ -561,11 +580,24 @@ def _build_replacement_operator_table_and_summary(
         scenario_runtime_inputs=scenario_runtime_inputs,
     )
     runtime_inputs = ScenarioRuntimeInputs.from_mapping(scenario_runtime_inputs)
+    boss_ttk_defaults = _boss_wave_default_ttk_inputs(
+        runtime_inputs,
+        primitives=primitives,
+        electron_boss_remaining_hp_pct=float(ELECTRON_BOSS_REMAINING_HP_PCT),
+    )
     effective_dr_pct = _optional_runtime_float(scenario_runtime_inputs, 'effective_damage_reduction_pct')
     tower_defense_pct = float(effective_dr_pct if effective_dr_pct is not None else primitives['tower_defense_pct'])
-    death_wave_health_multiplier = float(scenario_runtime_inputs.get('death_wave_health_multiplier', 1.0) or 1.0)
+    death_wave_health_max_multiplier = _boss_wave_death_wave_health_max_multiplier(
+        account_state,
+        scenario_runtime_inputs=scenario_runtime_inputs,
+    )
+    death_wave_health_max_wave = int(
+        _optional_runtime_float(scenario_runtime_inputs, 'death_wave_health_max_wave') or 1000
+    )
+    timed_dr_by_lane, timed_dr_sources = _boss_wave_timed_dr_inputs(runtime_inputs, primitives=primitives)
     workshop_levels, track_max_levels = _boss_wave_workshop_level_inputs(account_state, preset_name=preset_name)
     category_track_order = default_category_track_order(workshop_levels, track_max_levels)
+    tower_hp_level = _boss_wave_optional_workshop_level(workshop_levels, 'Health', primitive_name='state::tower.hp')
     wall_hp_level = _boss_wave_optional_workshop_level(workshop_levels, 'Wall Health', primitive_name='state::wall.hp')
     wall_regen_level = _boss_wave_optional_workshop_level(workshop_levels, 'Health Regen', primitive_name='state::wall.regen')
     wall_fortification_multiplier = float(primitives['wall_fortification_multiplier'])
@@ -573,12 +605,30 @@ def _build_replacement_operator_table_and_summary(
         raise ValueError("Boss Waves replacement input state::wall.fortification_multiplier must be positive")
     wall_hp_value = float(primitives['wall_hp'])
     wall_regen_value = float(primitives['wall_regen'])
+    wall_hp_workshop_percent_points = (
+        workshop_value_for_level('Wall Health', wall_hp_level)
+        if wall_hp_level and wall_hp_level > 0
+        else 0.0
+    )
+    tower_hp_workshop_value = (
+        workshop_value_for_level('Health', tower_hp_level)
+        if tower_hp_level and tower_hp_level > 0
+        else 0.0
+    )
     survivability = SurvivabilityContributorBundle(
         base_wall_hp=0.0 if wall_hp_level and wall_hp_level > 0 else wall_hp_value,
         workshop_wall_hp=wall_hp_value if wall_hp_level and wall_hp_level > 0 else 0.0,
         wall_hp_workshop_track='Wall Health' if wall_hp_level and wall_hp_level > 0 else None,
         wall_hp_workshop_baseline_level=wall_hp_level if wall_hp_level and wall_hp_level > 0 else None,
         wall_hp_workshop_value_per_level=float(primitives['wall_hp_per_workshop_level_pre_fort']) if wall_hp_level and wall_hp_level > 0 else 0.0,
+        wall_hp_static_ratio_percent_points=max(
+            0.0,
+            float(primitives['wall_hp_percent_points']) - float(wall_hp_workshop_percent_points),
+        ),
+        wall_hp_effect_multiplier=float(primitives['wall_hp_multiplier']),
+        tower_hp_workshop_track='Health' if tower_hp_level and tower_hp_level > 0 and tower_hp_workshop_value > 0 else None,
+        tower_hp_workshop_baseline_level=tower_hp_level if tower_hp_level and tower_hp_level > 0 else None,
+        tower_hp_workshop_multiplier=(float(primitives['tower_hp']) / float(tower_hp_workshop_value)) if tower_hp_workshop_value > 0 else 1.0,
         base_wall_regen=0.0 if wall_regen_level and wall_regen_level > 0 else wall_regen_value,
         workshop_wall_regen=wall_regen_value if wall_regen_level and wall_regen_level > 0 else 0.0,
         wall_regen_workshop_track='Health Regen' if wall_regen_level and wall_regen_level > 0 else None,
@@ -586,10 +636,21 @@ def _build_replacement_operator_table_and_summary(
         wall_regen_workshop_value_per_level=(wall_regen_value / float(wall_regen_level)) if wall_regen_level and wall_regen_level > 0 else 0.0,
         wall_fortification_multiplier=wall_fortification_multiplier,
         tower_defense_pct=tower_defense_pct,
-        timed_dr_by_lane={'min': 0.0, 'avg': 0.0, 'max': 0.0},
+        timed_dr_by_lane=timed_dr_by_lane,
+        black_hole_damage_reduction_pct=float(timed_dr_sources['black_hole_pbh']['damage_reduction_pct']),
+        black_hole_duration_seconds=float(timed_dr_sources['black_hole_pbh']['duration_seconds']),
+        black_hole_cooldown_seconds=float(timed_dr_sources['black_hole_pbh']['cooldown_seconds']),
+        chrono_field_damage_reduction_pct=float(primitives['chrono_field_damage_reduction_pct']),
+        chrono_field_duration_seconds=float(primitives['chrono_field_duration_seconds']),
+        chrono_field_cooldown_seconds=float(primitives['chrono_field_cooldown_seconds']),
         source_policy='explicit_staged_contributors_v1',
     )
     perk_counts_by_wave = _boss_wave_perk_counts_by_wave(perk_timeline)
+    perk_contributions_by_wave = _boss_wave_perk_contributions_by_wave(
+        perk_counts_by_wave,
+        standard_bonus_pct=float((getattr(account_state, 'labs', {}) or {}).get('Standard Perks Bonus') or 0.0),
+        tradeoff_bonus_pct=float((getattr(account_state, 'labs', {}) or {}).get('Improve Trade-off Perks') or 0.0),
+    )
     table1 = build_common_trajectory(
         CommonTrajectoryInputs(
             start_wave=int(config['start_wave']),
@@ -610,13 +671,18 @@ def _build_replacement_operator_table_and_summary(
             perk_counts=dict(perk_counts),
             perk_contributions={},
             perk_counts_by_wave=perk_counts_by_wave,
-            perk_contributions_by_wave={},
+            perk_contributions_by_wave=perk_contributions_by_wave,
             survivability_contributors=survivability,
-            death_wave_health_multiplier=death_wave_health_multiplier,
+            death_wave_health_max_multiplier=death_wave_health_max_multiplier,
+            death_wave_health_max_wave=death_wave_health_max_wave,
         )
     )
     skip_delta = -max(0.0, float(getattr(runtime_inputs, 'enemy_level_skip_reduction_pp') or 0.0)) / 100.0
     incoming_mult = float(getattr(runtime_inputs, 'incoming_damage_multiplier') or 1.0)
+    wall_thorns_damage_increase_per_hit = _boss_wave_wall_thorns_damage_increase_per_hit(
+        account_state,
+        preset_name=preset_name,
+    )
     scenario = ScenarioOverlayInputs(
         scenario_key='boss_waves_replacement_product',
         tier_column=str(config['tier_column']),
@@ -629,12 +695,16 @@ def _build_replacement_operator_table_and_summary(
     )
     combat = CombatInputs(
         plasma_cannon_effect_pct=float(primitives['plasma_cannon_effect_pct']),
-        tower_thorns_damage_pct=float(primitives['tower_thorns_damage_pct']),
+        tower_thorns_damage_pct=float(primitives['wall_thorns_contact_damage_pct']),
         orb_boss_hit_pct=float(getattr(runtime_inputs, 'orb_boss_hit_pct') or 0.0),
-        orb_boss_hits_per_second=float(getattr(runtime_inputs, 'orb_boss_hits_per_second') or 0.0),
-        electron_hits_per_second=float(getattr(runtime_inputs, 'electron_hits_per_second') or 0.0),
-        boss_contact_time_seconds=getattr(runtime_inputs, 'boss_contact_time_seconds'),
+        orb_boss_total_damage_pct=float(boss_ttk_defaults['orb_boss_total_damage_pct']),
+        orb_boss_hit_count=getattr(runtime_inputs, 'orb_boss_hit_count'),
+        electron_total_damage_pct=float(boss_ttk_defaults['electron_total_damage_pct']),
+        electron_hit_count=getattr(runtime_inputs, 'electron_hit_count'),
+        boss_time_to_contact_seconds=getattr(runtime_inputs, 'boss_time_to_contact_seconds'),
         boss_hit_interval_seconds=float(getattr(runtime_inputs, 'boss_hit_interval_seconds') or 2.0),
+        max_ttk_seconds=600.0,
+        wall_thorns_damage_increase_per_hit=wall_thorns_damage_increase_per_hit,
     )
     table2 = build_scenario_overlay_table(table1, scenario=scenario, combat=combat)
     operator_rows: list[dict[str, object]] = []
@@ -656,6 +726,11 @@ def _build_replacement_operator_table_and_summary(
         lab_levels=getattr(account_state, 'labs', {}) or {},
         row_input_wall_hp=wall_hp_value,
         row_input_wall_regen=wall_regen_value,
+        timed_dr_sources=timed_dr_sources,
+        death_wave_health_max_multiplier=death_wave_health_max_multiplier,
+        death_wave_health_max_wave=death_wave_health_max_wave,
+        boss_ttk_defaults=boss_ttk_defaults,
+        wall_thorns_damage_increase_per_hit=wall_thorns_damage_increase_per_hit,
     )
     return operator_rows, _replacement_summary_from_operator_rows(operator_rows), dict(primitives), semantic_ledger
 
@@ -667,7 +742,11 @@ def _resolve_boss_wave_replacement_primitives(
     perks_enabled: bool,
     scenario_runtime_inputs: dict[str, float],
 ) -> dict[str, float]:
-    from qe.run_plan import derive_wall_hp_from_qe_primitives, derive_wall_regen_hp_per_second
+    from qe.run_plan import (
+        derive_chrono_field_damage_reduction_pct,
+        derive_wall_hp_from_qe_primitives,
+        derive_wall_regen_hp_per_second,
+    )
 
     response = resolve_checkpoint_surfaces(
         account_state,
@@ -686,6 +765,9 @@ def _resolve_boss_wave_replacement_primitives(
         wall_hp_contributors=tuple(dict(row or {}) for row in (getattr(wall_hp_row, 'contributors', None) or ())),
     )
     wall_regen_pct_points = _required_statbook_float(statbook, 'state::wall.regen')
+    tower_thorns_damage_pct = _required_statbook_float(statbook, 'state::tower.thorns_damage_pct')
+    wall_thorns_level = int((getattr(account_state, 'labs', {}) or {}).get('Wall Thorns') or 0)
+    wall_thorns_contact_damage_pct = _required_statbook_float(statbook, 'state::wall.thorns_damage_pct')
     return {
         'attack_skip_chance': _required_statbook_fraction(statbook, 'state::tower.enemy_attack_level_skip_pct'),
         'health_skip_chance': _required_statbook_fraction(statbook, 'state::tower.enemy_health_level_skip_pct'),
@@ -707,8 +789,23 @@ def _resolve_boss_wave_replacement_primitives(
         'wall_regen_percent_points': wall_regen_pct_points,
         'wall_fortification_multiplier': _required_statbook_float(statbook, 'state::wall.fortification_multiplier'),
         'tower_defense_pct': _required_statbook_float(statbook, 'state::tower.defense_pct'),
-        'tower_thorns_damage_pct': _required_statbook_float(statbook, 'state::tower.thorns_damage_pct'),
+        'tower_thorns_damage_pct': tower_thorns_damage_pct,
+        'wall_thorns_level': float(wall_thorns_level),
+        'wall_thorns_contact_damage_pct': wall_thorns_contact_damage_pct,
         'plasma_cannon_effect_pct': _required_statbook_float(statbook, 'state::cards.plasma_cannon.effect_pct'),
+        'orbital_augment_electron_count': _optional_statbook_float(statbook, 'state::module.orbital_augment.electron_count', default=0.0),
+        'primordial_collapse_bh_damage_reduction_pct': _optional_statbook_float(statbook, 'state::module.primordial_collapse.bh_damage_reduction_pct', default=0.0),
+        'black_hole_duration_seconds': _optional_statbook_float(statbook, 'support_surface::ehp.black_hole_duration_seconds', default=0.0),
+        'black_hole_cooldown_seconds': _optional_statbook_float(statbook, 'support_surface::ehp.black_hole_cooldown_seconds', default=0.0),
+        'chrono_field_duration_seconds': _boss_wave_uw_track_value(account_state, 'Chrono Field', 'Duration'),
+        'chrono_field_cooldown_seconds': _boss_wave_uw_track_value(account_state, 'Chrono Field', 'Cooldown'),
+        'chrono_field_damage_reduction_pct': derive_chrono_field_damage_reduction_pct(
+            reduction_lab_level=int((getattr(account_state, 'labs', {}) or {}).get('Chrono Field Reduction %') or 0),
+            damage_reduction_unlocked=bool((getattr(account_state, 'labs', {}) or {}).get('Chrono Field Damage Reduction')),
+        ),
+        'flame_bot_damage_reduction_pct': _optional_statbook_float(statbook, 'state::bot.flame.damage_reduction_pct', default=0.0),
+        'flame_bot_cooldown_seconds': _optional_statbook_float(statbook, 'state::bot.flame.cooldown_seconds', default=0.0),
+        'flame_bot_range_m': _optional_statbook_float(statbook, 'state::bot.flame.range_m', default=0.0),
     }
 
 
@@ -725,6 +822,17 @@ def _boss_wave_workshop_level_inputs(account_state, *, preset_name: str) -> tupl
         levels[str(track_name)] = int(level)
         max_levels[str(track_name)] = int(max_level)
     return levels, max_levels
+
+
+def _boss_wave_uw_track_value(account_state, uw_name: str, track_name: str) -> float:
+    weapon = (getattr(account_state, 'ultimate_weapons', {}) or {}).get(uw_name)
+    if weapon is not None and str(getattr(weapon, 'unlocked', '') or '').strip().lower() not in {'true', 'yes', '1'}:
+        return 0.0
+    for track in (getattr(account_state, 'uw_tracks', {}) or {}).get(uw_name, []) or []:
+        if str(getattr(track, 'track_name', '') or '').strip() == track_name:
+            value = getattr(track, 'resolved_value', None)
+            return float(value or 0.0)
+    return 0.0
 
 
 def _boss_wave_optional_workshop_level(
@@ -753,6 +861,64 @@ def _boss_wave_perk_counts_by_wave(perk_timeline: tuple[dict[str, object], ...])
     return out
 
 
+def _boss_wave_perk_contributions_by_wave(
+    perk_counts_by_wave: dict[int, dict[str, int]],
+    *,
+    standard_bonus_pct: float,
+    tradeoff_bonus_pct: float,
+) -> dict[int, dict[str, float]]:
+    entities = load_perk_entities()
+    effects = load_perk_effects()
+    name_to_id = {
+        str(meta.get('perk_name') or '').strip(): str(perk_id)
+        for perk_id, meta in entities.items()
+        if str(meta.get('perk_name') or '').strip()
+    }
+    perk_lab_state = {
+        'standard_bonus_multiplier': 1.0 + (float(standard_bonus_pct) / 100.0),
+        'tradeoff_bonus_multiplier': 1.0 + (float(tradeoff_bonus_pct) / 100.0),
+    }
+    target_to_contribution = {
+        'tower_hp': 'wall_hp_multiplier',
+        'tower_regen': 'wall_regen_multiplier',
+        'uw_black_hole_duration_seconds': 'black_hole_duration_seconds_add',
+        'uw_chrono_field_duration_seconds': 'chrono_field_duration_seconds_add',
+    }
+    out: dict[int, dict[str, float]] = {}
+    for wave, counts in sorted(perk_counts_by_wave.items(), key=lambda item: int(item[0])):
+        contributions: dict[str, float] = {}
+        for perk_name, picks in sorted(counts.items()):
+            perk_id = name_to_id.get(str(perk_name))
+            if not perk_id:
+                raise ValueError(f"Boss Waves perk timeline emitted unknown perk {perk_name!r}")
+            perk_meta = entities.get(perk_id) or {}
+            for effect in effects.get(perk_id, []):
+                target = str(effect.get('target_stat_id') or '').strip()
+                contribution_effect = target_to_contribution.get(target)
+                if not contribution_effect:
+                    continue
+                operation = str(effect.get('operation') or '').strip()
+                effect_index = str(effect.get('effect_index') or '').strip()
+                value = scaled_perk_value(
+                    perk_meta=perk_meta,
+                    perk_effect_meta=effect,
+                    perk_id=perk_id,
+                    operation=operation,
+                    raw_value=str(effect.get('effect_value') or '').strip(),
+                    picks=int(picks),
+                    effect_index=effect_index,
+                    perk_lab_state=perk_lab_state,
+                )
+                if not isinstance(value, (int, float)):
+                    raise ValueError(
+                        f"Boss Waves perk contribution for {perk_id!r} effect {effect_index!r} "
+                        f"resolved to unsupported non-numeric value {value!r}"
+                    )
+                contributions[f"perk_{perk_id}_effect_{effect_index}:{contribution_effect}"] = float(value)
+        out[int(wave)] = contributions
+    return out
+
+
 def _boss_wave_primitive_semantics_ledger(
     *,
     primitives: dict[str, float],
@@ -761,6 +927,11 @@ def _boss_wave_primitive_semantics_ledger(
     lab_levels: dict[str, object],
     row_input_wall_hp: float,
     row_input_wall_regen: float,
+    timed_dr_sources: dict[str, object],
+    death_wave_health_max_multiplier: float,
+    death_wave_health_max_wave: int,
+    boss_ttk_defaults: dict[str, object],
+    wall_thorns_damage_increase_per_hit: float,
 ) -> dict[str, object]:
     fort = float(primitives['wall_fortification_multiplier'])
     return {
@@ -780,14 +951,14 @@ def _boss_wave_primitive_semantics_ledger(
                 'semantic_meaning': 'QE wall HP surface currently carries wall-health ratio contributors; Boss Waves derives pre-fort HP from tower HP and those contributor semantics',
                 'exact_value': float(primitives['wall_hp_qe_surface']),
                 'primitive_vs_displayed': 'partial_primitive_input_not_displayed_directly',
-                'fortification_transform': 'not_used_as_final_wall_pool',
+                'fortification_transform': 'not_used_as_final_wall_hp',
                 'state_phase': 'start_of_run',
                 'row_evolution': 'Table 1 starts from derived pre-fort wall HP and evolves by owned Wall Health workshop state',
                 'owner_layer': 'QE publishes tower_hp and wall-health contributors; app assembles primitive bundle; run_plan derives and row-rederives; evaluator applies fortification once',
                 'classification': 'transformed',
                 'boss_waves_semantic_decision': 'transformed_primitive_not_final_display_value',
-                'boss_waves_final_display_field': 'operator_rows.wall_hp for pre-fort HP and operator_rows.wall_pool_hp_used for fortified Wall Pool',
-                'repo_wide_rename_or_split': 'defer_followup_if_needed; Boss Waves contract is explicit and does not treat state::wall.hp as final displayed Wall Pool',
+                'boss_waves_final_display_field': 'operator_rows.wall_pre_fort_hp for pre-fort HP and operator_rows.wall_hp for fortified Wall HP',
+                'repo_wide_rename_or_split': 'defer_followup_if_needed; Boss Waves contract is explicit and does not treat state::wall.hp as final displayed Wall HP',
                 'row_input_value': float(row_input_wall_hp),
                 'tower_hp': float(primitives['tower_hp']),
                 'wall_hp_percent_points': float(primitives['wall_hp_percent_points']),
@@ -825,9 +996,9 @@ def _boss_wave_primitive_semantics_ledger(
             'state::wall.fortification_multiplier': {
                 'boss_waves_source': 'qe.routing.resolve_checkpoint_surfaces(state::wall.fortification_multiplier)',
                 'canonical_truth_source': 'qe.materializer._scale_wall_fortification_lab_value',
-                'semantic_meaning': 'multiplicative wall fortification factor applied once to pre-fort wall HP for Boss Waves wall pool',
+                'semantic_meaning': 'multiplicative wall fortification factor applied once to pre-fort wall HP for Boss Waves displayed Wall HP',
                 'exact_value': fort,
-                'primitive_vs_displayed': 'primitive_input_transform_for_wall_pool',
+                'primitive_vs_displayed': 'primitive_input_transform_for_wall_hp',
                 'fortification_transform': 'applied_once_in_evaluator_ttd',
                 'state_phase': 'start_of_run',
                 'row_evolution': 'static until an owned row-evolved fortification primitive exists',
@@ -843,14 +1014,80 @@ def _boss_wave_primitive_semantics_ledger(
             'state::tower.thorns_damage_pct': _primitive_ledger_entry(
                 source='qe.routing.resolve_checkpoint_surfaces(state::tower.thorns_damage_pct)',
                 value=float(primitives['tower_thorns_damage_pct']),
-                meaning='QE-published thorns percent used by v21 event-only thorns contact TTK source',
-                owner='QE publishes; evaluator consumes combat input',
+                meaning='QE-published tower thorns percent; Boss Waves uses it only as the upstream base for Wall Thorns contact damage',
+                owner='QE publishes; app derives wall contact thorns from tower thorns and Wall Thorns lab; evaluator consumes derived contact input',
+            ),
+            'state::wall.thorns_contact_damage_pct': _primitive_ledger_entry(
+                source='qe.routing.resolve_checkpoint_surfaces(state::wall.thorns_damage_pct)',
+                value=float(primitives['wall_thorns_contact_damage_pct']),
+                meaning='Boss Waves-local wall contact thorns percent before boss thorns effectiveness; this is the contact-resolution source included in total v21 event-only TTK when the boss reaches contact',
+                owner='QE publishes wall thorns from tower thorns and Wall Thorns lab; app assembles combat input; evaluator applies boss thorns effectiveness',
+            ),
+            'module::Sharp Fortitude.wall_thorns_damage_increase_per_hit': _primitive_ledger_entry(
+                source='module unique runtime contract -> active armor module preset',
+                value=float(wall_thorns_damage_increase_per_hit),
+                meaning='Sharp Fortitude repeated-hit vulnerability for wall-thorns contact events, applied as +1% wall-thorns damage taken per subsequent hit on the same boss when Sharp Fortitude is the primary armor module',
+                owner='KB owns module unique contract; app assembles active preset flag; evaluator applies event multiplier in v21 thorns contact events',
             ),
             'state::cards.plasma_cannon.effect_pct': _primitive_ledger_entry(
                 source='qe.routing.resolve_checkpoint_surfaces(state::cards.plasma_cannon.effect_pct)',
                 value=float(primitives['plasma_cannon_effect_pct']),
                 meaning='QE-published Plasma Cannon opening reduction percent used by v21 event-only TTK',
                 owner='QE publishes; evaluator consumes combat input',
+            ),
+            'state::module.orbital_augment.electron_count': _primitive_ledger_entry(
+                source='qe.routing.resolve_checkpoint_surfaces(state::module.orbital_augment.electron_count)',
+                value=float(primitives.get('orbital_augment_electron_count') or 0.0),
+                meaning='QE-published equipped Orbital Augment electron count; Boss Waves uses it to default total electron boss damage when runtime electron total is omitted',
+                owner='QE publishes module unique count; app assembles default TTK input; evaluator consumes combat input',
+            ),
+            'state::module.primordial_collapse.bh_damage_reduction_pct': _primitive_ledger_entry(
+                source='qe.routing.resolve_checkpoint_surfaces(state::module.primordial_collapse.bh_damage_reduction_pct)',
+                value=float(primitives.get('primordial_collapse_bh_damage_reduction_pct') or 0.0),
+                meaning='QE-published Primordial Collapse damage reduction percent while the boss is inside Black Hole; Boss Waves uses this for the PBH timed DR source when runtime PBH inputs are not explicitly provided',
+                owner='QE publishes module unique DR; app assembles timed DR primitive; evaluator consumes multiplicative DR lane input',
+            ),
+            'support_surface::ehp.black_hole_duration_seconds': _primitive_ledger_entry(
+                source='qe.routing.resolve_checkpoint_surfaces(support_surface::ehp.black_hole_duration_seconds)',
+                value=float(primitives.get('black_hole_duration_seconds') or 0.0),
+                meaning='QE support-surface Black Hole duration used to calculate PBH average uptime for Boss Waves timed DR',
+                owner='QE publishes timing support surface; app assembles timed DR primitive; evaluator consumes multiplicative DR lane input',
+            ),
+            'support_surface::ehp.black_hole_cooldown_seconds': _primitive_ledger_entry(
+                source='qe.routing.resolve_checkpoint_surfaces(support_surface::ehp.black_hole_cooldown_seconds)',
+                value=float(primitives.get('black_hole_cooldown_seconds') or 0.0),
+                meaning='QE support-surface Black Hole cooldown used to calculate PBH average uptime for Boss Waves timed DR',
+                owner='QE publishes timing support surface; app assembles timed DR primitive; evaluator consumes multiplicative DR lane input',
+            ),
+            'state::uw.chrono_field.duration_seconds': _primitive_ledger_entry(
+                source='input.runtime_state.AccountState.uw_tracks[Chrono Field::Duration]',
+                value=float(primitives.get('chrono_field_duration_seconds') or 0.0),
+                meaning='QE Chrono Field duration primitive; evaluator adds active Chrono Field Duration perk seconds per row before computing average CF DR',
+                owner='input publishes resolved UW timing track; app assembles named primitive; run_plan carries CF duration perk contribution; evaluator consumes multiplicative DR lane input',
+            ),
+            'state::uw.chrono_field.cooldown_seconds': _primitive_ledger_entry(
+                source='input.runtime_state.AccountState.uw_tracks[Chrono Field::Cooldown]',
+                value=float(primitives.get('chrono_field_cooldown_seconds') or 0.0),
+                meaning='Chrono Field cooldown primitive used to calculate average CF DR uptime',
+                owner='input publishes resolved UW timing track; evaluator consumes multiplicative DR lane input',
+            ),
+            'state::uw.chrono_field.damage_reduction_pct': _primitive_ledger_entry(
+                source='qe.run_plan.derive_chrono_field_damage_reduction_pct(input.runtime_state.AccountState.labs)',
+                value=float(primitives.get('chrono_field_damage_reduction_pct') or 0.0),
+                meaning='Chrono Field damage reduction percent from the KB canonical lab formula, used as a separate DR source after defense',
+                owner='QE formula helper owns the lab formula; app assembles named primitive; evaluator consumes multiplicative DR lane input',
+            ),
+            'state::bot.flame.damage_reduction_pct': _primitive_ledger_entry(
+                source='qe.routing.resolve_checkpoint_surfaces(state::bot.flame.damage_reduction_pct)',
+                value=float(primitives.get('flame_bot_damage_reduction_pct') or 0.0),
+                meaning='QE-published Flame Bot DR track value. Boss Waves records it but does not activate Flame Bot timed DR without an owned duration/encounter uptime primitive.',
+                owner='QE publishes bot track; app diagnoses missing duration ownership for Boss Waves timed DR',
+            ),
+            'state::bot.flame.cooldown_seconds': _primitive_ledger_entry(
+                source='qe.routing.resolve_checkpoint_surfaces(state::bot.flame.cooldown_seconds)',
+                value=float(primitives.get('flame_bot_cooldown_seconds') or 0.0),
+                meaning='QE-published Flame Bot cooldown. Boss Waves records it but does not activate Flame Bot timed DR without an owned duration/encounter uptime primitive.',
+                owner='QE publishes bot track; app diagnoses missing duration ownership for Boss Waves timed DR',
             ),
         },
         'workshop_levels': {
@@ -872,18 +1109,20 @@ def _boss_wave_primitive_semantics_ledger(
             'state_wall_hp_includes_fortification': True,
             'row_input_wall_hp': float(row_input_wall_hp),
             'fortification_multiplier': fort,
-            'reconstructed_wall_pool': float(row_input_wall_hp) * fort,
+            'reconstructed_wall_hp': float(row_input_wall_hp) * fort,
             'qe_state_wall_hp_surface': float(primitives['wall_hp_qe_surface']),
-            'policy': 'derive pre-fort wall HP from tower_hp and wall-health ratio contributors; evaluator multiplies by fortification once for displayed Wall Pool',
+            'policy': 'derive pre-fort wall HP from tower_hp and wall-health ratio contributors; evaluator multiplies by fortification once for displayed Wall HP',
         },
         'wall_hp_formula_check': {
             'tower_hp': float(primitives['tower_hp']),
+            'death_wave_health_max_multiplier': float(death_wave_health_max_multiplier),
+            'death_wave_health_max_wave': int(death_wave_health_max_wave),
             'wall_hp_percent_points': float(primitives['wall_hp_percent_points']),
             'wall_hp_ratio': float(primitives['wall_hp_ratio']),
             'wall_hp_multiplier': float(primitives['wall_hp_multiplier']),
             'displayed_wall_hp_pre_fort': float(row_input_wall_hp),
             'reconstructed_displayed_wall_hp_pre_fort': float(primitives['tower_hp']) * float(primitives['wall_hp_ratio']) * float(primitives['wall_hp_multiplier']),
-            'policy': 'displayed pre-fort Wall HP = resolved tower HP * wall health ratio * non-fort wall health multipliers',
+            'policy': 'displayed pre-fort Wall HP = row-evolved tower HP including Table 1 Death Wave health multiplier * wall health ratio * non-fort wall health multipliers',
         },
         'wall_regen_formula_check': {
             'tower_regen': float(primitives['tower_regen']),
@@ -896,8 +1135,8 @@ def _boss_wave_primitive_semantics_ledger(
         'boss_waves_wall_surface_semantic_contract': {
             'state::wall.hp': {
                 'decision': 'transformed_primitive_not_final_display_value',
-                'product_value': 'operator_rows.wall_hp is pre-fort row-derived HP; operator_rows.wall_pool_hp_used is fortified Wall Pool',
-                'fortification_policy': 'state::wall.fortification_multiplier is applied exactly once by evaluator TTD to produce Wall Pool',
+                'product_value': 'operator_rows.wall_pre_fort_hp is pre-fort row-derived HP; operator_rows.wall_hp is fortified Wall HP',
+                'fortification_policy': 'state::wall.fortification_multiplier is applied exactly once by evaluator TTD to produce displayed Wall HP',
             },
             'state::wall.regen': {
                 'decision': 'transformed_percent_points_primitive_not_final_hp_per_second',
@@ -905,6 +1144,17 @@ def _boss_wave_primitive_semantics_ledger(
                 'fortification_policy': 'not fortification-scaled',
             },
         },
+        'timed_dr_semantic_contract': {
+            'owner_layer': 'app assembles explicit runtime primitives; run_plan carries staged timed DR primitives and CF/BH duration perk contributions; evaluator combines DR multiplicatively per row',
+            'lane_policy': 'same average uptime contribution is applied to min/avg/max until a lane-specific encounter model is owned',
+            'sources': dict(timed_dr_sources),
+            'perk_duration_contributions': {
+                'PERK_BLACK_HOLE_DURATION_12_0S': 'black_hole_duration_seconds_add',
+                'PERK_CHRONO_FIELD_DURATION_5S': 'chrono_field_duration_seconds_add',
+            },
+            'concern': 'KB de-scopes exact same-tick Flame Bot overlap and PBH/BH encounter micro-precedence; current path models explicit average uptime, not frame-accurate overlap. Flame Bot timed DR remains inactive unless runtime duration or a future owned duration primitive is supplied; no owned Defense Field primitive was found in the active repo.',
+        },
+        'boss_ttk_input_contract': dict(boss_ttk_defaults),
     }
 
 
@@ -920,6 +1170,27 @@ def _primitive_ledger_entry(*, source: str, value: float, meaning: str, owner: s
         'row_evolution': 'static unless scenario/runtime transform applies',
         'owner_layer': owner,
         'classification': 'equivalent',
+    }
+
+
+def _boss_wave_default_ttk_inputs(
+    runtime_inputs: ScenarioRuntimeInputs,
+    *,
+    primitives: dict[str, float],
+    electron_boss_remaining_hp_pct: float,
+) -> dict[str, object]:
+    explicit_orb_total = getattr(runtime_inputs, 'orb_boss_total_damage_pct')
+    explicit_electron_total = getattr(runtime_inputs, 'electron_total_damage_pct')
+    oa_electron_count = max(0.0, float(primitives.get('orbital_augment_electron_count') or 0.0))
+    default_electron_total_pct = max(0.0, min(100.0, oa_electron_count * float(electron_boss_remaining_hp_pct) * 100.0))
+    return {
+        'orb_boss_total_damage_pct': float(explicit_orb_total) if explicit_orb_total is not None else 2.0,
+        'orb_boss_total_damage_source': 'runtime_input' if explicit_orb_total is not None else 'default_orb_boss_total_damage_pct_2',
+        'electron_total_damage_pct': float(explicit_electron_total) if explicit_electron_total is not None else default_electron_total_pct,
+        'electron_total_damage_source': 'runtime_input' if explicit_electron_total is not None else 'orbital_augment_electron_count_times_boss_electron_pct',
+        'orbital_augment_electron_count': oa_electron_count,
+        'orbital_augment_equipped': oa_electron_count > 0.0,
+        'electron_boss_remaining_hp_pct': float(electron_boss_remaining_hp_pct),
     }
 
 
@@ -953,6 +1224,16 @@ def _required_statbook_float(statbook, surface_id: str) -> float:
     return float(value)
 
 
+def _optional_statbook_float(statbook, surface_id: str, *, default: float = 0.0) -> float:
+    row = (getattr(statbook, 'rows', {}) or {}).get(surface_id)
+    if row is None or str(getattr(row, 'status', '') or '').strip() != 'resolved':
+        return float(default)
+    value = getattr(row, 'final_value', None)
+    if value is None:
+        return float(default)
+    return float(value)
+
+
 def _required_statbook_row(statbook, surface_id: str):
     row = (getattr(statbook, 'rows', {}) or {}).get(surface_id)
     if row is None:
@@ -972,24 +1253,33 @@ def _replacement_operator_row_from_overlay(
     incoming_damage_multiplier: float,
 ) -> dict[str, object]:
     summary = overlay.summary_combat
+    boss_damage = overlay.boss_damage_breakdown
     return {
         'display_wave': overlay.display_wave,
         'attack_wave': overlay.effective_attack_wave,
         'health_wave': overlay.effective_health_wave,
         'boss_attack': overlay.enemy_attack,
         'boss_health': overlay.enemy_health,
-        'wall_hp': overlay.final_wall_hp,
+        'wall_pre_fort_hp': overlay.final_wall_hp,
         'wall_regen': overlay.final_wall_regen,
         'tower_damage_per_second': None,
-        'effective_damage_reduction_pct_used': overlay.damage_reduction_pct,
-        'boss_ttk_seconds_used': summary.ttk_seconds,
-        'boss_contact_time_seconds_used': combat.boss_contact_time_seconds,
-        'boss_hit_interval_seconds_used': combat.boss_hit_interval_seconds,
-        'incoming_damage_multiplier_used': incoming_damage_multiplier,
+        'effective_damage_reduction_pct': overlay.damage_reduction_pct,
+        'boss_ttk_seconds': summary.ttk_seconds,
+        'boss_plasma_cannon_damage_to_boss_pct': boss_damage.plasma_cannon_damage_pct,
+        'boss_orb_damage_to_boss_pct': boss_damage.orb_damage_pct,
+        'boss_electron_damage_to_boss_pct': boss_damage.electron_damage_pct,
+        'boss_wall_thorns_damage_to_boss_pct': boss_damage.thorns_damage_pct,
+        'boss_expected_wall_thorns_damage_from_hits_pct': boss_damage.thorns_expected_damage_pct_from_hits,
+        'boss_wall_thorns_contact_kill_seconds': summary.contact_thorns_kill_seconds,
+        'boss_time_to_contact_seconds': combat.boss_time_to_contact_seconds,
+        'boss_hit_interval_seconds': combat.boss_hit_interval_seconds,
+        'incoming_damage_multiplier': incoming_damage_multiplier,
         'boss_hits_taken': summary.boss_hits_taken,
+        'boss_hits_to_player': summary.boss_hits_taken,
+        'boss_wall_thorns_hits': boss_damage.thorns_hits,
         'boss_total_damage_taken': summary.total_damage_taken,
         'boss_survival_margin_hp': summary.survival_margin_hp,
-        'wall_pool_hp_used': summary.wall_pool_hp,
+        'wall_hp': summary.wall_hp,
         'wall_regen_gained_hp': summary.wall_regen_gained_hp,
         'survives_boss': summary.survives,
         'fail_reason': summary.fail_reason,
@@ -1099,9 +1389,17 @@ def _build_replacement_diagnostics(
             'table2_source_basis': 'replacement_scenario_overlay',
             'survivability_derivation': 'baseline_qe_primitives_rederived_per_table1_row_from_workshop_levels_then_finalized_by_table2',
             'perk_state_derivation': 'table1_compiled_perk_state_per_checkpoint_from_runtime_policy_projection',
-            'death_wave_health_multiplier_applies_to': 'enemy_health_only_not_wall_hp_or_wall_regen',
+            'death_wave_health_multiplier_applies_to': 'table1_row_evolved_tower_hp_then_wall_hp_not_wall_regen_or_enemy_health',
             'boss_ttk_contract': 'v21_event_only',
             'boss_kill_sources': ['plasma_cannon', 'orbs', 'electrons', 'thorns_contact'],
+            'contact_resolution_sources': ['wall_thorns_contact'],
+            'thorns_contact_source': 'wall_thorns_contact_damage_pct_derived_from_tower_thorns_and_wall_thorns_lab',
+            'wall_thorns_repeated_hit_multiplier': 'Sharp Fortitude primary armor adds +1% wall-thorns damage taken per subsequent contact hit',
+            'boss_survival_model': 'max_waves_compares_ttd_wall_hp_plus_regen_against_total_v21_ttk_window',
+            'timed_dr_perk_sources': ['PERK_BLACK_HOLE_DURATION_12_0S:black_hole_duration_seconds_add', 'PERK_CHRONO_FIELD_DURATION_5S:chrono_field_duration_seconds_add'],
+            'timed_dr_sources': list(
+                ((primitive_semantics_ledger or {}).get('timed_dr_semantic_contract') or {}).get('sources', {}).keys()
+            ),
             'continuous_tower_dps_included': False,
             'lane_order': lane_order,
             'summary_lane_id': 'avg',
@@ -1116,10 +1414,11 @@ def _build_replacement_diagnostics(
         },
         'replacement_primitive_semantics_ledger': dict(primitive_semantics_ledger or {}),
         'replacement_display_derivation': {
-            'wall_pool': 'operator_rows.wall_pool_hp_used = table2.final_wall_hp_pre_fort * table1.wall_fortification_multiplier * scenario.wall_fortification_multiplier; pre-fort wall HP is derived from tower_hp * wall_health_ratio * wall_health_multipliers',
+            'wall_hp': 'operator_rows.wall_hp = table2.final_wall_hp_pre_fort * table1.wall_fortification_multiplier * scenario.wall_fortification_multiplier; pre-fort wall HP is derived from tower_hp * wall_health_ratio * wall_health_multipliers',
             'wall_regen': 'operator_rows.wall_regen = resolved tower_regen * wall_regen_percent_points / 100, after Table 1 contributor re-derivation and Table 2 scenario transforms',
-            'wall_hp': 'operator_rows.wall_hp = table2.final_wall_hp_pre_fort; not shown as the primary Wall Pool product column',
+            'wall_pre_fort_hp': 'operator_rows.wall_pre_fort_hp = table2.final_wall_hp_pre_fort; not shown as the primary Wall HP product column',
         },
+        'boss_wave_debug_ledger': _boss_wave_debug_ledger(operator_rows),
         'replacement_outputs': {
             'operator_row_count': len(operator_rows),
             'download_row_count': len(download_rows),
@@ -1134,6 +1433,55 @@ def _build_replacement_diagnostics(
     }
 
 
+def _boss_wave_debug_ledger(operator_rows: list[dict[str, object]]) -> dict[str, object]:
+    if not operator_rows:
+        return {'sample_rows': [], 'first_failed_wave': 0}
+    sample_waves = {9, 999, 3000, 4000, 5000, 6000}
+    failed = next((row for row in operator_rows if not bool(row.get('survives_boss'))), None)
+    if failed:
+        sample_waves.add(int(failed.get('display_wave') or 0))
+    rows_by_wave = {int(row.get('display_wave') or 0): row for row in operator_rows}
+    selected: list[dict[str, object]] = []
+    for target in sorted(wave for wave in sample_waves if wave > 0):
+        candidate_wave = min(rows_by_wave, key=lambda wave: abs(wave - target))
+        row = rows_by_wave[candidate_wave]
+        selected.append(
+            {
+                'requested_wave': target,
+                'display_wave': int(row.get('display_wave') or 0),
+                'effective_attack_wave': int(row.get('attack_wave') or 0),
+                'effective_health_wave': int(row.get('health_wave') or 0),
+                'boss_hp': row.get('boss_health'),
+                'boss_attack': row.get('boss_attack'),
+                'ttk_seconds': row.get('boss_ttk_seconds'),
+                'plasma_cannon_damage_to_boss_pct': row.get('boss_plasma_cannon_damage_to_boss_pct'),
+                'orb_damage_to_boss_pct': row.get('boss_orb_damage_to_boss_pct'),
+                'electron_damage_to_boss_pct': row.get('boss_electron_damage_to_boss_pct'),
+                'wall_thorns_damage_to_boss_pct': row.get('boss_wall_thorns_damage_to_boss_pct'),
+                'expected_wall_thorns_damage_from_hits_pct': row.get('boss_expected_wall_thorns_damage_from_hits_pct'),
+                'wall_thorns_contact_kill_seconds': row.get('boss_wall_thorns_contact_kill_seconds'),
+                'boss_time_to_contact_seconds': row.get('boss_time_to_contact_seconds'),
+                'boss_hits_taken': row.get('boss_hits_taken'),
+                'boss_hits_to_player': row.get('boss_hits_to_player'),
+                'wall_thorns_hits': row.get('boss_wall_thorns_hits'),
+                'dr_used_pct': row.get('effective_damage_reduction_pct'),
+                'wall_pre_fort_hp': row.get('wall_pre_fort_hp'),
+                'wall_hp': row.get('wall_hp'),
+                'wall_regen': row.get('wall_regen'),
+                'regen_gained': row.get('wall_regen_gained_hp'),
+                'total_damage_taken': row.get('boss_total_damage_taken'),
+                'survival_margin': row.get('boss_survival_margin_hp'),
+                'survives': bool(row.get('survives_boss')),
+                'fail_reason': row.get('fail_reason'),
+            }
+        )
+    return {
+        'sample_rows': selected,
+        'first_failed_wave': int(failed.get('display_wave') or 0) if failed else 0,
+        'ledger_purpose': 'separates player stats, boss stats, TTK, and TTD for T14 Farming-style sanity debugging',
+    }
+
+
 def _optional_runtime_float(payload: dict[str, float], key: str) -> float | None:
     raw_value = payload.get(key)
     if raw_value in (None, ''):
@@ -1142,6 +1490,151 @@ def _optional_runtime_float(payload: dict[str, float], key: str) -> float | None
         return float(raw_value)
     except (TypeError, ValueError) as exc:
         raise ValueError(f"Boss Waves replacement runtime input {key!r} must be numeric, got {raw_value!r}") from exc
+
+
+def _boss_wave_death_wave_health_max_multiplier(account_state, *, scenario_runtime_inputs: dict[str, float]) -> float:
+    runtime_value = _optional_runtime_float(scenario_runtime_inputs, 'death_wave_health_max_multiplier')
+    if runtime_value is not None:
+        return max(0.0, float(runtime_value))
+    lab_level = int((getattr(account_state, 'labs', {}) or {}).get('Death Wave Health') or 0)
+    if lab_level <= 0:
+        return 1.0
+    return 5.0 + (0.25 * lab_level)
+
+
+def _boss_wave_wall_thorns_damage_increase_per_hit(account_state, *, preset_name: str) -> float:
+    module_presets = getattr(account_state, 'module_presets', {}) or {}
+    preset = module_presets.get(preset_name) or {}
+    armor = preset.get('armor') if isinstance(preset, dict) else None
+    primary = str(getattr(armor, 'primary', '') or '').strip()
+    assist = str(getattr(armor, 'assist', '') or '').strip()
+    if primary == 'Sharp Fortitude':
+        return 0.01
+    if assist == 'Sharp Fortitude':
+        raise ValueError(
+            "Boss Waves cannot derive Sharp Fortitude assist wall-thorns vulnerability without an owned assist-efficiency primitive"
+        )
+    return 0.0
+
+
+def _boss_wave_timed_dr_inputs(
+    runtime_inputs: ScenarioRuntimeInputs,
+    *,
+    primitives: dict[str, float],
+) -> tuple[dict[str, float], dict[str, object]]:
+    flame_bot_dr_pct = _runtime_positive_float(runtime_inputs, 'flame_bot_damage_reduction_pct')
+    flame_bot_duration = _runtime_positive_float(runtime_inputs, 'flame_bot_duration_seconds')
+    flame_bot_runtime_enabled = flame_bot_dr_pct is not None or flame_bot_duration is not None
+    flame_bot_cooldown = _runtime_positive_float(runtime_inputs, 'flame_bot_cooldown_seconds') if flame_bot_runtime_enabled else None
+    if flame_bot_dr_pct is None:
+        flame_bot_dr_pct = _qe_ratio_or_percent_to_pct(float(primitives.get('flame_bot_damage_reduction_pct') or 0.0))
+    if flame_bot_cooldown is None:
+        flame_bot_cooldown = _positive_or_none(primitives.get('flame_bot_cooldown_seconds'))
+
+    defense_field_dr_pct = _runtime_positive_float(runtime_inputs, 'defense_field_damage_reduction_pct')
+    defense_field_duration = _runtime_positive_float(runtime_inputs, 'defense_field_duration_seconds')
+    defense_field_runtime_enabled = defense_field_dr_pct is not None or defense_field_duration is not None
+    defense_field_cooldown = _runtime_positive_float(runtime_inputs, 'defense_field_cooldown_seconds') if defense_field_runtime_enabled else None
+
+    black_hole_dr_pct = _runtime_positive_float(runtime_inputs, 'black_hole_damage_reduction_pct')
+    black_hole_duration = _runtime_positive_float(runtime_inputs, 'black_hole_duration_seconds')
+    pbh_uptime = _runtime_positive_float(runtime_inputs, 'pbh_encounter_uptime_fraction')
+    black_hole_runtime_enabled = black_hole_dr_pct is not None or black_hole_duration is not None or pbh_uptime is not None
+    black_hole_cooldown = _runtime_positive_float(runtime_inputs, 'black_hole_cooldown_seconds') if black_hole_runtime_enabled else None
+    if black_hole_dr_pct is None:
+        black_hole_dr_pct = _positive_or_none(primitives.get('primordial_collapse_bh_damage_reduction_pct'))
+    if black_hole_duration is None:
+        black_hole_duration = _positive_or_none(primitives.get('black_hole_duration_seconds'))
+    if black_hole_cooldown is None:
+        black_hole_cooldown = _positive_or_none(primitives.get('black_hole_cooldown_seconds'))
+
+    sources = {
+        'flame_bot': _timed_dr_source(
+            damage_reduction_pct=flame_bot_dr_pct,
+            duration_seconds=flame_bot_duration,
+            cooldown_seconds=flame_bot_cooldown,
+            primitive_status=(
+                'blocked_missing_duration_seconds_primitive'
+                if flame_bot_dr_pct is not None and flame_bot_duration is None
+                else 'runtime_or_qe_primitives'
+            ),
+        ),
+        'defense_field': _timed_dr_source(
+            damage_reduction_pct=defense_field_dr_pct,
+            duration_seconds=defense_field_duration,
+            cooldown_seconds=defense_field_cooldown,
+            primitive_status=(
+                'explicit_runtime_only_no_qe_surface_found'
+                if defense_field_dr_pct is None and defense_field_duration is None and defense_field_cooldown is None
+                else 'runtime_primitives'
+            ),
+        ),
+        'black_hole_pbh': _timed_dr_source(
+            damage_reduction_pct=black_hole_dr_pct,
+            duration_seconds=black_hole_duration,
+            cooldown_seconds=black_hole_cooldown,
+            explicit_uptime_fraction=pbh_uptime,
+            primitive_status='qe_primordial_collapse_black_hole_primitives',
+        ),
+    }
+    combined = 1.0
+    for source_name, source in sources.items():
+        if source_name == 'black_hole_pbh':
+            continue
+        combined *= 1.0 - float(source['effective_dr_fraction'])
+    average_dr = max(0.0, min(1.0, 1.0 - combined))
+    return {'min': average_dr, 'avg': average_dr, 'max': average_dr}, sources
+
+
+def _timed_dr_source(
+    *,
+    damage_reduction_pct: float | None,
+    duration_seconds: float | None,
+    cooldown_seconds: float | None,
+    explicit_uptime_fraction: float | None = None,
+    primitive_status: str = 'runtime_primitives',
+) -> dict[str, float | str]:
+    dr_fraction = max(0.0, min(1.0, float(damage_reduction_pct or 0.0) / 100.0))
+    if explicit_uptime_fraction is not None:
+        uptime = max(0.0, min(1.0, float(explicit_uptime_fraction)))
+        source = 'explicit_uptime_fraction'
+    elif duration_seconds is None or cooldown_seconds is None or float(cooldown_seconds) <= 0.0:
+        uptime = 0.0
+        source = 'not_provided'
+    else:
+        uptime = max(0.0, min(1.0, float(duration_seconds) / float(cooldown_seconds)))
+        source = 'duration_over_cooldown'
+    return {
+        'damage_reduction_pct': float(damage_reduction_pct or 0.0),
+        'duration_seconds': float(duration_seconds or 0.0),
+        'cooldown_seconds': float(cooldown_seconds or 0.0),
+        'uptime_fraction': uptime,
+        'uptime_source': source,
+        'effective_dr_fraction': dr_fraction * uptime,
+        'primitive_status': str(primitive_status),
+    }
+
+
+def _runtime_positive_float(runtime_inputs: ScenarioRuntimeInputs, name: str) -> float | None:
+    raw_value = getattr(runtime_inputs, name)
+    if raw_value in (None, ''):
+        return None
+    value = float(raw_value)
+    return value if value > 0.0 else None
+
+
+def _positive_or_none(raw_value: object) -> float | None:
+    if raw_value in (None, ''):
+        return None
+    value = float(raw_value)
+    return value if value > 0.0 else None
+
+
+def _qe_ratio_or_percent_to_pct(raw_value: float) -> float | None:
+    value = float(raw_value)
+    if value <= 0.0:
+        return None
+    return value * 100.0 if value <= 1.0 else value
 
 
 
@@ -1564,14 +2057,16 @@ def _resolve_policy_banned_perk_names(raw_policy: dict) -> list[str]:
 
 
 def _ids_player_value(ids_raw, name: str, default: int = 0) -> int:
-    rows = ids_raw.raw_sections.get('Player & Stuff', []) if ids_raw else []
-    for row in rows:
-        if row and str(row[0]).strip() == name:
-            token = str(row[1]).strip() if len(row) > 1 else ''
-            try:
-                return int(float(token.replace(',', '')))
-            except Exception:
-                return default
+    sections = ('Player & Stuff', 'Labs')
+    for section in sections:
+        rows = ids_raw.raw_sections.get(section, []) if ids_raw else []
+        for row in rows:
+            if row and str(row[0]).strip() == name:
+                token = str(row[1]).strip() if len(row) > 1 else ''
+                try:
+                    return int(float(token.replace(',', '')))
+                except Exception:
+                    return default
     return default
 
 
@@ -1592,7 +2087,15 @@ def _perk_policy_context(ids_raw, perk_policy: dict) -> tuple[dict, dict]:
 
     banned_names = _resolve_manual_banned_perks(policy)
     standard_perk_bonus_level = labs.get('Standard Perks Bonus', 0)
+    tradeoff_bonus_level = labs.get('Improve Trade-off Perks', 0)
     target_wave = int(policy.get('target_wave', 50000) or 50000)
+    first_perk_choice_level = _ids_player_value(ids_raw, 'First Perk Choice', 0)
+    configured_priority = list(policy.get('priority_order', []) or [])
+    configured_first_perk_choice = policy.get('first_perk_choice')
+    if first_perk_choice_level > 0 and 'first_perk_choice' in policy and not configured_first_perk_choice:
+        raise ValueError(
+            "First Perk Choice lab is unlocked, but manual_inputs.yaml:perk_policy.first_perk_choice is not configured."
+        )
     payload = {
         'seed': int(policy.get('seed', 42) or 42),
         'target_wave': target_wave,
@@ -1601,12 +2104,15 @@ def _perk_policy_context(ids_raw, perk_policy: dict) -> tuple[dict, dict]:
         'perk_option_quantity': _ids_player_value(ids_raw, 'Perk Option Quantity', 0),
         'ban_perks_capacity': max(_ids_player_value(ids_raw, 'Ban Perks', 0), len(banned_names)),
         'banned_perks': banned_names,
-        'priority_order': list(policy.get('priority_order', []) or []),
-        'first_perk_choice': policy.get('first_perk_choice'),
+        'priority_order': configured_priority,
+        'first_perk_choice': configured_first_perk_choice,
     }
     context = {
         'banned_names': banned_names,
         'standard_perk_bonus_level': standard_perk_bonus_level,
+        'tradeoff_bonus_level': tradeoff_bonus_level,
+        'first_perk_choice_level': first_perk_choice_level,
+        'configured_priority_order': configured_priority,
         'ban_perks_capacity_ids': _ids_player_value(ids_raw, 'Ban Perks', 0),
         'banned_perk_aliases': list(policy.get('banned_perk_aliases', []) or []),
     }
@@ -1662,6 +2168,7 @@ def _build_max_progression_policy_perk_config(ids_raw, perk_policy: dict) -> tup
 
 def _build_runtime_timeline_perk_config(ids_raw, perk_policy: dict, *, diag_output_dir: Path | None = None) -> tuple[dict, dict]:
     from qe.stat_input_compiler import load_perk_entity_rows
+    from simulators.perk_timeline_generator import PerkTimelinePolicy, generate_timeline_from_policy, perk_state_at_wave
 
     policy_payload, context = _perk_policy_context(ids_raw, perk_policy)
     policy = PerkTimelinePolicy(**policy_payload)
@@ -3087,3 +3594,6 @@ def resolve_fast_checkpoint(request: FastCheckpointRequest) -> FastCheckpointRes
         statbook=statbook_dict,
         diagnostics=dict(checkpoint_resolution.diagnostics),
     )
+
+
+

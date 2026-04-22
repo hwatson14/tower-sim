@@ -704,8 +704,25 @@ def _resolve_bucket(
             return _as_float(mirror_row.final_value), 'resolved', f"Deprecated transition mirror of {_state_from_legacy_canonical('coins_per_kill_bonus')}.", schema
         return None, 'mapped_not_resolved', f"Deprecated transition mirror requires {_state_from_legacy_canonical('coins_per_kill_bonus')}.", schema
     if destination_id == 'wall_thorns_damage_pct':
-        wall_ratio = next((_as_float(row.value) for row in contributors if row.source_family == 'lab'), None)
-        tower_thorns = next((_as_float(row.value) for row in contributors if row.source_family == 'workshop'), None)
+        wall_ratio = next(
+            (
+                _as_float(row.value)
+                for row in contributors
+                if row.source_family in {'lab', 'labs'} or getattr(row, 'source_class', None) in {'lab', 'labs'}
+            ),
+            None,
+        )
+        tower_thorns = next(
+            (
+                _as_float(row.value)
+                for row in contributors
+                if row.source_family == 'workshop' or getattr(row, 'source_class', None) == 'workshop'
+            ),
+            None,
+        )
+        tower_thorns_row = resolved_rows.get('state::tower.thorns_damage_pct')
+        if tower_thorns_row is not None and tower_thorns_row.final_value is not None:
+            tower_thorns = _as_float(tower_thorns_row.final_value)
         if wall_ratio is None:
             return None, 'mapped_not_resolved', 'Missing wall thorns ratio or tower thorns base.', schema
         if wall_ratio > 1.0:
@@ -903,6 +920,7 @@ _PROGRESSION_V1_SURFACE_IDS: tuple[str, ...] = (
     'state::wall.fortification_multiplier',
     'state::tower.defense_pct',
     'state::tower.thorns_damage_pct',
+    'state::wall.thorns_damage_pct',
     'state::tower.orb_count',
     'state::tower.orb_speed_rpm',
     'state::cards.plasma_cannon.effect_pct',

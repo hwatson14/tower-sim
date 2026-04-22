@@ -271,6 +271,23 @@ families:
       debug_only: false
       scenario_scoped: false
       semantics: resolved tower defense percent available to progression queries.
+    - surface_id: state::wall.thorns_damage_pct
+      surface_kind: canonical_surface
+      surface_class: surface
+      domain: progression
+      owning_families:
+      - progression_start_of_run
+      - progression_runtime_no_perks
+      - progression_runtime_with_perks
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: true
+      debug_only: false
+      scenario_scoped: false
+      semantics: resolved wall-thorns damage percent available to progression queries;
+        equal to tower thorns times the Wall Thorns lab ratio.
     - surface_id: state::tower.damage
       surface_kind: canonical_surface
       surface_class: surface
@@ -1891,6 +1908,7 @@ families:
       - state::wall.fortification_multiplier
       - state::tower.defense_pct
       - state::tower.thorns_damage_pct
+      - state::wall.thorns_damage_pct
       - state::tower.orb_count
       - state::tower.orb_speed_rpm
       - state::economy.cash_kill_multiplier

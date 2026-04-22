@@ -5,7 +5,7 @@ status:
   baseline: prior hardening and maintenance stabilization are complete, but the active program is now the v49 Streamlit-first canonical stat and max-wave simulator scope
   active_tranche: v49_streamlit_stat_and_simulator_program
   active_tranche_name: V49 Streamlit-first canonical stat and simulator program
-  overall_state: boss_waves_phase2a_phase2b_replacement_cutover_complete_legacy_disposition_pending
+  overall_state: boss_waves_replacement_owned_total_v21_ttk_ttd_and_timed_dr_corrected_cleanup_pending
   confidence:
     high_signal_suites_green: true
     full_suite_recertified_here: true
@@ -138,7 +138,7 @@ v49_program:
   - remove duplicate authority, stale residue, and bloat where they undermine truth, speed, or blind maintainability
   known_blockers:
   - the v49 interactive performance target remains open
-  - Boss Waves Phase 2A table/summary and Phase 2B export/diagnostics cutover are replacement-owned by default; stat evolution correctness and Boss Waves-local wall-surface semantics are closed with an explicit primitive/display split; legacy executor retirement is complete
+  - Boss Waves Phase 2A table/summary and Phase 2B export/diagnostics cutover are replacement-owned by default; stat evolution correctness and Boss Waves-local wall-surface semantics are closed with an explicit primitive/display split; legacy executor retirement is complete; displayed Boss Waves TTK is total v21 event-only kill time from Plasma Cannon, orbs, electrons, and contact thorns, with Sharp Fortitude contact-thorns timing and CF/BH duration-perk timed DR modeled in the replacement path
   shipped_vs_rebuilt_truth:
     latest_shipped_extract_audit_2026_04_15:
       source: tower-sim-src(9).zip

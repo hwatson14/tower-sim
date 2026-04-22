@@ -54,6 +54,22 @@ nodes:
     is_publishable: true
     publication_relevance: publish_default
     verification_status: verified
+  - node_id: source_input::lab:Wall Thorns
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: verified
+    blocker_reason: ''
+    notes: Wall Thorns lab source for the bounded run_stats progression surface set.
+  - node_id: state::wall.thorns_damage_pct
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_default
+    verification_status: verified
+    blocker_reason: ''
+    notes: Query-owned wall thorns surface derived from tower thorns and Wall Thorns lab ratio.
     blocker_reason: ''
     notes: Query-owned wall fortification multiplier surface.
   - node_id: state::wall.rebuild_seconds
@@ -1924,6 +1940,20 @@ edges:
     publication_relevance: publishable_path
     verification_status: verified
     notes: Wall Fortification lab contributes to wall fortification multiplier.
+  - upstream_node_id: source_input::lab:Wall Thorns
+    downstream_node_id: state::wall.thorns_damage_pct
+    invalidation_semantics: recompute_downstream
+    mutation_classes: []
+    publication_relevance: publishable_path
+    verification_status: verified
+    notes: Wall Thorns lab ratio contributes to wall thorns damage percent.
+  - upstream_node_id: state::tower.thorns_damage_pct
+    downstream_node_id: state::wall.thorns_damage_pct
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [workshop_mutation]
+    publication_relevance: publishable_path
+    verification_status: verified
+    notes: Wall thorns damage percent is derived from tower thorns damage percent.
   - upstream_node_id: source_input::workshop:Orbs
     downstream_node_id: state::tower.orb_count
     invalidation_semantics: recompute_downstream

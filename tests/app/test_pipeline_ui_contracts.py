@@ -530,3 +530,4 @@ def test_resolve_fast_checkpoint_returns_requested_surfaces():
     rows = result.statbook.get('rows') or {}
     assert result.diagnostics['resolver_kind'] == 'simulator_checkpoint_qe_light'
     assert set(rows) == {'state::tower.hp', 'state::wall.hp'}
+

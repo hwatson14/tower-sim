@@ -2755,19 +2755,51 @@
               "status": "resolved"
             }
           },
-          "derived::wall.hp_pre_fort": {
-            "stat_name": "derived::wall.hp_pre_fort",
+          "derived::wall.hp_final": {
+            "stat_name": "derived::wall.hp_final",
             "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 13890278.76923077,
-              "display_value": "13.9M",
+              "final_value": 185183031991361.72,
+              "display_value": "185T",
               "value_type": "hp",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 18039323.076923076,
-              "display_value": "18M",
+              "final_value": 4669779593286842.0,
+              "display_value": "4.67q",
               "value_type": "hp",
+              "status": "resolved"
+            }
+          },
+          "derived::wall.hp_pre_fort": {
+            "stat_name": "derived::wall.hp_pre_fort",
+            "changed_in_max_progression": true,
+            "start_of_run": {
+              "final_value": 17806060768400.164,
+              "display_value": "17.8T",
+              "value_type": "hp",
+              "status": "resolved"
+            },
+            "max_progression": {
+              "final_value": 449017268585273.25,
+              "display_value": "449T",
+              "value_type": "hp",
+              "status": "resolved"
+            }
+          },
+          "derived::wall.regen_hp_per_second": {
+            "stat_name": "derived::wall.regen_hp_per_second",
+            "changed_in_max_progression": false,
+            "start_of_run": {
+              "final_value": 5814158246443.825,
+              "display_value": "5.81T",
+              "value_type": "hp_per_second",
+              "status": "resolved"
+            },
+            "max_progression": {
+              "final_value": 5814158246443.825,
+              "display_value": "5.81T",
+              "value_type": "hp_per_second",
               "status": "resolved"
             }
           },
@@ -4515,6 +4547,22 @@
               "status": "resolved"
             }
           },
+          "state::wall.thorns_damage_pct": {
+            "stat_name": "state::wall.thorns_damage_pct",
+            "changed_in_max_progression": false,
+            "start_of_run": {
+              "final_value": 19.36,
+              "display_value": "19.36%",
+              "value_type": "pct",
+              "status": "resolved"
+            },
+            "max_progression": {
+              "final_value": 19.36,
+              "display_value": "19.36%",
+              "value_type": "pct",
+              "status": "resolved"
+            }
+          },
           "support_surface::eecon.adstarter_theme_relic_factor": {
             "stat_name": "support_surface::eecon.adstarter_theme_relic_factor",
             "changed_in_max_progression": false,
@@ -4709,8 +4757,8 @@
           }
         },
         "diagnostics": {
-          "row_count": 284,
-          "changed_in_max_progression_count": 40
+          "row_count": 287,
+          "changed_in_max_progression_count": 41
         }
       }
     },
@@ -7469,19 +7517,51 @@
               "status": "resolved"
             }
           },
-          "derived::wall.hp_pre_fort": {
-            "stat_name": "derived::wall.hp_pre_fort",
+          "derived::wall.hp_final": {
+            "stat_name": "derived::wall.hp_final",
             "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 2525505.230769231,
-              "display_value": "2.53M",
+              "final_value": 40826247016116.93,
+              "display_value": "40.8T",
               "value_type": "hp",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 3279876.923076923,
-              "display_value": "3.28M",
+              "final_value": 1078974464620768.4,
+              "display_value": "1.08q",
               "value_type": "hp",
+              "status": "resolved"
+            }
+          },
+          "derived::wall.hp_pre_fort": {
+            "stat_name": "derived::wall.hp_pre_fort",
+            "changed_in_max_progression": true,
+            "start_of_run": {
+              "final_value": 3925600674626.6274,
+              "display_value": "3.93T",
+              "value_type": "hp",
+              "status": "resolved"
+            },
+            "max_progression": {
+              "final_value": 103747544675073.88,
+              "display_value": "104T",
+              "value_type": "hp",
+              "status": "resolved"
+            }
+          },
+          "derived::wall.regen_hp_per_second": {
+            "stat_name": "derived::wall.regen_hp_per_second",
+            "changed_in_max_progression": false,
+            "start_of_run": {
+              "final_value": 465132659715.5061,
+              "display_value": "465B",
+              "value_type": "hp_per_second",
+              "status": "resolved"
+            },
+            "max_progression": {
+              "final_value": 465132659715.5061,
+              "display_value": "465B",
+              "value_type": "hp_per_second",
               "status": "resolved"
             }
           },
@@ -9229,6 +9309,22 @@
               "status": "resolved"
             }
           },
+          "state::wall.thorns_damage_pct": {
+            "stat_name": "state::wall.thorns_damage_pct",
+            "changed_in_max_progression": false,
+            "start_of_run": {
+              "final_value": 17.76,
+              "display_value": "17.76%",
+              "value_type": "pct",
+              "status": "resolved"
+            },
+            "max_progression": {
+              "final_value": 17.76,
+              "display_value": "17.76%",
+              "value_type": "pct",
+              "status": "resolved"
+            }
+          },
           "support_surface::eecon.adstarter_theme_relic_factor": {
             "stat_name": "support_surface::eecon.adstarter_theme_relic_factor",
             "changed_in_max_progression": false,
@@ -9423,8 +9519,8 @@
           }
         },
         "diagnostics": {
-          "row_count": 284,
-          "changed_in_max_progression_count": 43
+          "row_count": 287,
+          "changed_in_max_progression_count": 44
         }
       }
     }
@@ -9452,9 +9548,9 @@
     "qe_shared_runtime_context": {
       "context_kind": "qe_shared_runtime_context",
       "consumer_bundle_count": 13,
-      "family_surface_count": 513,
+      "family_surface_count": 516,
       "family_contract_count": 6,
-      "surface_metadata_count": 267,
+      "surface_metadata_count": 268,
       "compiler_mapping_count": 348,
       "compiler_alias_count": 22,
       "compiler_relic_count": 26,
@@ -9468,7 +9564,7 @@
       "Farming": {
         "start_of_run": {
           "query_backend": "bounded_qe_bundle",
-          "statbook_row_count": 284,
+          "statbook_row_count": 287,
           "bundle_ids": [
             "progression_core_stats",
             "timing_core_cycle",
@@ -9479,12 +9575,12 @@
             "timing_scenario_probe",
             "timing_scenario_probe"
           ],
-          "resolved_surface_count": 284,
-          "contributor_row_count": 285
+          "resolved_surface_count": 287,
+          "contributor_row_count": 286
         },
         "max_progression": {
           "query_backend": "bounded_qe_bundle",
-          "statbook_row_count": 284,
+          "statbook_row_count": 287,
           "bundle_ids": [
             "progression_core_stats",
             "timing_core_cycle",
@@ -9495,18 +9591,18 @@
             "timing_scenario_probe",
             "timing_scenario_probe"
           ],
-          "resolved_surface_count": 284,
-          "contributor_row_count": 286
+          "resolved_surface_count": 287,
+          "contributor_row_count": 287
         },
         "dual_state_stats": {
-          "row_count": 284,
-          "changed_in_max_progression_count": 40
+          "row_count": 287,
+          "changed_in_max_progression_count": 41
         }
       },
       "Tourney": {
         "start_of_run": {
           "query_backend": "bounded_qe_bundle",
-          "statbook_row_count": 284,
+          "statbook_row_count": 287,
           "bundle_ids": [
             "progression_core_stats",
             "timing_core_cycle",
@@ -9517,12 +9613,12 @@
             "timing_tournament_no_perks",
             "timing_tournament_no_perks"
           ],
-          "resolved_surface_count": 284,
-          "contributor_row_count": 268
+          "resolved_surface_count": 287,
+          "contributor_row_count": 269
         },
         "max_progression": {
           "query_backend": "bounded_qe_bundle",
-          "statbook_row_count": 284,
+          "statbook_row_count": 287,
           "bundle_ids": [
             "progression_core_stats",
             "timing_core_cycle",
@@ -9533,12 +9629,12 @@
             "timing_tournament_no_perks",
             "timing_tournament_no_perks"
           ],
-          "resolved_surface_count": 284,
-          "contributor_row_count": 269
+          "resolved_surface_count": 287,
+          "contributor_row_count": 270
         },
         "dual_state_stats": {
-          "row_count": 284,
-          "changed_in_max_progression_count": 43
+          "row_count": 287,
+          "changed_in_max_progression_count": 44
         }
       }
     },
@@ -9588,6 +9684,7 @@
               "state::wall.fortification_multiplier",
               "state::tower.defense_pct",
               "state::tower.thorns_damage_pct",
+              "state::wall.thorns_damage_pct",
               "state::tower.orb_count",
               "state::tower.orb_speed_rpm",
               "state::economy.cash_kill_multiplier",
@@ -9731,6 +9828,7 @@
               "state::wall.fortification_multiplier",
               "state::tower.defense_pct",
               "state::tower.thorns_damage_pct",
+              "state::wall.thorns_damage_pct",
               "state::tower.orb_count",
               "state::tower.orb_speed_rpm",
               "state::economy.cash_kill_multiplier",
@@ -9876,6 +9974,7 @@
               "state::wall.fortification_multiplier",
               "state::tower.defense_pct",
               "state::tower.thorns_damage_pct",
+              "state::wall.thorns_damage_pct",
               "state::tower.orb_count",
               "state::tower.orb_speed_rpm",
               "state::economy.cash_kill_multiplier",
@@ -10019,6 +10118,7 @@
               "state::wall.fortification_multiplier",
               "state::tower.defense_pct",
               "state::tower.thorns_damage_pct",
+              "state::wall.thorns_damage_pct",
               "state::tower.orb_count",
               "state::tower.orb_speed_rpm",
               "state::economy.cash_kill_multiplier",

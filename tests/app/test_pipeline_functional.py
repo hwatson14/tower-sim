@@ -227,11 +227,21 @@ def test_build_boss_wave_payload_publishes_summary_and_runtime_assumptions(monke
         stop_on_failure=True,
         scenario_runtime_inputs={
             'orb_boss_hit_pct': 2.5,
-            'orb_boss_hits_per_second': 5.0,
-            'electron_hits_per_second': 5.0,
-            'boss_contact_time_seconds': 1.0,
+            'orb_boss_hit_count': 5,
+            'electron_hit_count': 5,
+            'boss_time_to_contact_seconds': 1.0,
             'effective_damage_reduction_pct': 90.0,
             'incoming_damage_multiplier': 1.0,
+            'flame_bot_damage_reduction_pct': 0.0,
+            'flame_bot_duration_seconds': 0.0,
+            'flame_bot_cooldown_seconds': 1.0,
+            'defense_field_damage_reduction_pct': 0.0,
+            'defense_field_duration_seconds': 0.0,
+            'defense_field_cooldown_seconds': 1.0,
+            'black_hole_damage_reduction_pct': 0.0,
+            'black_hole_duration_seconds': 0.0,
+            'black_hole_cooldown_seconds': 1.0,
+            'pbh_encounter_uptime_fraction': 0.0,
         },
     )
 
@@ -275,7 +285,11 @@ def _install_fake_boss_wave_app_dependencies(monkeypatch, pipeline_mod):
     monkeypatch.setattr(
         pipeline_mod,
         'build_runtime_state',
-        lambda ids_raw, loadout_config=None, perk_config=None: type('State', (), {'player_meta': {}})(),
+        lambda ids_raw, loadout_config=None, perk_config=None: type(
+            'State',
+            (),
+            {'player_meta': {}, 'labs': {'Wall Thorns': 16}},
+        )(),
     )
 
 
@@ -324,7 +338,15 @@ def _install_fake_boss_wave_replacement_primitives(monkeypatch, pipeline_mod, *,
         'state::wall.fortification_multiplier': _FakeRow(2.0),
         'state::tower.defense_pct': _FakeRow(90.0),
         'state::tower.thorns_damage_pct': _FakeRow(99.0),
+        'state::wall.thorns_damage_pct': _FakeRow(15.84),
         'state::cards.plasma_cannon.effect_pct': _FakeRow(100.0),
+        'state::module.orbital_augment.electron_count': _FakeRow(2.0),
+        'state::module.primordial_collapse.bh_damage_reduction_pct': _FakeRow(80.0),
+        'support_surface::ehp.black_hole_duration_seconds': _FakeRow(32.0),
+        'support_surface::ehp.black_hole_cooldown_seconds': _FakeRow(50.0),
+        'state::bot.flame.damage_reduction_pct': _FakeRow(0.35),
+        'state::bot.flame.cooldown_seconds': _FakeRow(26.0),
+        'state::bot.flame.range_m': _FakeRow(55.0),
     }
     if omit_surface:
         rows.pop(omit_surface)
@@ -349,9 +371,9 @@ def test_build_boss_wave_payload_replacement_inputs_drive_table_summary_export_a
         stop_on_failure=True,
         scenario_runtime_inputs={
             'orb_boss_hit_pct': 2.5,
-            'orb_boss_hits_per_second': 5.0,
-            'electron_hits_per_second': 5.0,
-            'boss_contact_time_seconds': 1.0,
+            'orb_boss_hit_count': 5,
+            'electron_hit_count': 5,
+            'boss_time_to_contact_seconds': 1.0,
             'effective_damage_reduction_pct': 90.0,
             'incoming_damage_multiplier': 1.0,
         },
@@ -378,22 +400,55 @@ def test_build_boss_wave_payload_replacement_inputs_drive_table_summary_export_a
     assert operator_rows[0]['tower_damage_per_second'] is None
     assert operator_rows[0]['summary_lane_id'] == 'avg'
     assert set(operator_rows[0]['lane_handle_ids']) == {'avg', 'min', 'max'}
+    assert operator_rows[0]['boss_plasma_cannon_damage_to_boss_pct'] >= 0
+    assert operator_rows[0]['boss_orb_damage_to_boss_pct'] >= 0
+    assert operator_rows[0]['boss_electron_damage_to_boss_pct'] >= 0
+    assert operator_rows[0]['boss_wall_thorns_damage_to_boss_pct'] >= 0
+    assert operator_rows[0]['boss_expected_wall_thorns_damage_from_hits_pct'] >= operator_rows[0]['boss_wall_thorns_damage_to_boss_pct']
+    assert operator_rows[0]['boss_hits_to_player'] == operator_rows[0]['boss_hits_taken']
+    assert operator_rows[0]['boss_wall_thorns_hits'] == operator_rows[0]['boss_hits_taken']
     assert 'legacy_export_owner' not in contract
     assert 'legacy_shadow' not in payload
     assert payload.get('download_rows')[0]['replacement_source'] == 'replacement'
     assert payload.get('download_rows')[0]['operator_handle_id'] == operator_rows[0]['operator_handle_id']
+    assert payload.get('download_rows')[0]['boss_wall_thorns_damage_to_boss_pct'] == operator_rows[0]['boss_wall_thorns_damage_to_boss_pct']
+    assert payload.get('download_rows')[0]['boss_expected_wall_thorns_damage_from_hits_pct'] == operator_rows[0]['boss_expected_wall_thorns_damage_from_hits_pct']
     assert payload.get('download', {}).get('row_source') == 'replacement'
     diagnostics = payload.get('diagnostics') or {}
     assert diagnostics.get('execution_mode') == 'staged_replacement'
     assert diagnostics.get('checkpoint_resolution_mode') == 'replacement_table1_table2_overlay'
     assert diagnostics.get('source_selection', {}).get('diagnostics_source') == 'replacement'
     assert diagnostics.get('replacement_model', {}).get('boss_ttk_contract') == 'v21_event_only'
+    assert diagnostics.get('replacement_model', {}).get('boss_kill_sources') == ['plasma_cannon', 'orbs', 'electrons', 'thorns_contact']
+    assert diagnostics.get('replacement_model', {}).get('contact_resolution_sources') == ['wall_thorns_contact']
+    assert diagnostics.get('replacement_model', {}).get('thorns_contact_source') == 'wall_thorns_contact_damage_pct_derived_from_tower_thorns_and_wall_thorns_lab'
+    assert diagnostics.get('replacement_model', {}).get('wall_thorns_repeated_hit_multiplier') == 'Sharp Fortitude primary armor adds +1% wall-thorns damage taken per subsequent contact hit'
     assert diagnostics.get('replacement_model', {}).get('continuous_tower_dps_included') is False
     assert diagnostics.get('replacement_model', {}).get('contract_version') == 'boss_waves_replacement_v1'
     assert diagnostics.get('replacement_model', {}).get('table1_source_basis') == 'app_pipeline_qe_checkpoint_surfaces_to_run_plan'
     assert 'legacy_shadow_available' not in diagnostics
     assert 'legacy_shadow_materialized' not in diagnostics
     assert diagnostics.get('replacement_outputs', {}).get('download_row_count') == len(payload.get('download_rows') or [])
+    ttk_inputs = diagnostics.get('replacement_primitive_semantics_ledger', {}).get('boss_ttk_input_contract') or {}
+    assert ttk_inputs.get('orb_boss_total_damage_pct') == pytest.approx(2.0)
+    assert ttk_inputs.get('orb_boss_total_damage_source') == 'default_orb_boss_total_damage_pct_2'
+    assert ttk_inputs.get('electron_total_damage_pct') == pytest.approx(7.5)
+    assert ttk_inputs.get('electron_total_damage_source') == 'orbital_augment_electron_count_times_boss_electron_pct'
+    assert ttk_inputs.get('orbital_augment_electron_count') == pytest.approx(2.0)
+    primitive_values = diagnostics.get('replacement_primitive_inputs', {}).get('values') or {}
+    assert primitive_values['tower_thorns_damage_pct'] == pytest.approx(99.0)
+    assert primitive_values['wall_thorns_level'] == pytest.approx(16.0)
+    assert primitive_values['wall_thorns_contact_damage_pct'] == pytest.approx(15.84)
+    assert primitive_values['primordial_collapse_bh_damage_reduction_pct'] == pytest.approx(80.0)
+    assert primitive_values['black_hole_duration_seconds'] == pytest.approx(32.0)
+    assert primitive_values['black_hole_cooldown_seconds'] == pytest.approx(50.0)
+    timed_dr = diagnostics.get('replacement_primitive_semantics_ledger', {}).get('timed_dr_semantic_contract') or {}
+    timed_sources = timed_dr.get('sources') or {}
+    assert timed_sources['black_hole_pbh']['damage_reduction_pct'] == pytest.approx(80.0)
+    assert timed_sources['black_hole_pbh']['uptime_fraction'] == pytest.approx(32.0 / 50.0)
+    assert timed_sources['black_hole_pbh']['effective_dr_fraction'] == pytest.approx(0.512)
+    assert timed_sources['flame_bot']['primitive_status'] == 'blocked_missing_duration_seconds_primitive'
+    assert timed_sources['defense_field']['primitive_status'] == 'explicit_runtime_only_no_qe_surface_found'
 
     summary = payload.get('summary') or {}
     assert summary['max_surviving_wave'] == 27
@@ -437,9 +492,9 @@ def test_build_boss_wave_payload_fails_closed_on_unmapped_required_input_primiti
             stop_on_failure=True,
             scenario_runtime_inputs={
                 'orb_boss_hit_pct': 2.5,
-                'orb_boss_hits_per_second': 5.0,
-                'electron_hits_per_second': 5.0,
-                'boss_contact_time_seconds': 1.0,
+                'orb_boss_hit_count': 5,
+                'electron_hit_count': 5,
+                'boss_time_to_contact_seconds': 1.0,
                 'effective_damage_reduction_pct': 90.0,
                 'incoming_damage_multiplier': 1.0,
             },
@@ -464,9 +519,9 @@ def test_build_boss_wave_payload_fails_closed_on_missing_wall_regen_base_primiti
             stop_on_failure=True,
             scenario_runtime_inputs={
                 'orb_boss_hit_pct': 2.5,
-                'orb_boss_hits_per_second': 5.0,
-                'electron_hits_per_second': 5.0,
-                'boss_contact_time_seconds': 1.0,
+                'orb_boss_hit_count': 5,
+                'electron_hit_count': 5,
+                'boss_time_to_contact_seconds': 1.0,
                 'effective_damage_reduction_pct': 90.0,
                 'incoming_damage_multiplier': 1.0,
             },
@@ -496,9 +551,9 @@ def test_build_boss_wave_payload_fails_closed_on_missing_export_mapping(monkeypa
             stop_on_failure=True,
             scenario_runtime_inputs={
                 'orb_boss_hit_pct': 2.5,
-                'orb_boss_hits_per_second': 5.0,
-                'electron_hits_per_second': 5.0,
-                'boss_contact_time_seconds': 1.0,
+                'orb_boss_hit_count': 5,
+                'electron_hit_count': 5,
+                'boss_time_to_contact_seconds': 1.0,
                 'effective_damage_reduction_pct': 90.0,
                 'incoming_damage_multiplier': 1.0,
             },
@@ -514,10 +569,9 @@ def test_build_boss_wave_payload_live_path_avoids_delta_fallback():
 
     request = PipelineRunRequest(ids=IDS_PATH, out=ROOT / 'out')
     runtime_inputs = {
-        'orb_boss_hit_pct': 2.5,
-        'orb_boss_hits_per_second': 5.0,
-        'electron_hits_per_second': 5.0,
-        'boss_contact_time_seconds': 1.0,
+            'orb_boss_hit_pct': 100.0,
+            'orb_boss_hit_count': 1,
+            'boss_time_to_contact_seconds': 1.0,
         'effective_damage_reduction_pct': 90.0,
         'incoming_damage_multiplier': 1.0,
     }
@@ -533,7 +587,14 @@ def test_build_boss_wave_payload_live_path_avoids_delta_fallback():
             'state::wall.fortification_multiplier',
             'state::tower.defense_pct',
             'state::tower.thorns_damage_pct',
+            'state::wall.thorns_damage_pct',
             'state::cards.plasma_cannon.effect_pct',
+            'state::module.orbital_augment.electron_count',
+            'state::module.primordial_collapse.bh_damage_reduction_pct',
+            'support_surface::ehp.black_hole_duration_seconds',
+            'support_surface::ehp.black_hole_cooldown_seconds',
+            'state::bot.flame.damage_reduction_pct',
+            'state::bot.flame.cooldown_seconds',
         ),
         preset_name='Farming',
         state_mode='start_of_run',
@@ -552,8 +613,8 @@ def test_build_boss_wave_payload_live_path_avoids_delta_fallback():
         end_wave=50,
         boss_wave_step=1,
         stop_on_failure=False,
-        scenario_runtime_inputs=runtime_inputs,
-    )
+            scenario_runtime_inputs=runtime_inputs,
+        )
 
     diagnostics = payload.get('diagnostics') or {}
     assert diagnostics['actual_boss_interval_waves'] == 9
@@ -590,10 +651,19 @@ def test_build_boss_wave_payload_live_path_avoids_delta_fallback():
     assert primitives['wall_fortification_multiplier'] == pytest.approx(canonical['state::wall.fortification_multiplier'])
     assert primitives['tower_defense_pct'] == pytest.approx(canonical['state::tower.defense_pct'])
     assert primitives['tower_thorns_damage_pct'] == pytest.approx(canonical['state::tower.thorns_damage_pct'])
+    assert primitives['wall_thorns_contact_damage_pct'] == pytest.approx(canonical['state::wall.thorns_damage_pct'])
+    assert primitives['wall_thorns_level'] == pytest.approx(float(account_state.labs['Wall Thorns']))
+    assert primitives['wall_thorns_contact_damage_pct'] == pytest.approx(19.36)
     assert primitives['plasma_cannon_effect_pct'] == pytest.approx(canonical['state::cards.plasma_cannon.effect_pct'])
+    assert primitives['orbital_augment_electron_count'] == pytest.approx(canonical['state::module.orbital_augment.electron_count'])
+    assert primitives['primordial_collapse_bh_damage_reduction_pct'] == pytest.approx(canonical['state::module.primordial_collapse.bh_damage_reduction_pct'])
+    assert primitives['black_hole_duration_seconds'] == pytest.approx(canonical['support_surface::ehp.black_hole_duration_seconds'])
+    assert primitives['black_hole_cooldown_seconds'] == pytest.approx(canonical['support_surface::ehp.black_hole_cooldown_seconds'])
+    assert primitives['flame_bot_damage_reduction_pct'] == pytest.approx(canonical['state::bot.flame.damage_reduction_pct'])
+    assert primitives['flame_bot_cooldown_seconds'] == pytest.approx(canonical['state::bot.flame.cooldown_seconds'])
     ledger = diagnostics['replacement_primitive_semantics_ledger']
     assert ledger['primitives']['state::wall.hp']['semantic_meaning'].startswith('QE wall HP surface currently carries wall-health ratio contributors')
-    assert ledger['primitives']['state::wall.hp']['fortification_transform'] == 'not_used_as_final_wall_pool'
+    assert ledger['primitives']['state::wall.hp']['fortification_transform'] == 'not_used_as_final_wall_hp'
     assert ledger['primitives']['state::wall.hp']['classification'] == 'transformed'
     assert ledger['primitives']['state::wall.hp']['boss_waves_semantic_decision'] == 'transformed_primitive_not_final_display_value'
     assert ledger['primitives']['state::wall.hp']['tower_hp'] == pytest.approx(canonical['state::tower.hp'])
@@ -602,13 +672,35 @@ def test_build_boss_wave_payload_live_path_avoids_delta_fallback():
     assert ledger['primitives']['state::wall.regen']['exact_value'] == pytest.approx(canonical['state::wall.regen'])
     assert ledger['primitives']['state::wall.regen']['row_input_value'] == pytest.approx(expected_wall_regen)
     assert ledger['primitives']['state::tower.regen']['exact_value'] == pytest.approx(canonical['state::tower.regen'])
+    assert ledger['primitives']['state::tower.thorns_damage_pct']['semantic_meaning'].endswith(
+        'upstream base for Wall Thorns contact damage'
+    )
+    assert ledger['primitives']['state::wall.thorns_contact_damage_pct']['exact_value'] == pytest.approx(
+        primitives['wall_thorns_contact_damage_pct']
+    )
+    assert 'contact-resolution source' in ledger['primitives']['state::wall.thorns_contact_damage_pct']['semantic_meaning']
+    assert ledger['primitives']['state::module.primordial_collapse.bh_damage_reduction_pct']['exact_value'] == pytest.approx(
+        canonical['state::module.primordial_collapse.bh_damage_reduction_pct']
+    )
+    timed_sources = ledger['timed_dr_semantic_contract']['sources']
+    assert timed_sources['black_hole_pbh']['damage_reduction_pct'] == pytest.approx(
+        canonical['state::module.primordial_collapse.bh_damage_reduction_pct']
+    )
+    assert timed_sources['black_hole_pbh']['uptime_fraction'] == pytest.approx(
+        canonical['support_surface::ehp.black_hole_duration_seconds']
+        / canonical['support_surface::ehp.black_hole_cooldown_seconds']
+    )
+    assert timed_sources['black_hole_pbh']['effective_dr_fraction'] == pytest.approx(0.512)
+    assert timed_sources['flame_bot']['primitive_status'] == 'blocked_missing_duration_seconds_primitive'
+    assert timed_sources['defense_field']['primitive_status'] == 'explicit_runtime_only_no_qe_surface_found'
+    assert ledger['primitives']['module::Sharp Fortitude.wall_thorns_damage_increase_per_hit']['exact_value'] == pytest.approx(0.01)
     assert ledger['workshop_levels']['Wall Health']['exact_value'] == account_state.workshop['Wall Health'].preset_levels['Farming']
     assert ledger['workshop_levels']['Health Regen']['exact_value'] == account_state.workshop['Health Regen'].preset_levels['Farming']
     assert ledger['workshop_levels']['Wall Fortification']['exact_value'] == account_state.labs['Wall Fortification']
     assert ledger['workshop_levels']['Wall Fortification']['fortification_transform'] == 'lab level is converted by QE into state::wall.fortification_multiplier'
     fort_check = ledger['fortification_double_application_check']
     assert fort_check['state_wall_hp_includes_fortification'] is True
-    assert fort_check['reconstructed_wall_pool'] == pytest.approx(primitives['wall_hp'] * primitives['wall_fortification_multiplier'])
+    assert fort_check['reconstructed_wall_hp'] == pytest.approx(primitives['wall_hp'] * primitives['wall_fortification_multiplier'])
     assert fort_check['qe_state_wall_hp_surface'] == pytest.approx(canonical['state::wall.hp'])
     assert fort_check['policy'].startswith('derive pre-fort wall HP from tower_hp')
     hp_check = ledger['wall_hp_formula_check']
@@ -621,16 +713,23 @@ def test_build_boss_wave_payload_live_path_avoids_delta_fallback():
     semantic_contract = ledger['boss_waves_wall_surface_semantic_contract']
     assert semantic_contract['state::wall.hp']['decision'] == 'transformed_primitive_not_final_display_value'
     assert semantic_contract['state::wall.regen']['decision'] == 'transformed_percent_points_primitive_not_final_hp_per_second'
-    assert diagnostics['replacement_display_derivation']['wall_pool'].startswith('operator_rows.wall_pool_hp_used')
-    assert diagnostics['replacement_model']['death_wave_health_multiplier_applies_to'] == 'enemy_health_only_not_wall_hp_or_wall_regen'
+    assert diagnostics['replacement_display_derivation']['wall_hp'].startswith('operator_rows.wall_hp')
+    assert diagnostics['replacement_model']['death_wave_health_multiplier_applies_to'] == 'table1_row_evolved_tower_hp_then_wall_hp_not_wall_regen_or_enemy_health'
+    assert diagnostics['replacement_model']['boss_survival_model'] == 'max_waves_compares_ttd_wall_hp_plus_regen_against_total_v21_ttk_window'
+    ttk_inputs = ledger['boss_ttk_input_contract']
+    assert ttk_inputs['orb_boss_total_damage_pct'] == pytest.approx(2.0)
+    assert ttk_inputs['orb_boss_total_damage_source'] == 'default_orb_boss_total_damage_pct_2'
+    assert ttk_inputs['electron_total_damage_pct'] == pytest.approx(canonical['state::module.orbital_augment.electron_count'] * 3.75)
+    assert ttk_inputs['electron_total_damage_source'] == 'orbital_augment_electron_count_times_boss_electron_pct'
+    assert diagnostics['boss_wave_debug_ledger']['sample_rows']
     first_row = (payload.get('rows') or [{}])[0]
     assert first_row.get('display_wave') == 9
     rows = payload.get('rows') or []
-    assert rows[0]['wall_hp'] > fort_check['row_input_wall_hp']
-    assert rows[-1]['wall_hp'] > rows[0]['wall_hp']
-    assert rows[0]['wall_hp'] == pytest.approx(17810673737511.15)
-    assert rows[0]['wall_pool_hp_used'] == pytest.approx(185231006870115.94)
-    assert rows[0]['wall_pool_hp_used'] == pytest.approx(rows[0]['wall_hp'] * primitives['wall_fortification_multiplier'])
+    assert rows[0]['wall_pre_fort_hp'] > fort_check['row_input_wall_hp']
+    assert rows[-1]['wall_pre_fort_hp'] > rows[0]['wall_pre_fort_hp']
+    assert rows[0]['wall_pre_fort_hp'] == pytest.approx(19731905998921.957)
+    assert rows[0]['wall_hp'] == pytest.approx(205211822388788.38)
+    assert rows[0]['wall_hp'] == pytest.approx(rows[0]['wall_pre_fort_hp'] * primitives['wall_fortification_multiplier'])
     assert rows[0]['wall_regen'] == pytest.approx(5814158246443.825)
     assert rows[0]['summary_lane_id'] == 'avg'
     assert rows[0]['lane_handle_ids'] == {
@@ -638,10 +737,39 @@ def test_build_boss_wave_payload_live_path_avoids_delta_fallback():
         'min': 'boss:boss_waves_replacement_product:9:min',
         'max': 'boss:boss_waves_replacement_product:9:max',
     }
-    assert 'effective_damage_reduction_pct_used' in first_row
-    assert 'boss_contact_time_seconds_used' in first_row
-    assert 'boss_hit_interval_seconds_used' in first_row
-    assert 'incoming_damage_multiplier_used' in first_row
+    assert 'effective_damage_reduction_pct' in first_row
+    assert 'boss_time_to_contact_seconds' in first_row
+    assert 'boss_hit_interval_seconds' in first_row
+    assert 'incoming_damage_multiplier' in first_row
+
+
+def test_boss_wave_perk_timeline_uses_ids_labs_first_choice_and_exports_wall_contributions():
+    from app import pipeline as pipeline_mod
+    from simulators.perk_timeline_generator import PerkTimelinePolicy, generate_timeline_from_policy
+
+    bundle = pipeline_mod.load_inputs(ids_path=IDS_PATH)
+    payload, context = pipeline_mod._perk_policy_context(bundle.ids_raw, getattr(bundle, 'perk_policy', {}) or {})
+    assert payload['waves_required_lab'] == 13
+    assert payload['standard_perk_bonus'] == pytest.approx(0.25)
+    assert payload['perk_option_quantity'] == 2
+    assert context['ban_perks_capacity_ids'] == 6
+    assert len(payload['banned_perks']) == 2
+    assert payload['priority_order'] == ['Perk Wave Requirement -20.00%']
+    assert payload['first_perk_choice'] == 'Perk Wave Requirement -20.00%'
+
+    timeline, diag = generate_timeline_from_policy(PerkTimelinePolicy(**payload))
+    assert diag['pwr_stacks'] == 3
+    assert [row['wave'] for row in timeline if row['perk_taken'] == 'Perk Wave Requirement -20.00%'] == [187, 701, 1215]
+    counts_by_wave = pipeline_mod._boss_wave_perk_counts_by_wave(tuple(timeline))
+    contributions_by_wave = pipeline_mod._boss_wave_perk_contributions_by_wave(
+        counts_by_wave,
+        standard_bonus_pct=float(context['standard_perk_bonus_level']),
+        tradeoff_bonus_pct=float(context['tradeoff_bonus_level']),
+    )
+    final_contributions = contributions_by_wave[max(contributions_by_wave)]
+    assert final_contributions['perk_PERK_X1_20_MAX_HEALTH_effect_1:wall_hp_multiplier'] == pytest.approx(2.5)
+    assert final_contributions['perk_PERK_X1_75_HEALTH_REGEN_effect_1:wall_regen_multiplier'] == pytest.approx(5.9375)
+    assert final_contributions['perk_PERK_TOWER_HEALTH_REGEN_X8_00_BUT_TOWER_MAX_MAX_HEALTH_60_effect_1:wall_regen_multiplier'] == pytest.approx(8.8)
 
 
 def test_build_boss_wave_payload_tourney_fails_closed_without_tournament_wave(monkeypatch):
@@ -1084,3 +1212,6 @@ def test_sharded_evaluators_parity(canonical_pipeline_artifacts):
     projection_views = canonical_pipeline_artifacts['diagnostics']['ep_compare_projection_views']
     assert isinstance(compare_data, dict)
     assert int((projection_views.get('current_state_mode') or {}).get('ep_compare_count') or 0) == len(compare_data)
+
+
+

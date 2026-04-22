@@ -290,6 +290,11 @@ surface_nodes:
   ownership_status: query_owned
   governed_by: canonical_query_engine
   downstream_policy: consume_only_no_rederivation
+- node_id: state::wall.thorns_damage_pct
+  ownership_class: surface
+  ownership_status: query_owned
+  governed_by: canonical_query_engine
+  downstream_policy: consume_only_no_rederivation
 - node_id: state::tower.orb_count
   ownership_class: surface
   ownership_status: query_owned
