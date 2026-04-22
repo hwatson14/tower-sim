@@ -181,7 +181,7 @@
       },
       "derived::edamage": {
         "stat_name": "derived::edamage",
-        "final_value": 1.4822554789105617e+19,
+        "final_value": 3.926504579895528e+19,
         "value_type": "scalar",
         "source_count": 1,
         "status": "resolved",
@@ -207,7 +207,7 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_start_of_run",
         "trace_mode": "full_trace",
-        "display_value": "14.8Q"
+        "display_value": "39.3Q"
       },
       "derived::edamage.acp_factor": {
         "stat_name": "derived::edamage.acp_factor",
@@ -636,7 +636,7 @@
       },
       "derived::edamage.slow_factor": {
         "stat_name": "derived::edamage.slow_factor",
-        "final_value": 1.0,
+        "final_value": 2.6490066225165565,
         "value_type": "multiplier",
         "source_count": 1,
         "status": "resolved",
@@ -646,14 +646,14 @@
             "stat_name": "state::uw.chrono_field.slow_pct",
             "source_family": "published_surface",
             "source_name": "state::uw.chrono_field.slow_pct",
-            "value": null,
-            "value_type": null,
+            "value": 62.25,
+            "value_type": "pct",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
             "destination_id": "edamage.slow_factor",
             "resolver_id": "query_derived_composites",
-            "kb_mapped": false,
-            "display_value": null
+            "kb_mapped": true,
+            "display_value": "62.25%"
           }
         ],
         "schema": {
@@ -662,7 +662,7 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_start_of_run",
         "trace_mode": "full_trace",
-        "display_value": "x1"
+        "display_value": "x2.649"
       },
       "derived::edamage.spotlight_bonus_term": {
         "stat_name": "derived::edamage.spotlight_bonus_term",
@@ -1112,7 +1112,7 @@
       },
       "derived::edamage_ep": {
         "stat_name": "derived::edamage_ep",
-        "final_value": 1.4822554789105617e+19,
+        "final_value": 3.926504579895528e+19,
         "value_type": "scalar",
         "source_count": 1,
         "status": "resolved",
@@ -1138,7 +1138,7 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_start_of_run",
         "trace_mode": "full_trace",
-        "display_value": "14.8Q"
+        "display_value": "39.3Q"
       },
       "derived::edamage_ep_helper.dc_base_damage_stack": {
         "stat_name": "derived::edamage_ep_helper.dc_base_damage_stack",
@@ -1425,7 +1425,7 @@
       },
       "derived::edamage_ep_helper.el_slow_factor": {
         "stat_name": "derived::edamage_ep_helper.el_slow_factor",
-        "final_value": 1.0,
+        "final_value": 2.6490066225165565,
         "value_type": "multiplier",
         "source_count": 1,
         "status": "resolved",
@@ -1435,14 +1435,14 @@
             "stat_name": "state::uw.chrono_field.slow_pct",
             "source_family": "published_surface",
             "source_name": "state::uw.chrono_field.slow_pct",
-            "value": null,
-            "value_type": null,
+            "value": 62.25,
+            "value_type": "pct",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
             "destination_id": "edamage_ep_helper.el_slow_factor",
             "resolver_id": "query_derived_composites",
-            "kb_mapped": false,
-            "display_value": null
+            "kb_mapped": true,
+            "display_value": "62.25%"
           }
         ],
         "schema": {
@@ -1451,7 +1451,7 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_start_of_run",
         "trace_mode": "full_trace",
-        "display_value": "x1"
+        "display_value": "x2.649"
       },
       "derived::eecon": {
         "stat_name": "derived::eecon",
@@ -2163,7 +2163,7 @@
       },
       "derived::ehp": {
         "stat_name": "derived::ehp",
-        "final_value": 1.806140601112012e+22,
+        "final_value": 2.064160686985157e+22,
         "value_type": "scalar",
         "source_count": 2,
         "status": "resolved",
@@ -2202,7 +2202,7 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_start_of_run",
         "trace_mode": "full_trace",
-        "display_value": "18.1s"
+        "display_value": "20.6s"
       },
       "derived::ehp.armor_assist_factor": {
         "stat_name": "derived::ehp.armor_assist_factor",
@@ -2357,7 +2357,7 @@
       },
       "derived::ehp.chrono_field_cooldown_seconds": {
         "stat_name": "derived::ehp.chrono_field_cooldown_seconds",
-        "final_value": 0.0,
+        "final_value": 60.0,
         "value_type": "scalar",
         "source_count": 0,
         "status": "resolved",
@@ -2369,11 +2369,11 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_start_of_run",
         "trace_mode": "full_trace",
-        "display_value": "0"
+        "display_value": "60"
       },
       "derived::ehp.chrono_field_damage_reduction_factor": {
         "stat_name": "derived::ehp.chrono_field_damage_reduction_factor",
-        "final_value": 1.0,
+        "final_value": 1.1428571428571428,
         "value_type": "multiplier",
         "source_count": 1,
         "status": "resolved",
@@ -2383,14 +2383,14 @@
             "stat_name": "state::uw.chrono_field.damage_reduction_pct",
             "source_family": "published_surface",
             "source_name": "state::uw.chrono_field.damage_reduction_pct",
-            "value": null,
-            "value_type": null,
+            "value": 20.0,
+            "value_type": "pct",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
             "destination_id": "ehp.chrono_field_damage_reduction_factor",
             "resolver_id": "query_derived_composites",
-            "kb_mapped": false,
-            "display_value": null
+            "kb_mapped": true,
+            "display_value": "20%"
           }
         ],
         "schema": {
@@ -2399,11 +2399,11 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_start_of_run",
         "trace_mode": "full_trace",
-        "display_value": "x1"
+        "display_value": "x1.143"
       },
       "derived::ehp.chrono_field_damage_reduction_pct": {
         "stat_name": "derived::ehp.chrono_field_damage_reduction_pct",
-        "final_value": 0.0,
+        "final_value": 20.0,
         "value_type": "ratio",
         "source_count": 0,
         "status": "resolved",
@@ -2415,11 +2415,11 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_start_of_run",
         "trace_mode": "full_trace",
-        "display_value": "0"
+        "display_value": "20"
       },
       "derived::ehp.chrono_field_duration_seconds": {
         "stat_name": "derived::ehp.chrono_field_duration_seconds",
-        "final_value": 0.0,
+        "final_value": 100.0,
         "value_type": "scalar",
         "source_count": 0,
         "status": "resolved",
@@ -2431,11 +2431,11 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_start_of_run",
         "trace_mode": "full_trace",
-        "display_value": "0"
+        "display_value": "100"
       },
       "derived::ehp.chrono_field_uptime": {
         "stat_name": "derived::ehp.chrono_field_uptime",
-        "final_value": 0.0,
+        "final_value": 0.625,
         "value_type": "ratio",
         "source_count": 1,
         "status": "resolved",
@@ -2445,14 +2445,14 @@
             "stat_name": "state::uw.chrono_field.duration_seconds",
             "source_family": "published_surface",
             "source_name": "state::uw.chrono_field.duration_seconds",
-            "value": null,
-            "value_type": null,
+            "value": 50.0,
+            "value_type": "seconds",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
             "destination_id": "ehp.chrono_field_uptime",
             "resolver_id": "query_derived_composites",
-            "kb_mapped": false,
-            "display_value": null
+            "kb_mapped": true,
+            "display_value": "50"
           }
         ],
         "schema": {
@@ -2461,7 +2461,7 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_start_of_run",
         "trace_mode": "full_trace",
-        "display_value": "0"
+        "display_value": "0.625"
       },
       "derived::ehp.dabs_base_factor": {
         "stat_name": "derived::ehp.dabs_base_factor",
@@ -3032,7 +3032,7 @@
       },
       "derived::ehp.pre_defense_pool": {
         "stat_name": "derived::ehp.pre_defense_pool",
-        "final_value": 3.6122812022240274e+20,
+        "final_value": 4.128321373970317e+20,
         "value_type": "scalar",
         "source_count": 2,
         "status": "resolved",
@@ -3071,11 +3071,11 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_start_of_run",
         "trace_mode": "full_trace",
-        "display_value": "361Q"
+        "display_value": "413Q"
       },
       "derived::ehp.pre_tradeoff_ehp": {
         "stat_name": "derived::ehp.pre_tradeoff_ehp",
-        "final_value": 1.806140601112012e+22,
+        "final_value": 2.064160686985157e+22,
         "value_type": "scalar",
         "source_count": 2,
         "status": "resolved",
@@ -3114,7 +3114,7 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_start_of_run",
         "trace_mode": "full_trace",
-        "display_value": "18.1s"
+        "display_value": "20.6s"
       },
       "derived::ehp.primordial_black_hole_damage_reduction_factor": {
         "stat_name": "derived::ehp.primordial_black_hole_damage_reduction_factor",
@@ -3561,7 +3561,7 @@
       },
       "derived::ehp_ep": {
         "stat_name": "derived::ehp_ep",
-        "final_value": 1.806140601112012e+22,
+        "final_value": 2.064160686985157e+22,
         "value_type": "scalar",
         "source_count": 2,
         "status": "resolved",
@@ -3600,7 +3600,7 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_start_of_run",
         "trace_mode": "full_trace",
-        "display_value": "18.1s"
+        "display_value": "20.6s"
       },
       "derived::ehp_ep_helper.ce_pool_factor": {
         "stat_name": "derived::ehp_ep_helper.ce_pool_factor",
@@ -3853,7 +3853,7 @@
       },
       "derived::ehp_ep_helper.cl_cfdr_factor": {
         "stat_name": "derived::ehp_ep_helper.cl_cfdr_factor",
-        "final_value": 1.0,
+        "final_value": 1.1428571428571428,
         "value_type": "multiplier",
         "source_count": 1,
         "status": "resolved",
@@ -3863,14 +3863,14 @@
             "stat_name": "state::uw.chrono_field.damage_reduction_pct",
             "source_family": "published_surface",
             "source_name": "state::uw.chrono_field.damage_reduction_pct",
-            "value": null,
-            "value_type": null,
+            "value": 20.0,
+            "value_type": "pct",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
             "destination_id": "ehp.ep_cl_cfdr_factor",
             "resolver_id": "query_derived_composites",
-            "kb_mapped": false,
-            "display_value": null
+            "kb_mapped": true,
+            "display_value": "20%"
           }
         ],
         "schema": {
@@ -3879,7 +3879,7 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_start_of_run",
         "trace_mode": "full_trace",
-        "display_value": "x1"
+        "display_value": "x1.143"
       },
       "derived::ehp_ep_helper.cm_chain_thunder_factor": {
         "stat_name": "derived::ehp_ep_helper.cm_chain_thunder_factor",
@@ -9882,6 +9882,171 @@
         "trace_mode": "full_trace",
         "display_value": "36"
       },
+      "state::uw.chrono_field.cooldown_seconds": {
+        "stat_name": "state::uw.chrono_field.cooldown_seconds",
+        "final_value": 60.0,
+        "value_type": "seconds",
+        "source_count": 1,
+        "status": "resolved",
+        "notes": "Resolved through run_stats bounded query bundle.",
+        "contributors": [
+          {
+            "surface_id": "state::uw.chrono_field.cooldown_seconds",
+            "surface_class": "surface",
+            "domain": "ultimate_weapons",
+            "source_class": "ultimate_weapons",
+            "composition_stage": "additive_pre_cap",
+            "contributor_id": "uw_upgrade__chrono_field__cooldown__seconds",
+            "value": 60.0,
+            "value_type": "scalar",
+            "input_value_type": "resolved_value",
+            "active": true,
+            "gate_reason": null,
+            "provenance_ref": "IDS::UWs",
+            "display_value": "60"
+          }
+        ],
+        "schema": null,
+        "bundle_id": "progression_core_stats",
+        "family_id": "progression_start_of_run",
+        "trace_mode": "full_trace",
+        "display_value": "60"
+      },
+      "state::uw.chrono_field.damage_reduction_pct": {
+        "stat_name": "state::uw.chrono_field.damage_reduction_pct",
+        "final_value": 20.0,
+        "value_type": "pct",
+        "source_count": 2,
+        "status": "resolved",
+        "notes": "Resolved through run_stats bounded query bundle.",
+        "contributors": [
+          {
+            "surface_id": "state::uw.chrono_field.damage_reduction_pct",
+            "surface_class": "surface",
+            "domain": "ultimate_weapons",
+            "source_class": "labs",
+            "composition_stage": "additive_pre_cap",
+            "contributor_id": "lab.chrono_field_damage_reduction.account_state",
+            "value": 10.0,
+            "value_type": "scalar",
+            "input_value_type": "resolved_value",
+            "active": true,
+            "gate_reason": null,
+            "provenance_ref": "IDS::Labs",
+            "display_value": "10"
+          },
+          {
+            "surface_id": "state::uw.chrono_field.damage_reduction_pct",
+            "surface_class": "surface",
+            "domain": "ultimate_weapons",
+            "source_class": "labs",
+            "composition_stage": "additive_pre_cap",
+            "contributor_id": "lab.chrono_field_reduction_%.account_state",
+            "value": 10.0,
+            "value_type": "scalar",
+            "input_value_type": "resolved_value",
+            "active": true,
+            "gate_reason": null,
+            "provenance_ref": "IDS::Labs",
+            "display_value": "10"
+          }
+        ],
+        "schema": null,
+        "bundle_id": "progression_core_stats",
+        "family_id": "progression_start_of_run",
+        "trace_mode": "full_trace",
+        "display_value": "20%"
+      },
+      "state::uw.chrono_field.duration_seconds": {
+        "stat_name": "state::uw.chrono_field.duration_seconds",
+        "final_value": 50.0,
+        "value_type": "seconds",
+        "source_count": 2,
+        "status": "resolved",
+        "notes": "Resolved through run_stats bounded query bundle.",
+        "contributors": [
+          {
+            "surface_id": "state::uw.chrono_field.duration_seconds",
+            "surface_class": "surface",
+            "domain": "ultimate_weapons",
+            "source_class": "labs",
+            "composition_stage": "additive_pre_cap",
+            "contributor_id": "lab.chrono_field_duration.account_state",
+            "value": 30.0,
+            "value_type": "scalar",
+            "input_value_type": "resolved_value",
+            "active": true,
+            "gate_reason": null,
+            "provenance_ref": "IDS::Labs",
+            "display_value": "30"
+          },
+          {
+            "surface_id": "state::uw.chrono_field.duration_seconds",
+            "surface_class": "surface",
+            "domain": "ultimate_weapons",
+            "source_class": "ultimate_weapons",
+            "composition_stage": "additive_pre_cap",
+            "contributor_id": "uw_upgrade__chrono_field__duration__seconds",
+            "value": 20.0,
+            "value_type": "scalar",
+            "input_value_type": "resolved_value",
+            "active": true,
+            "gate_reason": null,
+            "provenance_ref": "IDS::UWs",
+            "display_value": "20"
+          }
+        ],
+        "schema": null,
+        "bundle_id": "progression_core_stats",
+        "family_id": "progression_start_of_run",
+        "trace_mode": "full_trace",
+        "display_value": "50"
+      },
+      "state::uw.chrono_field.slow_pct": {
+        "stat_name": "state::uw.chrono_field.slow_pct",
+        "final_value": 62.25,
+        "value_type": "pct",
+        "source_count": 2,
+        "status": "resolved",
+        "notes": "Resolved through run_stats bounded query bundle.",
+        "contributors": [
+          {
+            "surface_id": "state::uw.chrono_field.slow_pct",
+            "surface_class": "surface",
+            "domain": "ultimate_weapons",
+            "source_class": "module_substat",
+            "composition_stage": "additive_pre_cap",
+            "contributor_id": "module_substat.dimension_core.loadout_resolved",
+            "value": 2.25,
+            "value_type": "scalar",
+            "input_value_type": "percent_display",
+            "active": true,
+            "gate_reason": null,
+            "provenance_ref": "IDS::Modules",
+            "display_value": "2.25%"
+          },
+          {
+            "surface_id": "state::uw.chrono_field.slow_pct",
+            "surface_class": "surface",
+            "domain": "ultimate_weapons",
+            "source_class": "ultimate_weapons",
+            "composition_stage": "additive_pre_cap",
+            "contributor_id": "uw_upgrade__chrono_field__slow__pct",
+            "value": 60.0,
+            "value_type": "scalar",
+            "input_value_type": "resolved_value",
+            "active": true,
+            "gate_reason": null,
+            "provenance_ref": "IDS::UWs",
+            "display_value": "60%"
+          }
+        ],
+        "schema": null,
+        "bundle_id": "progression_core_stats",
+        "family_id": "progression_start_of_run",
+        "trace_mode": "full_trace",
+        "display_value": "62.25%"
+      },
       "state::uw.golden_tower.base_cooldown_seconds": {
         "stat_name": "state::uw.golden_tower.base_cooldown_seconds",
         "final_value": 180.0,
@@ -10287,6 +10452,36 @@
         "trace_mode": "full_trace",
         "display_value": "525"
       },
+      "state::wall.thorns_damage_pct": {
+        "stat_name": "state::wall.thorns_damage_pct",
+        "final_value": 19.36,
+        "value_type": "pct",
+        "source_count": 1,
+        "status": "resolved",
+        "notes": "Resolved through run_stats bounded query bundle.",
+        "contributors": [
+          {
+            "surface_id": "state::wall.thorns_damage_pct",
+            "surface_class": "surface",
+            "domain": "progression",
+            "source_class": "labs",
+            "composition_stage": "additive_pre_cap",
+            "contributor_id": "lab__wall__thorns_damage__pct",
+            "value": 0.16,
+            "value_type": "scalar",
+            "input_value_type": "resolved_value",
+            "active": true,
+            "gate_reason": null,
+            "provenance_ref": "IDS::Labs",
+            "display_value": "0.16%"
+          }
+        ],
+        "schema": null,
+        "bundle_id": "progression_core_stats",
+        "family_id": "progression_start_of_run",
+        "trace_mode": "full_trace",
+        "display_value": "19.36%"
+      },
       "support_surface::eecon.adstarter_theme_relic_factor": {
         "stat_name": "support_surface::eecon.adstarter_theme_relic_factor",
         "final_value": 1.48,
@@ -10649,18 +10844,18 @@
       }
     },
     "diagnostics": {
-      "pipeline_kind": "run_stats_bounded_query",
-      "state_mode": "start_of_run",
+      "bundle_ids": [
+        "progression_core_stats",
+        "timing_core_cycle",
+        "timing_wave_duration"
+      ],
       "family_ids": [
         "progression_start_of_run",
         "timing_scenario_probe",
         "timing_scenario_probe"
       ],
-      "bundle_ids": [
-        "progression_core_stats",
-        "timing_core_cycle",
-        "timing_wave_duration"
-      ]
+      "resolved_surface_count": 291,
+      "contributor_row_count": 293
     }
   },
   "Tourney": {
@@ -10845,7 +11040,7 @@
       },
       "derived::edamage": {
         "stat_name": "derived::edamage",
-        "final_value": 1.2497010391114601e+20,
+        "final_value": 4.9988041564458405e+20,
         "value_type": "scalar",
         "source_count": 1,
         "status": "resolved",
@@ -10871,7 +11066,7 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_start_of_run",
         "trace_mode": "full_trace",
-        "display_value": "125Q"
+        "display_value": "500Q"
       },
       "derived::edamage.acp_factor": {
         "stat_name": "derived::edamage.acp_factor",
@@ -11300,7 +11495,7 @@
       },
       "derived::edamage.slow_factor": {
         "stat_name": "derived::edamage.slow_factor",
-        "final_value": 1.0,
+        "final_value": 4.0,
         "value_type": "multiplier",
         "source_count": 1,
         "status": "resolved",
@@ -11310,14 +11505,14 @@
             "stat_name": "state::uw.chrono_field.slow_pct",
             "source_family": "published_surface",
             "source_name": "state::uw.chrono_field.slow_pct",
-            "value": null,
-            "value_type": null,
+            "value": 75.0,
+            "value_type": "pct",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
             "destination_id": "edamage.slow_factor",
             "resolver_id": "query_derived_composites",
-            "kb_mapped": false,
-            "display_value": null
+            "kb_mapped": true,
+            "display_value": "75%"
           }
         ],
         "schema": {
@@ -11326,7 +11521,7 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_start_of_run",
         "trace_mode": "full_trace",
-        "display_value": "x1"
+        "display_value": "x4"
       },
       "derived::edamage.spotlight_bonus_term": {
         "stat_name": "derived::edamage.spotlight_bonus_term",
@@ -11776,7 +11971,7 @@
       },
       "derived::edamage_ep": {
         "stat_name": "derived::edamage_ep",
-        "final_value": 1.2497010391114601e+20,
+        "final_value": 4.9988041564458405e+20,
         "value_type": "scalar",
         "source_count": 1,
         "status": "resolved",
@@ -11802,7 +11997,7 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_start_of_run",
         "trace_mode": "full_trace",
-        "display_value": "125Q"
+        "display_value": "500Q"
       },
       "derived::edamage_ep_helper.dc_base_damage_stack": {
         "stat_name": "derived::edamage_ep_helper.dc_base_damage_stack",
@@ -12089,7 +12284,7 @@
       },
       "derived::edamage_ep_helper.el_slow_factor": {
         "stat_name": "derived::edamage_ep_helper.el_slow_factor",
-        "final_value": 1.0,
+        "final_value": 4.0,
         "value_type": "multiplier",
         "source_count": 1,
         "status": "resolved",
@@ -12099,14 +12294,14 @@
             "stat_name": "state::uw.chrono_field.slow_pct",
             "source_family": "published_surface",
             "source_name": "state::uw.chrono_field.slow_pct",
-            "value": null,
-            "value_type": null,
+            "value": 75.0,
+            "value_type": "pct",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
             "destination_id": "edamage_ep_helper.el_slow_factor",
             "resolver_id": "query_derived_composites",
-            "kb_mapped": false,
-            "display_value": null
+            "kb_mapped": true,
+            "display_value": "75%"
           }
         ],
         "schema": {
@@ -12115,7 +12310,7 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_start_of_run",
         "trace_mode": "full_trace",
-        "display_value": "x1"
+        "display_value": "x4"
       },
       "derived::eecon": {
         "stat_name": "derived::eecon",
@@ -12827,7 +13022,7 @@
       },
       "derived::ehp": {
         "stat_name": "derived::ehp",
-        "final_value": 1.8065009821614908e+21,
+        "final_value": 2.0645725510417037e+21,
         "value_type": "scalar",
         "source_count": 2,
         "status": "resolved",
@@ -12866,7 +13061,7 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_start_of_run",
         "trace_mode": "full_trace",
-        "display_value": "1.81s"
+        "display_value": "2.06s"
       },
       "derived::ehp.armor_assist_factor": {
         "stat_name": "derived::ehp.armor_assist_factor",
@@ -13021,7 +13216,7 @@
       },
       "derived::ehp.chrono_field_cooldown_seconds": {
         "stat_name": "derived::ehp.chrono_field_cooldown_seconds",
-        "final_value": 0.0,
+        "final_value": 60.0,
         "value_type": "scalar",
         "source_count": 0,
         "status": "resolved",
@@ -13033,11 +13228,11 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_start_of_run",
         "trace_mode": "full_trace",
-        "display_value": "0"
+        "display_value": "60"
       },
       "derived::ehp.chrono_field_damage_reduction_factor": {
         "stat_name": "derived::ehp.chrono_field_damage_reduction_factor",
-        "final_value": 1.0,
+        "final_value": 1.1428571428571428,
         "value_type": "multiplier",
         "source_count": 1,
         "status": "resolved",
@@ -13047,14 +13242,14 @@
             "stat_name": "state::uw.chrono_field.damage_reduction_pct",
             "source_family": "published_surface",
             "source_name": "state::uw.chrono_field.damage_reduction_pct",
-            "value": null,
-            "value_type": null,
+            "value": 20.0,
+            "value_type": "pct",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
             "destination_id": "ehp.chrono_field_damage_reduction_factor",
             "resolver_id": "query_derived_composites",
-            "kb_mapped": false,
-            "display_value": null
+            "kb_mapped": true,
+            "display_value": "20%"
           }
         ],
         "schema": {
@@ -13063,11 +13258,11 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_start_of_run",
         "trace_mode": "full_trace",
-        "display_value": "x1"
+        "display_value": "x1.143"
       },
       "derived::ehp.chrono_field_damage_reduction_pct": {
         "stat_name": "derived::ehp.chrono_field_damage_reduction_pct",
-        "final_value": 0.0,
+        "final_value": 20.0,
         "value_type": "ratio",
         "source_count": 0,
         "status": "resolved",
@@ -13079,11 +13274,11 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_start_of_run",
         "trace_mode": "full_trace",
-        "display_value": "0"
+        "display_value": "20"
       },
       "derived::ehp.chrono_field_duration_seconds": {
         "stat_name": "derived::ehp.chrono_field_duration_seconds",
-        "final_value": 0.0,
+        "final_value": 100.0,
         "value_type": "scalar",
         "source_count": 0,
         "status": "resolved",
@@ -13095,11 +13290,11 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_start_of_run",
         "trace_mode": "full_trace",
-        "display_value": "0"
+        "display_value": "100"
       },
       "derived::ehp.chrono_field_uptime": {
         "stat_name": "derived::ehp.chrono_field_uptime",
-        "final_value": 0.0,
+        "final_value": 0.625,
         "value_type": "ratio",
         "source_count": 1,
         "status": "resolved",
@@ -13109,14 +13304,14 @@
             "stat_name": "state::uw.chrono_field.duration_seconds",
             "source_family": "published_surface",
             "source_name": "state::uw.chrono_field.duration_seconds",
-            "value": null,
-            "value_type": null,
+            "value": 50.0,
+            "value_type": "seconds",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
             "destination_id": "ehp.chrono_field_uptime",
             "resolver_id": "query_derived_composites",
-            "kb_mapped": false,
-            "display_value": null
+            "kb_mapped": true,
+            "display_value": "50"
           }
         ],
         "schema": {
@@ -13125,7 +13320,7 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_start_of_run",
         "trace_mode": "full_trace",
-        "display_value": "0"
+        "display_value": "0.625"
       },
       "derived::ehp.dabs_base_factor": {
         "stat_name": "derived::ehp.dabs_base_factor",
@@ -13696,7 +13891,7 @@
       },
       "derived::ehp.pre_defense_pool": {
         "stat_name": "derived::ehp.pre_defense_pool",
-        "final_value": 3.6130019643229848e+19,
+        "final_value": 4.129145102083411e+19,
         "value_type": "scalar",
         "source_count": 2,
         "status": "resolved",
@@ -13735,11 +13930,11 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_start_of_run",
         "trace_mode": "full_trace",
-        "display_value": "36.1Q"
+        "display_value": "41.3Q"
       },
       "derived::ehp.pre_tradeoff_ehp": {
         "stat_name": "derived::ehp.pre_tradeoff_ehp",
-        "final_value": 1.8065009821614908e+21,
+        "final_value": 2.0645725510417037e+21,
         "value_type": "scalar",
         "source_count": 2,
         "status": "resolved",
@@ -13778,7 +13973,7 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_start_of_run",
         "trace_mode": "full_trace",
-        "display_value": "1.81s"
+        "display_value": "2.06s"
       },
       "derived::ehp.primordial_black_hole_damage_reduction_factor": {
         "stat_name": "derived::ehp.primordial_black_hole_damage_reduction_factor",
@@ -14225,7 +14420,7 @@
       },
       "derived::ehp_ep": {
         "stat_name": "derived::ehp_ep",
-        "final_value": 1.8065009821614908e+21,
+        "final_value": 2.0645725510417037e+21,
         "value_type": "scalar",
         "source_count": 2,
         "status": "resolved",
@@ -14264,7 +14459,7 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_start_of_run",
         "trace_mode": "full_trace",
-        "display_value": "1.81s"
+        "display_value": "2.06s"
       },
       "derived::ehp_ep_helper.ce_pool_factor": {
         "stat_name": "derived::ehp_ep_helper.ce_pool_factor",
@@ -14517,7 +14712,7 @@
       },
       "derived::ehp_ep_helper.cl_cfdr_factor": {
         "stat_name": "derived::ehp_ep_helper.cl_cfdr_factor",
-        "final_value": 1.0,
+        "final_value": 1.1428571428571428,
         "value_type": "multiplier",
         "source_count": 1,
         "status": "resolved",
@@ -14527,14 +14722,14 @@
             "stat_name": "state::uw.chrono_field.damage_reduction_pct",
             "source_family": "published_surface",
             "source_name": "state::uw.chrono_field.damage_reduction_pct",
-            "value": null,
-            "value_type": null,
+            "value": 20.0,
+            "value_type": "pct",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
             "destination_id": "ehp.ep_cl_cfdr_factor",
             "resolver_id": "query_derived_composites",
-            "kb_mapped": false,
-            "display_value": null
+            "kb_mapped": true,
+            "display_value": "20%"
           }
         ],
         "schema": {
@@ -14543,7 +14738,7 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_start_of_run",
         "trace_mode": "full_trace",
-        "display_value": "x1"
+        "display_value": "x1.143"
       },
       "derived::ehp_ep_helper.cm_chain_thunder_factor": {
         "stat_name": "derived::ehp_ep_helper.cm_chain_thunder_factor",
@@ -20336,6 +20531,171 @@
         "trace_mode": "full_trace",
         "display_value": "31"
       },
+      "state::uw.chrono_field.cooldown_seconds": {
+        "stat_name": "state::uw.chrono_field.cooldown_seconds",
+        "final_value": 60.0,
+        "value_type": "seconds",
+        "source_count": 1,
+        "status": "resolved",
+        "notes": "Resolved through run_stats bounded query bundle.",
+        "contributors": [
+          {
+            "surface_id": "state::uw.chrono_field.cooldown_seconds",
+            "surface_class": "surface",
+            "domain": "ultimate_weapons",
+            "source_class": "ultimate_weapons",
+            "composition_stage": "additive_pre_cap",
+            "contributor_id": "uw_upgrade__chrono_field__cooldown__seconds",
+            "value": 60.0,
+            "value_type": "scalar",
+            "input_value_type": "resolved_value",
+            "active": true,
+            "gate_reason": null,
+            "provenance_ref": "IDS::UWs",
+            "display_value": "60"
+          }
+        ],
+        "schema": null,
+        "bundle_id": "progression_core_stats",
+        "family_id": "progression_start_of_run",
+        "trace_mode": "full_trace",
+        "display_value": "60"
+      },
+      "state::uw.chrono_field.damage_reduction_pct": {
+        "stat_name": "state::uw.chrono_field.damage_reduction_pct",
+        "final_value": 20.0,
+        "value_type": "pct",
+        "source_count": 2,
+        "status": "resolved",
+        "notes": "Resolved through run_stats bounded query bundle.",
+        "contributors": [
+          {
+            "surface_id": "state::uw.chrono_field.damage_reduction_pct",
+            "surface_class": "surface",
+            "domain": "ultimate_weapons",
+            "source_class": "labs",
+            "composition_stage": "additive_pre_cap",
+            "contributor_id": "lab.chrono_field_damage_reduction.account_state",
+            "value": 10.0,
+            "value_type": "scalar",
+            "input_value_type": "resolved_value",
+            "active": true,
+            "gate_reason": null,
+            "provenance_ref": "IDS::Labs",
+            "display_value": "10"
+          },
+          {
+            "surface_id": "state::uw.chrono_field.damage_reduction_pct",
+            "surface_class": "surface",
+            "domain": "ultimate_weapons",
+            "source_class": "labs",
+            "composition_stage": "additive_pre_cap",
+            "contributor_id": "lab.chrono_field_reduction_%.account_state",
+            "value": 10.0,
+            "value_type": "scalar",
+            "input_value_type": "resolved_value",
+            "active": true,
+            "gate_reason": null,
+            "provenance_ref": "IDS::Labs",
+            "display_value": "10"
+          }
+        ],
+        "schema": null,
+        "bundle_id": "progression_core_stats",
+        "family_id": "progression_start_of_run",
+        "trace_mode": "full_trace",
+        "display_value": "20%"
+      },
+      "state::uw.chrono_field.duration_seconds": {
+        "stat_name": "state::uw.chrono_field.duration_seconds",
+        "final_value": 50.0,
+        "value_type": "seconds",
+        "source_count": 2,
+        "status": "resolved",
+        "notes": "Resolved through run_stats bounded query bundle.",
+        "contributors": [
+          {
+            "surface_id": "state::uw.chrono_field.duration_seconds",
+            "surface_class": "surface",
+            "domain": "ultimate_weapons",
+            "source_class": "labs",
+            "composition_stage": "additive_pre_cap",
+            "contributor_id": "lab.chrono_field_duration.account_state",
+            "value": 30.0,
+            "value_type": "scalar",
+            "input_value_type": "resolved_value",
+            "active": true,
+            "gate_reason": null,
+            "provenance_ref": "IDS::Labs",
+            "display_value": "30"
+          },
+          {
+            "surface_id": "state::uw.chrono_field.duration_seconds",
+            "surface_class": "surface",
+            "domain": "ultimate_weapons",
+            "source_class": "ultimate_weapons",
+            "composition_stage": "additive_pre_cap",
+            "contributor_id": "uw_upgrade__chrono_field__duration__seconds",
+            "value": 20.0,
+            "value_type": "scalar",
+            "input_value_type": "resolved_value",
+            "active": true,
+            "gate_reason": null,
+            "provenance_ref": "IDS::UWs",
+            "display_value": "20"
+          }
+        ],
+        "schema": null,
+        "bundle_id": "progression_core_stats",
+        "family_id": "progression_start_of_run",
+        "trace_mode": "full_trace",
+        "display_value": "50"
+      },
+      "state::uw.chrono_field.slow_pct": {
+        "stat_name": "state::uw.chrono_field.slow_pct",
+        "final_value": 75.0,
+        "value_type": "pct",
+        "source_count": 2,
+        "status": "resolved",
+        "notes": "Resolved through run_stats bounded query bundle.",
+        "contributors": [
+          {
+            "surface_id": "state::uw.chrono_field.slow_pct",
+            "surface_class": "surface",
+            "domain": "ultimate_weapons",
+            "source_class": "module_substat",
+            "composition_stage": "additive_pre_cap",
+            "contributor_id": "module_substat.dimension_core.loadout_resolved",
+            "value": 15.0,
+            "value_type": "scalar",
+            "input_value_type": "percent_display",
+            "active": true,
+            "gate_reason": null,
+            "provenance_ref": "IDS::Modules",
+            "display_value": "15%"
+          },
+          {
+            "surface_id": "state::uw.chrono_field.slow_pct",
+            "surface_class": "surface",
+            "domain": "ultimate_weapons",
+            "source_class": "ultimate_weapons",
+            "composition_stage": "additive_pre_cap",
+            "contributor_id": "uw_upgrade__chrono_field__slow__pct",
+            "value": 60.0,
+            "value_type": "scalar",
+            "input_value_type": "resolved_value",
+            "active": true,
+            "gate_reason": null,
+            "provenance_ref": "IDS::UWs",
+            "display_value": "60%"
+          }
+        ],
+        "schema": null,
+        "bundle_id": "progression_core_stats",
+        "family_id": "progression_start_of_run",
+        "trace_mode": "full_trace",
+        "display_value": "75%"
+      },
       "state::uw.golden_tower.base_cooldown_seconds": {
         "stat_name": "state::uw.golden_tower.base_cooldown_seconds",
         "final_value": 180.0,
@@ -20695,6 +21055,36 @@
         "family_id": "progression_start_of_run",
         "trace_mode": "full_trace",
         "display_value": "210"
+      },
+      "state::wall.thorns_damage_pct": {
+        "stat_name": "state::wall.thorns_damage_pct",
+        "final_value": 17.76,
+        "value_type": "pct",
+        "source_count": 1,
+        "status": "resolved",
+        "notes": "Resolved through run_stats bounded query bundle.",
+        "contributors": [
+          {
+            "surface_id": "state::wall.thorns_damage_pct",
+            "surface_class": "surface",
+            "domain": "progression",
+            "source_class": "labs",
+            "composition_stage": "additive_pre_cap",
+            "contributor_id": "lab__wall__thorns_damage__pct",
+            "value": 0.16,
+            "value_type": "scalar",
+            "input_value_type": "resolved_value",
+            "active": true,
+            "gate_reason": null,
+            "provenance_ref": "IDS::Labs",
+            "display_value": "0.16%"
+          }
+        ],
+        "schema": null,
+        "bundle_id": "progression_core_stats",
+        "family_id": "progression_start_of_run",
+        "trace_mode": "full_trace",
+        "display_value": "17.76%"
       },
       "support_surface::eecon.adstarter_theme_relic_factor": {
         "stat_name": "support_surface::eecon.adstarter_theme_relic_factor",
@@ -21058,18 +21448,18 @@
       }
     },
     "diagnostics": {
-      "pipeline_kind": "run_stats_bounded_query",
-      "state_mode": "start_of_run",
+      "bundle_ids": [
+        "progression_core_stats",
+        "timing_core_cycle",
+        "timing_wave_duration"
+      ],
       "family_ids": [
         "progression_start_of_run",
         "timing_tournament_no_perks",
         "timing_tournament_no_perks"
       ],
-      "bundle_ids": [
-        "progression_core_stats",
-        "timing_core_cycle",
-        "timing_wave_duration"
-      ]
+      "resolved_surface_count": 291,
+      "contributor_row_count": 276
     }
   }
 }

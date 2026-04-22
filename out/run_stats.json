@@ -122,8 +122,137 @@
             }
           },
           "perks": {
-            "perk_preset_name": null,
-            "selections": []
+            "perk_preset_name": "ProjectedMaxPolicy_AllExceptManualBans",
+            "selections": [
+              {
+                "perk_id": "PERK_X1_20_MAX_HEALTH",
+                "picks": 5
+              },
+              {
+                "perk_id": "PERK_X1_15_DAMAGE",
+                "picks": 5
+              },
+              {
+                "perk_id": "PERK_X1_15_ALL_COIN_BONUSES",
+                "picks": 5
+              },
+              {
+                "perk_id": "PERK_X1_15_DEFENSE_ABSOLUTE",
+                "picks": 5
+              },
+              {
+                "perk_id": "PERK_X1_15_CASH_BONUS",
+                "picks": 5
+              },
+              {
+                "perk_id": "PERK_X1_75_HEALTH_REGEN",
+                "picks": 5
+              },
+              {
+                "perk_id": "PERK_INTEREST_X1_50",
+                "picks": 5
+              },
+              {
+                "perk_id": "PERK_LAND_MINE_DAMAGE_X3_50",
+                "picks": 5
+              },
+              {
+                "perk_id": "PERK_FREE_UPGRADE_CHANCE_FOR_ALL_5_0",
+                "picks": 5
+              },
+              {
+                "perk_id": "PERK_DEFENSE_PERCENT_4_00",
+                "picks": 5
+              },
+              {
+                "perk_id": "PERK_BOUNCE_SHOT_2",
+                "picks": 3
+              },
+              {
+                "perk_id": "PERK_PERK_WAVE_REQUIREMENT_20_00",
+                "picks": 3
+              },
+              {
+                "perk_id": "PERK_ORBS_1",
+                "picks": 2
+              },
+              {
+                "perk_id": "PERK_UNLOCK_A_RANDOM_ULTIMATE_WEAPON",
+                "picks": 1
+              },
+              {
+                "perk_id": "PERK_INCREASE_MAX_GAME_SPEED_BY_1_00",
+                "picks": 1
+              },
+              {
+                "perk_id": "PERK_4_MORE_SMART_MISSILES",
+                "picks": 1
+              },
+              {
+                "perk_id": "PERK_SWAMP_RADIUS_X1_5",
+                "picks": 1
+              },
+              {
+                "perk_id": "PERK_1_WAVE_ON_DEATH_WAVE",
+                "picks": 1
+              },
+              {
+                "perk_id": "PERK_EXTRA_SET_OF_INNER_MINES",
+                "picks": 1
+              },
+              {
+                "perk_id": "PERK_GOLDEN_TOWER_BONUS_X1_5",
+                "picks": 1
+              },
+              {
+                "perk_id": "PERK_CHAIN_LIGHTNING_DAMAGE_X2",
+                "picks": 1
+              },
+              {
+                "perk_id": "PERK_CHRONO_FIELD_DURATION_5S",
+                "picks": 1
+              },
+              {
+                "perk_id": "PERK_BLACK_HOLE_DURATION_12_0S",
+                "picks": 1
+              },
+              {
+                "perk_id": "PERK_SPOTLIGHT_DAMAGE_BONUS_X1_5",
+                "picks": 1
+              },
+              {
+                "perk_id": "PERK_X1_50_TOWER_DAMAGE_BUT_BOSSES_HAVE_8X_HEALTH",
+                "picks": 1
+              },
+              {
+                "perk_id": "PERK_X1_80_COINS_BUT_TOWER_MAX_HEALTH_70",
+                "picks": 1
+              },
+              {
+                "perk_id": "PERK_ENEMIES_DAMAGE_50_BUT_TOWER_DAMAGE_50",
+                "picks": 1
+              },
+              {
+                "perk_id": "PERK_RANGED_ENEMIES_ATTACK_DISTANCE_REDUCED_BUT_TOWER_RANGED_ENEMIES_DAMAGE_X3",
+                "picks": 1
+              },
+              {
+                "perk_id": "PERK_X12_00_CASH_PER_WAVE_BUT_ENEMY_KILL_DON_T_GIVE_CASH",
+                "picks": 1
+              },
+              {
+                "perk_id": "PERK_TOWER_HEALTH_REGEN_X8_00_BUT_TOWER_MAX_MAX_HEALTH_60",
+                "picks": 1
+              },
+              {
+                "perk_id": "PERK_BOSS_HEALTH_70_BUT_BOSS_SPEED_50",
+                "picks": 1
+              },
+              {
+                "perk_id": "PERK_LIFESTEAL_X2_50_BUT_KNOCKBACK_FORCE_70",
+                "picks": 1
+              }
+            ]
           },
           "bots": {
             "enabled": [
@@ -247,14 +376,14 @@
             "stat_name": "derived::edamage",
             "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 1.4822554789105617e+19,
-              "display_value": "14.8Q",
+              "final_value": 3.926504579895528e+19,
+              "display_value": "39.3Q",
               "value_type": "scalar",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 2.1945331353828917e+19,
-              "display_value": "21.9Q",
+              "final_value": 1.1443295525373225e+20,
+              "display_value": "114Q",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -285,8 +414,8 @@
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 4509616197.696707,
-              "display_value": "4.51B",
+              "final_value": 8138447981.780773,
+              "display_value": "8.14B",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -333,8 +462,8 @@
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 4.034108744542168,
-              "display_value": "x4.034",
+              "final_value": 4.400190893297815,
+              "display_value": "x4.4",
               "value_type": "multiplier",
               "status": "resolved"
             }
@@ -381,8 +510,8 @@
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 3221970.012422497,
-              "display_value": "3.22M",
+              "final_value": 3514353.2326243967,
+              "display_value": "3.51M",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -455,14 +584,14 @@
             "stat_name": "derived::edamage.slow_factor",
             "changed_in_max_progression": false,
             "start_of_run": {
-              "final_value": 1.0,
-              "display_value": "x1",
+              "final_value": 2.6490066225165565,
+              "display_value": "x2.649",
               "value_type": "multiplier",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 1.0,
-              "display_value": "x1",
+              "final_value": 2.6490066225165565,
+              "display_value": "x2.649",
               "value_type": "multiplier",
               "status": "resolved"
             }
@@ -695,14 +824,14 @@
             "stat_name": "derived::edamage_ep",
             "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 1.4822554789105617e+19,
-              "display_value": "14.8Q",
+              "final_value": 3.926504579895528e+19,
+              "display_value": "39.3Q",
               "value_type": "scalar",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 2.1945331353828917e+19,
-              "display_value": "21.9Q",
+              "final_value": 1.1443295525373225e+20,
+              "display_value": "114Q",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -717,8 +846,8 @@
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 4509616197.696707,
-              "display_value": "4.51B",
+              "final_value": 8138447981.780773,
+              "display_value": "8.14B",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -781,8 +910,8 @@
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 3221970.012422497,
-              "display_value": "3.22M",
+              "final_value": 3514353.2326243967,
+              "display_value": "3.51M",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -855,14 +984,14 @@
             "stat_name": "derived::edamage_ep_helper.el_slow_factor",
             "changed_in_max_progression": false,
             "start_of_run": {
-              "final_value": 1.0,
-              "display_value": "x1",
+              "final_value": 2.6490066225165565,
+              "display_value": "x2.649",
               "value_type": "multiplier",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 1.0,
-              "display_value": "x1",
+              "final_value": 2.6490066225165565,
+              "display_value": "x2.649",
               "value_type": "multiplier",
               "status": "resolved"
             }
@@ -1399,14 +1528,14 @@
             "stat_name": "derived::ehp",
             "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 1.806140601112012e+22,
-              "display_value": "18.1s",
+              "final_value": 2.064160686985157e+22,
+              "display_value": "20.6s",
               "value_type": "scalar",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 6.606472033361458e+24,
-              "display_value": "6.61S",
+              "final_value": 2.276554552036718e+24,
+              "display_value": "2.28S",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -1469,8 +1598,8 @@
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 9.08792738247772e+22,
-              "display_value": "90.9s",
+              "final_value": 2.726378214743315e+22,
+              "display_value": "27.3s",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -1511,30 +1640,30 @@
             "stat_name": "derived::ehp.chrono_field_cooldown_seconds",
             "changed_in_max_progression": false,
             "start_of_run": {
-              "final_value": 0.0,
-              "display_value": "0",
+              "final_value": 60.0,
+              "display_value": "60",
               "value_type": "scalar",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 0.0,
-              "display_value": "0",
+              "final_value": 60.0,
+              "display_value": "60",
               "value_type": "scalar",
               "status": "resolved"
             }
           },
           "derived::ehp.chrono_field_damage_reduction_factor": {
             "stat_name": "derived::ehp.chrono_field_damage_reduction_factor",
-            "changed_in_max_progression": false,
+            "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 1.0,
-              "display_value": "x1",
+              "final_value": 1.1428571428571428,
+              "display_value": "x1.143",
               "value_type": "multiplier",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 1.0,
-              "display_value": "x1",
+              "final_value": 1.1486486486486487,
+              "display_value": "x1.149",
               "value_type": "multiplier",
               "status": "resolved"
             }
@@ -1543,46 +1672,46 @@
             "stat_name": "derived::ehp.chrono_field_damage_reduction_pct",
             "changed_in_max_progression": false,
             "start_of_run": {
-              "final_value": 0.0,
-              "display_value": "0",
+              "final_value": 20.0,
+              "display_value": "20",
               "value_type": "ratio",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 0.0,
-              "display_value": "0",
+              "final_value": 20.0,
+              "display_value": "20",
               "value_type": "ratio",
               "status": "resolved"
             }
           },
           "derived::ehp.chrono_field_duration_seconds": {
             "stat_name": "derived::ehp.chrono_field_duration_seconds",
-            "changed_in_max_progression": false,
+            "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 0.0,
-              "display_value": "0",
+              "final_value": 100.0,
+              "display_value": "100",
               "value_type": "scalar",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 0.0,
-              "display_value": "0",
+              "final_value": 110.0,
+              "display_value": "110",
               "value_type": "scalar",
               "status": "resolved"
             }
           },
           "derived::ehp.chrono_field_uptime": {
             "stat_name": "derived::ehp.chrono_field_uptime",
-            "changed_in_max_progression": false,
+            "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 0.0,
-              "display_value": "0",
+              "final_value": 0.625,
+              "display_value": "0.625",
               "value_type": "ratio",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 0.0,
-              "display_value": "0",
+              "final_value": 0.6470588235294118,
+              "display_value": "0.647",
               "value_type": "ratio",
               "status": "resolved"
             }
@@ -1933,8 +2062,8 @@
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 484407918641234.06,
-              "display_value": "484T",
+              "final_value": 145322375592370.2,
+              "display_value": "145T",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -2103,14 +2232,14 @@
             "stat_name": "derived::ehp.pre_defense_pool",
             "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 3.6122812022240274e+20,
-              "display_value": "361Q",
+              "final_value": 4.128321373970317e+20,
+              "display_value": "413Q",
               "value_type": "scalar",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 1.3212944066722928e+23,
-              "display_value": "132s",
+              "final_value": 4.55310910407344e+22,
+              "display_value": "45.5s",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -2119,14 +2248,14 @@
             "stat_name": "derived::ehp.pre_tradeoff_ehp",
             "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 1.806140601112012e+22,
-              "display_value": "18.1s",
+              "final_value": 2.064160686985157e+22,
+              "display_value": "20.6s",
               "value_type": "scalar",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 6.606472033361458e+24,
-              "display_value": "6.61S",
+              "final_value": 2.276554552036718e+24,
+              "display_value": "2.28S",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -2375,14 +2504,14 @@
             "stat_name": "derived::ehp_ep",
             "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 1.806140601112012e+22,
-              "display_value": "18.1s",
+              "final_value": 2.064160686985157e+22,
+              "display_value": "20.6s",
               "value_type": "scalar",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 6.606472033361458e+24,
-              "display_value": "6.61S",
+              "final_value": 2.276554552036718e+24,
+              "display_value": "2.28S",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -2397,8 +2526,8 @@
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 484407918641234.06,
-              "display_value": "484T",
+              "final_value": 145322375592370.2,
+              "display_value": "145T",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -2501,16 +2630,16 @@
           },
           "derived::ehp_ep_helper.cl_cfdr_factor": {
             "stat_name": "derived::ehp_ep_helper.cl_cfdr_factor",
-            "changed_in_max_progression": false,
+            "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 1.0,
-              "display_value": "x1",
+              "final_value": 1.1428571428571428,
+              "display_value": "x1.143",
               "value_type": "multiplier",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 1.0,
-              "display_value": "x1",
+              "final_value": 1.1486486486486487,
+              "display_value": "x1.149",
               "value_type": "multiplier",
               "status": "resolved"
             }
@@ -2765,8 +2894,8 @@
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 4669779593286842.0,
-              "display_value": "4.67q",
+              "final_value": 1400933877986052.2,
+              "display_value": "1.4q",
               "value_type": "hp",
               "status": "resolved"
             }
@@ -2781,15 +2910,15 @@
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 449017268585273.25,
-              "display_value": "449T",
+              "final_value": 134705180575581.95,
+              "display_value": "135T",
               "value_type": "hp",
               "status": "resolved"
             }
           },
           "derived::wall.regen_hp_per_second": {
             "stat_name": "derived::wall.regen_hp_per_second",
-            "changed_in_max_progression": false,
+            "changed_in_max_progression": true,
             "start_of_run": {
               "final_value": 5814158246443.825,
               "display_value": "5.81T",
@@ -2797,8 +2926,8 @@
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 5814158246443.825,
-              "display_value": "5.81T",
+              "final_value": 303789768376689.94,
+              "display_value": "304T",
               "value_type": "hp_per_second",
               "status": "resolved"
             }
@@ -3221,7 +3350,7 @@
           },
           "state::economy.cash_kill_multiplier": {
             "stat_name": "state::economy.cash_kill_multiplier",
-            "changed_in_max_progression": false,
+            "changed_in_max_progression": true,
             "start_of_run": {
               "final_value": 25.972962912,
               "display_value": "x25.973",
@@ -3229,15 +3358,15 @@
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 25.972962912,
-              "display_value": "x25.973",
+              "final_value": 56.81585636999999,
+              "display_value": "x56.816",
               "value_type": "multiplier",
               "status": "resolved"
             }
           },
           "state::economy.cash_per_wave": {
             "stat_name": "state::economy.cash_per_wave",
-            "changed_in_max_progression": false,
+            "changed_in_max_progression": true,
             "start_of_run": {
               "final_value": 691.3599999999999,
               "display_value": "691.36",
@@ -3245,15 +3374,15 @@
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 691.3599999999999,
-              "display_value": "691.36",
+              "final_value": 9125.952,
+              "display_value": "9.13k",
               "value_type": "cash",
               "status": "resolved"
             }
           },
           "state::economy.coins_per_kill_bonus": {
             "stat_name": "state::economy.coins_per_kill_bonus",
-            "changed_in_max_progression": false,
+            "changed_in_max_progression": true,
             "start_of_run": {
               "final_value": 14.900558400000001,
               "display_value": "x14.901",
@@ -3261,8 +3390,8 @@
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 14.900558400000001,
-              "display_value": "x14.901",
+              "final_value": 64.53804357,
+              "display_value": "x64.538",
               "value_type": "multiplier",
               "status": "resolved"
             }
@@ -3285,7 +3414,7 @@
           },
           "state::economy.interest_per_wave_pct": {
             "stat_name": "state::economy.interest_per_wave_pct",
-            "changed_in_max_progression": false,
+            "changed_in_max_progression": true,
             "start_of_run": {
               "final_value": 7.159999999999999,
               "display_value": "7.16%",
@@ -3293,8 +3422,8 @@
               "status": "partially_resolved"
             },
             "max_progression": {
-              "final_value": 7.159999999999999,
-              "display_value": "7.16%",
+              "final_value": 31.324999999999996,
+              "display_value": "31.325%",
               "value_type": "pct",
               "status": "partially_resolved"
             }
@@ -3709,8 +3838,8 @@
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 8,
-              "display_value": "8",
+              "final_value": 14,
+              "display_value": "14",
               "value_type": "count",
               "status": "resolved"
             }
@@ -3757,8 +3886,8 @@
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 4509616197.696707,
-              "display_value": "4.51B",
+              "final_value": 8138447981.780773,
+              "display_value": "8.14B",
               "value_type": "damage",
               "status": "resolved"
             }
@@ -3797,7 +3926,7 @@
           },
           "state::tower.defense_pct": {
             "stat_name": "state::tower.defense_pct",
-            "changed_in_max_progression": false,
+            "changed_in_max_progression": true,
             "start_of_run": {
               "final_value": 78.9,
               "display_value": "78.9%",
@@ -3805,8 +3934,8 @@
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 78.9,
-              "display_value": "78.9%",
+              "final_value": 98.0,
+              "display_value": "98%",
               "value_type": "pct",
               "status": "resolved"
             }
@@ -3845,7 +3974,7 @@
           },
           "state::tower.free_attack_upgrade_chance_pct": {
             "stat_name": "state::tower.free_attack_upgrade_chance_pct",
-            "changed_in_max_progression": false,
+            "changed_in_max_progression": true,
             "start_of_run": {
               "final_value": 75.89999999999999,
               "display_value": "75.9%",
@@ -3853,15 +3982,15 @@
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 75.89999999999999,
-              "display_value": "75.9%",
+              "final_value": 111.83749999999999,
+              "display_value": "111.837%",
               "value_type": "pct",
               "status": "resolved"
             }
           },
           "state::tower.free_defense_upgrade_chance_pct": {
             "stat_name": "state::tower.free_defense_upgrade_chance_pct",
-            "changed_in_max_progression": false,
+            "changed_in_max_progression": true,
             "start_of_run": {
               "final_value": 72.44999999999999,
               "display_value": "72.45%",
@@ -3869,15 +3998,15 @@
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 72.44999999999999,
-              "display_value": "72.45%",
+              "final_value": 108.38749999999999,
+              "display_value": "108.387%",
               "value_type": "pct",
               "status": "resolved"
             }
           },
           "state::tower.free_utility_upgrade_chance_pct": {
             "stat_name": "state::tower.free_utility_upgrade_chance_pct",
-            "changed_in_max_progression": false,
+            "changed_in_max_progression": true,
             "start_of_run": {
               "final_value": 86.71,
               "display_value": "86.71%",
@@ -3885,8 +4014,8 @@
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 86.71,
-              "display_value": "86.71%",
+              "final_value": 122.6475,
+              "display_value": "122.647%",
               "value_type": "pct",
               "status": "resolved"
             }
@@ -3901,8 +4030,8 @@
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 25663995689601.805,
-              "display_value": "25.7T",
+              "final_value": 7699198706880.54,
+              "display_value": "7.7T",
               "value_type": "hp",
               "status": "resolved"
             }
@@ -3925,7 +4054,7 @@
           },
           "state::tower.knockback_force": {
             "stat_name": "state::tower.knockback_force",
-            "changed_in_max_progression": false,
+            "changed_in_max_progression": true,
             "start_of_run": {
               "final_value": 14.555519999999998,
               "display_value": "14.556",
@@ -3933,8 +4062,8 @@
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 14.555519999999998,
-              "display_value": "14.556",
+              "final_value": 4.366656,
+              "display_value": "4.367",
               "value_type": "force",
               "status": "resolved"
             }
@@ -3965,8 +4094,8 @@
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 2100.0,
-              "display_value": "2.1k",
+              "final_value": 35437.5,
+              "display_value": "35.4k",
               "value_type": "damage",
               "status": "resolved"
             }
@@ -3989,7 +4118,7 @@
           },
           "state::tower.lifesteal_pct": {
             "stat_name": "state::tower.lifesteal_pct",
-            "changed_in_max_progression": false,
+            "changed_in_max_progression": true,
             "start_of_run": {
               "final_value": 4.460204124,
               "display_value": "4.46%",
@@ -3997,8 +4126,8 @@
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 4.460204124,
-              "display_value": "4.46%",
+              "final_value": 12.265561341,
+              "display_value": "12.266%",
               "value_type": "pct",
               "status": "resolved"
             }
@@ -4069,7 +4198,7 @@
           },
           "state::tower.orb_count": {
             "stat_name": "state::tower.orb_count",
-            "changed_in_max_progression": false,
+            "changed_in_max_progression": true,
             "start_of_run": {
               "final_value": 7,
               "display_value": "7",
@@ -4077,8 +4206,8 @@
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 7,
-              "display_value": "7",
+              "final_value": 9,
+              "display_value": "9",
               "value_type": "count",
               "status": "resolved"
             }
@@ -4213,7 +4342,7 @@
           },
           "state::tower.regen": {
             "stat_name": "state::tower.regen",
-            "changed_in_max_progression": false,
+            "changed_in_max_progression": true,
             "start_of_run": {
               "final_value": 1107458713608.3477,
               "display_value": "1.11T",
@@ -4221,8 +4350,8 @@
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 1107458713608.3477,
-              "display_value": "1.11T",
+              "final_value": 57864717786036.18,
+              "display_value": "57.9T",
               "value_type": "hp_per_second",
               "status": "resolved"
             }
@@ -4373,7 +4502,7 @@
           },
           "state::uw.black_hole.base_duration_seconds": {
             "stat_name": "state::uw.black_hole.base_duration_seconds",
-            "changed_in_max_progression": false,
+            "changed_in_max_progression": true,
             "start_of_run": {
               "final_value": 36.0,
               "display_value": "36",
@@ -4381,8 +4510,8 @@
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 36.0,
-              "display_value": "36",
+              "final_value": 48.0,
+              "display_value": "48",
               "value_type": "seconds",
               "status": "resolved"
             }
@@ -4405,7 +4534,7 @@
           },
           "state::uw.black_hole.duration_seconds": {
             "stat_name": "state::uw.black_hole.duration_seconds",
-            "changed_in_max_progression": false,
+            "changed_in_max_progression": true,
             "start_of_run": {
               "final_value": 36.0,
               "display_value": "36",
@@ -4413,9 +4542,73 @@
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 36.0,
-              "display_value": "36",
+              "final_value": 48.0,
+              "display_value": "48",
               "value_type": "seconds",
+              "status": "resolved"
+            }
+          },
+          "state::uw.chrono_field.cooldown_seconds": {
+            "stat_name": "state::uw.chrono_field.cooldown_seconds",
+            "changed_in_max_progression": false,
+            "start_of_run": {
+              "final_value": 60.0,
+              "display_value": "60",
+              "value_type": "seconds",
+              "status": "resolved"
+            },
+            "max_progression": {
+              "final_value": 60.0,
+              "display_value": "60",
+              "value_type": "seconds",
+              "status": "resolved"
+            }
+          },
+          "state::uw.chrono_field.damage_reduction_pct": {
+            "stat_name": "state::uw.chrono_field.damage_reduction_pct",
+            "changed_in_max_progression": false,
+            "start_of_run": {
+              "final_value": 20.0,
+              "display_value": "20%",
+              "value_type": "pct",
+              "status": "resolved"
+            },
+            "max_progression": {
+              "final_value": 20.0,
+              "display_value": "20%",
+              "value_type": "pct",
+              "status": "resolved"
+            }
+          },
+          "state::uw.chrono_field.duration_seconds": {
+            "stat_name": "state::uw.chrono_field.duration_seconds",
+            "changed_in_max_progression": true,
+            "start_of_run": {
+              "final_value": 50.0,
+              "display_value": "50",
+              "value_type": "seconds",
+              "status": "resolved"
+            },
+            "max_progression": {
+              "final_value": 55.0,
+              "display_value": "55",
+              "value_type": "seconds",
+              "status": "resolved"
+            }
+          },
+          "state::uw.chrono_field.slow_pct": {
+            "stat_name": "state::uw.chrono_field.slow_pct",
+            "changed_in_max_progression": false,
+            "start_of_run": {
+              "final_value": 62.25,
+              "display_value": "62.25%",
+              "value_type": "pct",
+              "status": "resolved"
+            },
+            "max_progression": {
+              "final_value": 62.25,
+              "display_value": "62.25%",
+              "value_type": "pct",
               "status": "resolved"
             }
           },
@@ -4757,8 +4950,8 @@
           }
         },
         "diagnostics": {
-          "row_count": 287,
-          "changed_in_max_progression_count": 41
+          "row_count": 291,
+          "changed_in_max_progression_count": 61
         }
       }
     },
@@ -5009,14 +5202,14 @@
             "stat_name": "derived::edamage",
             "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 1.2497010391114601e+20,
-              "display_value": "125Q",
+              "final_value": 4.9988041564458405e+20,
+              "display_value": "500Q",
               "value_type": "scalar",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 1.665298139620929e+21,
-              "display_value": "1.67s",
+              "final_value": 6.661192558483716e+21,
+              "display_value": "6.66s",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -5217,14 +5410,14 @@
             "stat_name": "derived::edamage.slow_factor",
             "changed_in_max_progression": false,
             "start_of_run": {
-              "final_value": 1.0,
-              "display_value": "x1",
+              "final_value": 4.0,
+              "display_value": "x4",
               "value_type": "multiplier",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 1.0,
-              "display_value": "x1",
+              "final_value": 4.0,
+              "display_value": "x4",
               "value_type": "multiplier",
               "status": "resolved"
             }
@@ -5457,14 +5650,14 @@
             "stat_name": "derived::edamage_ep",
             "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 1.2497010391114601e+20,
-              "display_value": "125Q",
+              "final_value": 4.9988041564458405e+20,
+              "display_value": "500Q",
               "value_type": "scalar",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 1.665298139620929e+21,
-              "display_value": "1.67s",
+              "final_value": 6.661192558483716e+21,
+              "display_value": "6.66s",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -5617,14 +5810,14 @@
             "stat_name": "derived::edamage_ep_helper.el_slow_factor",
             "changed_in_max_progression": false,
             "start_of_run": {
-              "final_value": 1.0,
-              "display_value": "x1",
+              "final_value": 4.0,
+              "display_value": "x4",
               "value_type": "multiplier",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 1.0,
-              "display_value": "x1",
+              "final_value": 4.0,
+              "display_value": "x4",
               "value_type": "multiplier",
               "status": "resolved"
             }
@@ -6161,14 +6354,14 @@
             "stat_name": "derived::ehp",
             "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 1.8065009821614908e+21,
-              "display_value": "1.81s",
+              "final_value": 2.0645725510417037e+21,
+              "display_value": "2.06s",
               "value_type": "scalar",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 6.607790724405301e+23,
-              "display_value": "661s",
+              "final_value": 7.551760827891772e+23,
+              "display_value": "755s",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -6273,14 +6466,14 @@
             "stat_name": "derived::ehp.chrono_field_cooldown_seconds",
             "changed_in_max_progression": false,
             "start_of_run": {
-              "final_value": 0.0,
-              "display_value": "0",
+              "final_value": 60.0,
+              "display_value": "60",
               "value_type": "scalar",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 0.0,
-              "display_value": "0",
+              "final_value": 60.0,
+              "display_value": "60",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -6289,14 +6482,14 @@
             "stat_name": "derived::ehp.chrono_field_damage_reduction_factor",
             "changed_in_max_progression": false,
             "start_of_run": {
-              "final_value": 1.0,
-              "display_value": "x1",
+              "final_value": 1.1428571428571428,
+              "display_value": "x1.143",
               "value_type": "multiplier",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 1.0,
-              "display_value": "x1",
+              "final_value": 1.1428571428571428,
+              "display_value": "x1.143",
               "value_type": "multiplier",
               "status": "resolved"
             }
@@ -6305,14 +6498,14 @@
             "stat_name": "derived::ehp.chrono_field_damage_reduction_pct",
             "changed_in_max_progression": false,
             "start_of_run": {
-              "final_value": 0.0,
-              "display_value": "0",
+              "final_value": 20.0,
+              "display_value": "20",
               "value_type": "ratio",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 0.0,
-              "display_value": "0",
+              "final_value": 20.0,
+              "display_value": "20",
               "value_type": "ratio",
               "status": "resolved"
             }
@@ -6321,14 +6514,14 @@
             "stat_name": "derived::ehp.chrono_field_duration_seconds",
             "changed_in_max_progression": false,
             "start_of_run": {
-              "final_value": 0.0,
-              "display_value": "0",
+              "final_value": 100.0,
+              "display_value": "100",
               "value_type": "scalar",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 0.0,
-              "display_value": "0",
+              "final_value": 100.0,
+              "display_value": "100",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -6337,14 +6530,14 @@
             "stat_name": "derived::ehp.chrono_field_uptime",
             "changed_in_max_progression": false,
             "start_of_run": {
-              "final_value": 0.0,
-              "display_value": "0",
+              "final_value": 0.625,
+              "display_value": "0.625",
               "value_type": "ratio",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 0.0,
-              "display_value": "0",
+              "final_value": 0.625,
+              "display_value": "0.625",
               "value_type": "ratio",
               "status": "resolved"
             }
@@ -6865,14 +7058,14 @@
             "stat_name": "derived::ehp.pre_defense_pool",
             "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 3.6130019643229848e+19,
-              "display_value": "36.1Q",
+              "final_value": 4.129145102083411e+19,
+              "display_value": "41.3Q",
               "value_type": "scalar",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 1.3215581448810613e+22,
-              "display_value": "13.2s",
+              "final_value": 1.5103521655783556e+22,
+              "display_value": "15.1s",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -6881,14 +7074,14 @@
             "stat_name": "derived::ehp.pre_tradeoff_ehp",
             "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 1.8065009821614908e+21,
-              "display_value": "1.81s",
+              "final_value": 2.0645725510417037e+21,
+              "display_value": "2.06s",
               "value_type": "scalar",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 6.607790724405301e+23,
-              "display_value": "661s",
+              "final_value": 7.551760827891772e+23,
+              "display_value": "755s",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -7137,14 +7330,14 @@
             "stat_name": "derived::ehp_ep",
             "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 1.8065009821614908e+21,
-              "display_value": "1.81s",
+              "final_value": 2.0645725510417037e+21,
+              "display_value": "2.06s",
               "value_type": "scalar",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 6.607790724405301e+23,
-              "display_value": "661s",
+              "final_value": 7.551760827891772e+23,
+              "display_value": "755s",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -7265,14 +7458,14 @@
             "stat_name": "derived::ehp_ep_helper.cl_cfdr_factor",
             "changed_in_max_progression": false,
             "start_of_run": {
-              "final_value": 1.0,
-              "display_value": "x1",
+              "final_value": 1.1428571428571428,
+              "display_value": "x1.143",
               "value_type": "multiplier",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 1.0,
-              "display_value": "x1",
+              "final_value": 1.1428571428571428,
+              "display_value": "x1.143",
               "value_type": "multiplier",
               "status": "resolved"
             }
@@ -9181,6 +9374,70 @@
               "status": "resolved"
             }
           },
+          "state::uw.chrono_field.cooldown_seconds": {
+            "stat_name": "state::uw.chrono_field.cooldown_seconds",
+            "changed_in_max_progression": false,
+            "start_of_run": {
+              "final_value": 60.0,
+              "display_value": "60",
+              "value_type": "seconds",
+              "status": "resolved"
+            },
+            "max_progression": {
+              "final_value": 60.0,
+              "display_value": "60",
+              "value_type": "seconds",
+              "status": "resolved"
+            }
+          },
+          "state::uw.chrono_field.damage_reduction_pct": {
+            "stat_name": "state::uw.chrono_field.damage_reduction_pct",
+            "changed_in_max_progression": false,
+            "start_of_run": {
+              "final_value": 20.0,
+              "display_value": "20%",
+              "value_type": "pct",
+              "status": "resolved"
+            },
+            "max_progression": {
+              "final_value": 20.0,
+              "display_value": "20%",
+              "value_type": "pct",
+              "status": "resolved"
+            }
+          },
+          "state::uw.chrono_field.duration_seconds": {
+            "stat_name": "state::uw.chrono_field.duration_seconds",
+            "changed_in_max_progression": false,
+            "start_of_run": {
+              "final_value": 50.0,
+              "display_value": "50",
+              "value_type": "seconds",
+              "status": "resolved"
+            },
+            "max_progression": {
+              "final_value": 50.0,
+              "display_value": "50",
+              "value_type": "seconds",
+              "status": "resolved"
+            }
+          },
+          "state::uw.chrono_field.slow_pct": {
+            "stat_name": "state::uw.chrono_field.slow_pct",
+            "changed_in_max_progression": false,
+            "start_of_run": {
+              "final_value": 75.0,
+              "display_value": "75%",
+              "value_type": "pct",
+              "status": "resolved"
+            },
+            "max_progression": {
+              "final_value": 75.0,
+              "display_value": "75%",
+              "value_type": "pct",
+              "status": "resolved"
+            }
+          },
           "state::uw.golden_tower.base_cooldown_seconds": {
             "stat_name": "state::uw.golden_tower.base_cooldown_seconds",
             "changed_in_max_progression": false,
@@ -9519,7 +9776,7 @@
           }
         },
         "diagnostics": {
-          "row_count": 287,
+          "row_count": 291,
           "changed_in_max_progression_count": 44
         }
       }
@@ -9537,20 +9794,21 @@
       "max_progression"
     ],
     "perk_state": "auto",
-    "perk_mode": "none",
+    "perk_mode": "max_progression_policy",
     "perk_config_resolution": {
-      "requested_perks_path": "manual_inputs.yaml:perk_config",
-      "resolved_perks_path": "none",
+      "requested_perks_path": "manual_inputs.yaml:perk_policy",
+      "resolved_perks_path": "manual_inputs.yaml:perk_policy",
       "fallback_applied": false,
       "fallback_reason": null,
-      "perk_mode": "none"
+      "perk_mode": "max_progression_policy",
+      "manual_banned_perk_count": 2
     },
     "qe_shared_runtime_context": {
       "context_kind": "qe_shared_runtime_context",
       "consumer_bundle_count": 13,
-      "family_surface_count": 516,
+      "family_surface_count": 534,
       "family_contract_count": 6,
-      "surface_metadata_count": 268,
+      "surface_metadata_count": 272,
       "compiler_mapping_count": 348,
       "compiler_alias_count": 22,
       "compiler_relic_count": 26,
@@ -9564,7 +9822,7 @@
       "Farming": {
         "start_of_run": {
           "query_backend": "bounded_qe_bundle",
-          "statbook_row_count": 287,
+          "statbook_row_count": 291,
           "bundle_ids": [
             "progression_core_stats",
             "timing_core_cycle",
@@ -9575,34 +9833,34 @@
             "timing_scenario_probe",
             "timing_scenario_probe"
           ],
-          "resolved_surface_count": 287,
-          "contributor_row_count": 286
+          "resolved_surface_count": 291,
+          "contributor_row_count": 293
         },
         "max_progression": {
           "query_backend": "bounded_qe_bundle",
-          "statbook_row_count": 287,
+          "statbook_row_count": 291,
           "bundle_ids": [
             "progression_core_stats",
             "timing_core_cycle",
             "timing_wave_duration"
           ],
           "family_ids": [
-            "progression_runtime_no_perks",
-            "timing_scenario_probe",
-            "timing_scenario_probe"
+            "progression_runtime_with_perks",
+            "timing_farm_with_perks",
+            "timing_farm_with_perks"
           ],
-          "resolved_surface_count": 287,
-          "contributor_row_count": 287
+          "resolved_surface_count": 291,
+          "contributor_row_count": 318
         },
         "dual_state_stats": {
-          "row_count": 287,
-          "changed_in_max_progression_count": 41
+          "row_count": 291,
+          "changed_in_max_progression_count": 61
         }
       },
       "Tourney": {
         "start_of_run": {
           "query_backend": "bounded_qe_bundle",
-          "statbook_row_count": 287,
+          "statbook_row_count": 291,
           "bundle_ids": [
             "progression_core_stats",
             "timing_core_cycle",
@@ -9613,12 +9871,12 @@
             "timing_tournament_no_perks",
             "timing_tournament_no_perks"
           ],
-          "resolved_surface_count": 287,
-          "contributor_row_count": 269
+          "resolved_surface_count": 291,
+          "contributor_row_count": 276
         },
         "max_progression": {
           "query_backend": "bounded_qe_bundle",
-          "statbook_row_count": 287,
+          "statbook_row_count": 291,
           "bundle_ids": [
             "progression_core_stats",
             "timing_core_cycle",
@@ -9629,11 +9887,11 @@
             "timing_tournament_no_perks",
             "timing_tournament_no_perks"
           ],
-          "resolved_surface_count": 287,
-          "contributor_row_count": 270
+          "resolved_surface_count": 291,
+          "contributor_row_count": 277
         },
         "dual_state_stats": {
-          "row_count": 287,
+          "row_count": 291,
           "changed_in_max_progression_count": 44
         }
       }
@@ -9748,6 +10006,10 @@
               "state::cards.berserker.assumed_bonus_multiplier",
               "state::uw.black_hole.base_duration_seconds",
               "state::uw.black_hole.base_cooldown_seconds",
+              "state::uw.chrono_field.duration_seconds",
+              "state::uw.chrono_field.cooldown_seconds",
+              "state::uw.chrono_field.damage_reduction_pct",
+              "state::uw.chrono_field.slow_pct",
               "state::uw.golden_tower.base_duration_seconds",
               "state::uw.golden_tower.base_cooldown_seconds",
               "support_surface::ehp.health_relic_pct",
@@ -9892,6 +10154,10 @@
               "state::cards.berserker.assumed_bonus_multiplier",
               "state::uw.black_hole.base_duration_seconds",
               "state::uw.black_hole.base_cooldown_seconds",
+              "state::uw.chrono_field.duration_seconds",
+              "state::uw.chrono_field.cooldown_seconds",
+              "state::uw.chrono_field.damage_reduction_pct",
+              "state::uw.chrono_field.slow_pct",
               "state::uw.golden_tower.base_duration_seconds",
               "state::uw.golden_tower.base_cooldown_seconds",
               "support_surface::ehp.health_relic_pct",
@@ -9933,7 +10199,7 @@
         "Farming": {
           "progression": {
             "bundle_id": "progression_core_stats",
-            "family_id": "progression_runtime_no_perks",
+            "family_id": "progression_runtime_with_perks",
             "resolved_surface_ids": [
               "state::tower.damage",
               "state::tower.attack_speed",
@@ -10038,6 +10304,10 @@
               "state::cards.berserker.assumed_bonus_multiplier",
               "state::uw.black_hole.base_duration_seconds",
               "state::uw.black_hole.base_cooldown_seconds",
+              "state::uw.chrono_field.duration_seconds",
+              "state::uw.chrono_field.cooldown_seconds",
+              "state::uw.chrono_field.damage_reduction_pct",
+              "state::uw.chrono_field.slow_pct",
               "state::uw.golden_tower.base_duration_seconds",
               "state::uw.golden_tower.base_cooldown_seconds",
               "support_surface::ehp.health_relic_pct",
@@ -10054,7 +10324,7 @@
           "timing": [
             {
               "bundle_id": "timing_core_cycle",
-              "family_id": "timing_scenario_probe",
+              "family_id": "timing_farm_with_perks",
               "resolved_surface_ids": [
                 "state::uw.black_hole.cooldown_seconds",
                 "state::uw.black_hole.duration_seconds",
@@ -10065,7 +10335,7 @@
             },
             {
               "bundle_id": "timing_wave_duration",
-              "family_id": "timing_scenario_probe",
+              "family_id": "timing_farm_with_perks",
               "resolved_surface_ids": [
                 "support_surface::timing.wave_duration_seconds_effective",
                 "state::cards.wave_accelerator.spawn_rate_acceleration",
@@ -10182,6 +10452,10 @@
               "state::cards.berserker.assumed_bonus_multiplier",
               "state::uw.black_hole.base_duration_seconds",
               "state::uw.black_hole.base_cooldown_seconds",
+              "state::uw.chrono_field.duration_seconds",
+              "state::uw.chrono_field.cooldown_seconds",
+              "state::uw.chrono_field.damage_reduction_pct",
+              "state::uw.chrono_field.slow_pct",
               "state::uw.golden_tower.base_duration_seconds",
               "state::uw.golden_tower.base_cooldown_seconds",
               "support_surface::ehp.health_relic_pct",

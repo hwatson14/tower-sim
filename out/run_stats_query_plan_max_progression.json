@@ -5,7 +5,7 @@
     "Farming": {
       "progression": {
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_no_perks",
+        "family_id": "progression_runtime_with_perks",
         "resolved_surface_ids": [
           "state::tower.damage",
           "state::tower.attack_speed",
@@ -110,6 +110,10 @@
           "state::cards.berserker.assumed_bonus_multiplier",
           "state::uw.black_hole.base_duration_seconds",
           "state::uw.black_hole.base_cooldown_seconds",
+          "state::uw.chrono_field.duration_seconds",
+          "state::uw.chrono_field.cooldown_seconds",
+          "state::uw.chrono_field.damage_reduction_pct",
+          "state::uw.chrono_field.slow_pct",
           "state::uw.golden_tower.base_duration_seconds",
           "state::uw.golden_tower.base_cooldown_seconds",
           "support_surface::ehp.health_relic_pct",
@@ -126,7 +130,7 @@
       "timing": [
         {
           "bundle_id": "timing_core_cycle",
-          "family_id": "timing_scenario_probe",
+          "family_id": "timing_farm_with_perks",
           "resolved_surface_ids": [
             "state::uw.black_hole.cooldown_seconds",
             "state::uw.black_hole.duration_seconds",
@@ -137,7 +141,7 @@
         },
         {
           "bundle_id": "timing_wave_duration",
-          "family_id": "timing_scenario_probe",
+          "family_id": "timing_farm_with_perks",
           "resolved_surface_ids": [
             "support_surface::timing.wave_duration_seconds_effective",
             "state::cards.wave_accelerator.spawn_rate_acceleration",
@@ -254,6 +258,10 @@
           "state::cards.berserker.assumed_bonus_multiplier",
           "state::uw.black_hole.base_duration_seconds",
           "state::uw.black_hole.base_cooldown_seconds",
+          "state::uw.chrono_field.duration_seconds",
+          "state::uw.chrono_field.cooldown_seconds",
+          "state::uw.chrono_field.damage_reduction_pct",
+          "state::uw.chrono_field.slow_pct",
           "state::uw.golden_tower.base_duration_seconds",
           "state::uw.golden_tower.base_cooldown_seconds",
           "support_surface::ehp.health_relic_pct",

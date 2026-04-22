@@ -199,7 +199,7 @@ def test_stats_dashboard_primary_uw_operator_table_uses_workshop_shape():
     sections = {section.get('title'): section for section in (uw_panel.get('payload', {}).get('sections') or [])}
     rows_by_name = {row.get('name'): row for row in (sections['Golden Tower'].get('rows') or [])}
     assert rows_by_name['Cooldown']['workshop_level'] == '2'
-    assert rows_by_name['Cooldown']['stone_value'] == '180'
+    assert rows_by_name['Cooldown']['stone_value'] == '180s'
     assert rows_by_name['Cooldown']['start_of_run_value'] == '180s'
     assert rows_by_name['Cooldown']['max_progression_value'] == '160s'
     assert rows_by_name['Duration']['workshop_level'] == '3'
@@ -270,6 +270,16 @@ def test_stats_dashboard_primary_uw_operator_table_wires_module_other_and_recon_
     ]
     query_rows_start_of_run = json.loads((ROOT / 'out' / 'run_stats_query_rows_start_of_run.json').read_text(encoding='utf-8'))
     query_rows_max_progression = json.loads((ROOT / 'out' / 'run_stats_query_rows_max_progression.json').read_text(encoding='utf-8'))
+    start_rows = query_rows_start_of_run['Farming']['rows']
+    max_rows = query_rows_max_progression['Farming']['rows']
+    assert start_rows['state::uw.black_hole.duration_seconds']['final_value'] == pytest.approx(36.0)
+    assert start_rows['state::uw.black_hole.cooldown_seconds']['final_value'] == pytest.approx(46.0)
+    assert start_rows['state::uw.chrono_field.duration_seconds']['final_value'] == pytest.approx(50.0)
+    assert start_rows['state::uw.chrono_field.cooldown_seconds']['final_value'] == pytest.approx(60.0)
+    assert start_rows['state::uw.chrono_field.damage_reduction_pct']['final_value'] == pytest.approx(20.0)
+    assert start_rows['state::uw.chrono_field.slow_pct']['final_value'] == pytest.approx(62.25)
+    assert max_rows['state::uw.black_hole.duration_seconds']['final_value'] == pytest.approx(48.0)
+    assert max_rows['state::uw.chrono_field.duration_seconds']['final_value'] == pytest.approx(55.0)
     payload = _build_stats_dashboard_payload(
         account_state_payload=account_state,
         diagnostics={},
@@ -298,7 +308,7 @@ def test_stats_dashboard_primary_uw_operator_table_wires_module_other_and_recon_
     assert golden_rows['Duration']['lab_effects'] == '20s'
     assert golden_rows['Duration']['reconciliation_status'] == 'green'
     assert black_hole_rows['Duration']['module_effects'] == '4s'
-    assert black_hole_rows['Duration']['reconciliation_status'] == 'red'
+    assert black_hole_rows['Duration']['reconciliation_status'] == 'green'
 
 
 def test_stats_dashboard_live_guardian_scout_rows_publish_cumulative_bits_and_green_recon():
@@ -2978,7 +2988,7 @@ def test_stats_dashboard_primary_uw_operator_table_uses_workshop_shape():
     sections = {section.get('title'): section for section in (uw_panel.get('payload', {}).get('sections') or [])}
     rows_by_name = {row.get('name'): row for row in (sections['Golden Tower'].get('rows') or [])}
     assert rows_by_name['Cooldown']['workshop_level'] == '2'
-    assert rows_by_name['Cooldown']['stone_value'] == '180'
+    assert rows_by_name['Cooldown']['stone_value'] == '180s'
     assert rows_by_name['Cooldown']['start_of_run_value'] == '180s'
     assert rows_by_name['Cooldown']['max_progression_value'] == '160s'
     assert rows_by_name['Duration']['workshop_level'] == '3'
@@ -3025,6 +3035,9 @@ def test_stats_dashboard_primary_uw_operator_table_wires_module_other_and_recon_
         {'destination_id': 'state::uw.chain_lightning.max_enemy_damage_reduction_pct', 'source_family': 'module_unique', 'source_name': 'Chain Thunder', 'value': 22.0},
         {'destination_id': 'state::uw.golden_tower.duration_seconds', 'source_family': 'lab', 'source_name': 'Golden Tower Duration Lab', 'value': 20.0},
         {'destination_id': 'state::uw.black_hole.duration_seconds', 'source_family': 'module_unique', 'source_name': 'Multiverse Nexus', 'value': 4.0},
+        {'destination_id': 'state::uw.black_hole.cooldown_seconds', 'source_family': 'module_unique', 'source_name': 'Multiverse Nexus', 'value': -4.0},
+        {'destination_id': 'state::uw.chrono_field.duration_seconds', 'source_family': 'lab', 'source_name': 'Chrono Field Duration Lab', 'value': 30.0},
+        {'destination_id': 'state::uw.chrono_field.slow_pct', 'source_family': 'module_unique', 'source_name': 'Dimension Core', 'value': 2.25},
     ]
     query_rows_start_of_run = json.loads((ROOT / 'out' / 'run_stats_query_rows_start_of_run.json').read_text(encoding='utf-8'))
     query_rows_max_progression = json.loads((ROOT / 'out' / 'run_stats_query_rows_max_progression.json').read_text(encoding='utf-8'))
@@ -3054,7 +3067,7 @@ def test_stats_dashboard_primary_uw_operator_table_wires_module_other_and_recon_
     assert golden_rows['Duration']['lab_effects'] == '20s'
     assert golden_rows['Duration']['reconciliation_status'] == 'green'
     assert black_hole_rows['Duration']['module_effects'] == '4s'
-    assert black_hole_rows['Duration']['reconciliation_status'] == 'red'
+    assert black_hole_rows['Duration']['reconciliation_status'] == 'green'
 
 
 def test_stats_dashboard_primary_bot_operator_table_uses_start_of_run_only_surface():
@@ -3288,6 +3301,9 @@ def test_stats_dashboard_primary_uw_operator_table_wires_module_other_and_recon_
         {'destination_id': 'state::uw.chain_lightning.max_enemy_damage_reduction_pct', 'source_family': 'module_unique', 'source_name': 'Chain Thunder', 'value': 22.0},
         {'destination_id': 'state::uw.golden_tower.duration_seconds', 'source_family': 'lab', 'source_name': 'Golden Tower Duration Lab', 'value': 20.0},
         {'destination_id': 'state::uw.black_hole.duration_seconds', 'source_family': 'module_unique', 'source_name': 'Multiverse Nexus', 'value': 4.0},
+        {'destination_id': 'state::uw.black_hole.cooldown_seconds', 'source_family': 'module_unique', 'source_name': 'Multiverse Nexus', 'value': -4.0},
+        {'destination_id': 'state::uw.chrono_field.duration_seconds', 'source_family': 'lab', 'source_name': 'Chrono Field Duration Lab', 'value': 30.0},
+        {'destination_id': 'state::uw.chrono_field.slow_pct', 'source_family': 'module_unique', 'source_name': 'Dimension Core', 'value': 2.25},
     ]
     query_rows_start_of_run = json.loads((ROOT / 'out' / 'run_stats_query_rows_start_of_run.json').read_text(encoding='utf-8'))
     query_rows_max_progression = json.loads((ROOT / 'out' / 'run_stats_query_rows_max_progression.json').read_text(encoding='utf-8'))
@@ -3309,6 +3325,7 @@ def test_stats_dashboard_primary_uw_operator_table_wires_module_other_and_recon_
     chain_rows = {row.get('name'): row for row in (sections['Chain Lightning'].get('rows') or [])}
     golden_rows = {row.get('name'): row for row in (sections['Golden Tower'].get('rows') or [])}
     black_hole_rows = {row.get('name'): row for row in (sections['Black Hole'].get('rows') or [])}
+    chrono_rows = {row.get('name'): row for row in (sections['Chrono Field'].get('rows') or [])}
     assert chain_rows['Damage']['module_effects'] == 'x2.25'
     assert chain_rows['Damage']['other'] == '—'
     assert chain_rows['Damage']['start_of_run_value'] == 'x900.25'
@@ -3317,4 +3334,20 @@ def test_stats_dashboard_primary_uw_operator_table_wires_module_other_and_recon_
     assert golden_rows['Duration']['lab_effects'] == '20s'
     assert golden_rows['Duration']['reconciliation_status'] == 'green'
     assert black_hole_rows['Duration']['module_effects'] == '4s'
-    assert black_hole_rows['Duration']['reconciliation_status'] == 'red'
+    assert black_hole_rows['Duration']['start_of_run_value'] == '36s'
+    assert black_hole_rows['Duration']['perk_effects'] == '+ 12s'
+    assert black_hole_rows['Duration']['max_progression_value'] == '48s'
+    assert black_hole_rows['Duration']['reconciliation_status'] == 'green'
+    assert black_hole_rows['Cooldown']['start_of_run_value'] == '46s'
+    assert black_hole_rows['Cooldown']['reconciliation_status'] == 'green'
+    assert chrono_rows['Duration']['stone_value'] == '20s'
+    assert chrono_rows['Duration']['lab_effects'] == '30s'
+    assert chrono_rows['Duration']['perk_effects'] == '+ 5'
+    assert chrono_rows['Duration']['max_progression_value'] == '55s'
+    assert chrono_rows['Duration']['reconciliation_status'] == 'green'
+    assert chrono_rows['Cooldown']['start_of_run_value'] == '60s'
+    assert chrono_rows['Cooldown']['reconciliation_status'] == 'green'
+    assert chrono_rows['Speed Reduction']['stone_value'] == '60%'
+    assert chrono_rows['Speed Reduction']['module_effects'] == '2.25%'
+    assert chrono_rows['Speed Reduction']['start_of_run_value'] == '62.25%'
+    assert chrono_rows['Speed Reduction']['reconciliation_status'] == 'green'

@@ -1119,6 +1119,53 @@ def _normalize_effect_text_for_surface(surface_id: str, value: object) -> str:
     return _format_value_with_hint(number, suffix_hint=suffix_hint, scale_hint=_surface_pct_scale_hint(surface_id))
 
 
+def _uw_stone_value_text(surface_id: str, metadata: dict[str, object], start_row: dict[str, object]) -> str:
+    for contributor in start_row.get('contributors') or []:
+        if not isinstance(contributor, dict):
+            continue
+        if str(contributor.get('source_class') or '').strip() != 'ultimate_weapons':
+            continue
+        display_value = contributor.get('display_value')
+        if display_value not in (None, ''):
+            return _normalize_effect_text_for_surface(surface_id, display_value)
+        value = contributor.get('value')
+        if value not in (None, ''):
+            return _format_value_with_hint(
+                value,
+                suffix_hint=_semantic_suffix_for_display(value, fallback_surface_id=surface_id),
+                scale_hint='direct',
+            )
+    return _normalize_effect_text_for_surface(surface_id, metadata.get('stone_value'))
+
+
+def _derived_uw_perk_delta_text(
+    *,
+    surface_id: str,
+    start_value: str,
+    max_value: str,
+    start_expected: float | None,
+) -> str:
+    if surface_id not in {
+        'state::uw.black_hole.duration_seconds',
+        'state::uw.chrono_field.duration_seconds',
+    }:
+        return _DASH
+    if start_expected is None:
+        return _DASH
+    start_number, suffix = _parse_display_number(start_value)
+    max_number, max_suffix = _parse_display_number(max_value)
+    if start_number is None or max_number is None:
+        return _DASH
+    if abs(start_expected - start_number) >= 0.011:
+        return _DASH
+    delta = max_number - start_number
+    if abs(delta) < 0.011:
+        return _DASH
+    suffix_hint = max_suffix or suffix or _semantic_suffix_for_display(max_value, fallback_surface_id=surface_id)
+    magnitude = _format_value_with_hint(abs(delta), suffix_hint=suffix_hint, scale_hint='direct')
+    return f"- {magnitude}" if delta < 0 else f"+ {magnitude}"
+
+
 def _bot_recon_status_explicit(
     *,
     surface_id: str,
@@ -2155,6 +2202,7 @@ def _build_stats_uw_operator_panel(
             effect_map = surface_effect_map.get(surface_id) or {}
             start_row = dict(rows_start.get(surface_id) or {})
             max_row = dict(rows_max.get(surface_id) or {})
+            stone_text = _uw_stone_value_text(surface_id, metadata, start_row)
             lab_value = _normalize_effect_text_for_surface(surface_id, metadata.get('lab')) if metadata.get('lab') not in (None, '') else (_format_compacted_display_sum(*(effect_map.get('lab') or []), fallback_surface_id=surface_id) if (effect_map.get('lab') or []) else None)
             if not lab_value:
                 lab_value = _format_effect_from_contributors(
@@ -2178,10 +2226,8 @@ def _build_stats_uw_operator_panel(
                 )
             lab_text = _normalize_display_text(lab_value or _DASH)
             module_text = _normalize_display_text(module_value or _DASH)
-            perk_text = _normalize_display_text(perk_value or _DASH)
             other_text = _DASH
-            start_expected, _suffix = _sum_display_terms(metadata.get('stone_value') or _DASH, lab_text, module_text, other_text)
-            max_expected, _suffix = _sum_display_terms(metadata.get('stone_value') or _DASH, lab_text, module_text, other_text, perk_text)
+            start_expected, _suffix = _sum_display_terms(stone_text, lab_text, module_text, other_text)
             start_value = _surface_display_value(
                 start_row,
                 surface_id=surface_id,
@@ -2190,10 +2236,25 @@ def _build_stats_uw_operator_panel(
             max_value = _surface_display_value(
                 max_row,
                 surface_id=surface_id,
-                fallback_value=max_expected if max_expected is not None else metadata.get('final'),
+                fallback_value=metadata.get('final'),
             )
+            perk_text = _normalize_display_text(perk_value or _DASH)
+            if perk_text == _DASH:
+                perk_text = _derived_uw_perk_delta_text(
+                    surface_id=surface_id,
+                    start_value=start_value,
+                    max_value=max_value,
+                    start_expected=start_expected,
+                )
+            max_expected, _suffix = _sum_display_terms(stone_text, lab_text, module_text, other_text, perk_text)
+            if not _row_is_resolved(max_row) and max_expected is not None:
+                max_value = _surface_display_value(
+                    max_row,
+                    surface_id=surface_id,
+                    fallback_value=max_expected,
+                )
             uw_recon_status = 'amber'
-            if not _display_terms_parseable(metadata.get('stone_value') or _DASH, start_value, max_value, lab_text, module_text, perk_text):
+            if not _display_terms_parseable(stone_text, start_value, max_value, lab_text, module_text, perk_text):
                 uw_recon_status = 'red'
             elif start_expected is not None and max_expected is not None:
                 start_number, _ = _parse_display_number(start_value)
@@ -2209,7 +2270,7 @@ def _build_stats_uw_operator_panel(
                 'display_label': track_name,
                 'name': track_name,
                 'workshop_level': _normalize_display_text(metadata.get('stone_level') or _DASH),
-                'stone_value': _normalize_display_text(metadata.get('stone_value') or _DASH),
+                'stone_value': stone_text,
                 'lab_effects': lab_text,
                 'module_effects': module_text,
                 'start_of_run_value': start_value,

@@ -217,7 +217,7 @@ def test_build_boss_wave_payload_publishes_summary_and_runtime_assumptions(monke
     _install_fake_boss_wave_app_dependencies(monkeypatch, pipeline_mod)
     _install_fake_boss_wave_replacement_primitives(monkeypatch, pipeline_mod)
 
-    request = PipelineRunRequest(ids=ROOT / 'input' / 'imports' / 'ids.csv', out=ROOT / 'out')
+    request = PipelineRunRequest(ids=ROOT / 'input' / 'imports' / 'ids.csv', out=ROOT / 'out', perk_mode='runtime_timeline')
     payload = pipeline_mod.build_boss_wave_payload(
         request,
         preset_name='Farming',
@@ -364,7 +364,7 @@ def test_build_boss_wave_payload_replacement_inputs_drive_table_summary_export_a
     _install_fake_boss_wave_app_dependencies(monkeypatch, pipeline_mod)
     _install_fake_boss_wave_replacement_primitives(monkeypatch, pipeline_mod)
 
-    request = PipelineRunRequest(ids=ROOT / 'input' / 'imports' / 'ids.csv', out=ROOT / 'out')
+    request = PipelineRunRequest(ids=ROOT / 'input' / 'imports' / 'ids.csv', out=ROOT / 'out', perk_mode='runtime_timeline')
     payload = pipeline_mod.build_boss_wave_payload(
         request,
         preset_name='Farming',
@@ -635,6 +635,11 @@ def test_build_boss_wave_payload_live_path_avoids_delta_fallback():
     assert diagnostics['replacement_model']['contract_version'] == 'boss_waves_replacement_v1'
     assert diagnostics['replacement_model']['lane_order'] == ['avg', 'min', 'max']
     assert diagnostics['replacement_model']['summary_lane_id'] == 'avg'
+    assert diagnostics['perk_application_mode'] == 'max_progression_policy_static'
+    assert diagnostics['perk_timeline_rows'] == 0
+    assert diagnostics['perk_static_count'] > 0
+    assert diagnostics['perk_static_pick_count'] > diagnostics['perk_static_count']
+    assert payload['contract']['perk_timeline_mode'] == 'max_progression_policy_static'
     assert 'legacy_shadow_available' not in diagnostics
     assert 'legacy_shadow_materialized' not in diagnostics
     assert diagnostics['delta_fallback_count'] == 0
@@ -732,12 +737,12 @@ def test_build_boss_wave_payload_live_path_avoids_delta_fallback():
     first_row = (payload.get('rows') or [{}])[0]
     assert first_row.get('display_wave') == 9
     rows = payload.get('rows') or []
-    assert rows[0]['wall_pre_fort_hp'] > fort_check['row_input_wall_hp']
+    assert rows[0]['wall_pre_fort_hp'] < fort_check['row_input_wall_hp']
     assert rows[-1]['wall_pre_fort_hp'] > rows[0]['wall_pre_fort_hp']
-    assert rows[0]['wall_pre_fort_hp'] == pytest.approx(19731905998921.957)
-    assert rows[0]['wall_hp'] == pytest.approx(205211822388788.38)
+    assert rows[0]['wall_pre_fort_hp'] == pytest.approx(5919571799676.586)
+    assert rows[0]['wall_hp'] == pytest.approx(61563546716636.49)
     assert rows[0]['wall_hp'] == pytest.approx(rows[0]['wall_pre_fort_hp'] * primitives['wall_fortification_multiplier'])
-    assert rows[0]['wall_regen'] == pytest.approx(5814158246443.825)
+    assert rows[0]['wall_regen'] == pytest.approx(303789768376689.94)
     assert rows[0]['summary_lane_id'] == 'avg'
     assert rows[0]['lane_handle_ids'] == {
         'avg': 'boss:boss_waves_replacement_product:9:avg',
@@ -813,6 +818,23 @@ def test_boss_wave_payload_uses_effective_bh_cf_state_and_perk_switches():
     assert rows_with_perks[0]['effective_damage_reduction_pct'] < rows_with_perks[-1]['effective_damage_reduction_pct']
     assert rows_with_perks[-1]['effective_damage_reduction_pct'] >= 96.0
 
+    max_policy = build_boss_wave_payload(
+        PipelineRunRequest(ids=IDS_PATH, out=ROOT / 'out', perk_mode='max_progression_policy', perk_state='on'),
+        preset_name='Farming',
+        tier_number=14,
+        end_wave=5000,
+        boss_wave_step=100,
+        stop_on_failure=False,
+        scenario_runtime_inputs=runtime_inputs,
+    )
+    assert max_policy['diagnostics']['perk_application_mode'] == 'max_progression_policy_static'
+    assert max_policy['diagnostics']['perk_timeline_rows'] == 0
+    assert max_policy['diagnostics']['perk_static_count'] > 0
+    assert max_policy['diagnostics']['perk_static_pick_count'] > max_policy['diagnostics']['perk_static_count']
+    assert max_policy['contract']['perk_timeline_mode'] == 'max_progression_policy_static'
+    assert max_policy['rows'][0]['effective_damage_reduction_pct'] == pytest.approx(rows_with_perks[-1]['effective_damage_reduction_pct'])
+    assert max_policy['rows'][0]['wall_hp'] != pytest.approx(rows_with_perks[0]['wall_hp'])
+
     no_perks = build_boss_wave_payload(
         PipelineRunRequest(ids=IDS_PATH, out=ROOT / 'out', perk_mode='none', perk_state='on'),
         preset_name='Farming',
@@ -833,6 +855,8 @@ def test_boss_wave_payload_uses_effective_bh_cf_state_and_perk_switches():
     )
     assert no_perks['diagnostics']['perks_enabled'] is False
     assert perks_off['diagnostics']['perks_enabled'] is False
+    assert no_perks['diagnostics']['perk_application_mode'] == 'disabled'
+    assert perks_off['diagnostics']['perk_application_mode'] == 'disabled'
     assert no_perks['diagnostics']['perk_timeline_rows'] == 0
     assert perks_off['diagnostics']['perk_timeline_rows'] == 0
     assert rows_with_perks[-1]['wall_hp'] > no_perks['rows'][-1]['wall_hp']

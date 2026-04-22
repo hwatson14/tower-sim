@@ -397,9 +397,31 @@ def build_boss_wave_payload(
         perk_state=perk_state,
     )
     perk_policy_payload, _perk_context = _perk_policy_context(bundle.ids_raw, getattr(bundle, 'perk_policy', {}) or {})
-    perk_timeline, perk_timeline_diag = generate_timeline_from_policy(PerkTimelinePolicy(**perk_policy_payload))
-    if perk_mode == 'none' or not bool(resolved_context.get('perks_enabled')):
-        perk_timeline = []
+    perk_timeline: list[dict[str, object]] = []
+    perk_timeline_diag: dict[str, object] = {
+        'enabled': False,
+        'reason': 'not_runtime_timeline_mode',
+        'final_wave': 0,
+        'generated_rows': 0,
+    }
+    effective_perks_enabled = bool(resolved_context.get('perks_enabled')) and perk_mode != 'none'
+    perk_application_mode = 'disabled'
+    static_perk_counts: dict[str, int] = {}
+    if effective_perks_enabled and perk_mode == 'runtime_timeline':
+        perk_timeline, perk_timeline_diag = generate_timeline_from_policy(PerkTimelinePolicy(**perk_policy_payload))
+        perk_application_mode = 'runtime_timeline'
+    elif effective_perks_enabled and perk_mode == 'max_progression_policy':
+        static_perk_counts = _boss_wave_static_perk_counts_from_account_state(account_state)
+        perk_timeline_diag = {
+            'enabled': True,
+            'reason': 'max_progression_policy_static_perk_state',
+            'final_wave': 0,
+            'generated_rows': 0,
+            'static_perk_count': len(static_perk_counts),
+            'static_pick_count': sum(int(value) for value in static_perk_counts.values()),
+        }
+        perk_application_mode = 'max_progression_policy_static'
+    elif perk_mode == 'none' or not bool(resolved_context.get('perks_enabled')):
         perk_timeline_diag = {
             'enabled': False,
             'reason': 'disabled_by_perk_mode_or_state',
@@ -474,7 +496,6 @@ def build_boss_wave_payload(
             'operator_rows': [],
             'download_rows': [],
         }
-    effective_perks_enabled = bool(resolved_context.get('perks_enabled')) and perk_mode != 'none'
     config = {
         'execution_mode': 'table_sweep',
         'preset_name': preset_name,
@@ -491,19 +512,26 @@ def build_boss_wave_payload(
         'state_mode': 'start_of_run',
         'perk_mode': perk_mode,
         'perk_state': perk_state,
+        'perk_application_mode': perk_application_mode,
         'perk_config_resolution': dict(perk_config_resolution),
-        'perk_timeline': tuple(dict(row or {}) for row in perk_timeline) if effective_perks_enabled else (),
+        'perk_timeline': tuple(dict(row or {}) for row in perk_timeline) if perk_application_mode == 'runtime_timeline' else (),
+        'static_perk_count': len(static_perk_counts),
+        'static_perk_pick_count': sum(int(value) for value in static_perk_counts.values()),
         'scenario_config': resolved_context.get('scenario_config'),
         'scenario_surfaces': dict(resolved_context.get('scenario_surfaces') or {}),
     }
-    perk_counts = perk_state_at_wave(perk_timeline, 0) if effective_perks_enabled else {}
+    perk_counts = (
+        perk_state_at_wave(perk_timeline, 0)
+        if perk_application_mode == 'runtime_timeline'
+        else dict(static_perk_counts)
+    )
     operator_rows, selected_summary, primitive_inputs, primitive_semantics_ledger = _build_replacement_operator_table_and_summary(
         active_source=source_id,
         config=config,
         account_state=account_state,
         preset_name=preset_name,
         perk_counts=perk_counts,
-        perk_timeline=tuple(dict(row or {}) for row in perk_timeline),
+        perk_timeline=tuple(dict(row or {}) for row in perk_timeline) if perk_application_mode == 'runtime_timeline' else (),
         scenario_runtime_inputs=scenario_runtime_inputs,
         stop_on_failure=bool(stop_on_failure),
     )
@@ -513,7 +541,7 @@ def build_boss_wave_payload(
         preset_name=preset_name,
         config=config,
         resolved_context=resolved_context,
-        perk_timeline_rows=len(perk_timeline),
+        perk_timeline_rows=len(perk_timeline) if perk_application_mode == 'runtime_timeline' else 0,
         perk_timeline_final_wave=int(perk_timeline_diag.get('final_wave') or 0),
         scenario_runtime_inputs=scenario_runtime_inputs,
         operator_rows=operator_rows,
@@ -541,7 +569,9 @@ def build_boss_wave_payload(
             'start_state_basis': 'start_of_run',
             'perk_timeline_mode': (
                 'runtime_policy_projection'
-                if effective_perks_enabled
+                if perk_application_mode == 'runtime_timeline'
+                else 'max_progression_policy_static'
+                if perk_application_mode == 'max_progression_policy_static'
                 else 'disabled_by_perk_mode_or_state'
             ),
             'free_upgrade_mode': 'runtime_progression_allocation',
@@ -717,6 +747,11 @@ def _build_replacement_operator_table_and_summary(
         standard_bonus_pct=float((getattr(account_state, 'labs', {}) or {}).get('Standard Perks Bonus') or 0.0),
         tradeoff_bonus_pct=float((getattr(account_state, 'labs', {}) or {}).get('Improve Trade-off Perks') or 0.0),
     )
+    static_perk_contributions = _boss_wave_perk_contributions_for_counts(
+        perk_counts,
+        standard_bonus_pct=float((getattr(account_state, 'labs', {}) or {}).get('Standard Perks Bonus') or 0.0),
+        tradeoff_bonus_pct=float((getattr(account_state, 'labs', {}) or {}).get('Improve Trade-off Perks') or 0.0),
+    )
     table1 = build_common_trajectory(
         CommonTrajectoryInputs(
             start_wave=int(config['start_wave']),
@@ -735,7 +770,7 @@ def _build_replacement_operator_table_and_summary(
             track_max_levels=track_max_levels,
             workshop_levels=workshop_levels,
             perk_counts=dict(perk_counts),
-            perk_contributions={},
+            perk_contributions=static_perk_contributions,
             perk_counts_by_wave=perk_counts_by_wave,
             perk_contributions_by_wave=perk_contributions_by_wave,
             survivability_contributors=survivability,
@@ -1009,6 +1044,50 @@ def _boss_wave_perk_counts_by_wave(perk_timeline: tuple[dict[str, object], ...])
         counts[str(perk_name)] = counts.get(str(perk_name), 0) + 1
         out[wave] = dict(counts)
     return out
+
+
+def _boss_wave_static_perk_counts_from_account_state(account_state) -> dict[str, int]:
+    active_preset = getattr(account_state, 'active_perk_preset', None)
+    if not active_preset:
+        return {}
+    preset = (getattr(account_state, 'perk_presets', {}) or {}).get(active_preset) or ()
+    entities = load_perk_entities()
+    counts: dict[str, int] = {}
+    for selection in preset:
+        perk_id = str(getattr(selection, 'perk_id', '') or '').strip()
+        if not perk_id and isinstance(selection, dict):
+            perk_id = str(selection.get('perk_id') or '').strip()
+        if not perk_id:
+            continue
+        raw_picks = getattr(selection, 'picks', None)
+        if raw_picks is None and isinstance(selection, dict):
+            raw_picks = selection.get('picks')
+        try:
+            picks = int(raw_picks or 0)
+        except (TypeError, ValueError):
+            picks = 0
+        if picks <= 0:
+            continue
+        perk_name = str((entities.get(perk_id) or {}).get('perk_name') or '').strip()
+        if not perk_name:
+            raise ValueError(f"Boss Waves max_progression_policy references unknown perk id {perk_id!r}")
+        counts[perk_name] = counts.get(perk_name, 0) + picks
+    return counts
+
+
+def _boss_wave_perk_contributions_for_counts(
+    perk_counts: dict[str, int],
+    *,
+    standard_bonus_pct: float,
+    tradeoff_bonus_pct: float,
+) -> dict[str, float]:
+    if not perk_counts:
+        return {}
+    return _boss_wave_perk_contributions_by_wave(
+        {0: dict(perk_counts)},
+        standard_bonus_pct=standard_bonus_pct,
+        tradeoff_bonus_pct=tradeoff_bonus_pct,
+    ).get(0, {})
 
 
 def _boss_wave_perk_contributions_by_wave(
@@ -1503,9 +1582,15 @@ def _build_replacement_diagnostics(
         'league': config.get('league'),
         'tournament_wave': int(config.get('tournament_wave') or 0) or None,
         'perks_enabled': bool(config['perks_enabled']),
-        'perk_timeline_enabled': bool(config['perks_enabled']),
+        'perk_mode': str(config.get('perk_mode') or ''),
+        'perk_state': str(config.get('perk_state') or ''),
+        'perk_application_mode': str(config.get('perk_application_mode') or ''),
+        'perk_config_resolution': dict(config.get('perk_config_resolution') or {}),
+        'perk_timeline_enabled': str(config.get('perk_application_mode') or '') == 'runtime_timeline',
         'perk_timeline_rows': int(perk_timeline_rows),
         'perk_timeline_final_wave': int(perk_timeline_final_wave),
+        'perk_static_count': int(config.get('static_perk_count') or 0),
+        'perk_static_pick_count': int(config.get('static_perk_pick_count') or 0),
         'context_status': summary.get('status') or 'complete',
         'context_error': summary.get('failure_kind'),
         'context_error_message': summary.get('failure_message'),
@@ -1548,6 +1633,9 @@ def _build_replacement_diagnostics(
             'wall_thorns_repeated_hit_multiplier': 'Sharp Fortitude primary armor adds +1% wall-thorns damage taken per subsequent contact hit',
             'boss_survival_model': 'max_waves_compares_ttd_wall_hp_plus_regen_against_total_v21_ttk_window',
             'timed_dr_perk_sources': ['PERK_BLACK_HOLE_DURATION_12_0S:black_hole_duration_seconds_add', 'PERK_CHRONO_FIELD_DURATION_5S:chrono_field_duration_seconds_add'],
+            'perk_application_mode': str(config.get('perk_application_mode') or ''),
+            'perk_mode': str(config.get('perk_mode') or ''),
+            'perk_state': str(config.get('perk_state') or ''),
             'timed_dr_sources': list(
                 ((primitive_semantics_ledger or {}).get('timed_dr_semantic_contract') or {}).get('sources', {}).keys()
             ),

@@ -932,6 +932,7 @@ _PROGRESSION_V1_SURFACE_IDS: tuple[str, ...] = (
     'state::uw.chrono_field.duration_seconds',
     'state::uw.chrono_field.cooldown_seconds',
     'state::uw.chrono_field.damage_reduction_pct',
+    'state::uw.chrono_field.slow_pct',
     'state::uw.golden_tower.base_duration_seconds',
     'state::uw.golden_tower.base_cooldown_seconds',
     _state('module.orbital_augment.electron_count'),
