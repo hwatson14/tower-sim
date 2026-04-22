@@ -27,6 +27,7 @@ class PerkTimelinePolicy:
     banned_perks: List[str] = None
     priority_order: List[str] = None
     first_perk_choice: Optional[str] = None
+    unlocked_ultimate_weapons: List[str] = None
 
 
 def load_policy(path: Path) -> PerkTimelinePolicy:
@@ -41,6 +42,7 @@ def load_policy(path: Path) -> PerkTimelinePolicy:
         banned_perks=list(raw.get("banned_perks", [])),
         priority_order=list(raw.get("priority_order", [])),
         first_perk_choice=raw.get("first_perk_choice"),
+        unlocked_ultimate_weapons=list(raw.get("unlocked_ultimate_weapons", [])),
     )
 
 
@@ -105,9 +107,15 @@ def generate_timeline_from_policy(policy: PerkTimelinePolicy) -> Tuple[List[Dict
     by_name: Dict[str, PerkDefinition] = {p.perk_name: p for p in perks}
 
     banned_set: set[str] = set((policy.banned_perks or [])[: max(0, policy.ban_perks_capacity)])
+    unlocked_uw = {str(name).strip().lower() for name in (policy.unlocked_ultimate_weapons or []) if str(name).strip()}
+    locked_uw_exclusions = {
+        p.perk_name: p.required_uw
+        for p in perks
+        if p.category == "ultimate_weapon" and str(p.required_uw or "").strip().lower() not in unlocked_uw
+    }
 
     def eligible(name: str) -> bool:
-        return name in by_name and name not in banned_set
+        return name in by_name and name not in banned_set and name not in locked_uw_exclusions
 
     pool: List[str] = [p.perk_name for p in perks if eligible(p.perk_name)]
     if not pool:
@@ -207,6 +215,8 @@ def generate_timeline_from_policy(policy: PerkTimelinePolicy) -> Tuple[List[Dict
         "seed": policy.seed,
         "target_wave": policy.target_wave,
         "bans_applied": sorted(banned_set),
+        "unlocked_ultimate_weapons": sorted(policy.unlocked_ultimate_weapons or []),
+        "uw_locked_perks_excluded": dict(sorted(locked_uw_exclusions.items())),
         "offers_k": offers_k,
         "waves_required_lab": policy.waves_required_lab,
         "standard_perk_bonus": policy.standard_perk_bonus,

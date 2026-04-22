@@ -208,6 +208,7 @@ sections:
   stats_dashboard:
     primary_panel_order:
       - workshop
+      - derived_wall_economy
       - ultimate_weapons
       - bots
       - guardians

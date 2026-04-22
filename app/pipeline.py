@@ -67,6 +67,7 @@ from app.display import (
 from input.loader import load_inputs
 from input.runtime_state import build_runtime_state
 from qe.contracts import (
+    load_section_layout_contract,
     normalize_surface_id_to_contract,
     normalize_contract_payload,
     sanitize_perk_presets_for_canonical_output,
@@ -2312,6 +2313,27 @@ def _ids_player_value(ids_raw, name: str, default: int = 0) -> int:
     return default
 
 
+def _ids_unlocked_ultimate_weapons(ids_raw) -> list[str]:
+    rows = ids_raw.raw_sections.get('UWs', []) if ids_raw else []
+    if not rows:
+        return []
+    uw_layout = load_section_layout_contract()['uw']
+    block_size = int(uw_layout['block_size'])
+    name_col = int(uw_layout['name_column'])
+    stat_rows_per_block = int(uw_layout['stat_rows_per_block'])
+    unlocked: list[str] = []
+    for idx in range(0, len(rows), block_size):
+        block = rows[idx: idx + block_size]
+        unlock_row_index = stat_rows_per_block - 1
+        if len(block) <= unlock_row_index:
+            continue
+        uw_name = str(block[0][name_col] if len(block[0]) > name_col else '').strip()
+        token = str(block[unlock_row_index][name_col] if len(block[unlock_row_index]) > name_col else '').strip().lower()
+        if uw_name and token in {'true', 'yes', '1', 'unlocked'}:
+            unlocked.append(uw_name)
+    return sorted(unlocked)
+
+
 def _resolve_manual_banned_perks(perk_policy: dict) -> list[str]:
     return _resolve_policy_banned_perk_names(perk_policy or {})
 
@@ -2334,6 +2356,7 @@ def _perk_policy_context(ids_raw, perk_policy: dict) -> tuple[dict, dict]:
     first_perk_choice_level = _ids_player_value(ids_raw, 'First Perk Choice', 0)
     configured_priority = list(policy.get('priority_order', []) or [])
     configured_first_perk_choice = policy.get('first_perk_choice')
+    unlocked_ultimate_weapons = _ids_unlocked_ultimate_weapons(ids_raw)
     if first_perk_choice_level > 0 and 'first_perk_choice' in policy and not configured_first_perk_choice:
         raise ValueError(
             "First Perk Choice lab is unlocked, but manual_inputs.yaml:perk_policy.first_perk_choice is not configured."
@@ -2348,6 +2371,7 @@ def _perk_policy_context(ids_raw, perk_policy: dict) -> tuple[dict, dict]:
         'banned_perks': banned_names,
         'priority_order': configured_priority,
         'first_perk_choice': configured_first_perk_choice,
+        'unlocked_ultimate_weapons': unlocked_ultimate_weapons,
     }
     context = {
         'banned_names': banned_names,
@@ -2357,12 +2381,14 @@ def _perk_policy_context(ids_raw, perk_policy: dict) -> tuple[dict, dict]:
         'configured_priority_order': configured_priority,
         'ban_perks_capacity_ids': _ids_player_value(ids_raw, 'Ban Perks', 0),
         'banned_perk_aliases': list(policy.get('banned_perk_aliases', []) or []),
+        'unlocked_ultimate_weapons': unlocked_ultimate_weapons,
     }
     return payload, context
 
 
 def _build_max_progression_policy_perk_config(ids_raw, perk_policy: dict) -> tuple[dict, dict]:
     from qe.stat_input_compiler import load_perk_entity_rows
+    from qe.perk_tables import load_perk_definitions
 
     metadata = {
         'requested_perks_path': 'manual_inputs.yaml:perk_policy',
@@ -2372,12 +2398,23 @@ def _build_max_progression_policy_perk_config(ids_raw, perk_policy: dict) -> tup
     }
     policy_payload, context = _perk_policy_context(ids_raw, perk_policy)
     entities = load_perk_entity_rows()
+    perk_definitions = {perk.perk_name: perk for perk in load_perk_definitions()}
+    unlocked_uw = {name.strip().lower() for name in context['unlocked_ultimate_weapons']}
     banned_names = set(context['banned_names'])
+    locked_uw_exclusions = {}
     selections = []
     for row in entities:
         perk_id = row.get('perk_id')
         perk_name = row.get('perk_name')
         if not perk_id or not perk_name or perk_name in banned_names:
+            continue
+        perk_definition = perk_definitions.get(perk_name)
+        if (
+            perk_definition is not None
+            and perk_definition.category == 'ultimate_weapon'
+            and str(perk_definition.required_uw or '').strip().lower() not in unlocked_uw
+        ):
+            locked_uw_exclusions[perk_name] = perk_definition.required_uw
             continue
         try:
             picks = int(row.get('max_picks') or 1)
@@ -2396,6 +2433,8 @@ def _build_max_progression_policy_perk_config(ids_raw, perk_policy: dict) -> tup
             'manual_banned_perk_aliases': context['banned_perk_aliases'],
             'selection_rule': 'all_perks_except_manual_bans_using_registry_max_picks',
             'target_wave': policy_payload['target_wave'],
+            'unlocked_ultimate_weapons': context['unlocked_ultimate_weapons'],
+            'uw_locked_perks_excluded': dict(sorted(locked_uw_exclusions.items())),
         },
     }
     metadata.update(
@@ -2403,6 +2442,8 @@ def _build_max_progression_policy_perk_config(ids_raw, perk_policy: dict) -> tup
             'resolved_perks_path': 'manual_inputs.yaml:perk_policy',
             'perk_mode': 'max_progression_policy',
             'manual_banned_perk_count': len(banned_names),
+            'unlocked_ultimate_weapons': context['unlocked_ultimate_weapons'],
+            'uw_locked_perks_excluded': dict(sorted(locked_uw_exclusions.items())),
         }
     )
     return generated, metadata
@@ -2445,6 +2486,8 @@ def _build_runtime_timeline_perk_config(ids_raw, perk_policy: dict, *, diag_outp
             'perk_option_quantity': policy.perk_option_quantity,
             'ban_perks_capacity_ids': context['ban_perks_capacity_ids'],
             'ban_perks_capacity_effective': policy.ban_perks_capacity,
+            'unlocked_ultimate_weapons': policy.unlocked_ultimate_weapons or [],
+            'uw_locked_perks_excluded': diag.get('uw_locked_perks_excluded', {}),
         },
     }
     if diag_output_dir is not None:

@@ -29,11 +29,11 @@ _BOT_TRACK_COSTS_PATH = _REPO_ROOT / 'kb' / 'bots' / 'tables' / 'bot-upgrade-tra
 _GUARDIAN_TRACK_COSTS_PATH = _REPO_ROOT / 'kb' / 'guardians' / 'tables' / 'guardian-upgrades.csv'
 _DASH = '—'
 _DISPLAY_REPLACEMENTS = {
-    'Ã¢â‚¬â€': _DASH,
-    'â€”': _DASH,
     'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â': _DASH,
-    'Â·': ' · ',
-    'Ã‚Â·': ' · ',
+    'Ã¢â‚¬â€': _DASH,
+    'ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â': _DASH,
+    'Ã‚?': ' · ',
+    'Ãƒâ€šÃ‚?': ' · ',
 }
 
 _NUMERIC_TOKEN_RE = re.compile(
@@ -214,7 +214,7 @@ def publish_query_surfaces(
     compatibility entrypoint may call it today, but later query entrypoints can
     call the same publication contract directly.
 
-    account_state_labs: if provided (dict of lab_name → level), wires the module
+    account_state_labs: if provided (dict of lab_name â†’ level), wires the module
     lab policy publisher which feeds into drop economy.
     """
     publish_derived_composites(rows)
@@ -260,6 +260,26 @@ def publish_workshop_reconciliation_payload(
             )
         if rows:
             sections.append({'section_id': section_key, 'title': section_titles[section_key], 'rows': rows})
+    return {
+        'artifact': 'qe_workshop_reconciliation_rows',
+        'owner': 'qe',
+        'sections': sections,
+    }
+
+
+def _derived_row_reconciliation_status(start_status: str, max_status: str) -> str:
+    if start_status == 'resolved' and max_status == 'resolved':
+        return 'green'
+    return 'amber'
+
+
+def publish_derived_wall_economy_operator_payload(
+    *,
+    stats_layout: dict[str, Any],
+    rows_start: dict[str, dict[str, object]],
+    rows_max: dict[str, dict[str, object]],
+    surface_specs: callable,
+) -> dict[str, object]:
     derived_rows: list[dict[str, object]] = []
     for spec in surface_specs(stats_layout, 'derived_wall_economy_surfaces'):
         surface_id = spec['surface_id']
@@ -268,55 +288,46 @@ def publish_workshop_reconciliation_payload(
         start_display = _normalize_display_text(start_row.get('display_value'))
         max_display = _normalize_display_text(max_row.get('display_value'))
         if not isinstance(start_display, str) or not start_display.strip():
-            start_display = '—'
+            start_display = '?'
         if not isinstance(max_display, str) or not max_display.strip():
-            max_display = '—'
-        row_status = str(start_row.get('status') or max_row.get('status') or 'missing')
+            max_display = '?'
+        start_status = str(start_row.get('status') or 'missing')
+        max_status = str(max_row.get('status') or 'missing')
+        if start_status == 'resolved' and max_status == 'resolved':
+            row_status = 'resolved'
+        elif start_status == 'missing' and max_status == 'missing':
+            row_status = 'missing'
+        else:
+            row_status = 'partially_resolved'
         derived_rows.append({
             'canonical_row_id': str(spec.get('canonical_row_id') or surface_id),
+            'surface_id': surface_id,
             'display_label': spec['label'],
-            'value_format': {
-                'value_type': str(start_row.get('value_type') or max_row.get('value_type') or 'scalar'),
-                'display_kind': 'scalar',
-            },
-            'start_of_run': start_display,
-            'max_workshop': max_display,
-            'decomposition': {
-                'workshop': '—',
-                'lab': '—',
-                'module': '—',
-                'card': '—',
-                'enhancement': '—',
-                'relic': '—',
-                'perk': '—',
-                'other': '—',
-            },
-            'row_status': row_status,
-            'row_notes': str(start_row.get('notes') or max_row.get('notes') or ''),
             'name': spec['label'],
-            'workshop_level': '—',
-            'workshop_value': '—',
-            'lab_effects': '—',
-            'module_effects': '—',
-            'card_effects': '—',
-            'enhancement_effects': '—',
-            'relics': '—',
-            'start_of_run_modifier_total': '—',
+            'value_type': str(start_row.get('value_type') or max_row.get('value_type') or 'scalar'),
             'start_of_run_value': start_display,
-            'max_workshop_value': '—',
-            'perk_effects': '—',
-            'other': '—',
-            'max_progression_modifier_total': '—',
             'max_progression_value': max_display,
+            'status': row_status,
+            'notes': str(start_row.get('notes') or max_row.get('notes') or 'QE-derived row'),
+            'reconciliation_status': _derived_row_reconciliation_status(start_status, max_status),
+            'reconciliation_cell_flags': {},
         })
-    if derived_rows:
-        sections.append({'section_id': 'derived_wall_economy_surfaces', 'title': 'Derived', 'rows': derived_rows})
     return {
-        'artifact': 'qe_workshop_reconciliation_rows',
+        'artifact': 'qe_derived_wall_economy_operator_rows',
         'owner': 'qe',
-        'sections': sections,
+        'columns': [
+            {'key': 'name', 'label': 'Name'},
+            {'key': 'surface_id', 'label': 'Surface'},
+            {'key': 'value_type', 'label': 'Kind'},
+            {'key': 'start_of_run_value', 'label': 'Start of Run'},
+            {'key': 'max_progression_value', 'label': 'Max Progression'},
+            {'key': 'status', 'label': 'Status'},
+            {'key': 'notes', 'label': 'Notes'},
+            {'key': 'reconciliation_status', 'label': 'Recon', 'kind': 'recon'},
+        ],
+        'sections': [{'section_id': 'derived_wall_economy_surfaces', 'title': 'Derived', 'rows': derived_rows}],
     }
-
+    
 
 def publication_contract_snapshot() -> dict:
     """Expose the intended publication contract for tests and audits."""
@@ -390,6 +401,14 @@ def _stats_dashboard_contract_manifest() -> dict[str, object]:
                 'acceptance_state': 'active',
                 'product_tier': 'primary',
                 'notes': 'Counts toward current canonical visible-stat completion. Missingness and row status are QE-owned.',
+            },
+            {
+                'panel_id': 'derived_wall_economy',
+                'panel_role': 'canonical_derived_stat_rows',
+                'authority': 'qe_query_rows',
+                'acceptance_state': 'active',
+                'product_tier': 'primary',
+                'notes': 'Derived wall and objective rows are primary operator stats, but use a compact derived-row table rather than the workshop decomposition schema.',
             },
             {
                 'panel_id': 'ultimate_weapons',
@@ -823,7 +842,7 @@ def _format_named_other_entries(entries: list[tuple[str, object]]) -> str:
         if not label_text and not value_text:
             continue
         tokens.append(f'{label_text} {value_text}'.strip())
-    return ' · '.join(tokens) if tokens else '—'
+    return ' · '.join(tokens) if tokens else _DASH
 
 
 def _section_surface_value(row: dict[str, object], *, metadata_value: object = None) -> str:
@@ -923,7 +942,7 @@ def _format_compacted_display_sum(*terms: object, fallback_surface_id: str = '')
 
 def _format_uw_stat_input_value(*, destination_id: str, raw_value: object) -> str:
     if raw_value in (None, ''):
-        return '—'
+        return '?'
     try:
         value = float(raw_value)
     except (TypeError, ValueError):
@@ -1331,28 +1350,28 @@ def _operator_workshop_row(
     metadata: dict[str, object] | None = None,
 ) -> dict[str, object]:
     meta = dict(metadata or {})
-    base_value = str(meta.get('base_value') or meta.get('resolved_value') or '—')
+    base_value = str(meta.get('base_value') or meta.get('resolved_value') or '?')
     return {
         'canonical_row_id': canonical_row_id,
         'display_label': name,
         'name': name,
-        'workshop_level': str(meta.get('level') or '—'),
-        'lab_effects': str(meta.get('lab') or '—'),
-        'relics': str(meta.get('relics') or '—'),
+        'workshop_level': str(meta.get('level') or '?'),
+        'lab_effects': str(meta.get('lab') or '?'),
+        'relics': str(meta.get('relics') or '?'),
         'base_subtotal': base_value,
-        'module_effects': str(meta.get('module') or '—'),
-        'card_effects': str(meta.get('card') or '—'),
-        'base_loadout_subtotal': str(meta.get('final') or '—'),
-        'enhancement_effects': str(meta.get('enhancement') or '—'),
-        'start_of_run_modifier_total': str(meta.get('modifier_total') or '—'),
+        'module_effects': str(meta.get('module') or '?'),
+        'card_effects': str(meta.get('card') or '?'),
+        'base_loadout_subtotal': str(meta.get('final') or '?'),
+        'enhancement_effects': str(meta.get('enhancement') or '?'),
+        'start_of_run_modifier_total': str(meta.get('modifier_total') or '?'),
         'workshop_value': base_value,
-        'start_of_run_value': str(start_row.get('display_value') or meta.get('final') or '—'),
-        'other': str(meta.get('other') or '—'),
-        'max_workshop_modifier_total': str(meta.get('max_modifier_total') or '—'),
-        'max_workshop_value': str(meta.get('max_value') or '—'),
-        'max_workshop_resolved_value': str(meta.get('max_resolved_value') or '—'),
-        'perk_effects': str(meta.get('perk') or '—'),
-        'max_progression_value': str(max_row.get('display_value') or start_row.get('display_value') or meta.get('final') or '—'),
+        'start_of_run_value': str(start_row.get('display_value') or meta.get('final') or '?'),
+        'other': str(meta.get('other') or '?'),
+        'max_workshop_modifier_total': str(meta.get('max_modifier_total') or '?'),
+        'max_workshop_value': str(meta.get('max_value') or '?'),
+        'max_workshop_resolved_value': str(meta.get('max_resolved_value') or '?'),
+        'perk_effects': str(meta.get('perk') or '?'),
+        'max_progression_value': str(max_row.get('display_value') or start_row.get('display_value') or meta.get('final') or '?'),
         'reconciliation_status': _stats_reconciliation_status(start_row=start_row, max_row=max_row),
         'reconciliation_cell_flags': {},
     }
@@ -1479,7 +1498,7 @@ def _bot_track_surface_map() -> dict[str, list[dict[str, str]]]:
 
 def _extract_bot_medal_spent(level_token: str) -> str:
     match = re.search(r'Cost\s+([0-9]+)', level_token or '')
-    return match.group(1) if match else 'â€”'
+    return match.group(1) if match else 'Ã¢â‚¬â€'
 
 
 def _build_bot_track_metadata_index(account_state_payload: dict[str, object]) -> dict[str, dict[str, str]]:
@@ -1504,8 +1523,8 @@ def _build_bot_track_metadata_index(account_state_payload: dict[str, object]) ->
         normalized_track_name = track_name_overrides.get(track_name, track_name)
         level_token = str(row[4] if len(row) > 4 else '').strip()
         token_parts = [part.strip() for part in level_token.split('|')] if level_token else []
-        medal_level = token_parts[0] if token_parts else 'â€”'
-        medal_value = token_parts[1] if len(token_parts) > 1 and token_parts[1] else (str(row[3] if len(row) > 3 else '').strip() or 'â€”')
+        medal_level = token_parts[0] if token_parts else 'Ã¢â‚¬â€'
+        medal_value = token_parts[1] if len(token_parts) > 1 and token_parts[1] else (str(row[3] if len(row) > 3 else '').strip() or 'Ã¢â‚¬â€')
         try:
             medal_level_value = int(medal_level)
         except ValueError:
@@ -1523,9 +1542,9 @@ def _build_bot_track_metadata_index(account_state_payload: dict[str, object]) ->
             cumulative_costs.get((_normalize_identity(f'{current_bot} Bot'), track_cost_key, int(medal_level_value or -1)))
         ) if medal_level_value is not None else _DASH
         index[f'{current_bot}::{normalized_track_name}'] = {
-            'medal_level': medal_level or 'â€”',
+            'medal_level': medal_level or 'Ã¢â‚¬â€',
             'medals_spent': medals_spent,
-            'medal_value': medal_value or 'â€”',
+            'medal_value': medal_value or 'Ã¢â‚¬â€',
         }
     return index
 
@@ -1567,7 +1586,7 @@ def _guardian_track_surface_map() -> dict[str, list[dict[str, str]]]:
 
 def _extract_guardian_bits_spent(level_token: str) -> str:
     match = re.search(r'Cost\s+([0-9]+)', level_token or '')
-    return match.group(1) if match else 'â€”'
+    return match.group(1) if match else 'Ã¢â‚¬â€'
 
 
 def _build_guardian_track_metadata_index(account_state_payload: dict[str, object]) -> dict[str, dict[str, str]]:
@@ -1587,8 +1606,8 @@ def _build_guardian_track_metadata_index(account_state_payload: dict[str, object
             continue
         level_token = str(row[4] if len(row) > 4 else '').strip()
         token_parts = [part.strip() for part in level_token.split('|')] if level_token else []
-        bit_level = token_parts[0] if token_parts else 'â€”'
-        bit_value = token_parts[1] if len(token_parts) > 1 and token_parts[1] else (str(row[3] if len(row) > 3 else '').strip() or 'â€”')
+        bit_level = token_parts[0] if token_parts else 'Ã¢â‚¬â€'
+        bit_value = token_parts[1] if len(token_parts) > 1 and token_parts[1] else (str(row[3] if len(row) > 3 else '').strip() or 'Ã¢â‚¬â€')
         try:
             bit_level_value = int(bit_level)
         except ValueError:
@@ -1598,20 +1617,20 @@ def _build_guardian_track_metadata_index(account_state_payload: dict[str, object
             cumulative_costs.get((_normalize_identity(current_guardian), track_cost_key, bit_level_value))
         ) if bit_level_value is not None else _DASH
         index[f'{current_guardian}::{track_name}'] = {
-            'bit_level': bit_level or 'â€”',
+            'bit_level': bit_level or 'Ã¢â‚¬â€',
             'bits_spent': bits_spent,
-            'bit_value': bit_value or 'â€”',
+            'bit_value': bit_value or 'Ã¢â‚¬â€',
         }
     return index
 
 
 def _guardian_start_value(metadata_value: object, start_row: dict[str, object], *, surface_id: str, value_type: str) -> str:
-    return _row_display_value(start_row, surface_id=surface_id, value_type=value_type) or str(metadata_value or 'â€”')
+    return _row_display_value(start_row, surface_id=surface_id, value_type=value_type) or str(metadata_value or 'Ã¢â‚¬â€')
 
 
 def _guardian_recon_status(*, start_value: str) -> str:
-    normalized = str(start_value or '').strip().replace('Ã¢â‚¬â€', 'â€”')
-    return 'green' if normalized not in {'', 'â€”'} else 'amber'
+    normalized = str(start_value or '').strip().replace('ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â', 'Ã¢â‚¬â€')
+    return 'green' if normalized not in {'', 'Ã¢â‚¬â€'} else 'amber'
 
 
 def _join_display_tokens(*values: str) -> str:
@@ -1620,11 +1639,11 @@ def _join_display_tokens(*values: str) -> str:
         text = str(value).strip()
         if not text:
             continue
-        normalized = text.replace('â€”', '—')
-        if normalized == '—':
+        normalized = text.replace('Ã¢â‚¬â€', '?')
+        if normalized == '?':
             continue
         tokens.append(normalized)
-    return ' Â· '.join(tokens) if tokens else 'â€”'
+    return ' Ã‚? '.join(tokens) if tokens else 'Ã¢â‚¬â€'
 
 
 def _bot_recon_status(*, start_row: dict[str, object], effective_row: dict[str, object]) -> str:
@@ -1835,7 +1854,7 @@ def _build_stats_uw_operator_panel(
                 spec['label'],
                 (dict(rows_start.get(spec['surface_id']) or {}).get('display_value')
                  or dict(rows_max.get(spec['surface_id']) or {}).get('display_value')
-                 or '—'),
+                 or '?'),
             )
             for spec in other_specs_by_section.get(uw_name, [])
             if (
@@ -1965,18 +1984,18 @@ def _build_stats_track_operator_panel(
                     start_row,
                     source_classes=('labs',),
                     surface_value_type=surface_value_type,
-                ) if include_labs else '—',
-                'module': _row_module_effect_display(start_row, surface_value_type=surface_value_type) if include_modules else '—',
+                ) if include_labs else '?',
+                'module': _row_module_effect_display(start_row, surface_value_type=surface_value_type) if include_modules else '?',
                 'perk': _format_effect_from_contributors(
                     start_row,
                     source_classes=('perk', 'perks', 'perk_effect'),
                     surface_value_type=surface_value_type,
-                ) if include_perks else '—',
-                'resolved_value': _row_display_value(start_row, surface_id=surface_id, value_type=surface_value_type) or metadata.get('resolved_value') or '—',
+                ) if include_perks else '?',
+                'resolved_value': _row_display_value(start_row, surface_id=surface_id, value_type=surface_value_type) or metadata.get('resolved_value') or '?',
             },
         )
         if not include_max_progression:
-            row_payload['max_progression_value'] = '—'
+            row_payload['max_progression_value'] = '?'
         sections.setdefault(entity_name, []).append(
             row_payload
         )
@@ -2032,17 +2051,17 @@ def _build_stats_bots_operator_panel(
                 'canonical_row_id': surface_id,
                 'display_label': track_name,
                 'name': track_name,
-                'medal_level': str(metadata.get('medal_level') or 'â€”'),
-                'medals_spent': str(metadata.get('medals_spent') or 'â€”'),
-                'medal_value': str(metadata.get('medal_value') or 'â€”'),
+                'medal_level': str(metadata.get('medal_level') or 'Ã¢â‚¬â€'),
+                'medals_spent': str(metadata.get('medals_spent') or 'Ã¢â‚¬â€'),
+                'medal_value': str(metadata.get('medal_value') or 'Ã¢â‚¬â€'),
                 'lab_effects': _format_effect_from_contributors(
                     start_row,
                     source_classes=('labs',),
                     surface_value_type=surface_value_type,
                 ),
                 'module_effects': module_value,
-                'start_of_run_value': _row_display_value(start_row, surface_id=surface_id, value_type=surface_value_type) or 'â€”',
-                'effective_value': str(effective_row.get('display_value') or 'â€”'),
+                'start_of_run_value': _row_display_value(start_row, surface_id=surface_id, value_type=surface_value_type) or 'Ã¢â‚¬â€',
+                'effective_value': str(effective_row.get('display_value') or 'Ã¢â‚¬â€'),
                 'reconciliation_status': _bot_recon_status(start_row=start_row, effective_row=effective_row),
                 'reconciliation_cell_flags': {},
             })
@@ -2097,9 +2116,9 @@ def _build_stats_guardians_operator_panel(
                 'canonical_row_id': surface_id,
                 'display_label': track_name,
                 'name': track_name,
-                'bit_level': str(metadata.get('bit_level') or 'â€”'),
-                'bits_spent': str(metadata.get('bits_spent') or 'â€”'),
-                'bit_value': str(metadata.get('bit_value') or 'â€”'),
+                'bit_level': str(metadata.get('bit_level') or 'Ã¢â‚¬â€'),
+                'bits_spent': str(metadata.get('bits_spent') or 'Ã¢â‚¬â€'),
+                'bit_value': str(metadata.get('bit_value') or 'Ã¢â‚¬â€'),
                 'start_of_run_value': start_value,
                 'reconciliation_status': _guardian_recon_status(start_value=start_value),
                 'reconciliation_cell_flags': {},
@@ -2541,9 +2560,9 @@ def _stats_row_payload(
         'display_label': label,
         'label': label,
         'surface_id': surface_id,
-        'display_value': row.get('display_value') if row.get('display_value') not in (None, '') else '—',
-        'start_of_run_value': start_row.get('display_value') if start_row.get('display_value') not in (None, '') else '—',
-        'max_progression_value': max_row.get('display_value') if max_row.get('display_value') not in (None, '') else '—',
+        'display_value': row.get('display_value') if row.get('display_value') not in (None, '') else '?',
+        'start_of_run_value': start_row.get('display_value') if start_row.get('display_value') not in (None, '') else '?',
+        'max_progression_value': max_row.get('display_value') if max_row.get('display_value') not in (None, '') else '?',
         'value': row.get('final_value'),
         'status': row.get('status') or start_row.get('status') or max_row.get('status') or 'missing',
         'ep_display': ep.get('ep_value_display') or ep.get('ep_value_raw'),
@@ -2680,6 +2699,13 @@ def build_stats_dashboard_payload(
                 surface_specs=_stats_surface_specs,
             )
             primary_panels.append({'panel_id': 'workshop', 'panel_type': 'workshop_stat_table', 'title': 'Workshop', 'payload': workshop_payload})
+            derived_wall_payload = publish_derived_wall_economy_operator_payload(
+                stats_layout=stats_layout,
+                rows_start=rows_start,
+                rows_max=rows_max,
+                surface_specs=_stats_surface_specs,
+            )
+            primary_panels.append({'panel_id': 'derived_wall_economy', 'panel_type': 'workshop_stat_table', 'title': 'Derived', 'payload': derived_wall_payload})
             uw_panel, uw_panel_gaps = _build_stats_uw_operator_panel(
                 account_state_payload=account_state_payload,
                 input_dashboard_payload=input_dashboard_payload,

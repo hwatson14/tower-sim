@@ -24,6 +24,7 @@ class PerkDefinition:
     stacking_type: str | None
     effect_stat_name: str | None
     effect_stat_id: str | None
+    required_uw: str | None
     notes: str
     source: str
 
@@ -54,6 +55,7 @@ REQUIRED_COLUMNS = (
     "stacking_type",
     "effect_stat_name",
     "effect_stat_id",
+    "required_uw",
     "notes",
     "source",
 )
@@ -92,15 +94,20 @@ def load_perk_definitions(path: Path | None = None) -> List[PerkDefinition]:
         stacking_type = row["stacking_type"].strip() or None
         effect_stat_name = row["effect_stat_name"].strip() or None
         effect_stat_id = row["effect_stat_id"].strip() or None
+        required_uw = row["required_uw"].strip() or None
+        category = row["category"].strip()
+        if category == "ultimate_weapon" and not required_uw:
+            raise PerkTableError(f"Ultimate-weapon perk {perk_name!r} must declare required_uw in {resolved}.")
         perks.append(
             PerkDefinition(
                 perk_name=perk_name,
-                category=row["category"].strip(),
+                category=category,
                 effect=row["effect"].strip(),
                 max_picks=_parse_int(row["max_picks"], resolved, perk_name),
                 stacking_type=stacking_type,
                 effect_stat_name=effect_stat_name,
                 effect_stat_id=effect_stat_id,
+                required_uw=required_uw,
                 notes=row["notes"].strip(),
                 source=row["source"].strip(),
             )

@@ -859,7 +859,8 @@ def test_boss_wave_payload_uses_effective_bh_cf_state_and_perk_switches():
     assert perks_off['diagnostics']['perk_application_mode'] == 'disabled'
     assert no_perks['diagnostics']['perk_timeline_rows'] == 0
     assert perks_off['diagnostics']['perk_timeline_rows'] == 0
-    assert rows_with_perks[-1]['wall_hp'] > no_perks['rows'][-1]['wall_hp']
+    assert rows_with_perks[-1]['wall_hp'] != pytest.approx(no_perks['rows'][-1]['wall_hp'])
+    assert rows_with_perks[-1]['wall_regen'] > no_perks['rows'][-1]['wall_regen']
 
 
 @pytest.mark.live
@@ -922,10 +923,24 @@ def test_boss_wave_perk_timeline_uses_ids_labs_first_choice_and_exports_wall_con
     assert len(payload['banned_perks']) == 2
     assert payload['priority_order'] == ['Perk Wave Requirement -20.00%']
     assert payload['first_perk_choice'] == 'Perk Wave Requirement -20.00%'
+    assert payload['unlocked_ultimate_weapons'] == [
+        'Black Hole',
+        'Chain Lightning',
+        'Chrono Field',
+        'Death Wave',
+        'Golden Tower',
+        'Spotlight',
+    ]
 
     timeline, diag = generate_timeline_from_policy(PerkTimelinePolicy(**payload))
+    assert diag['uw_locked_perks_excluded'] == {
+        '4 More Smart Missiles': 'Smart Missiles',
+        'Extra Set of Inner Mines': 'Inner Land Mines',
+        'Swamp Radius x1.5': 'Poison Swamp',
+    }
+    assert not any(row['perk_taken'] in diag['uw_locked_perks_excluded'] for row in timeline)
     assert diag['pwr_stacks'] == 3
-    assert [row['wave'] for row in timeline if row['perk_taken'] == 'Perk Wave Requirement -20.00%'] == [187, 701, 1215]
+    assert [row['wave'] for row in timeline if row['perk_taken'] == 'Perk Wave Requirement -20.00%'] == [187, 280, 467]
     counts_by_wave = pipeline_mod._boss_wave_perk_counts_by_wave(tuple(timeline))
     contributions_by_wave = pipeline_mod._boss_wave_perk_contributions_by_wave(
         counts_by_wave,
@@ -936,6 +951,57 @@ def test_boss_wave_perk_timeline_uses_ids_labs_first_choice_and_exports_wall_con
     assert final_contributions['perk_PERK_X1_20_MAX_HEALTH_effect_1:wall_hp_multiplier'] == pytest.approx(2.5)
     assert final_contributions['perk_PERK_X1_75_HEALTH_REGEN_effect_1:wall_regen_multiplier'] == pytest.approx(5.9375)
     assert final_contributions['perk_PERK_TOWER_HEALTH_REGEN_X8_00_BUT_TOWER_MAX_MAX_HEALTH_60_effect_1:wall_regen_multiplier'] == pytest.approx(8.8)
+
+
+def test_perk_generator_excludes_uw_perks_for_locked_ultimate_weapons():
+    from simulators.perk_timeline_generator import PerkTimelinePolicy, generate_timeline_from_policy
+
+    policy = PerkTimelinePolicy(
+        seed=7,
+        target_wave=50000,
+        perk_option_quantity=2,
+        priority_order=[
+            'Golden Tower Bonus x1.5',
+            'Black Hole Duration +12.0s',
+        ],
+        first_perk_choice='Golden Tower Bonus x1.5',
+        unlocked_ultimate_weapons=['Black Hole'],
+    )
+
+    timeline, diag = generate_timeline_from_policy(policy)
+
+    assert diag['uw_locked_perks_excluded']['Golden Tower Bonus x1.5'] == 'Golden Tower'
+    offered = [perk for row in timeline for perk in row['offered']]
+    taken = [row['perk_taken'] for row in timeline]
+    assert 'Golden Tower Bonus x1.5' not in offered
+    assert 'Golden Tower Bonus x1.5' not in taken
+    assert 'Black Hole Duration +12.0s' in taken
+
+
+def test_max_progression_policy_excludes_uw_perks_for_locked_ultimate_weapons():
+    from app import pipeline as pipeline_mod
+    from qe.stat_input_compiler import load_perk_entity_rows
+
+    bundle = pipeline_mod.load_inputs(ids_path=IDS_PATH)
+    config, metadata = pipeline_mod._resolve_perk_config(
+        perk_mode='max_progression_policy',
+        primary_config=bundle.perk_config,
+        perk_policy=bundle.perk_policy,
+        ids_raw=bundle.ids_raw,
+    )
+    perk_names_by_id = {row['perk_id']: row['perk_name'] for row in load_perk_entity_rows()}
+    selected_names = {
+        perk_names_by_id[selection['perk_id']]
+        for selection in config['perk_presets']['ProjectedMaxPolicy_AllExceptManualBans']
+    }
+
+    assert metadata['uw_locked_perks_excluded'] == {
+        '4 More Smart Missiles': 'Smart Missiles',
+        'Extra Set of Inner Mines': 'Inner Land Mines',
+        'Swamp Radius x1.5': 'Poison Swamp',
+    }
+    assert not (selected_names & set(metadata['uw_locked_perks_excluded']))
+    assert 'Black Hole Duration +12.0s' in selected_names
 
 
 def test_build_boss_wave_payload_tourney_fails_closed_without_tournament_wave(monkeypatch):
@@ -1251,7 +1317,7 @@ def test_run_stats_writes_stats_dashboard_artifact(run_stats_single_execution):
     assert stats_dashboard.get("schema_version") == 1
     panel_ids = [panel.get("panel_id") for panel in (stats_dashboard.get("panels") or [])]
     secondary_panel_ids = [panel.get("panel_id") for panel in (stats_dashboard.get("secondary_panels") or [])]
-    assert panel_ids == ["workshop", "ultimate_weapons", "bots", "guardians", "modules"]
+    assert panel_ids == ["workshop", "derived_wall_economy", "ultimate_weapons", "bots", "guardians", "modules"]
     assert "modules_resolved" in secondary_panel_ids
     assert "guardians_resolved" in secondary_panel_ids
 

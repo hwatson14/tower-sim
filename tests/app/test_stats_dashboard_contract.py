@@ -37,6 +37,7 @@ def test_stats_dashboard_contract_and_panel_types():
     panel_pairs = [(panel.get('panel_id'), panel.get('panel_type')) for panel in (payload.get('panels') or [])]
     assert panel_pairs == [
         ('workshop', 'workshop_stat_table'),
+        ('derived_wall_economy', 'workshop_stat_table'),
         ('ultimate_weapons', 'workshop_stat_table'),
         ('bots', 'workshop_stat_table'),
         ('guardians', 'workshop_stat_table'),
@@ -103,6 +104,9 @@ def test_stats_dashboard_publishes_contract_manifest_and_domain_acceptance_gate(
     assert panel_acceptance['workshop']['acceptance_state'] == 'active'
     assert panel_acceptance['workshop']['authority'] == 'qe_query_rows'
     assert panel_acceptance['workshop']['product_tier'] == 'primary'
+    assert panel_acceptance['derived_wall_economy']['acceptance_state'] == 'active'
+    assert panel_acceptance['derived_wall_economy']['authority'] == 'qe_query_rows'
+    assert panel_acceptance['derived_wall_economy']['product_tier'] == 'primary'
     assert panel_acceptance['ultimate_weapons']['acceptance_state'] == 'active'
     assert panel_acceptance['ultimate_weapons']['product_tier'] == 'primary'
     assert panel_acceptance['bots']['acceptance_state'] == 'active'
@@ -635,6 +639,106 @@ def test_stats_dashboard_resolved_sections_publish_wall_and_derived_rows():
     assert wall_rows['eHP']['display_value'] == '666'
     assert wall_rows['Wall Thorns']['display_value'] == '15.84%'
     assert wall_rows['Wall Thorns']['status'] == 'resolved'
+
+
+def test_stats_dashboard_primary_derived_rows_use_compact_qe_owned_table():
+    account_state = {
+        'default_preset': 'Farming',
+        'card_presets': {'Farming': []},
+        'module_presets': {},
+        'workshop': {},
+        'workshop_enhancement_tracks': {},
+        'cards_inventory': {},
+        'raw_sections': {},
+        'uw_tracks': {},
+        'ultimate_weapons': {},
+    }
+    input_dashboard = _build_input_dashboard_payload(account_state, {}, module_card_payloads={})
+    query_rows_start = {
+        'Farming': {
+            'rows': {
+                'derived::wall.hp_final': {
+                    'display_value': '4.44T',
+                    'final_value': 4_440_000_000_000.0,
+                    'value_type': 'hp',
+                    'status': 'resolved',
+                    'notes': 'QE-published final displayed Wall HP.',
+                    'contributors': [],
+                },
+                'derived::wall.regen_hp_per_second': {
+                    'display_value': '5.55T',
+                    'final_value': 5_550_000_000_000.0,
+                    'value_type': 'hp_per_second',
+                    'status': 'resolved',
+                    'notes': 'QE-published final displayed Wall Regen.',
+                    'contributors': [],
+                },
+            }
+        }
+    }
+    query_rows_max = {
+        'Farming': {
+            'rows': {
+                'derived::wall.hp_final': {
+                    'display_value': '8.88T',
+                    'final_value': 8_880_000_000_000.0,
+                    'value_type': 'hp',
+                    'status': 'resolved',
+                    'notes': 'QE-published final displayed Wall HP.',
+                    'contributors': [],
+                },
+                'derived::wall.regen_hp_per_second': {
+                    'display_value': '9.99T',
+                    'final_value': 9_990_000_000_000.0,
+                    'value_type': 'hp_per_second',
+                    'status': 'resolved',
+                    'notes': 'QE-published final displayed Wall Regen.',
+                    'contributors': [],
+                },
+            }
+        }
+    }
+    payload = _build_stats_dashboard_payload(
+        account_state_payload=account_state,
+        diagnostics={},
+        input_dashboard_payload=input_dashboard,
+        module_card_payloads={},
+        query_rows_start_of_run=query_rows_start,
+        query_rows_max_progression=query_rows_max,
+        ep_compare_publishable={},
+        line_verification={},
+        selected_preset='Farming',
+        selected_state_mode='start_of_run',
+    )
+
+    primary = {panel.get('panel_id'): panel for panel in payload['variants']['Farming']['start_of_run']}
+    workshop_sections = {section.get('title'): section for section in (primary['workshop'].get('payload', {}).get('sections') or [])}
+    assert 'Derived' not in workshop_sections
+
+    derived_payload = primary['derived_wall_economy']['payload']
+    assert derived_payload['owner'] == 'qe'
+    assert [column['key'] for column in derived_payload['columns']] == [
+        'name',
+        'surface_id',
+        'value_type',
+        'start_of_run_value',
+        'max_progression_value',
+        'status',
+        'notes',
+        'reconciliation_status',
+    ]
+    derived_rows = {
+        row.get('name'): row
+        for row in ((derived_payload.get('sections') or [{}])[0].get('rows') or [])
+    }
+    assert derived_rows['Wall HP']['surface_id'] == 'derived::wall.hp_final'
+    assert derived_rows['Wall HP']['start_of_run_value'] == '4.44T'
+    assert derived_rows['Wall HP']['max_progression_value'] == '8.88T'
+    assert derived_rows['Wall HP']['reconciliation_status'] == 'green'
+    assert derived_rows['Wall Regen']['surface_id'] == 'derived::wall.regen_hp_per_second'
+    assert derived_rows['Wall Regen']['start_of_run_value'] == '5.55T'
+    assert derived_rows['Wall Regen']['max_progression_value'] == '9.99T'
+    assert derived_rows['Wall Regen']['reconciliation_status'] == 'green'
 
 
 def test_stats_dashboard_resolved_sections_publish_cards_and_uw_rows():
@@ -1495,12 +1599,12 @@ def test_stats_dashboard_workshop_panel_includes_derived_section_rows():
         selected_preset='Farming',
         selected_state_mode='start_of_run',
     )
-    workshop_panel = next(
+    derived_panel = next(
         panel for panel in payload['variants']['Farming']['start_of_run']
-        if panel.get('panel_id') == 'workshop'
+        if panel.get('panel_id') == 'derived_wall_economy'
     )
     derived_section = next(
-        section for section in (workshop_panel.get('payload', {}).get('sections') or [])
+        section for section in (derived_panel.get('payload', {}).get('sections') or [])
         if section.get('title') == 'Derived'
     )
     labels = [row.get('name') for row in (derived_section.get('rows') or [])]
@@ -1671,8 +1775,8 @@ def test_stats_dashboard_derived_rows_normalize_display_values():
         selected_preset='Farming',
         selected_state_mode='start_of_run',
     )
-    workshop = next(panel for panel in payload['variants']['Farming']['start_of_run'] if panel.get('panel_id') == 'workshop')
-    derived_rows = ((workshop.get('payload', {}).get('sections') or [{}, {}, {}, {}])[3].get('rows') or [])
+    derived_panel = next(panel for panel in payload['variants']['Farming']['start_of_run'] if panel.get('panel_id') == 'derived_wall_economy')
+    derived_rows = ((derived_panel.get('payload', {}).get('sections') or [{}])[0].get('rows') or [])
     by_name = {row.get('name'): row for row in derived_rows}
     assert by_name['Ultimate Weapon Damage']['start_of_run_value'] == 'x25.12'
     assert by_name['Ultimate Weapon Damage']['max_progression_value'] == 'x25.12'
@@ -1786,17 +1890,17 @@ def test_stats_dashboard_does_not_backfill_missing_rows_from_line_verification()
     assert by_name['Wall Rebuild']['start_of_run_value'] == '—'
     assert by_name['Interest / Wave']['start_of_run_value'] == '—'
 
-    workshop_panel = next(
+    derived_panel = next(
         panel for panel in payload['variants']['Farming']['start_of_run']
-        if panel.get('panel_id') == 'workshop'
+        if panel.get('panel_id') == 'derived_wall_economy'
     )
     derived_section = next(
-        section for section in (workshop_panel.get('payload', {}).get('sections') or [])
+        section for section in (derived_panel.get('payload', {}).get('sections') or [])
         if section.get('title') == 'Derived'
     )
     derived_rows = {row.get('name'): row for row in (derived_section.get('rows') or [])}
     assert derived_rows['Wall Thorns']['start_of_run_value'] == '—'
-    assert derived_rows['Wall Thorns']['row_status'] == 'missing'
+    assert derived_rows['Wall Thorns']['status'] == 'missing'
 
 
 def test_stats_dashboard_preserves_unresolved_query_rows_without_line_verification_backfill():
