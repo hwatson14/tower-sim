@@ -298,7 +298,7 @@ def test_stats_dashboard_primary_uw_operator_table_wires_module_other_and_recon_
     assert golden_rows['Duration']['lab_effects'] == '20s'
     assert golden_rows['Duration']['reconciliation_status'] == 'green'
     assert black_hole_rows['Duration']['module_effects'] == '4s'
-    assert black_hole_rows['Duration']['reconciliation_status'] == 'green'
+    assert black_hole_rows['Duration']['reconciliation_status'] == 'red'
 
 
 def test_stats_dashboard_live_guardian_scout_rows_publish_cumulative_bits_and_green_recon():
@@ -3054,7 +3054,7 @@ def test_stats_dashboard_primary_uw_operator_table_wires_module_other_and_recon_
     assert golden_rows['Duration']['lab_effects'] == '20s'
     assert golden_rows['Duration']['reconciliation_status'] == 'green'
     assert black_hole_rows['Duration']['module_effects'] == '4s'
-    assert black_hole_rows['Duration']['reconciliation_status'] == 'green'
+    assert black_hole_rows['Duration']['reconciliation_status'] == 'red'
 
 
 def test_stats_dashboard_primary_bot_operator_table_uses_start_of_run_only_surface():
@@ -3317,4 +3317,4 @@ def test_stats_dashboard_primary_uw_operator_table_wires_module_other_and_recon_
     assert golden_rows['Duration']['lab_effects'] == '20s'
     assert golden_rows['Duration']['reconciliation_status'] == 'green'
     assert black_hole_rows['Duration']['module_effects'] == '4s'
-    assert black_hole_rows['Duration']['reconciliation_status'] == 'green'
+    assert black_hole_rows['Duration']['reconciliation_status'] == 'red'

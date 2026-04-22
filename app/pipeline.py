@@ -134,8 +134,9 @@ BOSS_WAVE_REPLACEMENT_PRIMITIVE_SURFACE_IDS: tuple[str, ...] = (
     'state::cards.plasma_cannon.effect_pct',
     'state::module.orbital_augment.electron_count',
     'state::module.primordial_collapse.bh_damage_reduction_pct',
-    'support_surface::ehp.black_hole_duration_seconds',
-    'support_surface::ehp.black_hole_cooldown_seconds',
+    'state::uw.chrono_field.duration_seconds',
+    'state::uw.chrono_field.cooldown_seconds',
+    'state::uw.chrono_field.damage_reduction_pct',
     'state::bot.flame.damage_reduction_pct',
     'state::bot.flame.cooldown_seconds',
     'state::bot.flame.range_m',
@@ -208,6 +209,7 @@ def _resolve_boss_wave_run_context(
     preset_name: str,
     tier_number: int,
     checkpoint_every_bosses: int,
+    perk_state: str,
 ) -> dict[str, object]:
     from simulators.scenario import ScenarioConfig, compute_scenario_surfaces
 
@@ -258,6 +260,10 @@ def _resolve_boss_wave_run_context(
     scenario_surfaces = compute_scenario_surfaces(scenario_config)
     actual_boss_interval_waves = max(1, int(getattr(scenario_surfaces, 'boss_wave_interval', 10) or 10))
     checkpoint_every_bosses = max(1, int(checkpoint_every_bosses))
+    perks_enabled = mode_id != 'tournament' and _perks_enabled_for_state(
+        getattr(account_state, 'active_perk_preset', None),
+        perk_state,
+    )
     return {
         'resolved': True,
         'mode_id': mode_id,
@@ -266,13 +272,15 @@ def _resolve_boss_wave_run_context(
         'tier_column': f'Tier {int(tier_number)}',
         'league': scenario_config.league,
         'tournament_wave': int(scenario_config.tournament_wave or 0) or None,
-        'perks_enabled': mode_id != 'tournament',
-        'perk_timeline_mode': 'runtime_policy_projection' if mode_id != 'tournament' else 'disabled_for_scenario',
+        'perks_enabled': perks_enabled,
+        'perk_state': _normalize_perk_state(perk_state),
+        'perk_timeline_mode': 'runtime_policy_projection' if perks_enabled else 'disabled_by_perk_state_or_scenario',
         'actual_boss_interval_waves': actual_boss_interval_waves,
         'checkpoint_every_bosses': checkpoint_every_bosses,
         'checkpoint_stride_waves': actual_boss_interval_waves * checkpoint_every_bosses,
         'requested_start_wave': 1,
         'scenario_config': scenario_config,
+        'scenario_surfaces': scenario_surfaces.to_dict(),
     }
 
 
@@ -370,16 +378,34 @@ def build_boss_wave_payload(
 ) -> dict[str, object]:
     from simulators.perk_timeline_generator import PerkTimelinePolicy, generate_timeline_from_policy, perk_state_at_wave
     source_id = _normalize_boss_wave_source(boss_wave_source)
+    perk_mode = _normalize_perk_mode(getattr(request, 'perk_mode', None))
+    perk_state = _normalize_perk_state(getattr(request, 'perk_state', 'auto'))
     bundle = load_inputs(ids_path=request.ids, manual_inputs_path=request.manual_inputs)
-    account_state = build_runtime_state(bundle.ids_raw, loadout_config=bundle.loadout_config, perk_config=bundle.perk_config)
+    resolved_perk_config, perk_config_resolution = _resolve_perk_config(
+        perk_mode=perk_mode,
+        primary_config=bundle.perk_config,
+        perk_policy=getattr(bundle, 'perk_policy', {}) or {},
+        ids_raw=bundle.ids_raw,
+        diag_output_dir=None,
+    )
+    account_state = build_runtime_state(bundle.ids_raw, loadout_config=bundle.loadout_config, perk_config=resolved_perk_config)
     resolved_context = _resolve_boss_wave_run_context(
         account_state,
         preset_name=preset_name,
         tier_number=int(tier_number),
         checkpoint_every_bosses=int(boss_wave_step),
+        perk_state=perk_state,
     )
     perk_policy_payload, _perk_context = _perk_policy_context(bundle.ids_raw, getattr(bundle, 'perk_policy', {}) or {})
     perk_timeline, perk_timeline_diag = generate_timeline_from_policy(PerkTimelinePolicy(**perk_policy_payload))
+    if perk_mode == 'none' or not bool(resolved_context.get('perks_enabled')):
+        perk_timeline = []
+        perk_timeline_diag = {
+            'enabled': False,
+            'reason': 'disabled_by_perk_mode_or_state',
+            'final_wave': 0,
+            'generated_rows': 0,
+        }
     if not bool(resolved_context.get('resolved')):
         return {
             'artifact': 'boss_wave_dashboard_payload',
@@ -431,6 +457,9 @@ def build_boss_wave_payload(
                 'requested_start_wave': 1,
                 'first_checkpoint_wave': None,
                 'scenario_runtime_inputs': dict(scenario_runtime_inputs),
+                'perk_mode': perk_mode,
+                'perk_state': perk_state,
+                'perk_config_resolution': dict(perk_config_resolution),
             },
             'download': {
                 'format': 'csv',
@@ -445,6 +474,7 @@ def build_boss_wave_payload(
             'operator_rows': [],
             'download_rows': [],
         }
+    effective_perks_enabled = bool(resolved_context.get('perks_enabled')) and perk_mode != 'none'
     config = {
         'execution_mode': 'table_sweep',
         'preset_name': preset_name,
@@ -457,11 +487,16 @@ def build_boss_wave_payload(
         'end_wave': int(end_wave),
         'boss_interval_waves': int(resolved_context.get('actual_boss_interval_waves') or 10),
         'checkpoint_every_bosses': int(resolved_context.get('checkpoint_every_bosses') or 1),
-        'perks_enabled': bool(resolved_context.get('perks_enabled')),
+        'perks_enabled': effective_perks_enabled,
         'state_mode': 'start_of_run',
-        'perk_timeline': tuple(dict(row or {}) for row in perk_timeline) if bool(resolved_context.get('perks_enabled')) else (),
+        'perk_mode': perk_mode,
+        'perk_state': perk_state,
+        'perk_config_resolution': dict(perk_config_resolution),
+        'perk_timeline': tuple(dict(row or {}) for row in perk_timeline) if effective_perks_enabled else (),
+        'scenario_config': resolved_context.get('scenario_config'),
+        'scenario_surfaces': dict(resolved_context.get('scenario_surfaces') or {}),
     }
-    perk_counts = perk_state_at_wave(perk_timeline, 0) if bool(resolved_context.get('perks_enabled', True)) else {}
+    perk_counts = perk_state_at_wave(perk_timeline, 0) if effective_perks_enabled else {}
     operator_rows, selected_summary, primitive_inputs, primitive_semantics_ledger = _build_replacement_operator_table_and_summary(
         active_source=source_id,
         config=config,
@@ -504,7 +539,11 @@ def build_boss_wave_payload(
             'summary_kind': 'max_wave_survivability',
             'checkpoint_mode': 'actual_boss_cadence_with_sampling',
             'start_state_basis': 'start_of_run',
-            'perk_timeline_mode': resolved_context.get('perk_timeline_mode') or 'runtime_policy_projection',
+            'perk_timeline_mode': (
+                'runtime_policy_projection'
+                if effective_perks_enabled
+                else 'disabled_by_perk_mode_or_state'
+            ),
             'free_upgrade_mode': 'runtime_progression_allocation',
             'wave_progression_mode': 'runtime_wave_progression',
             'enemy_skip_mode': 'runtime_wave_progression',
@@ -531,6 +570,10 @@ def build_boss_wave_payload(
             'terminal_display_wave': int(selected_summary.get('terminal_display_wave') or 0),
             'survives_through_end': bool(selected_summary.get('survives_through_end')),
             'result_consistent_with_rows': bool(selected_summary.get('result_consistent_with_rows')),
+            'status': selected_summary.get('status') or 'complete',
+            'failure_kind': selected_summary.get('failure_kind'),
+            'failure_message': selected_summary.get('failure_message'),
+            'first_unresolved_wave': selected_summary.get('first_unresolved_wave'),
         },
         'diagnostics': selected_diagnostics,
         'download': {
@@ -568,25 +611,28 @@ def _build_replacement_operator_table_and_summary(
     from qe.kb_surfaces import ELECTRON_BOSS_REMAINING_HP_PCT
     from simulators.evaluator_kernel import (
         CombatInputs,
+        KernelAmbiguityError,
         ScenarioOverlayInputs,
         ScenarioSurvivabilityTransforms,
-        build_scenario_overlay_table,
+        evaluate_overlay_row,
     )
 
     primitives = _resolve_boss_wave_replacement_primitives(
         account_state=account_state,
         preset_name=preset_name,
+        config=config,
         perks_enabled=bool(config['perks_enabled']),
         scenario_runtime_inputs=scenario_runtime_inputs,
     )
     runtime_inputs = ScenarioRuntimeInputs.from_mapping(scenario_runtime_inputs)
+    scenario_surfaces = dict(config.get('scenario_surfaces') or {})
     boss_ttk_defaults = _boss_wave_default_ttk_inputs(
         runtime_inputs,
         primitives=primitives,
         electron_boss_remaining_hp_pct=float(ELECTRON_BOSS_REMAINING_HP_PCT),
     )
-    effective_dr_pct = _optional_runtime_float(scenario_runtime_inputs, 'effective_damage_reduction_pct')
-    tower_defense_pct = float(effective_dr_pct if effective_dr_pct is not None else primitives['tower_defense_pct'])
+    final_dr_override_pct = _optional_runtime_float(scenario_runtime_inputs, 'effective_damage_reduction_pct')
+    tower_defense_pct = float(final_dr_override_pct if final_dr_override_pct is not None else primitives['tower_defense_pct'])
     death_wave_health_max_multiplier = _boss_wave_death_wave_health_max_multiplier(
         account_state,
         scenario_runtime_inputs=scenario_runtime_inputs,
@@ -595,6 +641,26 @@ def _build_replacement_operator_table_and_summary(
         _optional_runtime_float(scenario_runtime_inputs, 'death_wave_health_max_wave') or 1000
     )
     timed_dr_by_lane, timed_dr_sources = _boss_wave_timed_dr_inputs(runtime_inputs, primitives=primitives)
+    if final_dr_override_pct is not None:
+        timed_dr_by_lane = {'min': 0.0, 'avg': 0.0, 'max': 0.0}
+        timed_dr_sources = {
+            **timed_dr_sources,
+            'final_dr_override': {
+                'damage_reduction_pct': float(final_dr_override_pct),
+                'duration_seconds': 0.0,
+                'cooldown_seconds': 0.0,
+                'uptime_fraction': 1.0,
+                'uptime_source': 'runtime_effective_damage_reduction_pct_final_override',
+                'effective_dr_fraction': max(0.0, min(1.0, float(final_dr_override_pct) / 100.0)),
+                'primitive_status': 'runtime_final_dr_override_bypasses_timed_dr_sources',
+            },
+        }
+    bh_dr_pct = 0.0 if final_dr_override_pct is not None else float(timed_dr_sources['black_hole_pbh']['damage_reduction_pct'])
+    bh_duration_seconds = 0.0 if final_dr_override_pct is not None else float(timed_dr_sources['black_hole_pbh']['duration_seconds'])
+    bh_cooldown_seconds = 0.0 if final_dr_override_pct is not None else float(timed_dr_sources['black_hole_pbh']['cooldown_seconds'])
+    cf_dr_pct = 0.0 if final_dr_override_pct is not None else float(primitives['chrono_field_damage_reduction_pct'])
+    cf_duration_seconds = 0.0 if final_dr_override_pct is not None else float(primitives['chrono_field_duration_seconds'])
+    cf_cooldown_seconds = 0.0 if final_dr_override_pct is not None else float(primitives['chrono_field_cooldown_seconds'])
     workshop_levels, track_max_levels = _boss_wave_workshop_level_inputs(account_state, preset_name=preset_name)
     category_track_order = default_category_track_order(workshop_levels, track_max_levels)
     tower_hp_level = _boss_wave_optional_workshop_level(workshop_levels, 'Health', primitive_name='state::tower.hp')
@@ -637,12 +703,12 @@ def _build_replacement_operator_table_and_summary(
         wall_fortification_multiplier=wall_fortification_multiplier,
         tower_defense_pct=tower_defense_pct,
         timed_dr_by_lane=timed_dr_by_lane,
-        black_hole_damage_reduction_pct=float(timed_dr_sources['black_hole_pbh']['damage_reduction_pct']),
-        black_hole_duration_seconds=float(timed_dr_sources['black_hole_pbh']['duration_seconds']),
-        black_hole_cooldown_seconds=float(timed_dr_sources['black_hole_pbh']['cooldown_seconds']),
-        chrono_field_damage_reduction_pct=float(primitives['chrono_field_damage_reduction_pct']),
-        chrono_field_duration_seconds=float(primitives['chrono_field_duration_seconds']),
-        chrono_field_cooldown_seconds=float(primitives['chrono_field_cooldown_seconds']),
+        black_hole_damage_reduction_pct=bh_dr_pct,
+        black_hole_duration_seconds=bh_duration_seconds,
+        black_hole_cooldown_seconds=bh_cooldown_seconds,
+        chrono_field_damage_reduction_pct=cf_dr_pct,
+        chrono_field_duration_seconds=cf_duration_seconds,
+        chrono_field_cooldown_seconds=cf_cooldown_seconds,
         source_policy='explicit_staged_contributors_v1',
     )
     perk_counts_by_wave = _boss_wave_perk_counts_by_wave(perk_timeline)
@@ -677,8 +743,19 @@ def _build_replacement_operator_table_and_summary(
             death_wave_health_max_wave=death_wave_health_max_wave,
         )
     )
-    skip_delta = -max(0.0, float(getattr(runtime_inputs, 'enemy_level_skip_reduction_pp') or 0.0)) / 100.0
-    incoming_mult = float(getattr(runtime_inputs, 'incoming_damage_multiplier') or 1.0)
+    runtime_skip_reduction = getattr(runtime_inputs, 'enemy_level_skip_reduction_pp')
+    skip_reduction_pp = (
+        float(runtime_skip_reduction)
+        if runtime_skip_reduction is not None
+        else float(scenario_surfaces.get('bc_enemy_level_skip_reduction_pp') or 0.0)
+    )
+    skip_delta = -max(0.0, skip_reduction_pp) / 100.0
+    runtime_incoming_mult = getattr(runtime_inputs, 'incoming_damage_multiplier')
+    incoming_mult = (
+        float(runtime_incoming_mult)
+        if runtime_incoming_mult is not None
+        else float(scenario_surfaces.get('env_enemy_damage_multiplier') or 1.0)
+    )
     wall_thorns_damage_increase_per_hit = _boss_wave_wall_thorns_damage_increase_per_hit(
         account_state,
         preset_name=preset_name,
@@ -686,7 +763,7 @@ def _build_replacement_operator_table_and_summary(
     scenario = ScenarioOverlayInputs(
         scenario_key='boss_waves_replacement_product',
         tier_column=str(config['tier_column']),
-        tournament_perks_enabled=bool(config['perks_enabled']),
+        tournament_perks_enabled=True,
         attack_skip_chance_delta=skip_delta,
         health_skip_chance_delta=skip_delta,
         survivability_transforms=ScenarioSurvivabilityTransforms(
@@ -702,13 +779,48 @@ def _build_replacement_operator_table_and_summary(
         electron_total_damage_pct=float(boss_ttk_defaults['electron_total_damage_pct']),
         electron_hit_count=getattr(runtime_inputs, 'electron_hit_count'),
         boss_time_to_contact_seconds=getattr(runtime_inputs, 'boss_time_to_contact_seconds'),
-        boss_hit_interval_seconds=float(getattr(runtime_inputs, 'boss_hit_interval_seconds') or 2.0),
+        boss_hit_interval_seconds=(
+            float(getattr(runtime_inputs, 'boss_hit_interval_seconds'))
+            if getattr(runtime_inputs, 'boss_hit_interval_seconds') is not None
+            else float(scenario_surfaces.get('boss_hit_interval_seconds') or 2.0)
+        ),
         max_ttk_seconds=600.0,
+        plasma_cannon_resistance_multiplier=float(scenario_surfaces.get('bc_plasma_cannon_resistance') or 1.0),
+        orb_resistance_multiplier=float(scenario_surfaces.get('bc_orb_resistance') or 1.0),
+        thorns_resistance_multiplier=float(scenario_surfaces.get('bc_thorns_resistance') or 1.0),
         wall_thorns_damage_increase_per_hit=wall_thorns_damage_increase_per_hit,
     )
-    table2 = build_scenario_overlay_table(table1, scenario=scenario, combat=combat)
     operator_rows: list[dict[str, object]] = []
-    for overlay in table2.rows:
+    kernel_failure: dict[str, object] | None = None
+    if combat.boss_time_to_contact_seconds is None:
+        contact_error = KernelAmbiguityError(
+            "boss_time_to_contact_seconds is required for the self-closing Boss Waves farming path; "
+            "no owned scenario/QE primitive currently defines boss spawn-to-wall contact time"
+        )
+        if bool(stop_on_failure):
+            raise contact_error
+        first_row = table1.rows[0] if table1.rows else None
+        kernel_failure = {
+            'status': 'incomplete',
+            'failure_kind': 'kernel_ambiguity',
+            'failure_message': str(contact_error),
+            'first_unresolved_wave': int(first_row.display_wave) if first_row is not None else None,
+        }
+    for table1_row in table1.rows:
+        if kernel_failure:
+            break
+        try:
+            overlay = evaluate_overlay_row(table1_row, scenario=scenario, combat=combat)
+        except KernelAmbiguityError as exc:
+            if bool(stop_on_failure):
+                raise
+            kernel_failure = {
+                'status': 'incomplete',
+                'failure_kind': 'kernel_ambiguity',
+                'failure_message': str(exc),
+                'first_unresolved_wave': int(table1_row.display_wave),
+            }
+            break
         operator_rows.append(
             _replacement_operator_row_from_overlay(
                 overlay=overlay,
@@ -732,28 +844,35 @@ def _build_replacement_operator_table_and_summary(
         boss_ttk_defaults=boss_ttk_defaults,
         wall_thorns_damage_increase_per_hit=wall_thorns_damage_increase_per_hit,
     )
-    return operator_rows, _replacement_summary_from_operator_rows(operator_rows), dict(primitives), semantic_ledger
+    summary = _replacement_summary_from_operator_rows(operator_rows)
+    if kernel_failure:
+        summary.update(kernel_failure)
+    else:
+        summary.setdefault('status', 'complete')
+    return operator_rows, summary, dict(primitives), semantic_ledger
 
 
 def _resolve_boss_wave_replacement_primitives(
     *,
     account_state,
     preset_name: str,
+    config: dict[str, object],
     perks_enabled: bool,
     scenario_runtime_inputs: dict[str, float],
 ) -> dict[str, float]:
     from qe.run_plan import (
-        derive_chrono_field_damage_reduction_pct,
         derive_wall_hp_from_qe_primitives,
         derive_wall_regen_hp_per_second,
     )
+    from simulators.scenario import ScenarioConfig
+    from simulators.timing import resolve_timing_consumer_bundle
 
     response = resolve_checkpoint_surfaces(
         account_state,
         requested_surface_ids=BOSS_WAVE_REPLACEMENT_PRIMITIVE_SURFACE_IDS,
         preset_name=preset_name,
         state_mode='start_of_run',
-        perks_enabled=bool(perks_enabled),
+        perks_enabled=False,
         scenario_runtime_inputs=ScenarioRuntimeInputs.from_mapping(scenario_runtime_inputs),
     )
     statbook = query_response_to_statbook(response, notes='Boss Waves replacement primitive resolution.')
@@ -768,6 +887,40 @@ def _resolve_boss_wave_replacement_primitives(
     tower_thorns_damage_pct = _required_statbook_float(statbook, 'state::tower.thorns_damage_pct')
     wall_thorns_level = int((getattr(account_state, 'labs', {}) or {}).get('Wall Thorns') or 0)
     wall_thorns_contact_damage_pct = _required_statbook_float(statbook, 'state::wall.thorns_damage_pct')
+    scenario_config = config.get('scenario_config')
+    if scenario_config is None:
+        scenario_config = ScenarioConfig(
+            mode_id=str(config.get('mode_id') or 'farming'),
+            tier=int(config.get('tier_number') or 1),
+            league=config.get('league'),
+            tournament_wave=(int(config.get('tournament_wave') or 0) or None),
+        )
+    if (
+        'state::uw.black_hole.duration_seconds' in statbook.rows
+        and 'state::uw.black_hole.cooldown_seconds' in statbook.rows
+        and statbook.rows['state::uw.black_hole.duration_seconds'].final_value is not None
+        and statbook.rows['state::uw.black_hole.cooldown_seconds'].final_value is not None
+    ):
+        black_hole_duration_seconds = _required_statbook_float(statbook, 'state::uw.black_hole.duration_seconds')
+        black_hole_cooldown_seconds = _required_statbook_float(statbook, 'state::uw.black_hole.cooldown_seconds')
+    else:
+        timing_family_id = 'timing_tournament_no_perks' if str(config.get('mode_id') or '') == 'tournament' else 'timing_scenario_probe'
+        timing_response = resolve_timing_consumer_bundle(
+            account_state=account_state,
+            consumer_id='run_stats',
+            bundle_id='timing_core_cycle',
+            family_id=timing_family_id,
+            preset_name=preset_name,
+            scenario_config=scenario_config,
+            perks_enabled=False,
+            state_mode='start_of_run',
+        )
+        timing_statbook = query_response_to_statbook(
+            timing_response,
+            notes='Boss Waves replacement effective UW timing primitive resolution.',
+        )
+        black_hole_duration_seconds = _required_statbook_float(timing_statbook, 'state::uw.black_hole.duration_seconds')
+        black_hole_cooldown_seconds = _required_statbook_float(timing_statbook, 'state::uw.black_hole.cooldown_seconds')
     return {
         'attack_skip_chance': _required_statbook_fraction(statbook, 'state::tower.enemy_attack_level_skip_pct'),
         'health_skip_chance': _required_statbook_fraction(statbook, 'state::tower.enemy_health_level_skip_pct'),
@@ -795,14 +948,11 @@ def _resolve_boss_wave_replacement_primitives(
         'plasma_cannon_effect_pct': _required_statbook_float(statbook, 'state::cards.plasma_cannon.effect_pct'),
         'orbital_augment_electron_count': _optional_statbook_float(statbook, 'state::module.orbital_augment.electron_count', default=0.0),
         'primordial_collapse_bh_damage_reduction_pct': _optional_statbook_float(statbook, 'state::module.primordial_collapse.bh_damage_reduction_pct', default=0.0),
-        'black_hole_duration_seconds': _optional_statbook_float(statbook, 'support_surface::ehp.black_hole_duration_seconds', default=0.0),
-        'black_hole_cooldown_seconds': _optional_statbook_float(statbook, 'support_surface::ehp.black_hole_cooldown_seconds', default=0.0),
-        'chrono_field_duration_seconds': _boss_wave_uw_track_value(account_state, 'Chrono Field', 'Duration'),
-        'chrono_field_cooldown_seconds': _boss_wave_uw_track_value(account_state, 'Chrono Field', 'Cooldown'),
-        'chrono_field_damage_reduction_pct': derive_chrono_field_damage_reduction_pct(
-            reduction_lab_level=int((getattr(account_state, 'labs', {}) or {}).get('Chrono Field Reduction %') or 0),
-            damage_reduction_unlocked=bool((getattr(account_state, 'labs', {}) or {}).get('Chrono Field Damage Reduction')),
-        ),
+        'black_hole_duration_seconds': black_hole_duration_seconds,
+        'black_hole_cooldown_seconds': black_hole_cooldown_seconds,
+        'chrono_field_duration_seconds': _required_statbook_float(statbook, 'state::uw.chrono_field.duration_seconds'),
+        'chrono_field_cooldown_seconds': _required_statbook_float(statbook, 'state::uw.chrono_field.cooldown_seconds'),
+        'chrono_field_damage_reduction_pct': _required_statbook_float(statbook, 'state::uw.chrono_field.damage_reduction_pct'),
         'flame_bot_damage_reduction_pct': _optional_statbook_float(statbook, 'state::bot.flame.damage_reduction_pct', default=0.0),
         'flame_bot_cooldown_seconds': _optional_statbook_float(statbook, 'state::bot.flame.cooldown_seconds', default=0.0),
         'flame_bot_range_m': _optional_statbook_float(statbook, 'state::bot.flame.range_m', default=0.0),
@@ -1047,35 +1197,35 @@ def _boss_wave_primitive_semantics_ledger(
                 meaning='QE-published Primordial Collapse damage reduction percent while the boss is inside Black Hole; Boss Waves uses this for the PBH timed DR source when runtime PBH inputs are not explicitly provided',
                 owner='QE publishes module unique DR; app assembles timed DR primitive; evaluator consumes multiplicative DR lane input',
             ),
-            'support_surface::ehp.black_hole_duration_seconds': _primitive_ledger_entry(
-                source='qe.routing.resolve_checkpoint_surfaces(support_surface::ehp.black_hole_duration_seconds)',
+            'state::uw.black_hole.duration_seconds': _primitive_ledger_entry(
+                source='simulators.timing.resolve_timing_consumer_bundle(state::uw.black_hole.duration_seconds)',
                 value=float(primitives.get('black_hole_duration_seconds') or 0.0),
-                meaning='QE support-surface Black Hole duration used to calculate PBH average uptime for Boss Waves timed DR',
-                owner='QE publishes timing support surface; app assembles timed DR primitive; evaluator consumes multiplicative DR lane input',
+                meaning='Effective current-account Black Hole duration used to calculate PBH uptime for Boss Waves timed DR; BH does not damage the boss in this tranche',
+                owner='simulators.timing publishes effective UW timing; app assembles timed DR primitive; run_plan applies BH duration perk per row; evaluator consumes multiplicative DR lane input',
             ),
-            'support_surface::ehp.black_hole_cooldown_seconds': _primitive_ledger_entry(
-                source='qe.routing.resolve_checkpoint_surfaces(support_surface::ehp.black_hole_cooldown_seconds)',
+            'state::uw.black_hole.cooldown_seconds': _primitive_ledger_entry(
+                source='simulators.timing.resolve_timing_consumer_bundle(state::uw.black_hole.cooldown_seconds)',
                 value=float(primitives.get('black_hole_cooldown_seconds') or 0.0),
-                meaning='QE support-surface Black Hole cooldown used to calculate PBH average uptime for Boss Waves timed DR',
-                owner='QE publishes timing support surface; app assembles timed DR primitive; evaluator consumes multiplicative DR lane input',
+                meaning='Effective current-account Black Hole cooldown used to calculate PBH uptime for Boss Waves timed DR',
+                owner='simulators.timing publishes effective UW timing; app assembles timed DR primitive; evaluator consumes multiplicative DR lane input',
             ),
             'state::uw.chrono_field.duration_seconds': _primitive_ledger_entry(
-                source='input.runtime_state.AccountState.uw_tracks[Chrono Field::Duration]',
+                source='qe.routing.resolve_checkpoint_surfaces(state::uw.chrono_field.duration_seconds)',
                 value=float(primitives.get('chrono_field_duration_seconds') or 0.0),
-                meaning='QE Chrono Field duration primitive; evaluator adds active Chrono Field Duration perk seconds per row before computing average CF DR',
-                owner='input publishes resolved UW timing track; app assembles named primitive; run_plan carries CF duration perk contribution; evaluator consumes multiplicative DR lane input',
+                meaning='Effective current-account Chrono Field duration primitive; evaluator adds active Chrono Field Duration perk seconds per row before computing average CF DR',
+                owner='QE publishes effective UW timing primitive; app assembles named primitive; run_plan carries CF duration perk contribution; evaluator consumes multiplicative DR lane input',
             ),
             'state::uw.chrono_field.cooldown_seconds': _primitive_ledger_entry(
-                source='input.runtime_state.AccountState.uw_tracks[Chrono Field::Cooldown]',
+                source='qe.routing.resolve_checkpoint_surfaces(state::uw.chrono_field.cooldown_seconds)',
                 value=float(primitives.get('chrono_field_cooldown_seconds') or 0.0),
                 meaning='Chrono Field cooldown primitive used to calculate average CF DR uptime',
-                owner='input publishes resolved UW timing track; evaluator consumes multiplicative DR lane input',
+                owner='QE publishes effective UW timing primitive; evaluator consumes multiplicative DR lane input',
             ),
             'state::uw.chrono_field.damage_reduction_pct': _primitive_ledger_entry(
-                source='qe.run_plan.derive_chrono_field_damage_reduction_pct(input.runtime_state.AccountState.labs)',
+                source='qe.routing.resolve_checkpoint_surfaces(state::uw.chrono_field.damage_reduction_pct)',
                 value=float(primitives.get('chrono_field_damage_reduction_pct') or 0.0),
-                meaning='Chrono Field damage reduction percent from the KB canonical lab formula, used as a separate DR source after defense',
-                owner='QE formula helper owns the lab formula; app assembles named primitive; evaluator consumes multiplicative DR lane input',
+                meaning='Effective current-account Chrono Field damage reduction percent, used as a separate DR source after defense',
+                owner='QE publishes effective UW timing primitive; app assembles named primitive; evaluator consumes multiplicative DR lane input',
             ),
             'state::bot.flame.damage_reduction_pct': _primitive_ledger_entry(
                 source='qe.routing.resolve_checkpoint_surfaces(state::bot.flame.damage_reduction_pct)',
@@ -1356,9 +1506,9 @@ def _build_replacement_diagnostics(
         'perk_timeline_enabled': bool(config['perks_enabled']),
         'perk_timeline_rows': int(perk_timeline_rows),
         'perk_timeline_final_wave': int(perk_timeline_final_wave),
-        'context_status': 'resolved',
-        'context_error': None,
-        'context_error_message': None,
+        'context_status': summary.get('status') or 'complete',
+        'context_error': summary.get('failure_kind'),
+        'context_error_message': summary.get('failure_message'),
         'actual_boss_interval_waves': int(config['boss_interval_waves']),
         'checkpoint_every_bosses': int(config['checkpoint_every_bosses']),
         'checkpoint_stride_waves': int(config['boss_interval_waves']) * int(config['checkpoint_every_bosses']),
@@ -1368,6 +1518,7 @@ def _build_replacement_diagnostics(
         'checkpoint_mode': 'actual_boss_cadence_with_sampling',
         'stop_on_failure': bool(stop_on_failure),
         'scenario_runtime_inputs': dict(scenario_runtime_inputs),
+        'scenario_surfaces': dict(config.get('scenario_surfaces') or {}),
         'execution_mode': 'staged_replacement',
         'checkpoint_resolution_mode': 'replacement_table1_table2_overlay',
         'qe_resolution_count': 0,
@@ -1429,6 +1580,9 @@ def _build_replacement_diagnostics(
             'first_lane_handle_ids': dict(first_row.get('lane_handle_ids') or {}),
             'max_surviving_wave': int(summary.get('max_surviving_wave') or 0),
             'first_failed_wave': int(summary.get('first_failed_wave') or 0),
+            'execution_status': summary.get('status') or 'complete',
+            'failure_kind': summary.get('failure_kind'),
+            'first_unresolved_wave': summary.get('first_unresolved_wave'),
         },
     }
 
@@ -1522,25 +1676,25 @@ def _boss_wave_timed_dr_inputs(
     *,
     primitives: dict[str, float],
 ) -> tuple[dict[str, float], dict[str, object]]:
-    flame_bot_dr_pct = _runtime_positive_float(runtime_inputs, 'flame_bot_damage_reduction_pct')
-    flame_bot_duration = _runtime_positive_float(runtime_inputs, 'flame_bot_duration_seconds')
+    flame_bot_dr_pct = _runtime_nonnegative_float(runtime_inputs, 'flame_bot_damage_reduction_pct')
+    flame_bot_duration = _runtime_nonnegative_float(runtime_inputs, 'flame_bot_duration_seconds')
     flame_bot_runtime_enabled = flame_bot_dr_pct is not None or flame_bot_duration is not None
-    flame_bot_cooldown = _runtime_positive_float(runtime_inputs, 'flame_bot_cooldown_seconds') if flame_bot_runtime_enabled else None
+    flame_bot_cooldown = _runtime_nonnegative_float(runtime_inputs, 'flame_bot_cooldown_seconds') if flame_bot_runtime_enabled else None
     if flame_bot_dr_pct is None:
         flame_bot_dr_pct = _qe_ratio_or_percent_to_pct(float(primitives.get('flame_bot_damage_reduction_pct') or 0.0))
     if flame_bot_cooldown is None:
         flame_bot_cooldown = _positive_or_none(primitives.get('flame_bot_cooldown_seconds'))
 
-    defense_field_dr_pct = _runtime_positive_float(runtime_inputs, 'defense_field_damage_reduction_pct')
-    defense_field_duration = _runtime_positive_float(runtime_inputs, 'defense_field_duration_seconds')
+    defense_field_dr_pct = _runtime_nonnegative_float(runtime_inputs, 'defense_field_damage_reduction_pct')
+    defense_field_duration = _runtime_nonnegative_float(runtime_inputs, 'defense_field_duration_seconds')
     defense_field_runtime_enabled = defense_field_dr_pct is not None or defense_field_duration is not None
-    defense_field_cooldown = _runtime_positive_float(runtime_inputs, 'defense_field_cooldown_seconds') if defense_field_runtime_enabled else None
+    defense_field_cooldown = _runtime_nonnegative_float(runtime_inputs, 'defense_field_cooldown_seconds') if defense_field_runtime_enabled else None
 
-    black_hole_dr_pct = _runtime_positive_float(runtime_inputs, 'black_hole_damage_reduction_pct')
-    black_hole_duration = _runtime_positive_float(runtime_inputs, 'black_hole_duration_seconds')
-    pbh_uptime = _runtime_positive_float(runtime_inputs, 'pbh_encounter_uptime_fraction')
+    black_hole_dr_pct = _runtime_nonnegative_float(runtime_inputs, 'black_hole_damage_reduction_pct')
+    black_hole_duration = _runtime_nonnegative_float(runtime_inputs, 'black_hole_duration_seconds')
+    pbh_uptime = _runtime_nonnegative_float(runtime_inputs, 'pbh_encounter_uptime_fraction')
     black_hole_runtime_enabled = black_hole_dr_pct is not None or black_hole_duration is not None or pbh_uptime is not None
-    black_hole_cooldown = _runtime_positive_float(runtime_inputs, 'black_hole_cooldown_seconds') if black_hole_runtime_enabled else None
+    black_hole_cooldown = _runtime_nonnegative_float(runtime_inputs, 'black_hole_cooldown_seconds') if black_hole_runtime_enabled else None
     if black_hole_dr_pct is None:
         black_hole_dr_pct = _positive_or_none(primitives.get('primordial_collapse_bh_damage_reduction_pct'))
     if black_hole_duration is None:
@@ -1615,12 +1769,12 @@ def _timed_dr_source(
     }
 
 
-def _runtime_positive_float(runtime_inputs: ScenarioRuntimeInputs, name: str) -> float | None:
+def _runtime_nonnegative_float(runtime_inputs: ScenarioRuntimeInputs, name: str) -> float | None:
     raw_value = getattr(runtime_inputs, name)
     if raw_value in (None, ''):
         return None
     value = float(raw_value)
-    return value if value > 0.0 else None
+    return value if value >= 0.0 else None
 
 
 def _positive_or_none(raw_value: object) -> float | None:

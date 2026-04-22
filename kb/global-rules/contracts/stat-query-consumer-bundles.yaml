@@ -114,6 +114,9 @@ consumers:
     - state::cards.ultimate_crit.chance_pct
     - state::uw.black_hole.base_duration_seconds
     - state::uw.black_hole.base_cooldown_seconds
+    - state::uw.chrono_field.duration_seconds
+    - state::uw.chrono_field.cooldown_seconds
+    - state::uw.chrono_field.damage_reduction_pct
     - state::uw.golden_tower.base_duration_seconds
     - state::uw.golden_tower.base_cooldown_seconds
     - support_surface::ehp.health_relic_pct
@@ -357,6 +360,9 @@ consumers:
     - state::cards.ultimate_crit.chance_pct
     - state::uw.black_hole.base_duration_seconds
     - state::uw.black_hole.base_cooldown_seconds
+    - state::uw.chrono_field.duration_seconds
+    - state::uw.chrono_field.cooldown_seconds
+    - state::uw.chrono_field.damage_reduction_pct
     - state::uw.golden_tower.base_duration_seconds
     - state::uw.golden_tower.base_cooldown_seconds
     - state::module.primordial_collapse.bh_damage_reduction_pct

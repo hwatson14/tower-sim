@@ -925,8 +925,13 @@ _PROGRESSION_V1_SURFACE_IDS: tuple[str, ...] = (
     'state::tower.orb_speed_rpm',
     'state::cards.plasma_cannon.effect_pct',
     'state::cards.berserker.assumed_bonus_multiplier',
+    'state::uw.black_hole.duration_seconds',
+    'state::uw.black_hole.cooldown_seconds',
     'state::uw.black_hole.base_duration_seconds',
     'state::uw.black_hole.base_cooldown_seconds',
+    'state::uw.chrono_field.duration_seconds',
+    'state::uw.chrono_field.cooldown_seconds',
+    'state::uw.chrono_field.damage_reduction_pct',
     'state::uw.golden_tower.base_duration_seconds',
     'state::uw.golden_tower.base_cooldown_seconds',
     _state('module.orbital_augment.electron_count'),
@@ -967,6 +972,7 @@ _DELEGATED_FAMILY_SURFACE_IDS: dict[str, tuple[str, ...]] = {
     # progression_runtime_no_perks shares this exact bounded surface set and remains QE-owned
     # through the direct progression helpers and runtime-consumer bundles.
     _PROGRESSION_START_OF_RUN: _PROGRESSION_V1_SURFACE_IDS,
+    _PROGRESSION_RUNTIME_NO_PERKS: _PROGRESSION_V1_SURFACE_IDS,
     _PROGRESSION_RUNTIME_WITH_PERKS: _PROGRESSION_V1_SURFACE_IDS,
 }
 

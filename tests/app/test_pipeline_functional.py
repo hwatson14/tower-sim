@@ -288,7 +288,7 @@ def _install_fake_boss_wave_app_dependencies(monkeypatch, pipeline_mod):
         lambda ids_raw, loadout_config=None, perk_config=None: type(
             'State',
             (),
-            {'player_meta': {}, 'labs': {'Wall Thorns': 16}},
+            {'player_meta': {}, 'labs': {'Wall Thorns': 16}, 'active_perk_preset': 'Farming'},
         )(),
     )
 
@@ -313,7 +313,7 @@ def _install_fake_boss_wave_replacement_primitives(monkeypatch, pipeline_mod, *,
             contributors=[
                 {
                     'active': True,
-                    'value': 100.0,
+                    'value': 1000000000000.0,
                     'composition_stage': 'additive_pre_cap',
                     'contributor_id': 'workshop__wall__health__flat',
                     'input_value_type': 'resolved_value',
@@ -342,8 +342,11 @@ def _install_fake_boss_wave_replacement_primitives(monkeypatch, pipeline_mod, *,
         'state::cards.plasma_cannon.effect_pct': _FakeRow(100.0),
         'state::module.orbital_augment.electron_count': _FakeRow(2.0),
         'state::module.primordial_collapse.bh_damage_reduction_pct': _FakeRow(80.0),
-        'support_surface::ehp.black_hole_duration_seconds': _FakeRow(32.0),
-        'support_surface::ehp.black_hole_cooldown_seconds': _FakeRow(50.0),
+        'state::uw.black_hole.duration_seconds': _FakeRow(36.0),
+        'state::uw.black_hole.cooldown_seconds': _FakeRow(46.0),
+        'state::uw.chrono_field.duration_seconds': _FakeRow(50.0),
+        'state::uw.chrono_field.cooldown_seconds': _FakeRow(60.0),
+        'state::uw.chrono_field.damage_reduction_pct': _FakeRow(20.0),
         'state::bot.flame.damage_reduction_pct': _FakeRow(0.35),
         'state::bot.flame.cooldown_seconds': _FakeRow(26.0),
         'state::bot.flame.range_m': _FakeRow(55.0),
@@ -440,13 +443,14 @@ def test_build_boss_wave_payload_replacement_inputs_drive_table_summary_export_a
     assert primitive_values['wall_thorns_level'] == pytest.approx(16.0)
     assert primitive_values['wall_thorns_contact_damage_pct'] == pytest.approx(15.84)
     assert primitive_values['primordial_collapse_bh_damage_reduction_pct'] == pytest.approx(80.0)
-    assert primitive_values['black_hole_duration_seconds'] == pytest.approx(32.0)
-    assert primitive_values['black_hole_cooldown_seconds'] == pytest.approx(50.0)
+    assert primitive_values['black_hole_duration_seconds'] == pytest.approx(36.0)
+    assert primitive_values['black_hole_cooldown_seconds'] == pytest.approx(46.0)
     timed_dr = diagnostics.get('replacement_primitive_semantics_ledger', {}).get('timed_dr_semantic_contract') or {}
     timed_sources = timed_dr.get('sources') or {}
     assert timed_sources['black_hole_pbh']['damage_reduction_pct'] == pytest.approx(80.0)
-    assert timed_sources['black_hole_pbh']['uptime_fraction'] == pytest.approx(32.0 / 50.0)
-    assert timed_sources['black_hole_pbh']['effective_dr_fraction'] == pytest.approx(0.512)
+    assert timed_sources['black_hole_pbh']['uptime_fraction'] == pytest.approx(36.0 / 46.0)
+    assert timed_sources['black_hole_pbh']['effective_dr_fraction'] == pytest.approx(0.8 * (36.0 / 46.0))
+    assert timed_sources['final_dr_override']['primitive_status'] == 'runtime_final_dr_override_bypasses_timed_dr_sources'
     assert timed_sources['flame_bot']['primitive_status'] == 'blocked_missing_duration_seconds_primitive'
     assert timed_sources['defense_field']['primitive_status'] == 'explicit_runtime_only_no_qe_surface_found'
 
@@ -591,8 +595,9 @@ def test_build_boss_wave_payload_live_path_avoids_delta_fallback():
             'state::cards.plasma_cannon.effect_pct',
             'state::module.orbital_augment.electron_count',
             'state::module.primordial_collapse.bh_damage_reduction_pct',
-            'support_surface::ehp.black_hole_duration_seconds',
-            'support_surface::ehp.black_hole_cooldown_seconds',
+            'state::uw.chrono_field.duration_seconds',
+            'state::uw.chrono_field.cooldown_seconds',
+            'state::uw.chrono_field.damage_reduction_pct',
             'state::bot.flame.damage_reduction_pct',
             'state::bot.flame.cooldown_seconds',
         ),
@@ -657,8 +662,11 @@ def test_build_boss_wave_payload_live_path_avoids_delta_fallback():
     assert primitives['plasma_cannon_effect_pct'] == pytest.approx(canonical['state::cards.plasma_cannon.effect_pct'])
     assert primitives['orbital_augment_electron_count'] == pytest.approx(canonical['state::module.orbital_augment.electron_count'])
     assert primitives['primordial_collapse_bh_damage_reduction_pct'] == pytest.approx(canonical['state::module.primordial_collapse.bh_damage_reduction_pct'])
-    assert primitives['black_hole_duration_seconds'] == pytest.approx(canonical['support_surface::ehp.black_hole_duration_seconds'])
-    assert primitives['black_hole_cooldown_seconds'] == pytest.approx(canonical['support_surface::ehp.black_hole_cooldown_seconds'])
+    assert primitives['black_hole_duration_seconds'] == pytest.approx(36.0)
+    assert primitives['black_hole_cooldown_seconds'] == pytest.approx(46.0)
+    assert primitives['chrono_field_duration_seconds'] == pytest.approx(canonical['state::uw.chrono_field.duration_seconds'])
+    assert primitives['chrono_field_cooldown_seconds'] == pytest.approx(canonical['state::uw.chrono_field.cooldown_seconds'])
+    assert primitives['chrono_field_damage_reduction_pct'] == pytest.approx(canonical['state::uw.chrono_field.damage_reduction_pct'])
     assert primitives['flame_bot_damage_reduction_pct'] == pytest.approx(canonical['state::bot.flame.damage_reduction_pct'])
     assert primitives['flame_bot_cooldown_seconds'] == pytest.approx(canonical['state::bot.flame.cooldown_seconds'])
     ledger = diagnostics['replacement_primitive_semantics_ledger']
@@ -687,10 +695,9 @@ def test_build_boss_wave_payload_live_path_avoids_delta_fallback():
         canonical['state::module.primordial_collapse.bh_damage_reduction_pct']
     )
     assert timed_sources['black_hole_pbh']['uptime_fraction'] == pytest.approx(
-        canonical['support_surface::ehp.black_hole_duration_seconds']
-        / canonical['support_surface::ehp.black_hole_cooldown_seconds']
+        36.0 / 46.0
     )
-    assert timed_sources['black_hole_pbh']['effective_dr_fraction'] == pytest.approx(0.512)
+    assert timed_sources['black_hole_pbh']['effective_dr_fraction'] == pytest.approx(0.8 * (36.0 / 46.0))
     assert timed_sources['flame_bot']['primitive_status'] == 'blocked_missing_duration_seconds_primitive'
     assert timed_sources['defense_field']['primitive_status'] == 'explicit_runtime_only_no_qe_surface_found'
     assert ledger['primitives']['module::Sharp Fortitude.wall_thorns_damage_increase_per_hit']['exact_value'] == pytest.approx(0.01)
@@ -741,6 +748,141 @@ def test_build_boss_wave_payload_live_path_avoids_delta_fallback():
     assert 'boss_time_to_contact_seconds' in first_row
     assert 'boss_hit_interval_seconds' in first_row
     assert 'incoming_damage_multiplier' in first_row
+
+
+@pytest.mark.live
+def test_boss_wave_payload_without_contact_time_returns_structured_incomplete_when_allowed():
+    from app.models import PipelineRunRequest
+    from app.pipeline import build_boss_wave_payload
+    from simulators.evaluator_kernel import KernelAmbiguityError
+
+    request = PipelineRunRequest(ids=IDS_PATH, out=ROOT / 'out')
+    payload = build_boss_wave_payload(
+        request,
+        preset_name='Farming',
+        tier_number=14,
+        end_wave=50,
+        boss_wave_step=1,
+        stop_on_failure=False,
+        scenario_runtime_inputs={},
+    )
+
+    summary = payload['summary']
+    assert summary['status'] == 'incomplete'
+    assert summary['failure_kind'] == 'kernel_ambiguity'
+    assert 'boss_time_to_contact_seconds is required' in summary['failure_message']
+    assert summary['first_unresolved_wave'] == 9
+    assert payload['diagnostics']['context_status'] == 'incomplete'
+
+    with pytest.raises(KernelAmbiguityError, match='boss_time_to_contact_seconds is required'):
+        build_boss_wave_payload(
+            request,
+            preset_name='Farming',
+            tier_number=14,
+            end_wave=50,
+            boss_wave_step=1,
+            stop_on_failure=True,
+            scenario_runtime_inputs={},
+        )
+
+
+@pytest.mark.live
+def test_boss_wave_payload_uses_effective_bh_cf_state_and_perk_switches():
+    from app.models import PipelineRunRequest
+    from app.pipeline import build_boss_wave_payload
+
+    runtime_inputs = {'boss_time_to_contact_seconds': 1.0}
+    with_perks = build_boss_wave_payload(
+        PipelineRunRequest(ids=IDS_PATH, out=ROOT / 'out', perk_mode='runtime_timeline', perk_state='on'),
+        preset_name='Farming',
+        tier_number=14,
+        end_wave=5000,
+        boss_wave_step=100,
+        stop_on_failure=False,
+        scenario_runtime_inputs=runtime_inputs,
+    )
+    primitives = with_perks['diagnostics']['replacement_primitive_inputs']['values']
+    assert primitives['black_hole_duration_seconds'] == pytest.approx(36.0)
+    assert primitives['black_hole_cooldown_seconds'] == pytest.approx(46.0)
+    assert primitives['chrono_field_duration_seconds'] == pytest.approx(50.0)
+    assert primitives['chrono_field_cooldown_seconds'] == pytest.approx(60.0)
+    assert primitives['chrono_field_damage_reduction_pct'] == pytest.approx(20.0)
+    assert primitives['chrono_field_duration_seconds'] != pytest.approx(20.0)
+
+    rows_with_perks = with_perks['rows']
+    assert rows_with_perks[0]['effective_damage_reduction_pct'] < rows_with_perks[-1]['effective_damage_reduction_pct']
+    assert rows_with_perks[-1]['effective_damage_reduction_pct'] >= 96.0
+
+    no_perks = build_boss_wave_payload(
+        PipelineRunRequest(ids=IDS_PATH, out=ROOT / 'out', perk_mode='none', perk_state='on'),
+        preset_name='Farming',
+        tier_number=14,
+        end_wave=5000,
+        boss_wave_step=100,
+        stop_on_failure=False,
+        scenario_runtime_inputs=runtime_inputs,
+    )
+    perks_off = build_boss_wave_payload(
+        PipelineRunRequest(ids=IDS_PATH, out=ROOT / 'out', perk_mode='runtime_timeline', perk_state='off'),
+        preset_name='Farming',
+        tier_number=14,
+        end_wave=5000,
+        boss_wave_step=100,
+        stop_on_failure=False,
+        scenario_runtime_inputs=runtime_inputs,
+    )
+    assert no_perks['diagnostics']['perks_enabled'] is False
+    assert perks_off['diagnostics']['perks_enabled'] is False
+    assert no_perks['diagnostics']['perk_timeline_rows'] == 0
+    assert perks_off['diagnostics']['perk_timeline_rows'] == 0
+    assert rows_with_perks[-1]['wall_hp'] > no_perks['rows'][-1]['wall_hp']
+
+
+@pytest.mark.live
+def test_boss_wave_payload_threads_t14_battle_conditions_and_final_dr_override():
+    from app.models import PipelineRunRequest
+    from app.pipeline import build_boss_wave_payload
+
+    request = PipelineRunRequest(ids=IDS_PATH, out=ROOT / 'out', perk_mode='none')
+    payload = build_boss_wave_payload(
+        request,
+        preset_name='Farming',
+        tier_number=14,
+        end_wave=10,
+        boss_wave_step=1,
+        stop_on_failure=False,
+        scenario_runtime_inputs={'boss_time_to_contact_seconds': 1.0},
+    )
+    scenario_surfaces = payload['diagnostics']['scenario_surfaces']
+    row = payload['rows'][0]
+    assert scenario_surfaces['bc_plasma_cannon_resistance'] == pytest.approx(0.8)
+    assert scenario_surfaces['bc_orb_resistance'] == pytest.approx(0.5)
+    assert scenario_surfaces['bc_thorns_resistance'] == pytest.approx(0.8)
+    assert row['boss_plasma_cannon_damage_to_boss_pct'] == pytest.approx(43.2)
+    assert row['boss_orb_damage_to_boss_pct'] == pytest.approx(1.0)
+    assert row['boss_hit_interval_seconds'] == pytest.approx(scenario_surfaces['boss_hit_interval_seconds'])
+
+    overridden = build_boss_wave_payload(
+        request,
+        preset_name='Farming',
+        tier_number=14,
+        end_wave=10,
+        boss_wave_step=1,
+        stop_on_failure=False,
+        scenario_runtime_inputs={
+            'boss_time_to_contact_seconds': 1.0,
+            'effective_damage_reduction_pct': 90.0,
+            'black_hole_damage_reduction_pct': 0.0,
+            'black_hole_duration_seconds': 0.0,
+            'pbh_encounter_uptime_fraction': 0.0,
+        },
+    )
+    overridden_row = overridden['rows'][0]
+    assert overridden_row['effective_damage_reduction_pct'] == pytest.approx(90.0)
+    sources = overridden['diagnostics']['replacement_primitive_semantics_ledger']['timed_dr_semantic_contract']['sources']
+    assert sources['black_hole_pbh']['damage_reduction_pct'] == pytest.approx(0.0)
+    assert sources['black_hole_pbh']['uptime_fraction'] == pytest.approx(0.0)
+    assert sources['final_dr_override']['primitive_status'] == 'runtime_final_dr_override_bypasses_timed_dr_sources'
 
 
 def test_boss_wave_perk_timeline_uses_ids_labs_first_choice_and_exports_wall_contributions():

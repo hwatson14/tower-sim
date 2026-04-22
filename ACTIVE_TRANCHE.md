@@ -128,7 +128,8 @@ This tranche is not about:
 21. COMPLETE: close Boss Waves wall-surface semantics and recertify the corrected live replacement path: `state::wall.hp` is final only as a transformed primitive input for row-derived pre-fort Wall HP / fortified Wall Pool, `state::wall.regen` is final only as a transformed percent-points primitive for displayed Wall Regen HP/sec, parity/shadow validation now includes the post-survivability-fix large-wall-surface case, and Streamlit no longer silently falls back from missing `operator_rows` / `download_rows` to `rows`
 22. COMPLETE: retire and delete the broader legacy executor after final symbol-role inventory found no active non-test consumer; `simulators/run_executor.py` and its direct defender tests are removed, and Boss Waves certification now uses the replacement kernel only
 23. COMPLETE: correct Boss Waves v21 TTK/TTD wiring so displayed TTK is the total event-only kill time from Plasma Cannon, orbs, electrons, and contact thorns, Sharp Fortitude affects contact-thorns timing, and Black Hole/Chrono Field duration perks flow into row-level timed DR
-24. NEXT: continue targeted performance/residue work from the replacement-owned product path; no legacy executor coexistence remains to protect
+24. COMPLETE: run the bounded Boss Waves product-honesty/live-closure tranche: Boss Waves now requests effective Black Hole timing from `state::uw.black_hole.duration_seconds` / cooldown via the timing owner, exposes effective Chrono Field timing/DR through the progression family, threads tier battle-condition resistances and boss hit interval into replacement combat, treats `effective_damage_reduction_pct` as a final DR override that bypasses timed DR stacking, preserves explicit zero runtime overrides, honors `perk_mode` / `perk_state` in payload behavior and diagnostics, and returns a structured incomplete payload when `stop_on_failure=False` and the owned boss spawn-to-wall contact-time primitive is missing.
+25. NEXT: resolve the remaining self-closing blocker by adding an owned boss spawn-to-wall contact-time primitive/formula, then continue targeted performance/residue work from the replacement-owned product path; no legacy executor coexistence remains to protect
 
 ### Current blockers inside the active program
 
@@ -139,6 +140,7 @@ This tranche is not about:
 5. `simulators/run_executor.py` is removed. Final inventory found no active product or active non-product consumer; remaining mentions are Bible/reconciliation historical authority text, root governance, boundary-test guard strings, or replacement certification notes.
 6. The repaired Stats contract must remain workshop-led: no reintroduction of Canonical Overview as a primary panel and no resolved-section-heavy default workflow.
 7. Delta fallback remains guarded by live-path tests and is not a sanctioned default; do not weaken that gate while resuming performance work.
+8. Boss Waves self-closing is still blocked by one explicit missing ownership surface: no KB/QE/scenario primitive currently defines `boss_time_to_contact_seconds`. The product path fails closed with structured incomplete output when `stop_on_failure=False` and raises `KernelAmbiguityError` when strict closure is requested.
 
 ### Boss Waves cutover plan
 

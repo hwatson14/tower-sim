@@ -1578,7 +1578,7 @@ nodes:
     notes: Support cooldown reduction surface consumed by timing mechanics.
   - node_id: state::uw.black_hole.cooldown_seconds
     node_kind: surface
-    family_ids: [timing_tournament_no_perks, timing_farm_with_perks, timing_scenario_probe]
+    family_ids: [timing_tournament_no_perks, timing_farm_with_perks, timing_scenario_probe, progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
     is_publishable: true
     publication_relevance: publish_default
     verification_status: verified
@@ -1594,12 +1594,36 @@ nodes:
     notes: Scenario-adjusted GT cooldown.
   - node_id: state::uw.black_hole.duration_seconds
     node_kind: surface
-    family_ids: [timing_tournament_no_perks, timing_farm_with_perks, timing_scenario_probe]
+    family_ids: [timing_tournament_no_perks, timing_farm_with_perks, timing_scenario_probe, progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
     is_publishable: true
     publication_relevance: publish_default
     verification_status: verified
     blocker_reason: ''
     notes: Scenario-adjusted BH duration.
+  - node_id: state::uw.chrono_field.duration_seconds
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_default
+    verification_status: verified
+    blocker_reason: ''
+    notes: Effective current-account CF duration consumed by Boss Waves timed DR.
+  - node_id: state::uw.chrono_field.cooldown_seconds
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_default
+    verification_status: verified
+    blocker_reason: ''
+    notes: Effective current-account CF cooldown consumed by Boss Waves timed DR.
+  - node_id: state::uw.chrono_field.damage_reduction_pct
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_default
+    verification_status: verified
+    blocker_reason: ''
+    notes: Effective current-account CF damage reduction consumed by Boss Waves timed DR.
   - node_id: state::uw.golden_tower.duration_seconds
     node_kind: surface
     family_ids: [timing_tournament_no_perks, timing_farm_with_perks, timing_scenario_probe]
@@ -1675,12 +1699,20 @@ nodes:
 
   - node_id: source_input::scenario:Black Hole Timing
     node_kind: source_input
-    family_ids: [timing_tournament_no_perks, timing_farm_with_perks, timing_scenario_probe]
+    family_ids: [timing_tournament_no_perks, timing_farm_with_perks, timing_scenario_probe, progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
     is_publishable: false
     publication_relevance: mutation_source_only
     verification_status: verified
     blocker_reason: ''
     notes: Scenario timing input for Black Hole runtime timing surfaces.
+  - node_id: source_input::scenario:Chrono Field Timing
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: verified
+    blocker_reason: ''
+    notes: Effective current-account Chrono Field timing and DR source inputs for Boss Waves.
   - node_id: source_input::scenario:Golden Tower Timing
     node_kind: source_input
     family_ids: [timing_tournament_no_perks, timing_farm_with_perks, timing_scenario_probe]
@@ -2781,6 +2813,27 @@ edges:
     publication_relevance: publishable_path
     verification_status: verified
     notes: Scenario timing inputs publish BH cooldown.
+  - upstream_node_id: source_input::scenario:Chrono Field Timing
+    downstream_node_id: state::uw.chrono_field.duration_seconds
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [runtime_target_display_wave, package_event_model]
+    publication_relevance: publishable_path
+    verification_status: verified
+    notes: Effective current-account Chrono Field timing publishes CF duration.
+  - upstream_node_id: source_input::scenario:Chrono Field Timing
+    downstream_node_id: state::uw.chrono_field.cooldown_seconds
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [runtime_target_display_wave, package_event_model]
+    publication_relevance: publishable_path
+    verification_status: verified
+    notes: Effective current-account Chrono Field timing publishes CF cooldown.
+  - upstream_node_id: source_input::scenario:Chrono Field Timing
+    downstream_node_id: state::uw.chrono_field.damage_reduction_pct
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [runtime_target_display_wave, package_event_model]
+    publication_relevance: publishable_path
+    verification_status: verified
+    notes: Effective current-account Chrono Field timing publishes CF damage reduction.
   - upstream_node_id: source_input::scenario:Golden Tower Timing
     downstream_node_id: state::uw.golden_tower.duration_seconds
     invalidation_semantics: recompute_downstream

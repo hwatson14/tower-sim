@@ -10287,36 +10287,6 @@
         "trace_mode": "full_trace",
         "display_value": "525"
       },
-      "state::wall.thorns_damage_pct": {
-        "stat_name": "state::wall.thorns_damage_pct",
-        "final_value": 19.36,
-        "value_type": "pct",
-        "source_count": 1,
-        "status": "resolved",
-        "notes": "Resolved through run_stats bounded query bundle.",
-        "contributors": [
-          {
-            "surface_id": "state::wall.thorns_damage_pct",
-            "surface_class": "surface",
-            "domain": "progression",
-            "source_class": "labs",
-            "composition_stage": "additive_pre_cap",
-            "contributor_id": "lab__wall__thorns_damage__pct",
-            "value": 0.16,
-            "value_type": "scalar",
-            "input_value_type": "resolved_value",
-            "active": true,
-            "gate_reason": null,
-            "provenance_ref": "IDS::Labs",
-            "display_value": "0.16%"
-          }
-        ],
-        "schema": null,
-        "bundle_id": "progression_core_stats",
-        "family_id": "progression_start_of_run",
-        "trace_mode": "full_trace",
-        "display_value": "19.36%"
-      },
       "support_surface::eecon.adstarter_theme_relic_factor": {
         "stat_name": "support_surface::eecon.adstarter_theme_relic_factor",
         "final_value": 1.48,
@@ -10679,18 +10649,18 @@
       }
     },
     "diagnostics": {
-      "bundle_ids": [
-        "progression_core_stats",
-        "timing_core_cycle",
-        "timing_wave_duration"
-      ],
+      "pipeline_kind": "run_stats_bounded_query",
+      "state_mode": "start_of_run",
       "family_ids": [
         "progression_start_of_run",
         "timing_scenario_probe",
         "timing_scenario_probe"
       ],
-      "resolved_surface_count": 287,
-      "contributor_row_count": 286
+      "bundle_ids": [
+        "progression_core_stats",
+        "timing_core_cycle",
+        "timing_wave_duration"
+      ]
     }
   },
   "Tourney": {
@@ -20726,36 +20696,6 @@
         "trace_mode": "full_trace",
         "display_value": "210"
       },
-      "state::wall.thorns_damage_pct": {
-        "stat_name": "state::wall.thorns_damage_pct",
-        "final_value": 17.76,
-        "value_type": "pct",
-        "source_count": 1,
-        "status": "resolved",
-        "notes": "Resolved through run_stats bounded query bundle.",
-        "contributors": [
-          {
-            "surface_id": "state::wall.thorns_damage_pct",
-            "surface_class": "surface",
-            "domain": "progression",
-            "source_class": "labs",
-            "composition_stage": "additive_pre_cap",
-            "contributor_id": "lab__wall__thorns_damage__pct",
-            "value": 0.16,
-            "value_type": "scalar",
-            "input_value_type": "resolved_value",
-            "active": true,
-            "gate_reason": null,
-            "provenance_ref": "IDS::Labs",
-            "display_value": "0.16%"
-          }
-        ],
-        "schema": null,
-        "bundle_id": "progression_core_stats",
-        "family_id": "progression_start_of_run",
-        "trace_mode": "full_trace",
-        "display_value": "17.76%"
-      },
       "support_surface::eecon.adstarter_theme_relic_factor": {
         "stat_name": "support_surface::eecon.adstarter_theme_relic_factor",
         "final_value": 1.48,
@@ -21118,18 +21058,18 @@
       }
     },
     "diagnostics": {
-      "bundle_ids": [
-        "progression_core_stats",
-        "timing_core_cycle",
-        "timing_wave_duration"
-      ],
+      "pipeline_kind": "run_stats_bounded_query",
+      "state_mode": "start_of_run",
       "family_ids": [
         "progression_start_of_run",
         "timing_tournament_no_perks",
         "timing_tournament_no_perks"
       ],
-      "resolved_surface_count": 287,
-      "contributor_row_count": 269
+      "bundle_ids": [
+        "progression_core_stats",
+        "timing_core_cycle",
+        "timing_wave_duration"
+      ]
     }
   }
 }
