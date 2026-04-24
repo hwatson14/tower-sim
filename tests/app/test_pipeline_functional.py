@@ -666,7 +666,10 @@ def test_build_boss_wave_payload_live_path_avoids_delta_fallback():
     assert diagnostics['perk_static_pick_count'] == 0
     assert diagnostics['perk_mode'] == 'runtime_timeline'
     assert diagnostics['perk_state'] == 'on'
+    assert diagnostics['perk_contract_owner'] == 'scenario_policy'
+    assert diagnostics['perk_mode_source'] == 'scenario_policy_tournament_none_other_runtime_timeline'
     assert diagnostics['perk_state_source'] == 'scenario_policy_tournament_off_other_runs_on'
+    assert diagnostics['perk_request_resolution'] == 'scenario_policy_overrides_request'
     assert payload['contract']['perk_timeline_mode'] == 'runtime_policy_projection'
     assert 'legacy_shadow_available' not in diagnostics
     assert 'legacy_shadow_materialized' not in diagnostics
@@ -856,6 +859,10 @@ def test_boss_wave_payload_uses_effective_bh_cf_state_and_perk_switches():
         scenario_runtime_inputs=runtime_inputs,
     )
     assert max_policy_request['diagnostics']['requested_perk_mode'] == 'max_progression_policy'
+    assert max_policy_request['diagnostics']['perk_mode'] == 'runtime_timeline'
+    assert max_policy_request['diagnostics']['perk_state'] == 'on'
+    assert max_policy_request['diagnostics']['perk_contract_owner'] == 'scenario_policy'
+    assert max_policy_request['diagnostics']['perk_request_resolution'] == 'scenario_policy_overrides_request'
     assert max_policy_request['diagnostics']['perk_application_mode'] == 'runtime_timeline'
     assert max_policy_request['diagnostics']['perk_timeline_rows'] > 0
     assert max_policy_request['contract']['perk_timeline_mode'] == 'runtime_policy_projection'
@@ -883,8 +890,16 @@ def test_boss_wave_payload_uses_effective_bh_cf_state_and_perk_switches():
     assert off_requested['diagnostics']['requested_perk_state'] == 'off'
     assert none_requested['diagnostics']['perks_enabled'] is True
     assert off_requested['diagnostics']['perks_enabled'] is True
+    assert none_requested['diagnostics']['perk_contract_owner'] == 'scenario_policy'
+    assert off_requested['diagnostics']['perk_contract_owner'] == 'scenario_policy'
     assert none_requested['diagnostics']['perk_application_mode'] == 'runtime_timeline'
     assert off_requested['diagnostics']['perk_application_mode'] == 'runtime_timeline'
+    assert none_requested['diagnostics']['perk_mode'] == 'runtime_timeline'
+    assert off_requested['diagnostics']['perk_state'] == 'on'
+    assert none_requested['diagnostics']['perk_request_resolution'] == 'scenario_policy_overrides_request'
+    assert off_requested['diagnostics']['perk_request_resolution'] == 'scenario_policy_overrides_request'
+    assert none_requested['diagnostics']['perk_mode_source'] == 'scenario_policy_tournament_none_other_runtime_timeline'
+    assert off_requested['diagnostics']['perk_mode_source'] == 'scenario_policy_tournament_none_other_runtime_timeline'
     assert none_requested['diagnostics']['perk_state_source'] == 'scenario_policy_tournament_off_other_runs_on'
     assert off_requested['diagnostics']['perk_state_source'] == 'scenario_policy_tournament_off_other_runs_on'
     assert none_requested['rows'][-1]['wall_hp'] == pytest.approx(rows_with_perks[-1]['wall_hp'])
@@ -983,10 +998,14 @@ def test_boss_wave_perk_state_is_owned_by_scenario_not_request():
     assert farming['mode_id'] == 'farming'
     assert farming['perks_enabled'] is True
     assert farming['perk_state'] == 'on'
+    assert farming['perk_mode'] == 'runtime_timeline'
+    assert farming['perk_contract_owner'] == 'scenario_policy'
+    assert farming['perk_mode_source'] == 'scenario_policy_tournament_none_other_runtime_timeline'
     assert farming['perk_state_source'] == 'scenario_policy_tournament_off_other_runs_on'
     assert tournament['mode_id'] == 'tournament'
     assert tournament['perks_enabled'] is False
     assert tournament['perk_state'] == 'off'
+    assert tournament['perk_mode'] == 'none'
     assert tournament['perk_timeline_mode'] == 'disabled_by_tournament_scenario'
 
 

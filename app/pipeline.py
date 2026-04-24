@@ -264,6 +264,7 @@ def _resolve_boss_wave_run_context(
     checkpoint_every_bosses = max(1, int(checkpoint_every_bosses))
     perks_enabled = mode_id != 'tournament'
     scenario_perk_state = 'off' if mode_id == 'tournament' else 'on'
+    scenario_perk_mode = 'none' if mode_id == 'tournament' else 'runtime_timeline'
     return {
         'resolved': True,
         'mode_id': mode_id,
@@ -274,7 +275,10 @@ def _resolve_boss_wave_run_context(
         'tournament_wave': int(scenario_config.tournament_wave or 0) or None,
         'perks_enabled': perks_enabled,
         'perk_state': scenario_perk_state,
+        'perk_mode': scenario_perk_mode,
+        'perk_contract_owner': 'scenario_policy',
         'perk_state_source': 'scenario_policy_tournament_off_other_runs_on',
+        'perk_mode_source': 'scenario_policy_tournament_none_other_runtime_timeline',
         'perk_timeline_mode': 'runtime_policy_projection' if perks_enabled else 'disabled_by_tournament_scenario',
         'actual_boss_interval_waves': actual_boss_interval_waves,
         'checkpoint_every_bosses': checkpoint_every_bosses,
@@ -382,14 +386,14 @@ def build_boss_wave_payload(
     source_id = _normalize_boss_wave_source(boss_wave_source)
     requested_perk_mode = _normalize_perk_mode(getattr(request, 'perk_mode', None))
     requested_perk_state = _normalize_perk_state(getattr(request, 'perk_state', 'auto'))
-    scenario_mode_id = _boss_wave_mode_id_for_preset(preset_name)
-    scenario_owned_perk_mode = 'none' if scenario_mode_id == 'tournament' else 'runtime_timeline'
     bundle = load_inputs(ids_path=request.ids, manual_inputs_path=request.manual_inputs)
     perk_policy = _merged_perk_policy(getattr(bundle, 'perk_policy', {}) or {}, perk_policy_override)
     perk_policy_payload, _perk_context = _perk_policy_context(bundle.ids_raw, perk_policy)
     perk_policy_validation = _perk_policy_validation_ledger(perk_policy_payload, _perk_context)
+    scenario_mode_id = _boss_wave_mode_id_for_preset(preset_name)
+    applied_perk_mode = 'none' if scenario_mode_id == 'tournament' else 'runtime_timeline'
     resolved_perk_config, perk_config_resolution = _resolve_perk_config(
-        perk_mode=scenario_owned_perk_mode,
+        perk_mode=applied_perk_mode,
         primary_config=bundle.perk_config,
         perk_policy=perk_policy,
         ids_raw=bundle.ids_raw,
@@ -402,8 +406,21 @@ def build_boss_wave_payload(
         tier_number=int(tier_number),
         checkpoint_every_bosses=int(boss_wave_step),
     )
-    perk_state = str(resolved_context.get('perk_state') or ('off' if resolved_context.get('mode_id') == 'tournament' else 'on'))
-    perk_mode = scenario_owned_perk_mode if bool(resolved_context.get('perks_enabled')) else 'none'
+    applied_perk_state = str(resolved_context.get('perk_state') or ('off' if resolved_context.get('mode_id') == 'tournament' else 'on'))
+    applied_perk_mode = str(
+        resolved_context.get('perk_mode') or ('none' if not bool(resolved_context.get('perks_enabled')) else 'runtime_timeline')
+    )
+    perk_contract_owner = str(resolved_context.get('perk_contract_owner') or 'scenario_policy')
+    perk_mode_source = str(resolved_context.get('perk_mode_source') or '')
+    perk_state_source = str(resolved_context.get('perk_state_source') or '')
+    requested_matches_applied = requested_perk_mode == applied_perk_mode and (
+        requested_perk_state in ('auto', applied_perk_state)
+    )
+    perk_request_resolution = (
+        'matched_scenario_policy'
+        if requested_matches_applied
+        else 'scenario_policy_overrides_request'
+    )
     perk_timeline: list[dict[str, object]] = []
     perk_timeline_diag: dict[str, object] = {
         'enabled': False,
@@ -416,10 +433,10 @@ def build_boss_wave_payload(
     static_perk_counts: dict[str, int] = {}
     if effective_perks_enabled and not perk_policy_validation['ok']:
         raise ValueError(f"Boss Waves perk policy is invalid: {perk_policy_validation['errors']!r}")
-    if effective_perks_enabled and perk_mode == 'runtime_timeline':
+    if effective_perks_enabled and applied_perk_mode == 'runtime_timeline':
         perk_timeline, perk_timeline_diag = generate_timeline_from_policy(PerkTimelinePolicy(**perk_policy_payload))
         perk_application_mode = 'runtime_timeline'
-    elif effective_perks_enabled and perk_mode == 'max_progression_policy':
+    elif effective_perks_enabled and applied_perk_mode == 'max_progression_policy':
         static_perk_counts = _boss_wave_static_perk_counts_from_account_state(account_state)
         perk_timeline_diag = {
             'enabled': True,
@@ -430,7 +447,7 @@ def build_boss_wave_payload(
             'static_pick_count': sum(int(value) for value in static_perk_counts.values()),
         }
         perk_application_mode = 'max_progression_policy_static'
-    elif perk_mode == 'none' or not bool(resolved_context.get('perks_enabled')):
+    elif applied_perk_mode == 'none' or not bool(resolved_context.get('perks_enabled')):
         perk_timeline_diag = {
             'enabled': False,
             'reason': 'disabled_by_perk_mode_or_state',
@@ -488,8 +505,14 @@ def build_boss_wave_payload(
                 'requested_start_wave': 1,
                 'first_checkpoint_wave': None,
                 'scenario_runtime_inputs': dict(scenario_runtime_inputs),
-                'perk_mode': perk_mode,
-                'perk_state': perk_state,
+                'perk_mode': applied_perk_mode,
+                'perk_state': applied_perk_state,
+                'requested_perk_mode': requested_perk_mode,
+                'requested_perk_state': requested_perk_state,
+                'perk_contract_owner': perk_contract_owner,
+                'perk_mode_source': perk_mode_source,
+                'perk_state_source': perk_state_source,
+                'perk_request_resolution': perk_request_resolution,
                 'perk_config_resolution': dict(perk_config_resolution),
             },
             'download': {
@@ -519,11 +542,14 @@ def build_boss_wave_payload(
         'checkpoint_every_bosses': int(resolved_context.get('checkpoint_every_bosses') or 1),
         'perks_enabled': effective_perks_enabled,
         'state_mode': 'start_of_run',
-        'perk_mode': perk_mode,
-        'perk_state': perk_state,
+        'perk_mode': applied_perk_mode,
+        'perk_state': applied_perk_state,
         'requested_perk_mode': requested_perk_mode,
         'requested_perk_state': requested_perk_state,
-        'perk_state_source': resolved_context.get('perk_state_source'),
+        'perk_contract_owner': perk_contract_owner,
+        'perk_mode_source': perk_mode_source,
+        'perk_state_source': perk_state_source,
+        'perk_request_resolution': perk_request_resolution,
         'perk_application_mode': perk_application_mode,
         'perk_config_resolution': dict(perk_config_resolution),
         'perk_policy_validation': dict(perk_policy_validation),
@@ -1595,7 +1621,10 @@ def _build_replacement_diagnostics(
         'perk_state': str(config.get('perk_state') or ''),
         'requested_perk_mode': str(config.get('requested_perk_mode') or ''),
         'requested_perk_state': str(config.get('requested_perk_state') or ''),
+        'perk_contract_owner': str(config.get('perk_contract_owner') or ''),
+        'perk_mode_source': str(config.get('perk_mode_source') or ''),
         'perk_state_source': str(config.get('perk_state_source') or ''),
+        'perk_request_resolution': str(config.get('perk_request_resolution') or ''),
         'perk_application_mode': str(config.get('perk_application_mode') or ''),
         'perk_config_resolution': dict(config.get('perk_config_resolution') or {}),
         'perk_policy_validation': dict(config.get('perk_policy_validation') or {}),
@@ -1653,6 +1682,10 @@ def _build_replacement_diagnostics(
                 'PERK_CHRONO_FIELD_DURATION_5S:chrono_field_duration_seconds_add',
             ],
             'timed_dr_perk_sources': ['PERK_BLACK_HOLE_DURATION_12_0S:black_hole_duration_seconds_add', 'PERK_CHRONO_FIELD_DURATION_5S:chrono_field_duration_seconds_add'],
+            'perk_contract_owner': str(config.get('perk_contract_owner') or ''),
+            'perk_mode_source': str(config.get('perk_mode_source') or ''),
+            'perk_state_source': str(config.get('perk_state_source') or ''),
+            'perk_request_resolution': str(config.get('perk_request_resolution') or ''),
             'perk_application_mode': str(config.get('perk_application_mode') or ''),
             'perk_mode': str(config.get('perk_mode') or ''),
             'perk_state': str(config.get('perk_state') or ''),
