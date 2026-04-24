@@ -66,6 +66,7 @@ PERK_CONTRIBUTION_EFFECT_IDS: frozenset[str] = frozenset(
         "wall_hp_multiplier",
         "wall_regen_flat",
         "wall_regen_multiplier",
+        "tower_defense_pct_points_add",
         "black_hole_duration_seconds_add",
         "chrono_field_duration_seconds_add",
     }

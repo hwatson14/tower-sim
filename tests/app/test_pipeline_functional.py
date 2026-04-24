@@ -9,6 +9,7 @@ import json
 import time
 from pathlib import Path
 import pytest
+import yaml
 
 from app.pipeline import (
     execute_pipeline,
@@ -635,11 +636,14 @@ def test_build_boss_wave_payload_live_path_avoids_delta_fallback():
     assert diagnostics['replacement_model']['contract_version'] == 'boss_waves_replacement_v1'
     assert diagnostics['replacement_model']['lane_order'] == ['avg', 'min', 'max']
     assert diagnostics['replacement_model']['summary_lane_id'] == 'avg'
-    assert diagnostics['perk_application_mode'] == 'max_progression_policy_static'
-    assert diagnostics['perk_timeline_rows'] == 0
-    assert diagnostics['perk_static_count'] > 0
-    assert diagnostics['perk_static_pick_count'] > diagnostics['perk_static_count']
-    assert payload['contract']['perk_timeline_mode'] == 'max_progression_policy_static'
+    assert diagnostics['perk_application_mode'] == 'runtime_timeline'
+    assert diagnostics['perk_timeline_rows'] > 0
+    assert diagnostics['perk_static_count'] == 0
+    assert diagnostics['perk_static_pick_count'] == 0
+    assert diagnostics['perk_mode'] == 'runtime_timeline'
+    assert diagnostics['perk_state'] == 'on'
+    assert diagnostics['perk_state_source'] == 'scenario_policy_tournament_off_other_runs_on'
+    assert payload['contract']['perk_timeline_mode'] == 'runtime_policy_projection'
     assert 'legacy_shadow_available' not in diagnostics
     assert 'legacy_shadow_materialized' not in diagnostics
     assert diagnostics['delta_fallback_count'] == 0
@@ -737,12 +741,12 @@ def test_build_boss_wave_payload_live_path_avoids_delta_fallback():
     first_row = (payload.get('rows') or [{}])[0]
     assert first_row.get('display_wave') == 9
     rows = payload.get('rows') or []
-    assert rows[0]['wall_pre_fort_hp'] < fort_check['row_input_wall_hp']
+    assert rows[0]['wall_pre_fort_hp'] > fort_check['row_input_wall_hp']
     assert rows[-1]['wall_pre_fort_hp'] > rows[0]['wall_pre_fort_hp']
-    assert rows[0]['wall_pre_fort_hp'] == pytest.approx(5919571799676.586)
-    assert rows[0]['wall_hp'] == pytest.approx(61563546716636.49)
+    assert rows[0]['wall_pre_fort_hp'] == pytest.approx(19731905998921.957)
+    assert rows[0]['wall_hp'] == pytest.approx(205211822388788.38)
     assert rows[0]['wall_hp'] == pytest.approx(rows[0]['wall_pre_fort_hp'] * primitives['wall_fortification_multiplier'])
-    assert rows[0]['wall_regen'] == pytest.approx(303789768376689.94)
+    assert rows[0]['wall_regen'] == pytest.approx(5814158246443.825)
     assert rows[0]['summary_lane_id'] == 'avg'
     assert rows[0]['lane_handle_ids'] == {
         'avg': 'boss:boss_waves_replacement_product:9:avg',
@@ -818,7 +822,7 @@ def test_boss_wave_payload_uses_effective_bh_cf_state_and_perk_switches():
     assert rows_with_perks[0]['effective_damage_reduction_pct'] < rows_with_perks[-1]['effective_damage_reduction_pct']
     assert rows_with_perks[-1]['effective_damage_reduction_pct'] >= 96.0
 
-    max_policy = build_boss_wave_payload(
+    max_policy_request = build_boss_wave_payload(
         PipelineRunRequest(ids=IDS_PATH, out=ROOT / 'out', perk_mode='max_progression_policy', perk_state='on'),
         preset_name='Farming',
         tier_number=14,
@@ -827,15 +831,13 @@ def test_boss_wave_payload_uses_effective_bh_cf_state_and_perk_switches():
         stop_on_failure=False,
         scenario_runtime_inputs=runtime_inputs,
     )
-    assert max_policy['diagnostics']['perk_application_mode'] == 'max_progression_policy_static'
-    assert max_policy['diagnostics']['perk_timeline_rows'] == 0
-    assert max_policy['diagnostics']['perk_static_count'] > 0
-    assert max_policy['diagnostics']['perk_static_pick_count'] > max_policy['diagnostics']['perk_static_count']
-    assert max_policy['contract']['perk_timeline_mode'] == 'max_progression_policy_static'
-    assert max_policy['rows'][0]['effective_damage_reduction_pct'] == pytest.approx(rows_with_perks[-1]['effective_damage_reduction_pct'])
-    assert max_policy['rows'][0]['wall_hp'] != pytest.approx(rows_with_perks[0]['wall_hp'])
+    assert max_policy_request['diagnostics']['requested_perk_mode'] == 'max_progression_policy'
+    assert max_policy_request['diagnostics']['perk_application_mode'] == 'runtime_timeline'
+    assert max_policy_request['diagnostics']['perk_timeline_rows'] > 0
+    assert max_policy_request['contract']['perk_timeline_mode'] == 'runtime_policy_projection'
+    assert max_policy_request['rows'][0]['effective_damage_reduction_pct'] == pytest.approx(rows_with_perks[0]['effective_damage_reduction_pct'])
 
-    no_perks = build_boss_wave_payload(
+    none_requested = build_boss_wave_payload(
         PipelineRunRequest(ids=IDS_PATH, out=ROOT / 'out', perk_mode='none', perk_state='on'),
         preset_name='Farming',
         tier_number=14,
@@ -844,7 +846,7 @@ def test_boss_wave_payload_uses_effective_bh_cf_state_and_perk_switches():
         stop_on_failure=False,
         scenario_runtime_inputs=runtime_inputs,
     )
-    perks_off = build_boss_wave_payload(
+    off_requested = build_boss_wave_payload(
         PipelineRunRequest(ids=IDS_PATH, out=ROOT / 'out', perk_mode='runtime_timeline', perk_state='off'),
         preset_name='Farming',
         tier_number=14,
@@ -853,14 +855,16 @@ def test_boss_wave_payload_uses_effective_bh_cf_state_and_perk_switches():
         stop_on_failure=False,
         scenario_runtime_inputs=runtime_inputs,
     )
-    assert no_perks['diagnostics']['perks_enabled'] is False
-    assert perks_off['diagnostics']['perks_enabled'] is False
-    assert no_perks['diagnostics']['perk_application_mode'] == 'disabled'
-    assert perks_off['diagnostics']['perk_application_mode'] == 'disabled'
-    assert no_perks['diagnostics']['perk_timeline_rows'] == 0
-    assert perks_off['diagnostics']['perk_timeline_rows'] == 0
-    assert rows_with_perks[-1]['wall_hp'] != pytest.approx(no_perks['rows'][-1]['wall_hp'])
-    assert rows_with_perks[-1]['wall_regen'] > no_perks['rows'][-1]['wall_regen']
+    assert none_requested['diagnostics']['requested_perk_mode'] == 'none'
+    assert off_requested['diagnostics']['requested_perk_state'] == 'off'
+    assert none_requested['diagnostics']['perks_enabled'] is True
+    assert off_requested['diagnostics']['perks_enabled'] is True
+    assert none_requested['diagnostics']['perk_application_mode'] == 'runtime_timeline'
+    assert off_requested['diagnostics']['perk_application_mode'] == 'runtime_timeline'
+    assert none_requested['diagnostics']['perk_state_source'] == 'scenario_policy_tournament_off_other_runs_on'
+    assert off_requested['diagnostics']['perk_state_source'] == 'scenario_policy_tournament_off_other_runs_on'
+    assert none_requested['rows'][-1]['wall_hp'] == pytest.approx(rows_with_perks[-1]['wall_hp'])
+    assert off_requested['rows'][-1]['wall_regen'] == pytest.approx(rows_with_perks[-1]['wall_regen'])
 
 
 @pytest.mark.live
@@ -910,6 +914,151 @@ def test_boss_wave_payload_threads_t14_battle_conditions_and_final_dr_override()
     assert sources['final_dr_override']['primitive_status'] == 'runtime_final_dr_override_bypasses_timed_dr_sources'
 
 
+def test_boss_wave_perk_state_is_owned_by_scenario_not_request():
+    from app.pipeline import _resolve_boss_wave_run_context
+
+    account_state = type(
+        'State',
+        (),
+        {
+            'active_perk_preset': None,
+            'player_meta': {'Tourney League': 'Legends', 'Tournament Wave': '100'},
+        },
+    )()
+
+    farming = _resolve_boss_wave_run_context(
+        account_state,
+        preset_name='Farming',
+        tier_number=14,
+        checkpoint_every_bosses=1,
+    )
+    tournament = _resolve_boss_wave_run_context(
+        account_state,
+        preset_name='Tourney',
+        tier_number=14,
+        checkpoint_every_bosses=1,
+    )
+
+    assert farming['mode_id'] == 'farming'
+    assert farming['perks_enabled'] is True
+    assert farming['perk_state'] == 'on'
+    assert farming['perk_state_source'] == 'scenario_policy_tournament_off_other_runs_on'
+    assert tournament['mode_id'] == 'tournament'
+    assert tournament['perks_enabled'] is False
+    assert tournament['perk_state'] == 'off'
+    assert tournament['perk_timeline_mode'] == 'disabled_by_tournament_scenario'
+
+
+def test_perk_timeline_preview_override_is_validated_and_consumed_by_boss_waves():
+    from app.models import PipelineRunRequest
+    from app.pipeline import build_boss_wave_payload, build_perk_timeline_preview
+
+    request = PipelineRunRequest(ids=IDS_PATH, out=ROOT / 'out')
+    override = {
+        'seed': 42,
+        'target_wave': 50000,
+        'banned_perks': [],
+        'first_perk_choice': 'Defense Percent +4.00',
+        'priority_order': ['Defense Percent +4.00'],
+    }
+    preview = build_perk_timeline_preview(request, perk_policy_override=override)
+
+    assert preview['validation']['ok'] is True
+    assert preview['validation']['ban_perks_used'] == 0
+    assert preview['resolved_policy']['first_perk_choice'] == 'Defense Percent +4.00'
+    assert preview['timeline'][0]['perk_taken'] == 'Defense Percent +4.00'
+    assert preview['diagnostics']['uw_locked_perks_excluded']['Swamp Radius x1.5'] == 'Poison Swamp'
+
+    payload = build_boss_wave_payload(
+        request,
+        preset_name='Farming',
+        tier_number=14,
+        end_wave=210,
+        boss_wave_step=1,
+        stop_on_failure=False,
+        scenario_runtime_inputs={'boss_time_to_contact_seconds': 1.0},
+        perk_policy_override=override,
+    )
+    rows = {int(row['display_wave']): row for row in payload['rows']}
+    assert payload['diagnostics']['perk_policy_override_active'] is True
+    assert payload['diagnostics']['perk_policy_validation']['ok'] is True
+    assert rows[180]['effective_damage_reduction_pct'] < rows[189]['effective_damage_reduction_pct']
+
+
+def test_perk_timeline_preview_rejects_over_capacity_bans():
+    from app.models import PipelineRunRequest
+    from app.pipeline import build_perk_timeline_preview
+
+    request = PipelineRunRequest(ids=IDS_PATH, out=ROOT / 'out')
+    preview = build_perk_timeline_preview(
+        request,
+        perk_policy_override={
+            'banned_perks': [
+                'x1.15 Damage',
+                'x1.20 Max Health',
+                'x1.75 Health Regen',
+                'Defense Percent +4.00',
+                'Black Hole Duration +12.0s',
+                'Chrono Field Duration +5s',
+                'Golden Tower Bonus x1.5',
+            ],
+        },
+    )
+
+    assert preview['validation']['ok'] is False
+    assert 'Ban Perks lab capacity is 6' in preview['validation']['errors'][0]
+
+
+def test_save_perk_policy_override_persists_to_manual_inputs(tmp_path):
+    from app.models import PipelineRunRequest
+    from app.pipeline import build_perk_timeline_preview, save_perk_policy_override
+
+    manual_inputs = tmp_path / 'manual_inputs.yaml'
+    manual_inputs.write_text(
+        yaml.safe_dump(
+            {
+                'loadout': {},
+                'perk_config': {'perk_presets': {}, 'active_perk_preset': None},
+                'perk_policy': {
+                    'seed': 1,
+                    'target_wave': 1000,
+                    'priority_order': ['Perk Wave Requirement -20.00%'],
+                    'first_perk_choice': 'Perk Wave Requirement -20.00%',
+                    'banned_perk_aliases': ['TO3'],
+                    'banned_perks': ['Enemies Speed -40%, But Enemies Damage x2.5'],
+                },
+            },
+            sort_keys=False,
+        ),
+        encoding='utf-8',
+    )
+    request = PipelineRunRequest(ids=IDS_PATH, out=ROOT / 'out', manual_inputs=manual_inputs)
+    override = {
+        'seed': 42,
+        'target_wave': 50000,
+        'banned_perks': [],
+        'first_perk_choice': 'Defense Percent +4.00',
+        'priority_order': ['Defense Percent +4.00'],
+    }
+
+    save_result = save_perk_policy_override(request, perk_policy_override=override)
+    saved_yaml = yaml.safe_load(manual_inputs.read_text(encoding='utf-8'))
+    saved_policy = saved_yaml['perk_policy']
+
+    assert save_result['manual_inputs_path'] == str(manual_inputs)
+    assert saved_policy['seed'] == 42
+    assert saved_policy['target_wave'] == 50000
+    assert saved_policy['banned_perks'] == []
+    assert 'banned_perk_aliases' not in saved_policy
+    assert saved_policy['first_perk_choice'] == 'Defense Percent +4.00'
+    assert saved_policy['priority_order'] == ['Defense Percent +4.00']
+
+    preview = build_perk_timeline_preview(request)
+    assert preview['validation']['ok'] is True
+    assert preview['resolved_policy']['first_perk_choice'] == 'Defense Percent +4.00'
+    assert preview['timeline'][0]['perk_taken'] == 'Defense Percent +4.00'
+
+
 def test_boss_wave_perk_timeline_uses_ids_labs_first_choice_and_exports_wall_contributions():
     from app import pipeline as pipeline_mod
     from simulators.perk_timeline_generator import PerkTimelinePolicy, generate_timeline_from_policy
@@ -951,6 +1100,7 @@ def test_boss_wave_perk_timeline_uses_ids_labs_first_choice_and_exports_wall_con
     assert final_contributions['perk_PERK_X1_20_MAX_HEALTH_effect_1:wall_hp_multiplier'] == pytest.approx(2.5)
     assert final_contributions['perk_PERK_X1_75_HEALTH_REGEN_effect_1:wall_regen_multiplier'] == pytest.approx(5.9375)
     assert final_contributions['perk_PERK_TOWER_HEALTH_REGEN_X8_00_BUT_TOWER_MAX_MAX_HEALTH_60_effect_1:wall_regen_multiplier'] == pytest.approx(8.8)
+    assert final_contributions['perk_PERK_DEFENSE_PERCENT_4_00_effect_1:tower_defense_pct_points_add'] == pytest.approx(25.0)
 
 
 def test_perk_generator_excludes_uw_perks_for_locked_ultimate_weapons():
@@ -1036,12 +1186,20 @@ def test_build_boss_wave_payload_tourney_fails_closed_without_tournament_wave(mo
         boss_wave_step=1,
         stop_on_failure=True,
         scenario_runtime_inputs={},
+        perk_policy_override={
+            'banned_perks': [
+                'x1.15 Damage',
+                'x1.20 Max Health',
+                'x1.75 Health Regen',
+            ],
+        },
     )
 
     diagnostics = payload.get('diagnostics') or {}
     assert (payload.get('rows') or []) == []
     assert diagnostics['context_status'] == 'error'
     assert diagnostics['context_error'] == 'missing_tournament_wave'
+    assert diagnostics['perk_mode'] == 'none'
     assert 'requires a resolved tournament wave' in str(diagnostics['context_error_message'] or '').lower()
 
 

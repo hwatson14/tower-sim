@@ -65,6 +65,7 @@ from app.display import (
     annotate_display_fields as _annotate_display_fields,
 )
 from input.loader import load_inputs
+from input.loader import MANUAL_INPUTS_PATH, write_perk_policy
 from input.runtime_state import build_runtime_state
 from qe.contracts import (
     load_section_layout_contract,
@@ -210,7 +211,6 @@ def _resolve_boss_wave_run_context(
     preset_name: str,
     tier_number: int,
     checkpoint_every_bosses: int,
-    perk_state: str,
 ) -> dict[str, object]:
     from simulators.scenario import ScenarioConfig, compute_scenario_surfaces
 
@@ -261,10 +261,8 @@ def _resolve_boss_wave_run_context(
     scenario_surfaces = compute_scenario_surfaces(scenario_config)
     actual_boss_interval_waves = max(1, int(getattr(scenario_surfaces, 'boss_wave_interval', 10) or 10))
     checkpoint_every_bosses = max(1, int(checkpoint_every_bosses))
-    perks_enabled = mode_id != 'tournament' and _perks_enabled_for_state(
-        getattr(account_state, 'active_perk_preset', None),
-        perk_state,
-    )
+    perks_enabled = mode_id != 'tournament'
+    scenario_perk_state = 'off' if mode_id == 'tournament' else 'on'
     return {
         'resolved': True,
         'mode_id': mode_id,
@@ -274,8 +272,9 @@ def _resolve_boss_wave_run_context(
         'league': scenario_config.league,
         'tournament_wave': int(scenario_config.tournament_wave or 0) or None,
         'perks_enabled': perks_enabled,
-        'perk_state': _normalize_perk_state(perk_state),
-        'perk_timeline_mode': 'runtime_policy_projection' if perks_enabled else 'disabled_by_perk_state_or_scenario',
+        'perk_state': scenario_perk_state,
+        'perk_state_source': 'scenario_policy_tournament_off_other_runs_on',
+        'perk_timeline_mode': 'runtime_policy_projection' if perks_enabled else 'disabled_by_tournament_scenario',
         'actual_boss_interval_waves': actual_boss_interval_waves,
         'checkpoint_every_bosses': checkpoint_every_bosses,
         'checkpoint_stride_waves': actual_boss_interval_waves * checkpoint_every_bosses,
@@ -376,16 +375,22 @@ def build_boss_wave_payload(
     stop_on_failure: bool,
     scenario_runtime_inputs: dict[str, float],
     boss_wave_source: str = BOSS_WAVE_SOURCE_REPLACEMENT,
+    perk_policy_override: dict[str, object] | None = None,
 ) -> dict[str, object]:
     from simulators.perk_timeline_generator import PerkTimelinePolicy, generate_timeline_from_policy, perk_state_at_wave
     source_id = _normalize_boss_wave_source(boss_wave_source)
-    perk_mode = _normalize_perk_mode(getattr(request, 'perk_mode', None))
-    perk_state = _normalize_perk_state(getattr(request, 'perk_state', 'auto'))
+    requested_perk_mode = _normalize_perk_mode(getattr(request, 'perk_mode', None))
+    requested_perk_state = _normalize_perk_state(getattr(request, 'perk_state', 'auto'))
+    scenario_mode_id = _boss_wave_mode_id_for_preset(preset_name)
+    scenario_owned_perk_mode = 'none' if scenario_mode_id == 'tournament' else 'runtime_timeline'
     bundle = load_inputs(ids_path=request.ids, manual_inputs_path=request.manual_inputs)
+    perk_policy = _merged_perk_policy(getattr(bundle, 'perk_policy', {}) or {}, perk_policy_override)
+    perk_policy_payload, _perk_context = _perk_policy_context(bundle.ids_raw, perk_policy)
+    perk_policy_validation = _perk_policy_validation_ledger(perk_policy_payload, _perk_context)
     resolved_perk_config, perk_config_resolution = _resolve_perk_config(
-        perk_mode=perk_mode,
+        perk_mode=scenario_owned_perk_mode,
         primary_config=bundle.perk_config,
-        perk_policy=getattr(bundle, 'perk_policy', {}) or {},
+        perk_policy=perk_policy,
         ids_raw=bundle.ids_raw,
         diag_output_dir=None,
     )
@@ -395,9 +400,9 @@ def build_boss_wave_payload(
         preset_name=preset_name,
         tier_number=int(tier_number),
         checkpoint_every_bosses=int(boss_wave_step),
-        perk_state=perk_state,
     )
-    perk_policy_payload, _perk_context = _perk_policy_context(bundle.ids_raw, getattr(bundle, 'perk_policy', {}) or {})
+    perk_state = str(resolved_context.get('perk_state') or ('off' if resolved_context.get('mode_id') == 'tournament' else 'on'))
+    perk_mode = scenario_owned_perk_mode if bool(resolved_context.get('perks_enabled')) else 'none'
     perk_timeline: list[dict[str, object]] = []
     perk_timeline_diag: dict[str, object] = {
         'enabled': False,
@@ -405,9 +410,11 @@ def build_boss_wave_payload(
         'final_wave': 0,
         'generated_rows': 0,
     }
-    effective_perks_enabled = bool(resolved_context.get('perks_enabled')) and perk_mode != 'none'
+    effective_perks_enabled = bool(resolved_context.get('perks_enabled'))
     perk_application_mode = 'disabled'
     static_perk_counts: dict[str, int] = {}
+    if effective_perks_enabled and not perk_policy_validation['ok']:
+        raise ValueError(f"Boss Waves perk policy is invalid: {perk_policy_validation['errors']!r}")
     if effective_perks_enabled and perk_mode == 'runtime_timeline':
         perk_timeline, perk_timeline_diag = generate_timeline_from_policy(PerkTimelinePolicy(**perk_policy_payload))
         perk_application_mode = 'runtime_timeline'
@@ -513,8 +520,13 @@ def build_boss_wave_payload(
         'state_mode': 'start_of_run',
         'perk_mode': perk_mode,
         'perk_state': perk_state,
+        'requested_perk_mode': requested_perk_mode,
+        'requested_perk_state': requested_perk_state,
+        'perk_state_source': resolved_context.get('perk_state_source'),
         'perk_application_mode': perk_application_mode,
         'perk_config_resolution': dict(perk_config_resolution),
+        'perk_policy_validation': dict(perk_policy_validation),
+        'perk_policy_override_active': bool(perk_policy_override),
         'perk_timeline': tuple(dict(row or {}) for row in perk_timeline) if perk_application_mode == 'runtime_timeline' else (),
         'static_perk_count': len(static_perk_counts),
         'static_perk_pick_count': sum(int(value) for value in static_perk_counts.values()),
@@ -1111,6 +1123,7 @@ def _boss_wave_perk_contributions_by_wave(
     target_to_contribution = {
         'tower_hp': 'wall_hp_multiplier',
         'tower_regen': 'wall_regen_multiplier',
+        'def_pct': 'tower_defense_pct_points_add',
         'uw_black_hole_duration_seconds': 'black_hole_duration_seconds_add',
         'uw_chrono_field_duration_seconds': 'chrono_field_duration_seconds_add',
     }
@@ -1238,8 +1251,8 @@ def _boss_wave_primitive_semantics_ledger(
             'state::tower.defense_pct': _primitive_ledger_entry(
                 source='qe.routing.resolve_checkpoint_surfaces(state::tower.defense_pct)',
                 value=float(primitives['tower_defense_pct']),
-                meaning='QE-published tower defense percent; runtime effective_damage_reduction_pct may override displayed DR Used',
-                owner='QE publishes; evaluator consumes damage reduction',
+                meaning='QE-published tower defense percent; evaluator adds active Defense Percent perk point contributions per row before timed BH/CF DR',
+                owner='QE publishes baseline; run_plan carries Defense Percent perk contributions; evaluator consumes damage reduction',
             ),
             'state::tower.thorns_damage_pct': _primitive_ledger_entry(
                 source='qe.routing.resolve_checkpoint_surfaces(state::tower.thorns_damage_pct)',
@@ -1585,8 +1598,13 @@ def _build_replacement_diagnostics(
         'perks_enabled': bool(config['perks_enabled']),
         'perk_mode': str(config.get('perk_mode') or ''),
         'perk_state': str(config.get('perk_state') or ''),
+        'requested_perk_mode': str(config.get('requested_perk_mode') or ''),
+        'requested_perk_state': str(config.get('requested_perk_state') or ''),
+        'perk_state_source': str(config.get('perk_state_source') or ''),
         'perk_application_mode': str(config.get('perk_application_mode') or ''),
         'perk_config_resolution': dict(config.get('perk_config_resolution') or {}),
+        'perk_policy_validation': dict(config.get('perk_policy_validation') or {}),
+        'perk_policy_override_active': bool(config.get('perk_policy_override_active')),
         'perk_timeline_enabled': str(config.get('perk_application_mode') or '') == 'runtime_timeline',
         'perk_timeline_rows': int(perk_timeline_rows),
         'perk_timeline_final_wave': int(perk_timeline_final_wave),
@@ -1633,6 +1651,11 @@ def _build_replacement_diagnostics(
             'thorns_contact_source': 'wall_thorns_contact_damage_pct_derived_from_tower_thorns_and_wall_thorns_lab',
             'wall_thorns_repeated_hit_multiplier': 'Sharp Fortitude primary armor adds +1% wall-thorns damage taken per subsequent contact hit',
             'boss_survival_model': 'max_waves_compares_ttd_wall_hp_plus_regen_against_total_v21_ttk_window',
+            'damage_reduction_perk_sources': [
+                'PERK_DEFENSE_PERCENT_4_00:tower_defense_pct_points_add',
+                'PERK_BLACK_HOLE_DURATION_12_0S:black_hole_duration_seconds_add',
+                'PERK_CHRONO_FIELD_DURATION_5S:chrono_field_duration_seconds_add',
+            ],
             'timed_dr_perk_sources': ['PERK_BLACK_HOLE_DURATION_12_0S:black_hole_duration_seconds_add', 'PERK_CHRONO_FIELD_DURATION_5S:chrono_field_duration_seconds_add'],
             'perk_application_mode': str(config.get('perk_application_mode') or ''),
             'perk_mode': str(config.get('perk_mode') or ''),
@@ -2336,6 +2359,144 @@ def _ids_unlocked_ultimate_weapons(ids_raw) -> list[str]:
 
 def _resolve_manual_banned_perks(perk_policy: dict) -> list[str]:
     return _resolve_policy_banned_perk_names(perk_policy or {})
+
+
+def _merged_perk_policy(base_policy: dict | None, override: dict[str, object] | None) -> dict:
+    merged = dict(base_policy or {})
+    if not override:
+        return merged
+    for key in ("seed", "target_wave", "banned_perks", "priority_order", "first_perk_choice"):
+        if key not in override:
+            continue
+        value = override.get(key)
+        if key in {"banned_perks", "priority_order"}:
+            merged[key] = [str(item).strip() for item in (value or []) if str(item).strip()]
+            if key == "banned_perks":
+                merged.pop("banned_perk_aliases", None)
+        elif key == "first_perk_choice":
+            text = str(value or "").strip()
+            if text:
+                merged[key] = text
+            else:
+                merged.pop(key, None)
+        elif value not in (None, ""):
+            merged[key] = int(value)
+    return merged
+
+
+def _perk_policy_validation_ledger(policy_payload: dict, context: dict) -> dict[str, object]:
+    from qe.perk_tables import load_perk_definitions
+
+    definitions = {perk.perk_name: perk for perk in load_perk_definitions()}
+    unlocked_uw = {str(name).strip().lower() for name in (policy_payload.get("unlocked_ultimate_weapons") or [])}
+    errors: list[str] = []
+    warnings: list[str] = []
+
+    def _check_known(name: str, field_name: str) -> None:
+        if name not in definitions:
+            errors.append(f"{field_name} references unknown perk {name!r}")
+
+    banned = [str(name).strip() for name in (policy_payload.get("banned_perks") or []) if str(name).strip()]
+    priority = [str(name).strip() for name in (policy_payload.get("priority_order") or []) if str(name).strip()]
+    first_choice = str(policy_payload.get("first_perk_choice") or "").strip()
+    lab_ban_capacity = int(context.get("ban_perks_capacity_ids") or 0)
+    if len(banned) > lab_ban_capacity:
+        errors.append(f"banned_perks has {len(banned)} entries but Ban Perks lab capacity is {lab_ban_capacity}")
+    for name in banned:
+        _check_known(name, "banned_perks")
+    for name in priority:
+        _check_known(name, "priority_order")
+    if first_choice:
+        _check_known(first_choice, "first_perk_choice")
+        if int(context.get("first_perk_choice_level") or 0) <= 0:
+            errors.append("first_perk_choice is configured but First Perk Choice lab is not unlocked")
+        if first_choice in banned:
+            errors.append(f"first_perk_choice {first_choice!r} is also banned")
+    for field_name, names in (("banned_perks", banned), ("priority_order", priority), ("first_perk_choice", [first_choice] if first_choice else [])):
+        for name in names:
+            definition = definitions.get(name)
+            if (
+                definition is not None
+                and definition.category == "ultimate_weapon"
+                and str(definition.required_uw or "").strip().lower() not in unlocked_uw
+            ):
+                warnings.append(f"{field_name} perk {name!r} requires locked UW {definition.required_uw!r} and will be excluded")
+    return {
+        "ok": not errors,
+        "errors": errors,
+        "warnings": warnings,
+        "ban_perks_used": len(banned),
+        "ban_perks_capacity": lab_ban_capacity,
+        "first_perk_choice_unlocked": int(context.get("first_perk_choice_level") or 0) > 0,
+    }
+
+
+def build_perk_timeline_preview(
+    request: PipelineRunRequest,
+    *,
+    perk_policy_override: dict[str, object] | None = None,
+) -> dict[str, object]:
+    from qe.perk_tables import load_perk_definitions
+    from simulators.perk_timeline_generator import PerkTimelinePolicy, generate_timeline_from_policy
+
+    bundle = load_inputs(ids_path=request.ids, manual_inputs_path=request.manual_inputs)
+    policy = _merged_perk_policy(getattr(bundle, "perk_policy", {}) or {}, perk_policy_override)
+    policy_payload, context = _perk_policy_context(bundle.ids_raw, policy)
+    validation = _perk_policy_validation_ledger(policy_payload, context)
+    timeline: list[dict[str, object]] = []
+    diagnostics: dict[str, object] = {
+        "enabled": False,
+        "reason": "validation_failed",
+        "generated_rows": 0,
+        "final_wave": 0,
+    }
+    if validation["ok"]:
+        timeline, diagnostics = generate_timeline_from_policy(PerkTimelinePolicy(**policy_payload))
+    definitions = load_perk_definitions()
+    eligible_perks = sorted(
+        perk.perk_name
+        for perk in definitions
+        if perk.perk_name not in (diagnostics.get("uw_locked_perks_excluded") or {})
+    )
+    return {
+        "artifact": "perk_timeline_preview",
+        "schema_version": 1,
+        "owner": "app.pipeline.build_perk_timeline_preview",
+        "generator_owner": "simulators.perk_timeline_generator",
+        "policy_source": "manual_inputs.yaml:perk_policy + streamlit_session_override",
+        "resolved_policy": dict(policy_payload),
+        "policy_override": dict(perk_policy_override or {}),
+        "validation": validation,
+        "timeline": tuple(dict(row or {}) for row in timeline),
+        "diagnostics": dict(diagnostics),
+        "eligible_perks": eligible_perks,
+        "all_perks": sorted(perk.perk_name for perk in definitions),
+        "context": dict(context),
+    }
+
+
+def save_perk_policy_override(
+    request: PipelineRunRequest,
+    *,
+    perk_policy_override: dict[str, object],
+) -> dict[str, object]:
+    bundle = load_inputs(ids_path=request.ids, manual_inputs_path=request.manual_inputs)
+    policy = _merged_perk_policy(getattr(bundle, "perk_policy", {}) or {}, perk_policy_override)
+    policy_payload, context = _perk_policy_context(bundle.ids_raw, policy)
+    validation = _perk_policy_validation_ledger(policy_payload, context)
+    if not validation["ok"]:
+        raise ValueError(f"Perk policy is invalid: {validation['errors']!r}")
+    saved_policy = write_perk_policy(policy, manual_inputs_path=request.manual_inputs)
+    return {
+        "artifact": "perk_policy_save_result",
+        "schema_version": 1,
+        "owner": "app.pipeline.save_perk_policy_override",
+        "input_owner": "input.loader.write_perk_policy",
+        "manual_inputs_path": str(request.manual_inputs or MANUAL_INPUTS_PATH),
+        "saved_policy": dict(saved_policy),
+        "resolved_policy": dict(policy_payload),
+        "validation": validation,
+    }
 
 
 def _perk_policy_context(ids_raw, perk_policy: dict) -> tuple[dict, dict]:

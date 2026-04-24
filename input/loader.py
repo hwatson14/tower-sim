@@ -33,6 +33,7 @@ EP_EXPORT_CSV_PATH = _HERE / "imports" / "ep_export.csv"
 PROGRESS_CSV_PATH = _HERE / "imports" / "progress.csv"
 MANIFEST_PATH = _HERE / "imports" / "manifest.json"
 _YAML_LOADER = getattr(yaml, 'CSafeLoader', yaml.SafeLoader)
+_YAML_DUMPER = getattr(yaml, 'CSafeDumper', yaml.SafeDumper)
 
 
 # ── InputBundle ───────────────────────────────────────────────────────────────
@@ -115,6 +116,26 @@ def parse_perk_policy(manual_inputs: dict) -> dict:
     """Extract the input-owned manual perk policy surface."""
     policy = manual_inputs.get("perk_policy") or {}
     return policy if isinstance(policy, dict) else {}
+
+
+def write_perk_policy(perk_policy: dict, *, manual_inputs_path: Optional[Path] = None) -> dict:
+    """Persist the input-owned perk policy surface into manual_inputs.yaml."""
+    if not isinstance(perk_policy, dict):
+        raise ValueError(f"perk_policy must be a mapping, got {type(perk_policy).__name__}")
+    manual_inputs_path = manual_inputs_path or MANUAL_INPUTS_PATH
+    manual_inputs = _load_yaml_required(manual_inputs_path, context="manual_inputs")
+    manual_inputs["perk_policy"] = dict(perk_policy)
+    manual_inputs_path.write_text(
+        yaml.dump(
+            manual_inputs,
+            Dumper=_YAML_DUMPER,
+            sort_keys=False,
+            allow_unicode=True,
+            default_flow_style=False,
+        ),
+        encoding="utf-8",
+    )
+    return parse_perk_policy(manual_inputs)
 
 
 def parse_manual_advisory_inputs(manual_inputs: dict) -> dict[str, dict]:

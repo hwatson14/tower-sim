@@ -5,7 +5,7 @@ status:
   baseline: prior hardening and maintenance stabilization are complete, but the active program is now the v49 Streamlit-first canonical stat and max-wave simulator scope
   active_tranche: v49_streamlit_stat_and_simulator_program
   active_tranche_name: V49 Streamlit-first canonical stat and simulator program
-  overall_state: boss_waves_replacement_owned_uw_publication_stats_parity_closed_manual_contact_time
+  overall_state: boss_waves_replacement_owned_perk_policy_surface_wired
   confidence:
     high_signal_suites_green: true
     full_suite_recertified_here: true
@@ -138,7 +138,7 @@ v49_program:
   - remove duplicate authority, stale residue, and bloat where they undermine truth, speed, or blind maintainability
   known_blockers:
   - the v49 interactive performance target remains open
-  - Boss Waves Phase 2A table/summary and Phase 2B export/diagnostics cutover are replacement-owned by default; stat evolution correctness and Boss Waves-local wall-surface semantics are closed with an explicit primitive/display split; legacy executor retirement is complete; displayed Boss Waves TTK is total v21 event-only kill time from Plasma Cannon, orbs, electrons, and contact thorns, with Sharp Fortitude contact-thorns timing and CF/BH duration-perk timed DR modeled in the replacement path; the product-honesty tranche now threads effective BH 36/46 timing, effective CF timing/DR, tier battle-condition combat resistances, honest final-DR override semantics, and explicit zero overrides; the follow-up perk-mode closure tranche made runtime_timeline, max_progression_policy static, and disabled perk paths distinct and diagnostic-visible; the UW publication/Stats parity tranche now publishes effective CF surfaces and makes Stats reconcile BH/CF against the same effective truth Boss Waves consumes; boss_time_to_contact_seconds remains an explicit manual runtime input by governance decision
+  - Boss Waves Phase 2A table/summary and Phase 2B export/diagnostics cutover are replacement-owned by default; stat evolution correctness and Boss Waves-local wall-surface semantics are closed with an explicit primitive/display split; legacy executor retirement is complete; displayed Boss Waves TTK is total v21 event-only kill time from Plasma Cannon, orbs, electrons, and contact thorns, with Sharp Fortitude contact-thorns timing and CF/BH duration-perk timed DR modeled in the replacement path; the product-honesty tranche now threads effective BH 36/46 timing, effective CF timing/DR, tier battle-condition combat resistances, honest final-DR override semantics, and explicit zero overrides; the UW publication/Stats parity tranche now publishes effective CF surfaces and makes Stats reconcile BH/CF against the same effective truth Boss Waves consumes; Boss Waves product perk enablement is now scenario-owned with tournament perks off and non-tournament runtime perk timelines on, Defense Percent perks flow through staged DR, Streamlit exposes only wired manual combat assumptions, the Streamlit Perks tab now previews session-local perk policy controls through app.pipeline and the simulator-owned perk timeline generator, Boss Waves consumes that same session policy override, and boss_time_to_contact_seconds remains an explicit manual runtime input by governance decision
   shipped_vs_rebuilt_truth:
     latest_shipped_extract_audit_2026_04_15:
       source: tower-sim-src(9).zip

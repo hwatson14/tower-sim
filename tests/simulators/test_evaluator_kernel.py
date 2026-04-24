@@ -123,6 +123,7 @@ def test_table2_registry_derived_survivability_lanes_and_operator_handles():
             perk_contributions={
                 "standard_damage:wall_hp_flat": 50.0,
                 "standard_damage:wall_regen_flat": 2.0,
+                "standard_defense:tower_defense_pct_points_add": 10.0,
                 "tradeoff_enemy_damage:wall_hp_flat": 999.0,
                 "tradeoff_enemy_damage:wall_regen_multiplier": 99.0,
             },
@@ -142,6 +143,7 @@ def test_table2_registry_derived_survivability_lanes_and_operator_handles():
             perk_contributions={
                 "standard_damage:wall_hp_flat": 50.0,
                 "standard_damage:wall_regen_flat": 2.0,
+                "standard_defense:tower_defense_pct_points_add": 10.0,
                 "tradeoff_enemy_damage:wall_hp_flat": 999.0,
                 "tradeoff_enemy_damage:wall_regen_multiplier": 99.0,
             },
@@ -186,7 +188,12 @@ def test_table2_registry_derived_survivability_lanes_and_operator_handles():
     assert row.final_wall_hp == pytest.approx((100 + 200 + 50 + 25 + 25 + 50) * 2.0 * 1.5)
     assert row.final_wall_regen == pytest.approx((10 + 5 + 5 + 2) * 3.0 * 2.0)
     assert row.active_perk_counts == {"standard_damage": 1}
-    assert row.active_perk_contributions == {"standard_damage:wall_hp_flat": 50.0, "standard_damage:wall_regen_flat": 2.0}
+    assert row.active_perk_contributions == {
+        "standard_damage:wall_hp_flat": 50.0,
+        "standard_damage:wall_regen_flat": 2.0,
+        "standard_defense:tower_defense_pct_points_add": 10.0,
+    }
+    assert row.damage_reduction_pct == pytest.approx(47.5)
     assert row.enemy_health == pytest.approx(baseline_row.enemy_health)
     assert LANE_ORDER == ("avg", "min", "max")
     assert [lane.lane_id for lane in row.lane_evaluations] == ["avg", "min", "max"]

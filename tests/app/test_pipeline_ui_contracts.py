@@ -100,6 +100,45 @@ def test_trace_artifact_is_listed_in_generated_files(start_of_run_pipeline_resul
     assert 'pipeline_trace.json' in generated
 
 
+def test_streamlit_boss_waves_exposes_only_wired_manual_runtime_inputs():
+    source = (ROOT / 'app' / 'streamlit_inspector.py').read_text(encoding='utf-8')
+    assert 'Manual combat assumptions' in source
+    for label in (
+        'Orb damage to boss (total %)',
+        'Electron damage override (total %)',
+        'Boss time to contact (s)',
+        'Death Wave maxed wave',
+    ):
+        assert label in source
+    for stale_label in (
+        'Orb boss hit %',
+        'Effective DR %',
+        'Incoming damage multiplier',
+        'Death Wave health max x',
+        'Boss hit interval (s)',
+        'Flame Bot DR %',
+        'Defense Field DR %',
+        'BH DR %',
+        'BH duration (s)',
+        'PBH uptime',
+    ):
+        assert stale_label not in source
+
+
+def test_streamlit_perks_tab_consumes_pipeline_preview_not_local_generator():
+    source = (ROOT / 'app' / 'streamlit_inspector.py').read_text(encoding='utf-8')
+    assert "'Perks'" in source
+    assert 'build_perk_timeline_preview' in source
+    assert 'save_perk_policy_override' in source
+    assert 'Save perk policy' in source
+    assert 'Banned perks' in source
+    assert 'First perk choice' in source
+    assert 'Priority order' in source
+    assert 'Generated perks' in source
+    assert 'generate_timeline_from_policy' not in source
+    assert 'PerkTimelinePolicy' not in source
+
+
 def test_pipeline_writes_input_dashboard_contract(tmp_path, monkeypatch):
     from app.pipeline import PipelineRunRequest, execute_pipeline
 
@@ -336,7 +375,7 @@ def test_streamlit_stats_and_boss_waves_use_sanctioned_facades() -> None:
 
 def test_boss_waves_render_uses_published_summary_and_execution_contract() -> None:
     text = (ROOT / 'app' / 'streamlit_inspector.py').read_text(encoding='utf-8')
-    start = text.index("def _render_boss_waves(request: PipelineRunRequest) -> None:")
+    start = text.index("def _render_boss_waves(request: PipelineRunRequest")
     end = text.index("\ndef main() -> None:", start)
     boss_block = text[start:end]
     assert "Checkpoint every N bosses" in boss_block
@@ -350,7 +389,7 @@ def test_boss_waves_render_uses_published_summary_and_execution_contract() -> No
     assert "visible wall regen contribution" in boss_block
 
     helper_start = text.index("def _build_boss_wave_operator_frame(frame: pd.DataFrame) -> pd.DataFrame:")
-    helper_end = text.index("\ndef _render_boss_waves(request: PipelineRunRequest) -> None:", helper_start)
+    helper_end = text.index("\ndef _render_boss_waves(request: PipelineRunRequest", helper_start)
     helper_block = text[helper_start:helper_end]
     assert "'Wall Regen'" in helper_block
     assert "'Regen Gain'" in helper_block

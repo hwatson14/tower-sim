@@ -381,7 +381,11 @@ def _derive_lane_damage_reduction(
     transforms: ScenarioSurvivabilityTransforms,
     perk_contributions: Mapping[str, float],
 ) -> dict[str, float]:
-    defense = _bounded_percent(contributors.tower_defense_pct) / 100.0
+    defense_pct = float(contributors.tower_defense_pct) + _perk_contribution_sum(
+        perk_contributions,
+        "tower_defense_pct_points_add",
+    )
+    defense = _bounded_percent(defense_pct) / 100.0
     black_hole_dr = _timed_dr_fraction(
         damage_reduction_pct=contributors.black_hole_damage_reduction_pct,
         duration_seconds=contributors.black_hole_duration_seconds + _perk_contribution_sum(perk_contributions, "black_hole_duration_seconds_add"),

@@ -87,11 +87,13 @@ from app.pipeline import (
     FastCheckpointRequest,
     PipelineRunRequest,
     build_boss_wave_payload,
+    build_perk_timeline_preview,
     build_verification_snapshot_set,
     compute_perk_max_effect_displays,
     execute_pipeline,
     load_streamlit_reference_data,
     resolve_fast_checkpoint,
+    save_perk_policy_override,
 )
 from qe.contracts import normalize_surface_id_to_contract
 
@@ -760,6 +762,122 @@ def _render_perks_table(
             }
         )
     st.dataframe(pd.DataFrame(rows), width='stretch', hide_index=True)
+
+
+def _render_perk_policy_tab(request: PipelineRunRequest) -> dict[str, object]:
+    st.subheader('Perk Timeline Policy')
+    initial_override = st.session_state.get('boss_wave_perk_policy_override')
+    preview = build_perk_timeline_preview(
+        request,
+        perk_policy_override=initial_override if isinstance(initial_override, dict) else None,
+    )
+    resolved = dict(preview.get('resolved_policy') or {})
+    validation = dict(preview.get('validation') or {})
+    all_perks = list(preview.get('all_perks') or [])
+    eligible_perks = list(preview.get('eligible_perks') or all_perks)
+
+    lab_cols = st.columns(5)
+    lab_cols[0].metric('Waves Required lab', int(resolved.get('waves_required_lab') or 0))
+    lab_cols[1].metric('Perk choices', int(resolved.get('perk_option_quantity') or 0) + 2)
+    lab_cols[2].metric('Ban slots used', f"{int(validation.get('ban_perks_used') or 0)} / {int(validation.get('ban_perks_capacity') or 0)}")
+    lab_cols[3].metric('SPB', f"{float(resolved.get('standard_perk_bonus') or 0.0) * 100:g}%")
+    lab_cols[4].metric('First choice lab', 'unlocked' if validation.get('first_perk_choice_unlocked') else 'locked')
+
+    control_cols = st.columns(2)
+    seed = control_cols[0].number_input('Perk RNG seed', min_value=0, value=int(resolved.get('seed') or 42), step=1)
+    target_wave = control_cols[1].number_input('Perk preview target wave', min_value=1, value=int(resolved.get('target_wave') or 50000), step=100)
+
+    banned = st.multiselect(
+        'Banned perks',
+        options=all_perks,
+        default=[name for name in resolved.get('banned_perks', []) if name in all_perks],
+    )
+    first_options = [''] + eligible_perks
+    first_value = str(resolved.get('first_perk_choice') or '')
+    first_choice = st.selectbox(
+        'First perk choice',
+        options=first_options,
+        index=first_options.index(first_value) if first_value in first_options else 0,
+        disabled=not bool(validation.get('first_perk_choice_unlocked')),
+    )
+    priority = st.multiselect(
+        'Priority order',
+        options=eligible_perks,
+        default=[name for name in resolved.get('priority_order', []) if name in eligible_perks],
+    )
+    override = {
+        'seed': int(seed),
+        'target_wave': int(target_wave),
+        'banned_perks': list(banned),
+        'first_perk_choice': str(first_choice or ''),
+        'priority_order': list(priority),
+    }
+    st.session_state['boss_wave_perk_policy_override'] = override
+    preview = build_perk_timeline_preview(request, perk_policy_override=override)
+    validation = dict(preview.get('validation') or {})
+    diagnostics = dict(preview.get('diagnostics') or {})
+
+    if validation.get('errors'):
+        st.error('Perk policy is invalid: ' + '; '.join(str(item) for item in validation.get('errors') or []))
+    for warning in validation.get('warnings') or []:
+        st.warning(str(warning))
+
+    save_cols = st.columns((1, 3))
+    save_disabled = not bool(validation.get('ok'))
+    if save_cols[0].button('Save perk policy', disabled=save_disabled):
+        try:
+            save_result = save_perk_policy_override(request, perk_policy_override=override)
+        except ValueError as exc:
+            st.error(str(exc))
+        else:
+            st.session_state['boss_wave_perk_policy_override'] = {}
+            st.success(f"Saved to {save_result.get('manual_inputs_path')}")
+            preview = build_perk_timeline_preview(request)
+            validation = dict(preview.get('validation') or {})
+            diagnostics = dict(preview.get('diagnostics') or {})
+    save_cols[1].caption('default manual input file' if request.manual_inputs is None else str(request.manual_inputs))
+
+    summary_cols = st.columns(4)
+    summary_cols[0].metric('Generated perks', int(diagnostics.get('generated_rows') or 0))
+    summary_cols[1].metric('Final perk wave', int(diagnostics.get('final_wave') or 0))
+    summary_cols[2].metric('PWR stacks', int(diagnostics.get('pwr_stacks') or 0))
+    summary_cols[3].metric('Pool remaining', int(diagnostics.get('pool_remaining') or 0))
+
+    exclusions = diagnostics.get('uw_locked_perks_excluded') or {}
+    if exclusions:
+        st.caption('UW-locked perks excluded by KB eligibility')
+        st.dataframe(
+            pd.DataFrame(
+                [{'perk': perk_name, 'requires UW': required_uw} for perk_name, required_uw in sorted(exclusions.items())]
+            ),
+            width='stretch',
+            hide_index=True,
+        )
+
+    timeline_rows = []
+    for index, row in enumerate(preview.get('timeline') or (), start=1):
+        timeline_rows.append(
+            {
+                'pick': index,
+                'wave': row.get('wave'),
+                'perk': row.get('perk_taken'),
+                'quantity': row.get('quantity'),
+                'pwr stacks': row.get('pwr_stacks_after'),
+                'effect': row.get('effect'),
+                'offered': ', '.join(str(item) for item in (row.get('offered') or [])),
+            }
+        )
+    st.dataframe(pd.DataFrame(timeline_rows), width='stretch', hide_index=True)
+    with st.expander('Resolved perk policy diagnostics', expanded=False):
+        st.json(
+            {
+                'resolved_policy': preview.get('resolved_policy'),
+                'validation': preview.get('validation'),
+                'diagnostics': preview.get('diagnostics'),
+                'generator_owner': preview.get('generator_owner'),
+            }
+        )
+    return override
 
 
 def _uw_track_stat_suffix(track_name: object) -> tuple[str, ...]:
@@ -1670,7 +1788,7 @@ def _require_boss_wave_payload_rows(boss_payload: dict, field_name: str) -> list
     return rows
 
 
-def _render_boss_waves(request: PipelineRunRequest) -> None:
+def _render_boss_waves(request: PipelineRunRequest, *, perk_policy_override: dict[str, object] | None = None) -> None:
     st.subheader('Boss Waves')
     control_cols = st.columns(4)
     preset_name = control_cols[0].selectbox('Boss preset', options=['Farming', 'Tourney', 'Milestone'], index=['Farming', 'Tourney', 'Milestone'].index(request.preset) if request.preset in {'Farming', 'Tourney', 'Milestone'} else 0)
@@ -1679,62 +1797,32 @@ def _render_boss_waves(request: PipelineRunRequest) -> None:
     boss_wave_step = control_cols[3].number_input('Checkpoint every N bosses', min_value=1, max_value=1000, value=1, step=1)
     stop_on_failure = st.toggle('Stop on first failed boss', value=True)
 
-    with st.expander('Runtime assumptions', expanded=False):
-        runtime_cols = st.columns(3)
-        orb_boss_hit_pct = runtime_cols[0].number_input('Orb boss hit %', min_value=0.0, max_value=100.0, value=2.5, step=0.1)
-        orb_boss_total_damage_pct = runtime_cols[1].number_input('Orb boss damage (total %)', min_value=0.0, max_value=100.0, value=2.0, step=0.1)
-        electron_total_damage_pct = runtime_cols[2].number_input('Electron damage override (total %)', min_value=0.0, max_value=100.0, value=0.0, step=0.1)
-        runtime_cols_2 = st.columns(3)
-        boss_time_to_contact_seconds = runtime_cols_2[0].number_input('Boss time to contact (s)', min_value=0.0, max_value=120.0, value=1.0, step=0.1)
-        effective_damage_reduction_pct = runtime_cols_2[1].number_input('Effective DR %', min_value=0.0, max_value=100.0, value=90.0, step=0.1)
-        incoming_damage_multiplier = runtime_cols_2[2].number_input('Incoming damage multiplier', min_value=0.0, max_value=100.0, value=1.0, step=0.1)
-        runtime_cols_3 = st.columns(3)
-        death_wave_health_max_multiplier = runtime_cols_3[0].number_input('Death Wave health max x', min_value=0.0, max_value=1000.0, value=12.5, step=0.25)
-        death_wave_health_max_wave = runtime_cols_3[1].number_input('Death Wave maxed wave', min_value=1, value=1000, step=10)
-        boss_hit_interval_seconds = runtime_cols_3[2].number_input('Boss hit interval (s)', min_value=0.1, max_value=30.0, value=2.0, step=0.1)
-        dr_cols = st.columns(3)
-        flame_bot_damage_reduction_pct = dr_cols[0].number_input('Flame Bot DR %', min_value=0.0, max_value=100.0, value=0.0, step=0.1)
-        defense_field_damage_reduction_pct = dr_cols[1].number_input('Defense Field DR %', min_value=0.0, max_value=100.0, value=0.0, step=0.1)
-        black_hole_damage_reduction_pct = dr_cols[2].number_input('BH DR %', min_value=0.0, max_value=100.0, value=0.0, step=0.1)
-        uptime_cols = st.columns(4)
-        flame_bot_duration_seconds = uptime_cols[0].number_input('FB duration (s)', min_value=0.0, max_value=120.0, value=0.0, step=0.1)
-        flame_bot_cooldown_seconds = uptime_cols[1].number_input('FB cooldown (s)', min_value=0.1, max_value=600.0, value=1.0, step=0.1)
-        defense_field_duration_seconds = uptime_cols[2].number_input('DF duration (s)', min_value=0.0, max_value=120.0, value=0.0, step=0.1)
-        defense_field_cooldown_seconds = uptime_cols[3].number_input('DF cooldown (s)', min_value=0.1, max_value=600.0, value=1.0, step=0.1)
-        bh_cols = st.columns(3)
-        black_hole_duration_seconds = bh_cols[0].number_input('BH duration (s)', min_value=0.0, max_value=120.0, value=0.0, step=0.1)
-        black_hole_cooldown_seconds = bh_cols[1].number_input('BH cooldown (s)', min_value=0.1, max_value=600.0, value=1.0, step=0.1)
-        pbh_encounter_uptime_fraction = bh_cols[2].number_input('PBH uptime', min_value=0.0, max_value=1.0, value=0.0, step=0.01)
+    with st.expander('Manual combat assumptions', expanded=False):
+        runtime_cols = st.columns(4)
+        orb_boss_total_damage_pct = runtime_cols[0].number_input('Orb damage to boss (total %)', min_value=0.0, max_value=100.0, value=2.0, step=0.1)
+        electron_total_damage_pct = runtime_cols[1].number_input('Electron damage override (total %)', min_value=0.0, max_value=100.0, value=0.0, step=0.1)
+        boss_time_to_contact_seconds = runtime_cols[2].number_input('Boss time to contact (s)', min_value=0.0, max_value=120.0, value=1.0, step=0.1)
+        death_wave_health_max_wave = runtime_cols[3].number_input('Death Wave maxed wave', min_value=1, value=1000, step=10)
 
-    boss_payload = build_boss_wave_payload(
-        request,
-        preset_name=preset_name,
-        tier_number=int(tier_number),
-        end_wave=int(end_wave),
-        boss_wave_step=int(boss_wave_step),
-        stop_on_failure=bool(stop_on_failure),
-        scenario_runtime_inputs={
-            'orb_boss_hit_pct': orb_boss_hit_pct,
-            'orb_boss_total_damage_pct': orb_boss_total_damage_pct,
-            **({'electron_total_damage_pct': electron_total_damage_pct} if electron_total_damage_pct > 0.0 else {}),
-            'boss_time_to_contact_seconds': boss_time_to_contact_seconds,
-            'boss_hit_interval_seconds': boss_hit_interval_seconds,
-            'effective_damage_reduction_pct': effective_damage_reduction_pct,
-            'incoming_damage_multiplier': incoming_damage_multiplier,
-            'death_wave_health_max_multiplier': death_wave_health_max_multiplier,
-            'death_wave_health_max_wave': death_wave_health_max_wave,
-            'flame_bot_damage_reduction_pct': flame_bot_damage_reduction_pct,
-            'flame_bot_duration_seconds': flame_bot_duration_seconds,
-            'flame_bot_cooldown_seconds': flame_bot_cooldown_seconds,
-            'defense_field_damage_reduction_pct': defense_field_damage_reduction_pct,
-            'defense_field_duration_seconds': defense_field_duration_seconds,
-            'defense_field_cooldown_seconds': defense_field_cooldown_seconds,
-            'black_hole_damage_reduction_pct': black_hole_damage_reduction_pct,
-            'black_hole_duration_seconds': black_hole_duration_seconds,
-            'black_hole_cooldown_seconds': black_hole_cooldown_seconds,
-            'pbh_encounter_uptime_fraction': pbh_encounter_uptime_fraction,
-        },
-    )
+    try:
+        boss_payload = build_boss_wave_payload(
+            request,
+            preset_name=preset_name,
+            tier_number=int(tier_number),
+            end_wave=int(end_wave),
+            boss_wave_step=int(boss_wave_step),
+            stop_on_failure=bool(stop_on_failure),
+            scenario_runtime_inputs={
+                'orb_boss_total_damage_pct': orb_boss_total_damage_pct,
+                **({'electron_total_damage_pct': electron_total_damage_pct} if electron_total_damage_pct > 0.0 else {}),
+                'boss_time_to_contact_seconds': boss_time_to_contact_seconds,
+                'death_wave_health_max_wave': death_wave_health_max_wave,
+            },
+            perk_policy_override=perk_policy_override,
+        )
+    except ValueError as exc:
+        st.error(str(exc))
+        return
     try:
         operator_rows = _require_boss_wave_payload_rows(boss_payload, 'operator_rows')
         download_rows = _require_boss_wave_payload_rows(boss_payload, 'download_rows')
@@ -1874,15 +1962,17 @@ def main() -> None:
         if Path(path) != active_out_dir
     ]
 
-    inputs_tab, qe_tab, stats_tab, boss_waves_tab, pipeline_tab, checks_tab = st.tabs(['Input', 'QE', 'Stats', 'Boss Waves', 'Pipeline', 'Checks'])
+    inputs_tab, qe_tab, stats_tab, perks_tab, boss_waves_tab, pipeline_tab, checks_tab = st.tabs(['Input', 'QE', 'Stats', 'Perks', 'Boss Waves', 'Pipeline', 'Checks'])
     with inputs_tab:
         _render_inputs(active_artifacts, active_out_dir)
     with qe_tab:
         _render_qe(active_artifacts, request)
     with stats_tab:
         _render_stats(active_artifacts, comparison_artifacts, request)
+    with perks_tab:
+        perk_policy_override = _render_perk_policy_tab(request)
     with boss_waves_tab:
-        _render_boss_waves(request)
+        _render_boss_waves(request, perk_policy_override=perk_policy_override)
     with pipeline_tab:
         _render_pipeline(active_artifacts.get('pipeline_trace.json', {}), active_artifacts.get('diagnostics.json', {}))
     with checks_tab:
