@@ -131,6 +131,7 @@ BOSS_WAVE_REPLACEMENT_PRIMITIVE_SURFACE_IDS: tuple[str, ...] = (
     'state::wall.regen',
     'state::wall.fortification_multiplier',
     'state::tower.defense_pct',
+    'state::tower.defense_absolute',
     'state::tower.thorns_damage_pct',
     'state::wall.thorns_damage_pct',
     'state::cards.plasma_cannon.effect_pct',
@@ -674,8 +675,7 @@ def _build_replacement_operator_table_and_summary(
         primitives=primitives,
         electron_boss_remaining_hp_pct=float(ELECTRON_BOSS_REMAINING_HP_PCT),
     )
-    final_dr_override_pct = _optional_runtime_float(scenario_runtime_inputs, 'effective_damage_reduction_pct')
-    tower_defense_pct = float(final_dr_override_pct if final_dr_override_pct is not None else primitives['tower_defense_pct'])
+    tower_defense_pct = float(primitives['tower_defense_pct'])
     death_wave_health_max_multiplier = _boss_wave_death_wave_health_max_multiplier(
         account_state,
         scenario_runtime_inputs=scenario_runtime_inputs,
@@ -684,26 +684,12 @@ def _build_replacement_operator_table_and_summary(
         _optional_runtime_float(scenario_runtime_inputs, 'death_wave_health_max_wave') or 1000
     )
     timed_dr_by_lane, timed_dr_sources = _boss_wave_timed_dr_inputs(runtime_inputs, primitives=primitives)
-    if final_dr_override_pct is not None:
-        timed_dr_by_lane = {'min': 0.0, 'avg': 0.0, 'max': 0.0}
-        timed_dr_sources = {
-            **timed_dr_sources,
-            'final_dr_override': {
-                'damage_reduction_pct': float(final_dr_override_pct),
-                'duration_seconds': 0.0,
-                'cooldown_seconds': 0.0,
-                'uptime_fraction': 1.0,
-                'uptime_source': 'runtime_effective_damage_reduction_pct_final_override',
-                'effective_dr_fraction': max(0.0, min(1.0, float(final_dr_override_pct) / 100.0)),
-                'primitive_status': 'runtime_final_dr_override_bypasses_timed_dr_sources',
-            },
-        }
-    bh_dr_pct = 0.0 if final_dr_override_pct is not None else float(timed_dr_sources['black_hole_pbh']['damage_reduction_pct'])
-    bh_duration_seconds = 0.0 if final_dr_override_pct is not None else float(timed_dr_sources['black_hole_pbh']['duration_seconds'])
-    bh_cooldown_seconds = 0.0 if final_dr_override_pct is not None else float(timed_dr_sources['black_hole_pbh']['cooldown_seconds'])
-    cf_dr_pct = 0.0 if final_dr_override_pct is not None else float(primitives['chrono_field_damage_reduction_pct'])
-    cf_duration_seconds = 0.0 if final_dr_override_pct is not None else float(primitives['chrono_field_duration_seconds'])
-    cf_cooldown_seconds = 0.0 if final_dr_override_pct is not None else float(primitives['chrono_field_cooldown_seconds'])
+    bh_dr_pct = float(timed_dr_sources['black_hole_pbh']['damage_reduction_pct'])
+    bh_duration_seconds = float(timed_dr_sources['black_hole_pbh']['duration_seconds'])
+    bh_cooldown_seconds = float(timed_dr_sources['black_hole_pbh']['cooldown_seconds'])
+    cf_dr_pct = float(primitives['chrono_field_damage_reduction_pct'])
+    cf_duration_seconds = float(primitives['chrono_field_duration_seconds'])
+    cf_cooldown_seconds = float(primitives['chrono_field_cooldown_seconds'])
     workshop_levels, track_max_levels = _boss_wave_workshop_level_inputs(account_state, preset_name=preset_name)
     category_track_order = default_category_track_order(workshop_levels, track_max_levels)
     tower_hp_level = _boss_wave_optional_workshop_level(workshop_levels, 'Health', primitive_name='state::tower.hp')
@@ -745,6 +731,7 @@ def _build_replacement_operator_table_and_summary(
         wall_regen_workshop_value_per_level=(wall_regen_value / float(wall_regen_level)) if wall_regen_level and wall_regen_level > 0 else 0.0,
         wall_fortification_multiplier=wall_fortification_multiplier,
         tower_defense_pct=tower_defense_pct,
+        tower_defense_absolute=float(primitives['tower_defense_absolute']),
         timed_dr_by_lane=timed_dr_by_lane,
         black_hole_damage_reduction_pct=bh_dr_pct,
         black_hole_duration_seconds=bh_duration_seconds,
@@ -990,6 +977,7 @@ def _resolve_boss_wave_replacement_primitives(
         'wall_regen_percent_points': wall_regen_pct_points,
         'wall_fortification_multiplier': _required_statbook_float(statbook, 'state::wall.fortification_multiplier'),
         'tower_defense_pct': _required_statbook_float(statbook, 'state::tower.defense_pct'),
+        'tower_defense_absolute': _optional_statbook_float(statbook, 'state::tower.defense_absolute', default=0.0),
         'tower_thorns_damage_pct': tower_thorns_damage_pct,
         'wall_thorns_level': float(wall_thorns_level),
         'wall_thorns_contact_damage_pct': wall_thorns_contact_damage_pct,
@@ -1124,6 +1112,7 @@ def _boss_wave_perk_contributions_by_wave(
         'tower_hp': 'wall_hp_multiplier',
         'tower_regen': 'wall_regen_multiplier',
         'def_pct': 'tower_defense_pct_points_add',
+        'absolute_defense': 'tower_defense_absolute_multiplier',
         'uw_black_hole_duration_seconds': 'black_hole_duration_seconds_add',
         'uw_chrono_field_duration_seconds': 'chrono_field_duration_seconds_add',
     }
@@ -1254,6 +1243,12 @@ def _boss_wave_primitive_semantics_ledger(
                 meaning='QE-published tower defense percent; evaluator adds active Defense Percent perk point contributions per row before timed BH/CF DR',
                 owner='QE publishes baseline; run_plan carries Defense Percent perk contributions; evaluator consumes damage reduction',
             ),
+            'state::tower.defense_absolute': _primitive_ledger_entry(
+                source='qe.routing.resolve_checkpoint_surfaces(state::tower.defense_absolute)',
+                value=float(primitives['tower_defense_absolute']),
+                meaning='QE-published Defense Absolute value; evaluator applies it after Defense Percent and before BH/CF/Flame Bot timed damage reduction.',
+                owner='QE publishes baseline; run_plan carries Defense Absolute perk multiplier contributions; evaluator consumes post-defense-pct survivability reduction',
+            ),
             'state::tower.thorns_damage_pct': _primitive_ledger_entry(
                 source='qe.routing.resolve_checkpoint_surfaces(state::tower.thorns_damage_pct)',
                 value=float(primitives['tower_thorns_damage_pct']),
@@ -1323,14 +1318,14 @@ def _boss_wave_primitive_semantics_ledger(
             'state::bot.flame.damage_reduction_pct': _primitive_ledger_entry(
                 source='qe.routing.resolve_checkpoint_surfaces(state::bot.flame.damage_reduction_pct)',
                 value=float(primitives.get('flame_bot_damage_reduction_pct') or 0.0),
-                meaning='QE-published Flame Bot DR track value. Boss Waves records it but does not activate Flame Bot timed DR without an owned duration/encounter uptime primitive.',
-                owner='QE publishes bot track; app diagnoses missing duration ownership for Boss Waves timed DR',
+                meaning='QE-published Flame Bot DR track value. Boss Waves combines this with a manual Flame Bot boss-hit chance runtime surface for average expected DR, or with explicit duration/cooldown if those runtime primitives are supplied.',
+                owner='QE publishes bot DR track; app assembles average or timed DR semantics from explicit runtime inputs',
             ),
             'state::bot.flame.cooldown_seconds': _primitive_ledger_entry(
                 source='qe.routing.resolve_checkpoint_surfaces(state::bot.flame.cooldown_seconds)',
                 value=float(primitives.get('flame_bot_cooldown_seconds') or 0.0),
-                meaning='QE-published Flame Bot cooldown. Boss Waves records it but does not activate Flame Bot timed DR without an owned duration/encounter uptime primitive.',
-                owner='QE publishes bot track; app diagnoses missing duration ownership for Boss Waves timed DR',
+                meaning='QE-published Flame Bot cooldown. Boss Waves uses it only when explicit duration/cooldown timed-DR runtime inputs are supplied; average boss-hit-chance modeling does not consume cooldown.',
+                owner='QE publishes bot track; app selects average or timed DR semantics from explicit runtime inputs',
             ),
         },
         'workshop_levels': {
@@ -1395,7 +1390,7 @@ def _boss_wave_primitive_semantics_ledger(
                 'PERK_BLACK_HOLE_DURATION_12_0S': 'black_hole_duration_seconds_add',
                 'PERK_CHRONO_FIELD_DURATION_5S': 'chrono_field_duration_seconds_add',
             },
-            'concern': 'KB de-scopes exact same-tick Flame Bot overlap and PBH/BH encounter micro-precedence; current path models explicit average uptime, not frame-accurate overlap. Flame Bot timed DR remains inactive unless runtime duration or a future owned duration primitive is supplied; no owned Defense Field primitive was found in the active repo.',
+            'concern': 'KB de-scopes exact same-tick Flame Bot overlap and PBH/BH encounter micro-precedence; current path models explicit average overlap, not frame-accurate overlap. Flame Bot uses manual boss-hit chance times Flame Bot DR for expected average DR, or explicit runtime duration/cooldown if supplied; no owned Defense Field primitive was found in the active repo.',
         },
         'boss_ttk_input_contract': dict(boss_ttk_defaults),
     }
@@ -1650,9 +1645,10 @@ def _build_replacement_diagnostics(
             'contact_resolution_sources': ['wall_thorns_contact'],
             'thorns_contact_source': 'wall_thorns_contact_damage_pct_derived_from_tower_thorns_and_wall_thorns_lab',
             'wall_thorns_repeated_hit_multiplier': 'Sharp Fortitude primary armor adds +1% wall-thorns damage taken per subsequent contact hit',
-            'boss_survival_model': 'max_waves_compares_ttd_wall_hp_plus_regen_against_total_v21_ttk_window',
+            'boss_survival_model': 'max_waves_compares_v21_ttk_against_hit_by_hit_wall_ttd_with_between_hit_regen_only',
             'damage_reduction_perk_sources': [
                 'PERK_DEFENSE_PERCENT_4_00:tower_defense_pct_points_add',
+                'PERK_X1_15_DEFENSE_ABSOLUTE:tower_defense_absolute_multiplier',
                 'PERK_BLACK_HOLE_DURATION_12_0S:black_hole_duration_seconds_add',
                 'PERK_CHRONO_FIELD_DURATION_5S:chrono_field_duration_seconds_add',
             ],
@@ -1789,8 +1785,13 @@ def _boss_wave_timed_dr_inputs(
     primitives: dict[str, float],
 ) -> tuple[dict[str, float], dict[str, object]]:
     flame_bot_dr_pct = _runtime_nonnegative_float(runtime_inputs, 'flame_bot_damage_reduction_pct')
+    flame_bot_hit_chance_pct = _runtime_nonnegative_float(runtime_inputs, 'flame_bot_boss_hit_chance_pct')
     flame_bot_duration = _runtime_nonnegative_float(runtime_inputs, 'flame_bot_duration_seconds')
-    flame_bot_runtime_enabled = flame_bot_dr_pct is not None or flame_bot_duration is not None
+    flame_bot_runtime_enabled = (
+        flame_bot_dr_pct is not None
+        or flame_bot_hit_chance_pct is not None
+        or flame_bot_duration is not None
+    )
     flame_bot_cooldown = _runtime_nonnegative_float(runtime_inputs, 'flame_bot_cooldown_seconds') if flame_bot_runtime_enabled else None
     if flame_bot_dr_pct is None:
         flame_bot_dr_pct = _qe_ratio_or_percent_to_pct(float(primitives.get('flame_bot_damage_reduction_pct') or 0.0))
@@ -1819,8 +1820,20 @@ def _boss_wave_timed_dr_inputs(
             damage_reduction_pct=flame_bot_dr_pct,
             duration_seconds=flame_bot_duration,
             cooldown_seconds=flame_bot_cooldown,
+            explicit_uptime_fraction=(
+                max(0.0, min(1.0, float(flame_bot_hit_chance_pct) / 100.0))
+                if flame_bot_hit_chance_pct is not None
+                else None
+            ),
+            explicit_uptime_source=(
+                'manual_boss_hit_chance_fraction'
+                if flame_bot_hit_chance_pct is not None
+                else 'explicit_uptime_fraction'
+            ),
             primitive_status=(
-                'blocked_missing_duration_seconds_primitive'
+                'manual_boss_hit_chance_average_model'
+                if flame_bot_hit_chance_pct is not None
+                else 'blocked_missing_duration_seconds_primitive'
                 if flame_bot_dr_pct is not None and flame_bot_duration is None
                 else 'runtime_or_qe_primitives'
             ),
@@ -1843,13 +1856,17 @@ def _boss_wave_timed_dr_inputs(
             primitive_status='qe_primordial_collapse_black_hole_primitives',
         ),
     }
-    combined = 1.0
+    lane_products = {'min': 1.0, 'avg': 1.0, 'max': 1.0}
     for source_name, source in sources.items():
         if source_name == 'black_hole_pbh':
             continue
-        combined *= 1.0 - float(source['effective_dr_fraction'])
-    average_dr = max(0.0, min(1.0, 1.0 - combined))
-    return {'min': average_dr, 'avg': average_dr, 'max': average_dr}, sources
+        lane_dr = _timed_dr_source_by_lane(source)
+        for lane_id, lane_fraction in lane_dr.items():
+            lane_products[lane_id] *= 1.0 - float(lane_fraction)
+    return {
+        lane_id: max(0.0, min(1.0, 1.0 - product))
+        for lane_id, product in lane_products.items()
+    }, sources
 
 
 def _timed_dr_source(
@@ -1858,12 +1875,13 @@ def _timed_dr_source(
     duration_seconds: float | None,
     cooldown_seconds: float | None,
     explicit_uptime_fraction: float | None = None,
+    explicit_uptime_source: str = 'explicit_uptime_fraction',
     primitive_status: str = 'runtime_primitives',
 ) -> dict[str, float | str]:
     dr_fraction = max(0.0, min(1.0, float(damage_reduction_pct or 0.0) / 100.0))
     if explicit_uptime_fraction is not None:
         uptime = max(0.0, min(1.0, float(explicit_uptime_fraction)))
-        source = 'explicit_uptime_fraction'
+        source = str(explicit_uptime_source)
     elif duration_seconds is None or cooldown_seconds is None or float(cooldown_seconds) <= 0.0:
         uptime = 0.0
         source = 'not_provided'
@@ -1878,6 +1896,19 @@ def _timed_dr_source(
         'uptime_source': source,
         'effective_dr_fraction': dr_fraction * uptime,
         'primitive_status': str(primitive_status),
+    }
+
+
+def _timed_dr_source_by_lane(source: dict[str, float | str]) -> dict[str, float]:
+    dr_fraction = max(0.0, min(1.0, float(source.get('damage_reduction_pct') or 0.0) / 100.0))
+    uptime_fraction = max(0.0, min(1.0, float(source.get('uptime_fraction') or 0.0)))
+    is_permanent = uptime_fraction >= 1.0
+    if is_permanent:
+        return {'min': dr_fraction, 'avg': dr_fraction, 'max': dr_fraction}
+    return {
+        'min': 0.0,
+        'avg': dr_fraction * uptime_fraction,
+        'max': dr_fraction,
     }
 
 

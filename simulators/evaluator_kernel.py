@@ -30,6 +30,7 @@ ENEMY_HEALTH_TABLE = ROOT / "kb" / "enemies" / "tables" / "enemy-health-table.cs
 KILL_HP_THRESHOLD_FRACTION = 1e-9
 LANE_ORDER: tuple[str, str, str] = ("avg", "min", "max")
 SUMMARY_LANE_ID = "avg"
+TOWER_DEFENSE_MAX_PCT = 98.0
 
 
 TABLE2_COLUMN_REGISTRY: tuple[ColumnFormulaSpec, ...] = (
@@ -280,7 +281,13 @@ def evaluate_overlay_row(
     active_perk_counts, active_perk_contributions = _active_perk_state(row, scenario)
     final_wall_hp = _derive_wall_hp(row.survivability_contributors, transforms, active_perk_contributions)
     final_wall_regen = _derive_wall_regen(row.survivability_contributors, transforms, active_perk_contributions)
-    lane_drs = _derive_lane_damage_reduction(row.survivability_contributors, transforms, active_perk_contributions)
+    tower_defense_fraction = _tower_defense_fraction(row.survivability_contributors, active_perk_contributions)
+    tower_defense_absolute = _tower_defense_absolute_value(row.survivability_contributors, active_perk_contributions)
+    lane_non_defense_drs = _derive_lane_non_defense_damage_reduction(row.survivability_contributors, transforms, active_perk_contributions)
+    lane_drs = _compose_lane_damage_reduction(
+        tower_defense_fraction=tower_defense_fraction,
+        lane_non_defense_drs=lane_non_defense_drs,
+    )
     boss_timeline = _simulate_boss_combat_timeline(enemy_health=enemy_health, combat=combat)
     ttk_seconds = boss_timeline.ttk_seconds
     contact_thorns_kill_seconds = boss_timeline.wall_thorns_kill_seconds
@@ -292,6 +299,9 @@ def evaluate_overlay_row(
             pre_fort_wall_hp=final_wall_hp,
             wall_regen=final_wall_regen,
             wall_fortification_multiplier=row.survivability_contributors.wall_fortification_multiplier * max(0.0, float(transforms.wall_fortification_multiplier)),
+            tower_defense_fraction=tower_defense_fraction,
+            tower_defense_absolute=tower_defense_absolute,
+            non_defense_damage_reduction_fraction=lane_non_defense_drs[lane_id],
             damage_reduction_fraction=lane_drs[lane_id],
             incoming_damage_multiplier=max(0.0, float(transforms.incoming_damage_multiplier)),
             ttk_seconds=ttk_seconds,
@@ -376,22 +386,41 @@ def _derive_wall_regen(
     return base * max(0.0, float(contributors.wall_regen_multiplier)) * multiplier * max(0.0, float(transforms.wall_regen_multiplier))
 
 
-def _derive_lane_damage_reduction(
+def _tower_defense_fraction(
     contributors: SurvivabilityContributorBundle,
-    transforms: ScenarioSurvivabilityTransforms,
     perk_contributions: Mapping[str, float],
-) -> dict[str, float]:
+) -> float:
     defense_pct = float(contributors.tower_defense_pct) + _perk_contribution_sum(
         perk_contributions,
         "tower_defense_pct_points_add",
     )
-    defense = _bounded_percent(defense_pct) / 100.0
-    black_hole_dr = _timed_dr_fraction(
+    return min(TOWER_DEFENSE_MAX_PCT, _bounded_percent(defense_pct)) / 100.0
+
+
+def _tower_defense_absolute_value(
+    contributors: SurvivabilityContributorBundle,
+    perk_contributions: Mapping[str, float],
+) -> float:
+    _validate_perk_contributions(perk_contributions)
+    _, multiplier = _perk_contribution_pair(
+        perk_contributions,
+        flat_effect_id="tower_defense_absolute_flat",
+        multiplier_effect_id="tower_defense_absolute_multiplier",
+    )
+    return max(0.0, float(contributors.tower_defense_absolute) * multiplier)
+
+
+def _derive_lane_non_defense_damage_reduction(
+    contributors: SurvivabilityContributorBundle,
+    transforms: ScenarioSurvivabilityTransforms,
+    perk_contributions: Mapping[str, float],
+) -> dict[str, float]:
+    black_hole_dr = _timed_dr_fraction_by_lane(
         damage_reduction_pct=contributors.black_hole_damage_reduction_pct,
         duration_seconds=contributors.black_hole_duration_seconds + _perk_contribution_sum(perk_contributions, "black_hole_duration_seconds_add"),
         cooldown_seconds=contributors.black_hole_cooldown_seconds,
     )
-    chrono_field_dr = _timed_dr_fraction(
+    chrono_field_dr = _timed_dr_fraction_by_lane(
         damage_reduction_pct=contributors.chrono_field_damage_reduction_pct,
         duration_seconds=contributors.chrono_field_duration_seconds + _perk_contribution_sum(perk_contributions, "chrono_field_duration_seconds_add"),
         cooldown_seconds=contributors.chrono_field_cooldown_seconds,
@@ -403,12 +432,25 @@ def _derive_lane_damage_reduction(
         out[lane_id] = _bounded_fraction(
             1.0
             - (
-                (1.0 - defense)
-                * (1.0 - timed)
-                * (1.0 - black_hole_dr)
-                * (1.0 - chrono_field_dr)
+                (1.0 - timed)
+                * (1.0 - black_hole_dr[lane_id])
+                * (1.0 - chrono_field_dr[lane_id])
                 * (1.0 - scenario_bonus)
             )
+        )
+    return out
+
+
+def _compose_lane_damage_reduction(
+    *,
+    tower_defense_fraction: float,
+    lane_non_defense_drs: Mapping[str, float],
+) -> dict[str, float]:
+    defense = _bounded_fraction(tower_defense_fraction)
+    out: dict[str, float] = {}
+    for lane_id in LANE_ORDER:
+        out[lane_id] = _bounded_fraction(
+            1.0 - ((1.0 - defense) * (1.0 - _bounded_fraction(lane_non_defense_drs.get(lane_id, 0.0))))
         )
     if not 0.0 <= out["min"] <= out["avg"] <= out["max"] <= 1.0:
         raise KernelAmbiguityError("lane DR invariant failed: expected 0 <= min <= avg <= max <= 1")
@@ -504,6 +546,9 @@ def _evaluate_boss_ttd_lane(
     pre_fort_wall_hp: float,
     wall_regen: float,
     wall_fortification_multiplier: float,
+    tower_defense_fraction: float,
+    tower_defense_absolute: float,
+    non_defense_damage_reduction_fraction: float,
     damage_reduction_fraction: float,
     incoming_damage_multiplier: float,
     ttk_seconds: float | None,
@@ -513,15 +558,25 @@ def _evaluate_boss_ttd_lane(
 ) -> CombatLaneEvaluation:
     if ttk_seconds is None:
         raise KernelAmbiguityError("boss TTD requires finite boss_ttk_seconds")
-    ttd_window_seconds = float(ttk_seconds)
     wall_hp = pre_fort_wall_hp * max(0.0, float(wall_fortification_multiplier))
-    wall_regen_gained = max(0.0, wall_regen * ttd_window_seconds)
     hits = _bounded_whole_hit_count(boss_hits_to_player, "boss_hits_to_player")
+    current_wall_hp = wall_hp
+    wall_regen_gained = 0.0
     total_damage = 0.0
     for hit_index in range(hits):
+        if hit_index > 0:
+            regen_window_seconds = max(0.0, float(combat.boss_hit_interval_seconds))
+            healed = min(wall_hp - current_wall_hp, max(0.0, wall_regen * regen_window_seconds))
+            current_wall_hp += healed
+            wall_regen_gained += healed
         heat_multiplier = 1.0 + BOSS_HEAT_UP_DAMAGE_PER_HIT_PCT * hit_index
-        total_damage += float(enemy_attack) * incoming_damage_multiplier * heat_multiplier * max(0.0, 1.0 - damage_reduction_fraction)
-    margin = wall_hp + wall_regen_gained - total_damage
+        raw_damage = float(enemy_attack) * incoming_damage_multiplier * heat_multiplier
+        post_defense_pct_damage = raw_damage * max(0.0, 1.0 - tower_defense_fraction)
+        post_defense_absolute_damage = max(0.0, post_defense_pct_damage - max(0.0, float(tower_defense_absolute)))
+        hit_damage = post_defense_absolute_damage * max(0.0, 1.0 - non_defense_damage_reduction_fraction)
+        total_damage += hit_damage
+        current_wall_hp -= hit_damage
+    margin = current_wall_hp
     return CombatLaneEvaluation(lane_id, margin >= 0.0, None if margin >= 0.0 else "boss_wall_damage_exceeds_hp", ttk_seconds, contact_thorns_kill_seconds, hits, total_damage, margin, wall_hp, wall_regen_gained, damage_reduction_fraction)
 
 
@@ -779,13 +834,25 @@ def _timed_dr_fraction(*, damage_reduction_pct: float, duration_seconds: float, 
     return _bounded_fraction(dr * min(1.0, duration / cooldown))
 
 
+def _timed_dr_fraction_by_lane(*, damage_reduction_pct: float, duration_seconds: float, cooldown_seconds: float) -> dict[str, float]:
+    dr = _bounded_percent(damage_reduction_pct) / 100.0
+    duration = max(0.0, float(duration_seconds))
+    cooldown = max(0.0, float(cooldown_seconds))
+    if dr <= 0.0 or duration <= 0.0 or cooldown <= 0.0:
+        return {"min": 0.0, "avg": 0.0, "max": 0.0}
+    uptime = min(1.0, duration / cooldown)
+    if uptime >= 1.0:
+        return {"min": dr, "avg": dr, "max": dr}
+    return {"min": 0.0, "avg": _bounded_fraction(dr * uptime), "max": dr}
+
+
 def _validate_survivability_contributors(contributors: SurvivabilityContributorBundle) -> None:
     if contributors.source_policy != "explicit_staged_contributors_v1":
         raise KernelAmbiguityError("survivability contributors source_policy must be explicit_staged_contributors_v1")
     for name in (
         "base_wall_hp", "workshop_wall_hp", "lab_wall_hp", "enhancement_wall_hp", "module_flat_wall_hp", "wall_hp_multiplier",
         "base_wall_regen", "workshop_wall_regen", "lab_wall_regen", "enhancement_wall_regen", "module_flat_wall_regen", "wall_regen_multiplier",
-        "wall_fortification_multiplier", "black_hole_damage_reduction_pct", "black_hole_duration_seconds", "black_hole_cooldown_seconds",
+        "wall_fortification_multiplier", "tower_defense_absolute", "black_hole_damage_reduction_pct", "black_hole_duration_seconds", "black_hole_cooldown_seconds",
         "chrono_field_damage_reduction_pct", "chrono_field_duration_seconds", "chrono_field_cooldown_seconds",
     ):
         if float(getattr(contributors, name)) < 0.0:

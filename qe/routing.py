@@ -919,6 +919,7 @@ _PROGRESSION_V1_SURFACE_IDS: tuple[str, ...] = (
     'state::wall.regen',
     'state::wall.fortification_multiplier',
     'state::tower.defense_pct',
+    'state::tower.defense_absolute',
     'state::tower.thorns_damage_pct',
     'state::wall.thorns_damage_pct',
     'state::tower.orb_count',

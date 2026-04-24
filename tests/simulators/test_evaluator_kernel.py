@@ -21,6 +21,7 @@ def _contributors(**overrides):
         wall_regen_multiplier=3.0,
         wall_fortification_multiplier=1.5,
         tower_defense_pct=20.0,
+        tower_defense_absolute=0.0,
         timed_dr_by_lane={"min": 0.0, "avg": 0.25, "max": 0.5},
     )
     defaults.update(overrides)
@@ -357,6 +358,48 @@ def test_cf_and_bh_duration_perk_contributions_recompute_timed_dr_per_row():
     assert table2.rows[0].damage_reduction_pct == pytest.approx(100.0 * (1.0 - ((1.0 - 0.05) * (1.0 - 0.02))))
     assert table2.rows[1].damage_reduction_pct == pytest.approx(100.0 * (1.0 - ((1.0 - 0.10) * (1.0 - 0.04))))
     assert table2.rows[1].damage_reduction_pct > table2.rows[0].damage_reduction_pct
+
+
+def test_lane_dr_bounds_use_min_zero_avg_uptime_max_full_for_non_permanent_fb_bh_cf():
+    from qe.run_plan import CommonTrajectoryInputs, build_common_trajectory
+    from simulators.evaluator_kernel import ScenarioOverlayInputs, build_scenario_overlay_table
+
+    table1 = build_common_trajectory(
+        CommonTrajectoryInputs(
+            start_wave=1,
+            end_wave=10,
+            tier_column="Tier 1",
+            survivability_contributors=_contributors(
+                tower_defense_pct=20.0,
+                timed_dr_by_lane={"min": 0.0, "avg": 0.14, "max": 0.35},
+                black_hole_damage_reduction_pct=80.0,
+                black_hole_duration_seconds=36.0,
+                black_hole_cooldown_seconds=46.0,
+                chrono_field_damage_reduction_pct=20.0,
+                chrono_field_duration_seconds=50.0,
+                chrono_field_cooldown_seconds=60.0,
+            ),
+        )
+    )
+
+    row = build_scenario_overlay_table(
+        table1,
+        scenario=ScenarioOverlayInputs("lane-dr-bounds", "Tier 1"),
+        combat=_combat(plasma_cannon_effect_pct=100.0),
+    ).rows[0]
+
+    expected_min = 100.0 * (1.0 - ((1.0 - 0.20) * (1.0 - 0.0) * (1.0 - 0.0) * (1.0 - 0.0)))
+    expected_avg = 100.0 * (
+        1.0
+        - ((1.0 - 0.20) * (1.0 - 0.14) * (1.0 - (0.80 * (36.0 / 46.0))) * (1.0 - (0.20 * (50.0 / 60.0))))
+    )
+    expected_max = 100.0 * (1.0 - ((1.0 - 0.20) * (1.0 - 0.35) * (1.0 - 0.80) * (1.0 - 0.20)))
+
+    lane_by_id = {lane.lane_id: lane for lane in row.lane_evaluations}
+    assert lane_by_id["min"].damage_reduction_fraction == pytest.approx(expected_min / 100.0)
+    assert lane_by_id["avg"].damage_reduction_fraction == pytest.approx(expected_avg / 100.0)
+    assert lane_by_id["max"].damage_reduction_fraction == pytest.approx(expected_max / 100.0)
+    assert lane_by_id["min"].damage_reduction_fraction < lane_by_id["avg"].damage_reduction_fraction < lane_by_id["max"].damage_reduction_fraction
 
 
 def test_death_wave_multiplier_feeds_table1_tower_hp_wall_hp_not_enemy_health_or_regen():
@@ -718,6 +761,121 @@ def test_boss_hits_to_player_match_wall_thorns_contact_events():
     assert row.boss_damage_breakdown.thorns_hits == 4
     assert row.summary_combat.boss_hits_taken == row.boss_damage_breakdown.thorns_hits
     assert row.summary_combat.ttk_seconds == pytest.approx(7.0)
+
+
+def test_ttd_wall_regen_does_not_precharge_before_first_contact_hit():
+    from simulators.evaluator_kernel import _evaluate_boss_ttd_lane
+
+    lane = _evaluate_boss_ttd_lane(
+        lane_id="avg",
+        enemy_attack=150.0,
+        pre_fort_wall_hp=100.0,
+        wall_regen=100.0,
+        wall_fortification_multiplier=1.0,
+        tower_defense_fraction=0.0,
+        tower_defense_absolute=0.0,
+        non_defense_damage_reduction_fraction=0.0,
+        damage_reduction_fraction=0.0,
+        incoming_damage_multiplier=1.0,
+        ttk_seconds=1.0,
+        contact_thorns_kill_seconds=0.0,
+        boss_hits_to_player=1,
+        combat=_combat(boss_hit_interval_seconds=2.0),
+    )
+
+    assert lane.survives is False
+    assert lane.total_damage_taken == pytest.approx(150.0)
+    assert lane.wall_regen_gained_hp == pytest.approx(0.0)
+    assert lane.survival_margin_hp == pytest.approx(-50.0)
+
+
+def test_lane_damage_reduction_caps_tower_defense_at_98_percent():
+    from qe.run_plan import CommonTrajectoryInputs, build_common_trajectory
+    from simulators.evaluator_kernel import ScenarioOverlayInputs, build_scenario_overlay_table
+
+    table1 = build_common_trajectory(
+        CommonTrajectoryInputs(
+            start_wave=1,
+            end_wave=10,
+            tier_column="Tier 1",
+            perk_counts={"defense_perk": 1},
+            perk_contributions={"defense_perk:tower_defense_pct_points_add": 25.0},
+            survivability_contributors=_contributors(tower_defense_pct=98.0, timed_dr_by_lane={"min": 0.0, "avg": 0.0, "max": 0.0}),
+        )
+    )
+
+    row = build_scenario_overlay_table(
+        table1,
+        scenario=ScenarioOverlayInputs("def-cap", "Tier 1"),
+        combat=_combat(plasma_cannon_effect_pct=100.0),
+    ).rows[0]
+
+    assert row.damage_reduction_pct == pytest.approx(98.0)
+
+
+def test_ttd_applies_defense_absolute_after_defense_percent_before_timed_dr():
+    from simulators.evaluator_kernel import _evaluate_boss_ttd_lane
+
+    lane = _evaluate_boss_ttd_lane(
+        lane_id="avg",
+        enemy_attack=1000.0,
+        pre_fort_wall_hp=300.0,
+        wall_regen=0.0,
+        wall_fortification_multiplier=1.0,
+        tower_defense_fraction=0.5,
+        tower_defense_absolute=100.0,
+        non_defense_damage_reduction_fraction=0.5,
+        damage_reduction_fraction=0.6,
+        incoming_damage_multiplier=1.0,
+        ttk_seconds=1.0,
+        contact_thorns_kill_seconds=0.0,
+        boss_hits_to_player=1,
+        combat=_combat(boss_hit_interval_seconds=2.0),
+    )
+
+    assert lane.total_damage_taken == pytest.approx(200.0)
+    assert lane.survival_margin_hp == pytest.approx(100.0)
+
+
+def test_ttd_defense_absolute_multiplier_reduces_damage_taken():
+    from simulators.evaluator_kernel import _evaluate_boss_ttd_lane
+
+    baseline = _evaluate_boss_ttd_lane(
+        lane_id="avg",
+        enemy_attack=1000.0,
+        pre_fort_wall_hp=1000.0,
+        wall_regen=0.0,
+        wall_fortification_multiplier=1.0,
+        tower_defense_fraction=0.0,
+        tower_defense_absolute=100.0,
+        non_defense_damage_reduction_fraction=0.0,
+        damage_reduction_fraction=0.0,
+        incoming_damage_multiplier=1.0,
+        ttk_seconds=1.0,
+        contact_thorns_kill_seconds=0.0,
+        boss_hits_to_player=1,
+        combat=_combat(boss_hit_interval_seconds=2.0),
+    )
+    perked = _evaluate_boss_ttd_lane(
+        lane_id="avg",
+        enemy_attack=1000.0,
+        pre_fort_wall_hp=1000.0,
+        wall_regen=0.0,
+        wall_fortification_multiplier=1.0,
+        tower_defense_fraction=0.0,
+        tower_defense_absolute=115.0,
+        non_defense_damage_reduction_fraction=0.0,
+        damage_reduction_fraction=0.0,
+        incoming_damage_multiplier=1.0,
+        ttk_seconds=1.0,
+        contact_thorns_kill_seconds=0.0,
+        boss_hits_to_player=1,
+        combat=_combat(boss_hit_interval_seconds=2.0),
+    )
+
+    assert baseline.total_damage_taken == pytest.approx(900.0)
+    assert perked.total_damage_taken == pytest.approx(885.0)
+    assert perked.total_damage_taken < baseline.total_damage_taken
 
 
 def test_enemy_attack_and_health_tables_interpolate_between_rows():

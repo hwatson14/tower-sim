@@ -104,6 +104,14 @@ nodes:
     verification_status: verified
     blocker_reason: ''
     notes: Mutable workshop defense track.
+  - node_id: source_input::labs:Defense Absolute
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Defense Absolute lab source feeding progression publication.
   - node_id: state::tower.defense_pct
     node_kind: surface
     family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
@@ -112,6 +120,14 @@ nodes:
     verification_status: verified
     blocker_reason: ''
     notes: Query-owned tower defense surface.
+  - node_id: state::tower.defense_absolute
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_default
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned tower defense absolute surface.
   - node_id: state::tower.damage
     node_kind: surface
     family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
@@ -2008,6 +2024,13 @@ edges:
     publication_relevance: publishable_path
     verification_status: verified
     notes: Workshop Defense routes to tower defense.
+  - upstream_node_id: source_input::labs:Defense Absolute
+    downstream_node_id: state::tower.defense_absolute
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [lab_mutation]
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: Defense Absolute lab routes to tower defense absolute.
   - upstream_node_id: source_input::workshop:Damage
     downstream_node_id: state::tower.damage
     invalidation_semantics: recompute_downstream

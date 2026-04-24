@@ -451,7 +451,7 @@ def test_build_boss_wave_payload_replacement_inputs_drive_table_summary_export_a
     assert timed_sources['black_hole_pbh']['damage_reduction_pct'] == pytest.approx(80.0)
     assert timed_sources['black_hole_pbh']['uptime_fraction'] == pytest.approx(36.0 / 46.0)
     assert timed_sources['black_hole_pbh']['effective_dr_fraction'] == pytest.approx(0.8 * (36.0 / 46.0))
-    assert timed_sources['final_dr_override']['primitive_status'] == 'runtime_final_dr_override_bypasses_timed_dr_sources'
+    assert 'final_dr_override' not in timed_sources
     assert timed_sources['flame_bot']['primitive_status'] == 'blocked_missing_duration_seconds_primitive'
     assert timed_sources['defense_field']['primitive_status'] == 'explicit_runtime_only_no_qe_surface_found'
 
@@ -459,6 +459,26 @@ def test_build_boss_wave_payload_replacement_inputs_drive_table_summary_export_a
     assert summary['max_surviving_wave'] == 27
     assert summary['first_failed_wave'] == 0
     assert summary['survives_through_end'] is True
+
+
+def test_boss_wave_flame_bot_hit_chance_applies_average_expected_dr():
+    from app import pipeline as pipeline_mod
+    from input.state_types import ScenarioRuntimeInputs
+
+    timed_dr_by_lane, sources = pipeline_mod._boss_wave_timed_dr_inputs(
+        ScenarioRuntimeInputs.from_mapping({'flame_bot_boss_hit_chance_pct': 40.0}),
+        primitives={
+            'flame_bot_damage_reduction_pct': 0.35,
+            'flame_bot_cooldown_seconds': 26.0,
+        },
+    )
+
+    assert timed_dr_by_lane == pytest.approx({'min': 0.0, 'avg': 0.14, 'max': 0.35})
+    assert sources['flame_bot']['damage_reduction_pct'] == pytest.approx(35.0)
+    assert sources['flame_bot']['uptime_fraction'] == pytest.approx(0.4)
+    assert sources['flame_bot']['uptime_source'] == 'manual_boss_hit_chance_fraction'
+    assert sources['flame_bot']['effective_dr_fraction'] == pytest.approx(0.14)
+    assert sources['flame_bot']['primitive_status'] == 'manual_boss_hit_chance_average_model'
 
 
 def test_build_boss_wave_payload_rejects_legacy_source_after_excision():
@@ -591,6 +611,7 @@ def test_build_boss_wave_payload_live_path_avoids_delta_fallback():
             'state::tower.regen',
             'state::wall.fortification_multiplier',
             'state::tower.defense_pct',
+            'state::tower.defense_absolute',
             'state::tower.thorns_damage_pct',
             'state::wall.thorns_damage_pct',
             'state::cards.plasma_cannon.effect_pct',
@@ -638,6 +659,9 @@ def test_build_boss_wave_payload_live_path_avoids_delta_fallback():
     assert diagnostics['replacement_model']['summary_lane_id'] == 'avg'
     assert diagnostics['perk_application_mode'] == 'runtime_timeline'
     assert diagnostics['perk_timeline_rows'] > 0
+    assert canonical['state::tower.defense_absolute'] == pytest.approx(
+        payload['diagnostics']['replacement_primitive_inputs']['values']['tower_defense_absolute']
+    )
     assert diagnostics['perk_static_count'] == 0
     assert diagnostics['perk_static_pick_count'] == 0
     assert diagnostics['perk_mode'] == 'runtime_timeline'
@@ -731,7 +755,7 @@ def test_build_boss_wave_payload_live_path_avoids_delta_fallback():
     assert semantic_contract['state::wall.regen']['decision'] == 'transformed_percent_points_primitive_not_final_hp_per_second'
     assert diagnostics['replacement_display_derivation']['wall_hp'].startswith('operator_rows.wall_hp')
     assert diagnostics['replacement_model']['death_wave_health_multiplier_applies_to'] == 'table1_row_evolved_tower_hp_then_wall_hp_not_wall_regen_or_enemy_health'
-    assert diagnostics['replacement_model']['boss_survival_model'] == 'max_waves_compares_ttd_wall_hp_plus_regen_against_total_v21_ttk_window'
+    assert diagnostics['replacement_model']['boss_survival_model'] == 'max_waves_compares_v21_ttk_against_hit_by_hit_wall_ttd_with_between_hit_regen_only'
     ttk_inputs = ledger['boss_ttk_input_contract']
     assert ttk_inputs['orb_boss_total_damage_pct'] == pytest.approx(2.0)
     assert ttk_inputs['orb_boss_total_damage_source'] == 'default_orb_boss_total_damage_pct_2'
@@ -868,7 +892,7 @@ def test_boss_wave_payload_uses_effective_bh_cf_state_and_perk_switches():
 
 
 @pytest.mark.live
-def test_boss_wave_payload_threads_t14_battle_conditions_and_final_dr_override():
+def test_boss_wave_payload_threads_t14_battle_conditions_and_ignores_removed_final_dr_override():
     from app.models import PipelineRunRequest
     from app.pipeline import build_boss_wave_payload
 
@@ -890,6 +914,9 @@ def test_boss_wave_payload_threads_t14_battle_conditions_and_final_dr_override()
     assert row['boss_plasma_cannon_damage_to_boss_pct'] == pytest.approx(43.2)
     assert row['boss_orb_damage_to_boss_pct'] == pytest.approx(1.0)
     assert row['boss_hit_interval_seconds'] == pytest.approx(scenario_surfaces['boss_hit_interval_seconds'])
+    dabs_semantics = payload['diagnostics']['replacement_primitive_semantics_ledger']['primitives']['state::tower.defense_absolute']
+    assert dabs_semantics['exact_value'] >= 0.0
+    assert dabs_semantics['boss_waves_source'] == 'qe.routing.resolve_checkpoint_surfaces(state::tower.defense_absolute)'
 
     overridden = build_boss_wave_payload(
         request,
@@ -906,12 +933,26 @@ def test_boss_wave_payload_threads_t14_battle_conditions_and_final_dr_override()
             'pbh_encounter_uptime_fraction': 0.0,
         },
     )
+    bh_zeroed = build_boss_wave_payload(
+        request,
+        preset_name='Farming',
+        tier_number=14,
+        end_wave=10,
+        boss_wave_step=1,
+        stop_on_failure=False,
+        scenario_runtime_inputs={
+            'boss_time_to_contact_seconds': 1.0,
+            'black_hole_damage_reduction_pct': 0.0,
+            'black_hole_duration_seconds': 0.0,
+            'pbh_encounter_uptime_fraction': 0.0,
+        },
+    )
     overridden_row = overridden['rows'][0]
-    assert overridden_row['effective_damage_reduction_pct'] == pytest.approx(90.0)
+    assert overridden_row['effective_damage_reduction_pct'] == pytest.approx(bh_zeroed['rows'][0]['effective_damage_reduction_pct'])
     sources = overridden['diagnostics']['replacement_primitive_semantics_ledger']['timed_dr_semantic_contract']['sources']
     assert sources['black_hole_pbh']['damage_reduction_pct'] == pytest.approx(0.0)
     assert sources['black_hole_pbh']['uptime_fraction'] == pytest.approx(0.0)
-    assert sources['final_dr_override']['primitive_status'] == 'runtime_final_dr_override_bypasses_timed_dr_sources'
+    assert 'final_dr_override' not in sources
 
 
 def test_boss_wave_perk_state_is_owned_by_scenario_not_request():
@@ -1069,8 +1110,28 @@ def test_boss_wave_perk_timeline_uses_ids_labs_first_choice_and_exports_wall_con
     assert payload['standard_perk_bonus'] == pytest.approx(0.25)
     assert payload['perk_option_quantity'] == 2
     assert context['ban_perks_capacity_ids'] == 6
-    assert len(payload['banned_perks']) == 2
-    assert payload['priority_order'] == ['Perk Wave Requirement -20.00%']
+    assert payload['banned_perks'] == [
+        'Enemies Have -50% Health, but Tower Health Regen and Lifesteal -90%',
+        'Enemies Speed -40%, But Enemies Damage x2.5',
+        'Interest x1.50',
+        'x1.15 Defense Absolute',
+        'Land Mine Damage x3.50',
+        'x1.15 Cash Bonus',
+    ]
+    assert payload['priority_order'] == [
+        'Perk Wave Requirement -20.00%',
+        'Black Hole Duration +12.0s',
+        'x1.80 coins, but Tower Max Health -70%',
+        'Increase Max Game Speed by +1.00',
+        '+1 Wave on Death Wave',
+        'Golden Tower Bonus x1.5',
+        'x1.15 All Coin Bonuses',
+        'Free Upgrade Chance for All +5.0%',
+        'Defense Percent +4.00',
+        'Tower Health Regen x8.00, But Tower Max Max Health -60%',
+        'x1.20 Max Health',
+        'x1.75 Health Regen',
+    ]
     assert payload['first_perk_choice'] == 'Perk Wave Requirement -20.00%'
     assert payload['unlocked_ultimate_weapons'] == [
         'Black Hole',
@@ -1089,7 +1150,7 @@ def test_boss_wave_perk_timeline_uses_ids_labs_first_choice_and_exports_wall_con
     }
     assert not any(row['perk_taken'] in diag['uw_locked_perks_excluded'] for row in timeline)
     assert diag['pwr_stacks'] == 3
-    assert [row['wave'] for row in timeline if row['perk_taken'] == 'Perk Wave Requirement -20.00%'] == [187, 280, 467]
+    assert [row['wave'] for row in timeline if row['perk_taken'] == 'Perk Wave Requirement -20.00%'] == [187, 561, 748]
     counts_by_wave = pipeline_mod._boss_wave_perk_counts_by_wave(tuple(timeline))
     contributions_by_wave = pipeline_mod._boss_wave_perk_contributions_by_wave(
         counts_by_wave,

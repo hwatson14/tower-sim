@@ -222,6 +222,7 @@ class ScenarioRuntimeInputs:
     effective_damage_reduction_pct: Optional[float] = None
     incoming_damage_multiplier: Optional[float] = None
     flame_bot_damage_reduction_pct: Optional[float] = None
+    flame_bot_boss_hit_chance_pct: Optional[float] = None
     flame_bot_duration_seconds: Optional[float] = None
     flame_bot_cooldown_seconds: Optional[float] = None
     defense_field_damage_reduction_pct: Optional[float] = None

@@ -29,19 +29,31 @@ perk_policy:
   target_wave: 50000
   priority_order:
     - "Perk Wave Requirement -20.00%"
+    - "Black Hole Duration +12.0s"
+    - "x1.80 coins, but Tower Max Health -70%"
+    - "Increase Max Game Speed by +1.00"
+    - "+1 Wave on Death Wave"
+    - "Golden Tower Bonus x1.5"
+    - "x1.15 All Coin Bonuses"
+    - "Free Upgrade Chance for All +5.0%"
+    - "Defense Percent +4.00"
+    - "Tower Health Regen x8.00, But Tower Max Max Health -60%"
+    - "x1.20 Max Health"
+    - "x1.75 Health Regen"
   first_perk_choice: "Perk Wave Requirement -20.00%"
   notes: >-
     Projected max progression perk availability is generated from IDS-backed
     Waves Required / Standard Perk Bonus / Perk Option Quantity / Ban Perks
-    plus this policy file. Edit banned_perk_aliases and/or banned_perks here
+    plus this policy file. Edit banned_perks and/or priority_order here
     to set the default manual bans used by the generator when perk_config above
-    has no active preset. Default bans currently: TO3 and TO6.
-  banned_perk_aliases:
-    - TO3
-    - TO6
+    has no active preset.
   banned_perks:
     - "Enemies Have -50% Health, but Tower Health Regen and Lifesteal -90%"
     - "Enemies Speed -40%, But Enemies Damage x2.5"
+    - "Interest x1.50"
+    - "x1.15 Defense Absolute"
+    - "Land Mine Damage x3.50"
+    - "x1.15 Cash Bonus"
 
 manual_advisory_inputs:
   inputs:

@@ -1793,16 +1793,17 @@ def _render_boss_waves(request: PipelineRunRequest, *, perk_policy_override: dic
     control_cols = st.columns(4)
     preset_name = control_cols[0].selectbox('Boss preset', options=['Farming', 'Tourney', 'Milestone'], index=['Farming', 'Tourney', 'Milestone'].index(request.preset) if request.preset in {'Farming', 'Tourney', 'Milestone'} else 0)
     tier_number = control_cols[1].number_input('Tier', min_value=1, max_value=18, value=14, step=1)
-    end_wave = control_cols[2].number_input('End wave', min_value=10, value=500, step=10)
+    end_wave = control_cols[2].number_input('End wave', min_value=10, value=10000, step=10)
     boss_wave_step = control_cols[3].number_input('Checkpoint every N bosses', min_value=1, max_value=1000, value=1, step=1)
     stop_on_failure = st.toggle('Stop on first failed boss', value=True)
 
     with st.expander('Manual combat assumptions', expanded=False):
-        runtime_cols = st.columns(4)
+        runtime_cols = st.columns(5)
         orb_boss_total_damage_pct = runtime_cols[0].number_input('Orb damage to boss (total %)', min_value=0.0, max_value=100.0, value=2.0, step=0.1)
         electron_total_damage_pct = runtime_cols[1].number_input('Electron damage override (total %)', min_value=0.0, max_value=100.0, value=0.0, step=0.1)
-        boss_time_to_contact_seconds = runtime_cols[2].number_input('Boss time to contact (s)', min_value=0.0, max_value=120.0, value=1.0, step=0.1)
-        death_wave_health_max_wave = runtime_cols[3].number_input('Death Wave maxed wave', min_value=1, value=1000, step=10)
+        flame_bot_boss_hit_chance_pct = runtime_cols[2].number_input('Flame Bot boss hit chance (%)', min_value=0.0, max_value=100.0, value=50.0, step=1.0)
+        boss_time_to_contact_seconds = runtime_cols[3].number_input('Boss time to contact (s)', min_value=0.0, max_value=120.0, value=1.0, step=0.1)
+        death_wave_health_max_wave = runtime_cols[4].number_input('Death Wave maxed wave', min_value=1, value=1000, step=10)
 
     try:
         boss_payload = build_boss_wave_payload(
@@ -1815,6 +1816,7 @@ def _render_boss_waves(request: PipelineRunRequest, *, perk_policy_override: dic
             scenario_runtime_inputs={
                 'orb_boss_total_damage_pct': orb_boss_total_damage_pct,
                 **({'electron_total_damage_pct': electron_total_damage_pct} if electron_total_damage_pct > 0.0 else {}),
+                **({'flame_bot_boss_hit_chance_pct': flame_bot_boss_hit_chance_pct} if flame_bot_boss_hit_chance_pct > 0.0 else {}),
                 'boss_time_to_contact_seconds': boss_time_to_contact_seconds,
                 'death_wave_health_max_wave': death_wave_health_max_wave,
             },

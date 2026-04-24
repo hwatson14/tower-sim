@@ -85,6 +85,15 @@ fields:
     ownership_class: scenario_runtime_input
     owned_by: manual_or_explicit_runtime_input
     rationale: Boss Waves uses Flame Bot as a timed DR source when explicit damage-reduction and uptime primitives are provided.
+  flame_bot_boss_hit_chance_pct:
+    aliases:
+      - flame_bot_boss_hit_chance_pct
+      - state::combat.flame_bot_boss_hit_chance_pct
+    min: 0.0
+    max: 100.0
+    ownership_class: scenario_runtime_input
+    owned_by: manual_or_explicit_runtime_input
+    rationale: Boss Waves average-mode Flame Bot DR uses manual boss-hit chance times Flame Bot DR to produce expected average damage reduction.
   flame_bot_duration_seconds:
     aliases:
       - flame_bot_duration_seconds

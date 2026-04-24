@@ -51,6 +51,7 @@ def test_contract_field_set__matches_expected_dataclass_fields():
         "effective_damage_reduction_pct",
         "incoming_damage_multiplier",
         "flame_bot_damage_reduction_pct",
+        "flame_bot_boss_hit_chance_pct",
         "flame_bot_duration_seconds",
         "flame_bot_cooldown_seconds",
         "defense_field_damage_reduction_pct",

@@ -67,6 +67,7 @@ PERK_CONTRIBUTION_EFFECT_IDS: frozenset[str] = frozenset(
         "wall_regen_flat",
         "wall_regen_multiplier",
         "tower_defense_pct_points_add",
+        "tower_defense_absolute_multiplier",
         "black_hole_duration_seconds_add",
         "chrono_field_duration_seconds_add",
     }
@@ -299,6 +300,7 @@ class SurvivabilityContributorBundle:
     wall_regen_multiplier: float = 1.0
     wall_fortification_multiplier: float = 1.0
     tower_defense_pct: float = 0.0
+    tower_defense_absolute: float = 0.0
     timed_dr_by_lane: Mapping[str, float] = field(default_factory=dict)
     black_hole_damage_reduction_pct: float = 0.0
     black_hole_duration_seconds: float = 0.0

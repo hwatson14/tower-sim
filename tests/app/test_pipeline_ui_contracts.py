@@ -103,9 +103,12 @@ def test_trace_artifact_is_listed_in_generated_files(start_of_run_pipeline_resul
 def test_streamlit_boss_waves_exposes_only_wired_manual_runtime_inputs():
     source = (ROOT / 'app' / 'streamlit_inspector.py').read_text(encoding='utf-8')
     assert 'Manual combat assumptions' in source
+    assert "number_input('End wave', min_value=10, value=10000, step=10)" in source
+    assert "number_input('Flame Bot boss hit chance (%)', min_value=0.0, max_value=100.0, value=50.0, step=1.0)" in source
     for label in (
         'Orb damage to boss (total %)',
         'Electron damage override (total %)',
+        'Flame Bot boss hit chance (%)',
         'Boss time to contact (s)',
         'Death Wave maxed wave',
     ):
