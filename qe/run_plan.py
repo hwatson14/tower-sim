@@ -121,6 +121,14 @@ class CheckpointPolicyConfig:
 class RecurrencePolicyConfig:
     attack_skip_chance: float = 0.0
     health_skip_chance: float = 0.0
+    attack_skip_static_percent_points: float = 0.0
+    attack_skip_multiplier: float = 1.0
+    attack_skip_workshop_track: str = ""
+    attack_skip_workshop_baseline_level: int = 0
+    health_skip_static_percent_points: float = 0.0
+    health_skip_multiplier: float = 1.0
+    health_skip_workshop_track: str = ""
+    health_skip_workshop_baseline_level: int = 0
     free_upgrade_chance_by_category: Mapping[str, float] = field(default_factory=dict)
     category_track_order: Mapping[str, tuple[str, ...]] = field(default_factory=dict)
     track_max_levels: Mapping[str, int] = field(default_factory=dict)
@@ -447,6 +455,14 @@ class CommonTrajectoryInputs:
     tier_column: str = "Tier 14"
     attack_skip_chance: float = 0.0
     health_skip_chance: float = 0.0
+    attack_skip_static_percent_points: float = 0.0
+    attack_skip_multiplier: float = 1.0
+    attack_skip_workshop_track: str = ""
+    attack_skip_workshop_baseline_level: int = 0
+    health_skip_static_percent_points: float = 0.0
+    health_skip_multiplier: float = 1.0
+    health_skip_workshop_track: str = ""
+    health_skip_workshop_baseline_level: int = 0
     free_upgrade_chance_by_category: Mapping[str, float] = field(default_factory=dict)
     category_track_order: Mapping[str, tuple[str, ...]] = field(default_factory=dict)
     track_max_levels: Mapping[str, int] = field(default_factory=dict)
@@ -513,6 +529,14 @@ def compile_run_plan(inputs: CommonTrajectoryInputs) -> RunPlan:
     recurrence_policy = RecurrencePolicyConfig(
         attack_skip_chance=_bounded_fraction(inputs.attack_skip_chance),
         health_skip_chance=_bounded_fraction(inputs.health_skip_chance),
+        attack_skip_static_percent_points=float(inputs.attack_skip_static_percent_points),
+        attack_skip_multiplier=float(inputs.attack_skip_multiplier),
+        attack_skip_workshop_track=str(inputs.attack_skip_workshop_track or ""),
+        attack_skip_workshop_baseline_level=int(inputs.attack_skip_workshop_baseline_level),
+        health_skip_static_percent_points=float(inputs.health_skip_static_percent_points),
+        health_skip_multiplier=float(inputs.health_skip_multiplier),
+        health_skip_workshop_track=str(inputs.health_skip_workshop_track or ""),
+        health_skip_workshop_baseline_level=int(inputs.health_skip_workshop_baseline_level),
         free_upgrade_chance_by_category=_category_fraction_map(inputs.free_upgrade_chance_by_category),
         category_track_order={str(k): tuple(v) for k, v in inputs.category_track_order.items()},
         track_max_levels={str(k): int(v) for k, v in inputs.track_max_levels.items()},
@@ -566,6 +590,27 @@ def build_checkpoint_wave_grid(*, start_wave: int, end_wave: int, boss_interval_
     if first_wave > end_wave:
         return ()
     return tuple(range(first_wave, int(end_wave) + 1, stride))
+
+
+def _row_skip_chance(
+    *,
+    fallback_fraction: float,
+    static_percent_points: float,
+    multiplier: float,
+    workshop_track: str,
+    workshop_baseline_level: int,
+    workshop_levels: Mapping[str, int],
+) -> float:
+    bounded_fallback = _bounded_fraction(fallback_fraction)
+    track = str(workshop_track or "").strip()
+    if not track:
+        return bounded_fallback
+    baseline_level = int(workshop_baseline_level)
+    if baseline_level < 0:
+        raise ValueError("skip workshop baseline level cannot be negative")
+    level = int(workshop_levels.get(track, baseline_level))
+    resolved = (float(static_percent_points) + workshop_value_for_level(track, level)) * float(multiplier)
+    return _bounded_fraction(resolved / 100.0)
 
 
 def advance_wave_progression(state: WaveProgressionRecurrence, *, target_display_wave: int, attack_skip_chance: float, health_skip_chance: float) -> WaveProgressionRecurrence:
@@ -661,11 +706,27 @@ def build_common_trajectory(inputs: CommonTrajectoryInputs | RunPlan) -> CommonT
     rows: list[CommonTrajectoryRow] = []
     previous_wave = progression.display_wave
     for index, wave in enumerate(checkpoint_waves):
+        row_attack_skip_chance = _row_skip_chance(
+            fallback_fraction=plan.recurrence_policy.attack_skip_chance,
+            static_percent_points=plan.recurrence_policy.attack_skip_static_percent_points,
+            multiplier=plan.recurrence_policy.attack_skip_multiplier,
+            workshop_track=plan.recurrence_policy.attack_skip_workshop_track,
+            workshop_baseline_level=plan.recurrence_policy.attack_skip_workshop_baseline_level,
+            workshop_levels=workshop_levels,
+        )
+        row_health_skip_chance = _row_skip_chance(
+            fallback_fraction=plan.recurrence_policy.health_skip_chance,
+            static_percent_points=plan.recurrence_policy.health_skip_static_percent_points,
+            multiplier=plan.recurrence_policy.health_skip_multiplier,
+            workshop_track=plan.recurrence_policy.health_skip_workshop_track,
+            workshop_baseline_level=plan.recurrence_policy.health_skip_workshop_baseline_level,
+            workshop_levels=workshop_levels,
+        )
         progression = advance_wave_progression(
             progression,
             target_display_wave=wave,
-            attack_skip_chance=plan.recurrence_policy.attack_skip_chance,
-            health_skip_chance=plan.recurrence_policy.health_skip_chance,
+            attack_skip_chance=row_attack_skip_chance,
+            health_skip_chance=row_health_skip_chance,
         )
         free_state, generated_last = advance_free_upgrade_generation(
             free_state,
@@ -705,8 +766,8 @@ def build_common_trajectory(inputs: CommonTrajectoryInputs | RunPlan) -> CommonT
             common_inputs={
                 "plan_id": plan.plan_id,
                 "start_progression_wave": max(0, plan.scope.start_wave - 1),
-                "attack_skip_chance": float(plan.recurrence_policy.attack_skip_chance),
-                "health_skip_chance": float(plan.recurrence_policy.health_skip_chance),
+                "attack_skip_chance": float(row_attack_skip_chance),
+                "health_skip_chance": float(row_health_skip_chance),
                 "boss_interval_waves": int(plan.checkpoint_policy.boss_interval_waves),
                 "checkpoint_every_bosses": int(plan.checkpoint_policy.checkpoint_every_bosses),
                 "tier_column": plan.scope.tier_column,

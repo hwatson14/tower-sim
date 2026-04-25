@@ -289,7 +289,25 @@ def _install_fake_boss_wave_app_dependencies(monkeypatch, pipeline_mod):
         lambda ids_raw, loadout_config=None, perk_config=None: type(
             'State',
             (),
-            {'player_meta': {}, 'labs': {'Wall Thorns': 16}, 'active_perk_preset': 'Farming'},
+            {
+                'player_meta': {},
+                'labs': {'Wall Thorns': 16},
+                'active_perk_preset': 'Farming',
+                'workshop': {
+                    track: type(
+                        'Track',
+                        (),
+                        {'preset_levels': {'Farming': level}, 'max_level': max_level},
+                    )()
+                    for track, level, max_level in (
+                        ('Health', 10, 20),
+                        ('Wall Health', 10, 20),
+                        ('Health Regen', 10, 20),
+                        ('Enemy Attack Level Skip', 10, 20),
+                        ('Enemy Health Level Skip', 10, 20),
+                    )
+                },
+            },
         )(),
     )
 
@@ -302,8 +320,72 @@ def _install_fake_boss_wave_replacement_primitives(monkeypatch, pipeline_mod, *,
             self.contributors = list(contributors or [])
 
     rows = {
-        'state::tower.enemy_attack_level_skip_pct': _FakeRow(0.0),
-        'state::tower.enemy_health_level_skip_pct': _FakeRow(0.0),
+        'state::tower.enemy_attack_level_skip_pct': _FakeRow(
+            5.265,
+            contributors=[
+                {
+                    'active': True,
+                    'value': 2.0,
+                    'composition_stage': 'additive_pre_cap',
+                    'contributor_id': 'lab.enemy_attack_level_skip.account_state',
+                    'input_value_type': 'resolved_value',
+                },
+                {
+                    'active': True,
+                    'value': 1.5,
+                    'composition_stage': 'additive_pre_cap',
+                    'contributor_id': 'relic__tower__enemy_attack_level_skip__pct',
+                    'input_value_type': 'resolved_value',
+                },
+                {
+                    'active': True,
+                    'value': 0.55,
+                    'composition_stage': 'additive_pre_cap',
+                    'contributor_id': 'workshop__tower__enemy_attack_level_skip__pct',
+                    'input_value_type': 'resolved_value',
+                },
+                {
+                    'active': True,
+                    'value': 1.3,
+                    'composition_stage': 'multiplicative',
+                    'contributor_id': 'enhancements__tower__enemy_attack_level_skip__multiplier',
+                    'input_value_type': 'resolved_value',
+                },
+            ],
+        ),
+        'state::tower.enemy_health_level_skip_pct': _FakeRow(
+            3.9650000000000003,
+            contributors=[
+                {
+                    'active': True,
+                    'value': 1.5,
+                    'composition_stage': 'additive_pre_cap',
+                    'contributor_id': 'lab.enemy_health_level_skip.account_state',
+                    'input_value_type': 'resolved_value',
+                },
+                {
+                    'active': True,
+                    'value': 1.0,
+                    'composition_stage': 'additive_pre_cap',
+                    'contributor_id': 'relic__tower__enemy_health_level_skip__pct',
+                    'input_value_type': 'resolved_value',
+                },
+                {
+                    'active': True,
+                    'value': 0.55,
+                    'composition_stage': 'additive_pre_cap',
+                    'contributor_id': 'workshop__tower__enemy_health_level_skip__pct',
+                    'input_value_type': 'resolved_value',
+                },
+                {
+                    'active': True,
+                    'value': 1.3,
+                    'composition_stage': 'multiplicative',
+                    'contributor_id': 'enhancements__tower__enemy_health_level_skip__multiplier',
+                    'input_value_type': 'resolved_value',
+                },
+            ],
+        ),
         'state::tower.free_attack_upgrade_chance_pct': _FakeRow(0.0),
         'state::tower.free_defense_upgrade_chance_pct': _FakeRow(0.0),
         'state::tower.free_utility_upgrade_chance_pct': _FakeRow(0.0),
@@ -605,6 +687,8 @@ def test_build_boss_wave_payload_live_path_avoids_delta_fallback():
     canonical_response = resolve_checkpoint_surfaces(
         account_state,
         requested_surface_ids=(
+            'state::tower.enemy_attack_level_skip_pct',
+            'state::tower.enemy_health_level_skip_pct',
             'state::wall.hp',
             'state::tower.hp',
             'state::wall.regen',
@@ -632,25 +716,6 @@ def test_build_boss_wave_payload_live_path_avoids_delta_fallback():
     canonical = {
         surface_id: float(canonical_statbook.rows[surface_id].final_value)
         for surface_id in canonical_statbook.rows
-    }
-    progression_canonical_response = resolve_checkpoint_surfaces(
-        account_state,
-        requested_surface_ids=(
-            'state::tower.enemy_attack_level_skip_pct',
-            'state::tower.enemy_health_level_skip_pct',
-        ),
-        preset_name='Farming',
-        state_mode='max_progression',
-        perks_enabled=False,
-        scenario_runtime_inputs=ScenarioRuntimeInputs.from_mapping(runtime_inputs),
-    )
-    progression_canonical_statbook = query_response_to_statbook(
-        progression_canonical_response,
-        notes='Boss Waves progression-seeded primitive authority reconciliation test.',
-    )
-    progression_canonical = {
-        surface_id: float(progression_canonical_statbook.rows[surface_id].final_value)
-        for surface_id in progression_canonical_statbook.rows
     }
     payload = build_boss_wave_payload(
         request,
@@ -694,7 +759,7 @@ def test_build_boss_wave_payload_live_path_avoids_delta_fallback():
     assert 'legacy_shadow_materialized' not in diagnostics
     assert diagnostics['delta_fallback_count'] == 0
     primitive_inputs = diagnostics['replacement_primitive_inputs']
-    assert primitive_inputs['layer'] == 'mixed_start_of_run_static_plus_max_progression_seed_inputs_not_final_displayed_rows'
+    assert primitive_inputs['layer'] == 'start_of_run_static_primitives_plus_row_evolved_workshop_skip_inputs_not_final_displayed_rows'
     primitives = primitive_inputs['values']
     expected_wall_regen = canonical['state::tower.regen'] * (canonical['state::wall.regen'] / 100.0)
     expected_wall_hp_pre_fort = (
@@ -703,8 +768,8 @@ def test_build_boss_wave_payload_live_path_avoids_delta_fallback():
         * primitives['wall_hp_multiplier']
     )
     assert primitives['tower_hp'] == pytest.approx(canonical['state::tower.hp'])
-    assert primitives['attack_skip_chance'] == pytest.approx(progression_canonical['state::tower.enemy_attack_level_skip_pct'] / 100.0)
-    assert primitives['health_skip_chance'] == pytest.approx(progression_canonical['state::tower.enemy_health_level_skip_pct'] / 100.0)
+    assert primitives['attack_skip_chance'] == pytest.approx(canonical['state::tower.enemy_attack_level_skip_pct'] / 100.0)
+    assert primitives['health_skip_chance'] == pytest.approx(canonical['state::tower.enemy_health_level_skip_pct'] / 100.0)
     assert primitives['wall_hp_qe_surface'] == pytest.approx(canonical['state::wall.hp'])
     assert primitives['wall_hp'] == pytest.approx(expected_wall_hp_pre_fort)
     assert primitives['tower_regen'] == pytest.approx(canonical['state::tower.regen'])
@@ -727,8 +792,12 @@ def test_build_boss_wave_payload_live_path_avoids_delta_fallback():
     assert primitives['flame_bot_damage_reduction_pct'] == pytest.approx(canonical['state::bot.flame.damage_reduction_pct'])
     assert primitives['flame_bot_cooldown_seconds'] == pytest.approx(canonical['state::bot.flame.cooldown_seconds'])
     ledger = diagnostics['replacement_primitive_semantics_ledger']
-    assert ledger['primitives']['state::tower.enemy_attack_level_skip_pct']['state_phase'] == 'max_progression'
-    assert ledger['primitives']['state::tower.enemy_health_level_skip_pct']['state_phase'] == 'max_progression'
+    assert ledger['primitives']['state::tower.enemy_attack_level_skip_pct']['state_phase'] == 'start_of_run'
+    assert ledger['primitives']['state::tower.enemy_health_level_skip_pct']['state_phase'] == 'start_of_run'
+    assert ledger['primitives']['state::tower.enemy_attack_level_skip_pct']['workshop_track'] == 'Enemy Attack Level Skip'
+    assert ledger['primitives']['state::tower.enemy_health_level_skip_pct']['workshop_track'] == 'Enemy Health Level Skip'
+    assert ledger['primitives']['state::tower.enemy_attack_level_skip_pct']['classification'] == 'transformed'
+    assert ledger['primitives']['state::tower.enemy_health_level_skip_pct']['classification'] == 'transformed'
     assert ledger['primitives']['state::tower.hp']['state_phase'] == 'start_of_run'
     assert ledger['primitives']['state::tower.hp']['exact_value'] == pytest.approx(canonical['state::tower.hp'])
     assert ledger['primitives']['state::wall.hp']['semantic_meaning'].startswith('QE wall HP surface currently carries wall-health ratio contributors')
@@ -1032,6 +1101,51 @@ def test_boss_wave_perk_state_is_owned_by_scenario_not_request():
     assert tournament['perk_state'] == 'off'
     assert tournament['perk_mode'] == 'none'
     assert tournament['perk_timeline_mode'] == 'disabled_by_tournament_scenario'
+
+
+def test_build_common_trajectory_rederives_skip_from_row_workshop_levels():
+    from qe.run_plan import CommonTrajectoryInputs, build_common_trajectory, workshop_value_for_level
+
+    table = build_common_trajectory(
+        CommonTrajectoryInputs(
+            start_wave=1,
+            end_wave=3,
+            boss_interval_waves=1,
+            checkpoint_every_bosses=1,
+            attack_skip_chance=0.0,
+            health_skip_chance=0.0,
+            attack_skip_static_percent_points=2.5,
+            attack_skip_multiplier=1.2,
+            attack_skip_workshop_track='Enemy Attack Level Skip',
+            attack_skip_workshop_baseline_level=10,
+            health_skip_static_percent_points=1.5,
+            health_skip_multiplier=1.1,
+            health_skip_workshop_track='Enemy Health Level Skip',
+            health_skip_workshop_baseline_level=10,
+            free_upgrade_chance_by_category={'utility': 1.0},
+            category_track_order={'utility': ('Enemy Attack Level Skip', 'Enemy Health Level Skip')},
+            track_max_levels={'Enemy Attack Level Skip': 12, 'Enemy Health Level Skip': 12},
+            workshop_levels={'Enemy Attack Level Skip': 10, 'Enemy Health Level Skip': 10},
+        )
+    )
+
+    rows = table.rows
+    attack_row1 = rows[0].common_inputs['attack_skip_chance']
+    attack_row2 = rows[1].common_inputs['attack_skip_chance']
+    health_row2 = rows[1].common_inputs['health_skip_chance']
+    health_row3 = rows[2].common_inputs['health_skip_chance']
+
+    expected_attack_row1 = ((2.5 + workshop_value_for_level('Enemy Attack Level Skip', 10)) * 1.2) / 100.0
+    expected_attack_row2 = ((2.5 + workshop_value_for_level('Enemy Attack Level Skip', 11)) * 1.2) / 100.0
+    expected_health_row2 = ((1.5 + workshop_value_for_level('Enemy Health Level Skip', 10)) * 1.1) / 100.0
+    expected_health_row3 = ((1.5 + workshop_value_for_level('Enemy Health Level Skip', 11)) * 1.1) / 100.0
+
+    assert attack_row1 == pytest.approx(expected_attack_row1)
+    assert attack_row2 == pytest.approx(expected_attack_row2)
+    assert health_row2 == pytest.approx(expected_health_row2)
+    assert health_row3 == pytest.approx(expected_health_row3)
+    assert attack_row2 > attack_row1
+    assert health_row3 > health_row2
 
 
 def test_perk_timeline_preview_override_is_validated_and_consumed_by_boss_waves():

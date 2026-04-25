@@ -120,6 +120,8 @@ BOSS_WAVE_REPLACEMENT_EXPORT_FIELDS: tuple[str, ...] = (
     'operator_handle_id',
 )
 BOSS_WAVE_REPLACEMENT_PRIMITIVE_SURFACE_IDS: tuple[str, ...] = (
+    'state::tower.enemy_attack_level_skip_pct',
+    'state::tower.enemy_health_level_skip_pct',
     'state::tower.free_attack_upgrade_chance_pct',
     'state::tower.free_defense_upgrade_chance_pct',
     'state::tower.free_utility_upgrade_chance_pct',
@@ -142,10 +144,10 @@ BOSS_WAVE_REPLACEMENT_PRIMITIVE_SURFACE_IDS: tuple[str, ...] = (
     'state::bot.flame.cooldown_seconds',
     'state::bot.flame.range_m',
 )
-BOSS_WAVE_REPLACEMENT_PROGRESSION_SEEDED_SURFACE_IDS: tuple[str, ...] = (
-    'state::tower.enemy_attack_level_skip_pct',
-    'state::tower.enemy_health_level_skip_pct',
-)
+_BOSS_WAVE_SKIP_WORKSHOP_TRACK_BY_SURFACE: dict[str, str] = {
+    'state::tower.enemy_attack_level_skip_pct': 'Enemy Attack Level Skip',
+    'state::tower.enemy_health_level_skip_pct': 'Enemy Health Level Skip',
+}
 
 
 def _load_json_config(path: Path) -> dict:
@@ -672,7 +674,7 @@ def _build_replacement_operator_table_and_summary(
     perk_timeline: tuple[dict[str, object], ...],
     scenario_runtime_inputs: dict[str, float],
     stop_on_failure: bool,
-) -> tuple[list[dict[str, object]], dict[str, object], dict[str, float], dict[str, object]]:
+) -> tuple[list[dict[str, object]], dict[str, object], dict[str, object], dict[str, object]]:
     from qe.run_plan import (
         CommonTrajectoryInputs,
         SurvivabilityContributorBundle,
@@ -689,12 +691,14 @@ def _build_replacement_operator_table_and_summary(
         evaluate_overlay_row,
     )
 
+    workshop_levels, track_max_levels = _boss_wave_workshop_level_inputs(account_state, preset_name=preset_name)
     primitives = _resolve_boss_wave_replacement_primitives(
         account_state=account_state,
         preset_name=preset_name,
         config=config,
         perks_enabled=bool(config['perks_enabled']),
         scenario_runtime_inputs=scenario_runtime_inputs,
+        workshop_levels=workshop_levels,
     )
     runtime_inputs = ScenarioRuntimeInputs.from_mapping(scenario_runtime_inputs)
     scenario_surfaces = dict(config.get('scenario_surfaces') or {})
@@ -718,7 +722,6 @@ def _build_replacement_operator_table_and_summary(
     cf_dr_pct = float(primitives['chrono_field_damage_reduction_pct'])
     cf_duration_seconds = float(primitives['chrono_field_duration_seconds'])
     cf_cooldown_seconds = float(primitives['chrono_field_cooldown_seconds'])
-    workshop_levels, track_max_levels = _boss_wave_workshop_level_inputs(account_state, preset_name=preset_name)
     category_track_order = default_category_track_order(workshop_levels, track_max_levels)
     tower_hp_level = _boss_wave_optional_workshop_level(workshop_levels, 'Health', primitive_name='state::tower.hp')
     wall_hp_level = _boss_wave_optional_workshop_level(workshop_levels, 'Wall Health', primitive_name='state::wall.hp')
@@ -789,6 +792,14 @@ def _build_replacement_operator_table_and_summary(
             tier_column=str(config['tier_column']),
             attack_skip_chance=float(primitives['attack_skip_chance']),
             health_skip_chance=float(primitives['health_skip_chance']),
+            attack_skip_static_percent_points=float(primitives['attack_skip_static_percent_points']),
+            attack_skip_multiplier=float(primitives['attack_skip_multiplier']),
+            attack_skip_workshop_track=str(primitives['attack_skip_workshop_track'] or ''),
+            attack_skip_workshop_baseline_level=int(primitives['attack_skip_workshop_baseline_level']),
+            health_skip_static_percent_points=float(primitives['health_skip_static_percent_points']),
+            health_skip_multiplier=float(primitives['health_skip_multiplier']),
+            health_skip_workshop_track=str(primitives['health_skip_workshop_track'] or ''),
+            health_skip_workshop_baseline_level=int(primitives['health_skip_workshop_baseline_level']),
             free_upgrade_chance_by_category={
                 'attack': float(primitives['free_attack_upgrade_chance']),
                 'defense': float(primitives['free_defense_upgrade_chance']),
@@ -922,7 +933,8 @@ def _resolve_boss_wave_replacement_primitives(
     config: dict[str, object],
     perks_enabled: bool,
     scenario_runtime_inputs: dict[str, float],
-) -> dict[str, float]:
+    workshop_levels: Mapping[str, int],
+) -> dict[str, object]:
     from qe.run_plan import (
         derive_wall_hp_from_qe_primitives,
         derive_wall_regen_hp_per_second,
@@ -938,18 +950,16 @@ def _resolve_boss_wave_replacement_primitives(
         perks_enabled=False,
         scenario_runtime_inputs=ScenarioRuntimeInputs.from_mapping(scenario_runtime_inputs),
     )
-    progression_response = resolve_checkpoint_surfaces(
-        account_state,
-        requested_surface_ids=BOSS_WAVE_REPLACEMENT_PROGRESSION_SEEDED_SURFACE_IDS,
-        preset_name=preset_name,
-        state_mode='max_progression',
-        perks_enabled=False,
-        scenario_runtime_inputs=ScenarioRuntimeInputs.from_mapping(scenario_runtime_inputs),
-    )
     statbook = query_response_to_statbook(response, notes='Boss Waves replacement primitive resolution.')
-    progression_statbook = query_response_to_statbook(
-        progression_response,
-        notes='Boss Waves replacement progression-seeded primitive resolution.',
+    attack_skip_seed = _boss_wave_skip_seed_from_qe_row(
+        surface_id='state::tower.enemy_attack_level_skip_pct',
+        statbook_row=_required_statbook_row(statbook, 'state::tower.enemy_attack_level_skip_pct'),
+        workshop_levels=workshop_levels,
+    )
+    health_skip_seed = _boss_wave_skip_seed_from_qe_row(
+        surface_id='state::tower.enemy_health_level_skip_pct',
+        statbook_row=_required_statbook_row(statbook, 'state::tower.enemy_health_level_skip_pct'),
+        workshop_levels=workshop_levels,
     )
     tower_hp = _required_statbook_float(statbook, 'state::tower.hp')
     tower_regen = _required_statbook_float(statbook, 'state::tower.regen')
@@ -997,8 +1007,16 @@ def _resolve_boss_wave_replacement_primitives(
         black_hole_duration_seconds = _required_statbook_float(timing_statbook, 'state::uw.black_hole.duration_seconds')
         black_hole_cooldown_seconds = _required_statbook_float(timing_statbook, 'state::uw.black_hole.cooldown_seconds')
     return {
-        'attack_skip_chance': _required_statbook_fraction(progression_statbook, 'state::tower.enemy_attack_level_skip_pct'),
-        'health_skip_chance': _required_statbook_fraction(progression_statbook, 'state::tower.enemy_health_level_skip_pct'),
+        'attack_skip_chance': float(attack_skip_seed['chance_fraction']),
+        'attack_skip_static_percent_points': float(attack_skip_seed['static_percent_points']),
+        'attack_skip_multiplier': float(attack_skip_seed['multiplier']),
+        'attack_skip_workshop_track': str(attack_skip_seed['workshop_track']),
+        'attack_skip_workshop_baseline_level': int(attack_skip_seed['workshop_baseline_level']),
+        'health_skip_chance': float(health_skip_seed['chance_fraction']),
+        'health_skip_static_percent_points': float(health_skip_seed['static_percent_points']),
+        'health_skip_multiplier': float(health_skip_seed['multiplier']),
+        'health_skip_workshop_track': str(health_skip_seed['workshop_track']),
+        'health_skip_workshop_baseline_level': int(health_skip_seed['workshop_baseline_level']),
         'free_attack_upgrade_chance': _required_statbook_fraction(statbook, 'state::tower.free_attack_upgrade_chance_pct'),
         'free_defense_upgrade_chance': _required_statbook_fraction(statbook, 'state::tower.free_defense_upgrade_chance_pct'),
         'free_utility_upgrade_chance': _required_statbook_fraction(statbook, 'state::tower.free_utility_upgrade_chance_pct'),
@@ -1072,6 +1090,62 @@ def _boss_wave_optional_workshop_level(
     if track_name not in workshop_levels:
         raise ValueError(f"Boss Waves replacement input {primitive_name!r} requires workshop track {track_name!r}")
     return int(workshop_levels[track_name])
+
+
+def _boss_wave_skip_seed_from_qe_row(
+    *,
+    surface_id: str,
+    statbook_row,
+    workshop_levels: Mapping[str, int],
+) -> dict[str, object]:
+    from qe.run_plan import workshop_value_for_level
+
+    contributors = tuple(dict(row or {}) for row in (getattr(statbook_row, 'contributors', None) or ()))
+    if not contributors:
+        raise ValueError(f"Boss Waves skip surface {surface_id!r} is missing contributor metadata")
+    workshop_track = _BOSS_WAVE_SKIP_WORKSHOP_TRACK_BY_SURFACE.get(surface_id)
+    if not workshop_track:
+        raise ValueError(f"Boss Waves skip surface {surface_id!r} has no workshop-track mapping")
+    if workshop_track not in workshop_levels:
+        raise ValueError(f"Boss Waves skip surface {surface_id!r} requires workshop level for {workshop_track!r}")
+    static_percent_points = 0.0
+    multiplier = 1.0
+    saw_workshop = False
+    for contributor in contributors:
+        if not bool(contributor.get('active', True)):
+            continue
+        value = float(contributor.get('value') or 0.0)
+        contributor_id = str(contributor.get('contributor_id') or '')
+        stage = str(contributor.get('composition_stage') or '')
+        if contributor_id.startswith('workshop__tower__') and contributor_id.endswith('__pct'):
+            saw_workshop = True
+            continue
+        if stage == 'additive_pre_cap':
+            static_percent_points += value
+            continue
+        if stage == 'multiplicative':
+            multiplier *= value
+            continue
+        raise ValueError(
+            f"unsupported Boss Waves skip contributor semantics for {surface_id!r} contributor {contributor_id!r}"
+        )
+    if not saw_workshop:
+        raise ValueError(f"Boss Waves skip surface {surface_id!r} is missing its workshop contributor")
+    baseline_level = int(workshop_levels[workshop_track])
+    baseline_workshop_value = workshop_value_for_level(workshop_track, baseline_level)
+    reconstructed = (static_percent_points + baseline_workshop_value) * multiplier
+    final_value = float(getattr(statbook_row, 'final_value', 0.0) or 0.0)
+    if abs(reconstructed - final_value) > 1e-6:
+        raise ValueError(
+            f"Boss Waves skip seed mismatch for {surface_id!r}: reconstructed {reconstructed} != resolved {final_value}"
+        )
+    return {
+        'chance_fraction': reconstructed / 100.0,
+        'static_percent_points': static_percent_points,
+        'multiplier': multiplier,
+        'workshop_track': workshop_track,
+        'workshop_baseline_level': baseline_level,
+    }
 
 
 def _boss_wave_perk_counts_by_wave(perk_timeline: tuple[dict[str, object], ...]) -> dict[int, dict[str, int]]:
@@ -1210,7 +1284,7 @@ def _boss_wave_primitive_semantics_ledger(
         'request_path': {
             'account_source': 'PipelineRunRequest.ids -> load_inputs -> build_runtime_state',
             'preset_name': 'Farming-or-requested-preset',
-            'state_mode': 'mixed_start_of_run_static_plus_max_progression_seeds',
+            'state_mode': 'start_of_run_static_primitives_plus_row_evolved_workshop_skip_state',
             'primitive_resolution_owner': 'qe.routing.resolve_checkpoint_surfaces (split by ownership)',
             'table1_owner': 'qe.run_plan',
             'table2_owner': 'simulators.evaluator_kernel',
@@ -1218,28 +1292,36 @@ def _boss_wave_primitive_semantics_ledger(
         },
         'primitives': {
             'state::tower.enemy_attack_level_skip_pct': {
-                'boss_waves_source': 'qe.routing.resolve_checkpoint_surfaces(state::tower.enemy_attack_level_skip_pct, state_mode=max_progression, perks_enabled=False)',
-                'canonical_truth_source': 'qe.routing.resolve_checkpoint_surfaces(state::tower.enemy_attack_level_skip_pct, state_mode=max_progression, perks_enabled=False)',
-                'semantic_meaning': 'QE-published effective enemy attack level skip chance seeded from progression-consistent max progression state for Boss Waves wave progression recurrence',
+                'boss_waves_source': 'qe.routing.resolve_checkpoint_surfaces(state::tower.enemy_attack_level_skip_pct, state_mode=start_of_run, perks_enabled=False) + contributor decomposition into static additive + workshop track + multiplier',
+                'canonical_truth_source': 'QE skip contributor row: additive_pre_cap contributors plus workshop__tower__enemy_attack_level_skip__pct times multiplicative enhancements',
+                'semantic_meaning': 'QE-published enemy attack level skip surface is decomposed into static additive skip plus the Enemy Attack Level Skip workshop track and enhancement multiplier; Table 1 rederives the effective skip chance each checkpoint from current workshop levels',
                 'exact_value': float(primitives['attack_skip_chance']),
                 'primitive_vs_displayed': 'primitive_input',
                 'fortification_transform': 'none',
-                'state_phase': 'max_progression',
-                'row_evolution': 'used as the recurrence seed for checkpoint wave progression',
-                'owner_layer': 'QE publishes progression-consistent skip chance; run_plan consumes recurrence seed',
-                'classification': 'equivalent',
+                'state_phase': 'start_of_run',
+                'row_evolution': 'Table 1 rederives skip chance from current Enemy Attack Level Skip workshop level each checkpoint',
+                'owner_layer': 'QE publishes the contributor bundle; run_plan owns row-evolved checkpoint recurrence',
+                'classification': 'transformed',
+                'static_percent_points': float(primitives['attack_skip_static_percent_points']),
+                'multiplier': float(primitives['attack_skip_multiplier']),
+                'workshop_track': str(primitives['attack_skip_workshop_track']),
+                'workshop_baseline_level': int(primitives['attack_skip_workshop_baseline_level']),
             },
             'state::tower.enemy_health_level_skip_pct': {
-                'boss_waves_source': 'qe.routing.resolve_checkpoint_surfaces(state::tower.enemy_health_level_skip_pct, state_mode=max_progression, perks_enabled=False)',
-                'canonical_truth_source': 'qe.routing.resolve_checkpoint_surfaces(state::tower.enemy_health_level_skip_pct, state_mode=max_progression, perks_enabled=False)',
-                'semantic_meaning': 'QE-published effective enemy health level skip chance seeded from progression-consistent max progression state for Boss Waves wave progression recurrence',
+                'boss_waves_source': 'qe.routing.resolve_checkpoint_surfaces(state::tower.enemy_health_level_skip_pct, state_mode=start_of_run, perks_enabled=False) + contributor decomposition into static additive + workshop track + multiplier',
+                'canonical_truth_source': 'QE skip contributor row: additive_pre_cap contributors plus workshop__tower__enemy_health_level_skip__pct times multiplicative enhancements',
+                'semantic_meaning': 'QE-published enemy health level skip surface is decomposed into static additive skip plus the Enemy Health Level Skip workshop track and enhancement multiplier; Table 1 rederives the effective skip chance each checkpoint from current workshop levels',
                 'exact_value': float(primitives['health_skip_chance']),
                 'primitive_vs_displayed': 'primitive_input',
                 'fortification_transform': 'none',
-                'state_phase': 'max_progression',
-                'row_evolution': 'used as the recurrence seed for checkpoint wave progression',
-                'owner_layer': 'QE publishes progression-consistent skip chance; run_plan consumes recurrence seed',
-                'classification': 'equivalent',
+                'state_phase': 'start_of_run',
+                'row_evolution': 'Table 1 rederives skip chance from current Enemy Health Level Skip workshop level each checkpoint',
+                'owner_layer': 'QE publishes the contributor bundle; run_plan owns row-evolved checkpoint recurrence',
+                'classification': 'transformed',
+                'static_percent_points': float(primitives['health_skip_static_percent_points']),
+                'multiplier': float(primitives['health_skip_multiplier']),
+                'workshop_track': str(primitives['health_skip_workshop_track']),
+                'workshop_baseline_level': int(primitives['health_skip_workshop_baseline_level']),
             },
             'state::tower.hp': {
                 'boss_waves_source': 'qe.routing.resolve_checkpoint_surfaces(state::tower.hp)',
@@ -1751,7 +1833,7 @@ def _build_replacement_diagnostics(
             },
         },
         'replacement_primitive_inputs': {
-            'layer': 'mixed_start_of_run_static_plus_max_progression_seed_inputs_not_final_displayed_rows',
+            'layer': 'start_of_run_static_primitives_plus_row_evolved_workshop_skip_inputs_not_final_displayed_rows',
             'values': dict(primitive_inputs or {}),
         },
         'replacement_primitive_semantics_ledger': dict(primitive_semantics_ledger or {}),
