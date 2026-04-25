@@ -120,8 +120,6 @@ BOSS_WAVE_REPLACEMENT_EXPORT_FIELDS: tuple[str, ...] = (
     'operator_handle_id',
 )
 BOSS_WAVE_REPLACEMENT_PRIMITIVE_SURFACE_IDS: tuple[str, ...] = (
-    'state::tower.enemy_attack_level_skip_pct',
-    'state::tower.enemy_health_level_skip_pct',
     'state::tower.free_attack_upgrade_chance_pct',
     'state::tower.free_defense_upgrade_chance_pct',
     'state::tower.free_utility_upgrade_chance_pct',
@@ -143,6 +141,10 @@ BOSS_WAVE_REPLACEMENT_PRIMITIVE_SURFACE_IDS: tuple[str, ...] = (
     'state::bot.flame.damage_reduction_pct',
     'state::bot.flame.cooldown_seconds',
     'state::bot.flame.range_m',
+)
+BOSS_WAVE_REPLACEMENT_PROGRESSION_SEEDED_SURFACE_IDS: tuple[str, ...] = (
+    'state::tower.enemy_attack_level_skip_pct',
+    'state::tower.enemy_health_level_skip_pct',
 )
 
 
@@ -260,7 +262,7 @@ def _resolve_boss_wave_run_context(
         scenario_config = ScenarioConfig(mode_id=mode_id, tier=int(tier_number))
 
     scenario_surfaces = compute_scenario_surfaces(scenario_config)
-    actual_boss_interval_waves = max(1, int(getattr(scenario_surfaces, 'boss_wave_interval', 10) or 10))
+    actual_boss_interval_waves = 1
     checkpoint_every_bosses = max(1, int(checkpoint_every_bosses))
     perks_enabled = mode_id != 'tournament'
     scenario_perk_state = 'off' if mode_id == 'tournament' else 'on'
@@ -936,7 +938,19 @@ def _resolve_boss_wave_replacement_primitives(
         perks_enabled=False,
         scenario_runtime_inputs=ScenarioRuntimeInputs.from_mapping(scenario_runtime_inputs),
     )
+    progression_response = resolve_checkpoint_surfaces(
+        account_state,
+        requested_surface_ids=BOSS_WAVE_REPLACEMENT_PROGRESSION_SEEDED_SURFACE_IDS,
+        preset_name=preset_name,
+        state_mode='max_progression',
+        perks_enabled=False,
+        scenario_runtime_inputs=ScenarioRuntimeInputs.from_mapping(scenario_runtime_inputs),
+    )
     statbook = query_response_to_statbook(response, notes='Boss Waves replacement primitive resolution.')
+    progression_statbook = query_response_to_statbook(
+        progression_response,
+        notes='Boss Waves replacement progression-seeded primitive resolution.',
+    )
     tower_hp = _required_statbook_float(statbook, 'state::tower.hp')
     tower_regen = _required_statbook_float(statbook, 'state::tower.regen')
     wall_hp_row = _required_statbook_row(statbook, 'state::wall.hp')
@@ -983,8 +997,8 @@ def _resolve_boss_wave_replacement_primitives(
         black_hole_duration_seconds = _required_statbook_float(timing_statbook, 'state::uw.black_hole.duration_seconds')
         black_hole_cooldown_seconds = _required_statbook_float(timing_statbook, 'state::uw.black_hole.cooldown_seconds')
     return {
-        'attack_skip_chance': _required_statbook_fraction(statbook, 'state::tower.enemy_attack_level_skip_pct'),
-        'health_skip_chance': _required_statbook_fraction(statbook, 'state::tower.enemy_health_level_skip_pct'),
+        'attack_skip_chance': _required_statbook_fraction(progression_statbook, 'state::tower.enemy_attack_level_skip_pct'),
+        'health_skip_chance': _required_statbook_fraction(progression_statbook, 'state::tower.enemy_health_level_skip_pct'),
         'free_attack_upgrade_chance': _required_statbook_fraction(statbook, 'state::tower.free_attack_upgrade_chance_pct'),
         'free_defense_upgrade_chance': _required_statbook_fraction(statbook, 'state::tower.free_defense_upgrade_chance_pct'),
         'free_utility_upgrade_chance': _required_statbook_fraction(statbook, 'state::tower.free_utility_upgrade_chance_pct'),
@@ -1196,13 +1210,49 @@ def _boss_wave_primitive_semantics_ledger(
         'request_path': {
             'account_source': 'PipelineRunRequest.ids -> load_inputs -> build_runtime_state',
             'preset_name': 'Farming-or-requested-preset',
-            'state_mode': 'start_of_run',
-            'primitive_resolution_owner': 'qe.routing.resolve_checkpoint_surfaces',
+            'state_mode': 'mixed_start_of_run_static_plus_max_progression_seeds',
+            'primitive_resolution_owner': 'qe.routing.resolve_checkpoint_surfaces (split by ownership)',
             'table1_owner': 'qe.run_plan',
             'table2_owner': 'simulators.evaluator_kernel',
             'product_render_owner': 'app.streamlit_inspector consumes operator_rows',
         },
         'primitives': {
+            'state::tower.enemy_attack_level_skip_pct': {
+                'boss_waves_source': 'qe.routing.resolve_checkpoint_surfaces(state::tower.enemy_attack_level_skip_pct, state_mode=max_progression, perks_enabled=False)',
+                'canonical_truth_source': 'qe.routing.resolve_checkpoint_surfaces(state::tower.enemy_attack_level_skip_pct, state_mode=max_progression, perks_enabled=False)',
+                'semantic_meaning': 'QE-published effective enemy attack level skip chance seeded from progression-consistent max progression state for Boss Waves wave progression recurrence',
+                'exact_value': float(primitives['attack_skip_chance']),
+                'primitive_vs_displayed': 'primitive_input',
+                'fortification_transform': 'none',
+                'state_phase': 'max_progression',
+                'row_evolution': 'used as the recurrence seed for checkpoint wave progression',
+                'owner_layer': 'QE publishes progression-consistent skip chance; run_plan consumes recurrence seed',
+                'classification': 'equivalent',
+            },
+            'state::tower.enemy_health_level_skip_pct': {
+                'boss_waves_source': 'qe.routing.resolve_checkpoint_surfaces(state::tower.enemy_health_level_skip_pct, state_mode=max_progression, perks_enabled=False)',
+                'canonical_truth_source': 'qe.routing.resolve_checkpoint_surfaces(state::tower.enemy_health_level_skip_pct, state_mode=max_progression, perks_enabled=False)',
+                'semantic_meaning': 'QE-published effective enemy health level skip chance seeded from progression-consistent max progression state for Boss Waves wave progression recurrence',
+                'exact_value': float(primitives['health_skip_chance']),
+                'primitive_vs_displayed': 'primitive_input',
+                'fortification_transform': 'none',
+                'state_phase': 'max_progression',
+                'row_evolution': 'used as the recurrence seed for checkpoint wave progression',
+                'owner_layer': 'QE publishes progression-consistent skip chance; run_plan consumes recurrence seed',
+                'classification': 'equivalent',
+            },
+            'state::tower.hp': {
+                'boss_waves_source': 'qe.routing.resolve_checkpoint_surfaces(state::tower.hp)',
+                'canonical_truth_source': 'qe.routing.resolve_checkpoint_surfaces(state::tower.hp)',
+                'semantic_meaning': 'QE-published tower HP baseline used before Boss Waves row-owned Death Wave and wall-health transforms',
+                'exact_value': float(primitives['tower_hp']),
+                'primitive_vs_displayed': 'primitive_input_transform_for_wall_hp',
+                'fortification_transform': 'none',
+                'state_phase': 'start_of_run',
+                'row_evolution': 'Table 1 applies Death Wave multiplier and downstream wall-health transforms per checkpoint',
+                'owner_layer': 'QE publishes baseline; run_plan and evaluator derive row-facing wall HP',
+                'classification': 'equivalent',
+            },
             'state::wall.hp': {
                 'boss_waves_source': 'qe.routing.resolve_checkpoint_surfaces(state::wall.hp)',
                 'canonical_truth_source': 'kb wall_hp = tower_hp * wall_health_ratio; qe.run_plan.derive_wall_hp_from_qe_primitives',
@@ -1701,7 +1751,7 @@ def _build_replacement_diagnostics(
             },
         },
         'replacement_primitive_inputs': {
-            'layer': 'primitive_start_of_run_inputs_not_final_displayed_rows',
+            'layer': 'mixed_start_of_run_static_plus_max_progression_seed_inputs_not_final_displayed_rows',
             'values': dict(primitive_inputs or {}),
         },
         'replacement_primitive_semantics_ledger': dict(primitive_semantics_ledger or {}),

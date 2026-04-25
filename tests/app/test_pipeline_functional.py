@@ -254,8 +254,8 @@ def test_build_boss_wave_payload_publishes_summary_and_runtime_assumptions(monke
     assert payload.get('contract', {}).get('checkpoint_mode') == 'actual_boss_cadence_with_sampling'
     assert payload.get('download', {}).get('format') == 'csv'
     summary = payload.get('summary') or {}
-    assert summary['max_wave'] == 27
-    assert summary['max_surviving_wave'] == 27
+    assert summary['max_wave'] == 30
+    assert summary['max_surviving_wave'] == 30
     assert summary['first_failed_wave'] == 0
     assert summary['result_consistent_with_rows'] is True
     diagnostics = payload.get('diagnostics') or {}
@@ -263,7 +263,7 @@ def test_build_boss_wave_payload_publishes_summary_and_runtime_assumptions(monke
     assert diagnostics['mode_id'] == 'farming'
     assert diagnostics['tier_number'] == 14
     assert diagnostics['tier_column'] == 'Tier 14'
-    assert diagnostics['actual_boss_interval_waves'] == 9
+    assert diagnostics['actual_boss_interval_waves'] == 1
     assert diagnostics['checkpoint_every_bosses'] == 1
     assert diagnostics['checkpoint_mode'] == 'actual_boss_cadence_with_sampling'
     assert diagnostics['checkpoint_resolution_mode'] == 'replacement_table1_table2_overlay'
@@ -456,7 +456,7 @@ def test_build_boss_wave_payload_replacement_inputs_drive_table_summary_export_a
     assert timed_sources['defense_field']['primitive_status'] == 'explicit_runtime_only_no_qe_surface_found'
 
     summary = payload.get('summary') or {}
-    assert summary['max_surviving_wave'] == 27
+    assert summary['max_surviving_wave'] == 30
     assert summary['first_failed_wave'] == 0
     assert summary['survives_through_end'] is True
 
@@ -633,6 +633,25 @@ def test_build_boss_wave_payload_live_path_avoids_delta_fallback():
         surface_id: float(canonical_statbook.rows[surface_id].final_value)
         for surface_id in canonical_statbook.rows
     }
+    progression_canonical_response = resolve_checkpoint_surfaces(
+        account_state,
+        requested_surface_ids=(
+            'state::tower.enemy_attack_level_skip_pct',
+            'state::tower.enemy_health_level_skip_pct',
+        ),
+        preset_name='Farming',
+        state_mode='max_progression',
+        perks_enabled=False,
+        scenario_runtime_inputs=ScenarioRuntimeInputs.from_mapping(runtime_inputs),
+    )
+    progression_canonical_statbook = query_response_to_statbook(
+        progression_canonical_response,
+        notes='Boss Waves progression-seeded primitive authority reconciliation test.',
+    )
+    progression_canonical = {
+        surface_id: float(progression_canonical_statbook.rows[surface_id].final_value)
+        for surface_id in progression_canonical_statbook.rows
+    }
     payload = build_boss_wave_payload(
         request,
         preset_name='Farming',
@@ -644,7 +663,7 @@ def test_build_boss_wave_payload_live_path_avoids_delta_fallback():
         )
 
     diagnostics = payload.get('diagnostics') or {}
-    assert diagnostics['actual_boss_interval_waves'] == 9
+    assert diagnostics['actual_boss_interval_waves'] == 1
     assert diagnostics['checkpoint_every_bosses'] == 1
     assert diagnostics['checkpoint_resolution_mode'] == 'replacement_table1_table2_overlay'
     assert diagnostics['execution_mode'] == 'staged_replacement'
@@ -675,7 +694,7 @@ def test_build_boss_wave_payload_live_path_avoids_delta_fallback():
     assert 'legacy_shadow_materialized' not in diagnostics
     assert diagnostics['delta_fallback_count'] == 0
     primitive_inputs = diagnostics['replacement_primitive_inputs']
-    assert primitive_inputs['layer'] == 'primitive_start_of_run_inputs_not_final_displayed_rows'
+    assert primitive_inputs['layer'] == 'mixed_start_of_run_static_plus_max_progression_seed_inputs_not_final_displayed_rows'
     primitives = primitive_inputs['values']
     expected_wall_regen = canonical['state::tower.regen'] * (canonical['state::wall.regen'] / 100.0)
     expected_wall_hp_pre_fort = (
@@ -684,6 +703,8 @@ def test_build_boss_wave_payload_live_path_avoids_delta_fallback():
         * primitives['wall_hp_multiplier']
     )
     assert primitives['tower_hp'] == pytest.approx(canonical['state::tower.hp'])
+    assert primitives['attack_skip_chance'] == pytest.approx(progression_canonical['state::tower.enemy_attack_level_skip_pct'] / 100.0)
+    assert primitives['health_skip_chance'] == pytest.approx(progression_canonical['state::tower.enemy_health_level_skip_pct'] / 100.0)
     assert primitives['wall_hp_qe_surface'] == pytest.approx(canonical['state::wall.hp'])
     assert primitives['wall_hp'] == pytest.approx(expected_wall_hp_pre_fort)
     assert primitives['tower_regen'] == pytest.approx(canonical['state::tower.regen'])
@@ -706,6 +727,10 @@ def test_build_boss_wave_payload_live_path_avoids_delta_fallback():
     assert primitives['flame_bot_damage_reduction_pct'] == pytest.approx(canonical['state::bot.flame.damage_reduction_pct'])
     assert primitives['flame_bot_cooldown_seconds'] == pytest.approx(canonical['state::bot.flame.cooldown_seconds'])
     ledger = diagnostics['replacement_primitive_semantics_ledger']
+    assert ledger['primitives']['state::tower.enemy_attack_level_skip_pct']['state_phase'] == 'max_progression'
+    assert ledger['primitives']['state::tower.enemy_health_level_skip_pct']['state_phase'] == 'max_progression'
+    assert ledger['primitives']['state::tower.hp']['state_phase'] == 'start_of_run'
+    assert ledger['primitives']['state::tower.hp']['exact_value'] == pytest.approx(canonical['state::tower.hp'])
     assert ledger['primitives']['state::wall.hp']['semantic_meaning'].startswith('QE wall HP surface currently carries wall-health ratio contributors')
     assert ledger['primitives']['state::wall.hp']['fortification_transform'] == 'not_used_as_final_wall_hp'
     assert ledger['primitives']['state::wall.hp']['classification'] == 'transformed'
@@ -766,19 +791,19 @@ def test_build_boss_wave_payload_live_path_avoids_delta_fallback():
     assert ttk_inputs['electron_total_damage_source'] == 'orbital_augment_electron_count_times_boss_electron_pct'
     assert diagnostics['boss_wave_debug_ledger']['sample_rows']
     first_row = (payload.get('rows') or [{}])[0]
-    assert first_row.get('display_wave') == 9
+    assert first_row.get('display_wave') == 1
     rows = payload.get('rows') or []
     assert rows[0]['wall_pre_fort_hp'] > fort_check['row_input_wall_hp']
     assert rows[-1]['wall_pre_fort_hp'] > rows[0]['wall_pre_fort_hp']
-    assert rows[0]['wall_pre_fort_hp'] == pytest.approx(19731905998921.957)
-    assert rows[0]['wall_hp'] == pytest.approx(205211822388788.38)
+    assert rows[0]['wall_pre_fort_hp'] == pytest.approx(18010830467236.766)
+    assert rows[0]['wall_hp'] == pytest.approx(187312636859262.38)
     assert rows[0]['wall_hp'] == pytest.approx(rows[0]['wall_pre_fort_hp'] * primitives['wall_fortification_multiplier'])
     assert rows[0]['wall_regen'] == pytest.approx(5814158246443.825)
     assert rows[0]['summary_lane_id'] == 'avg'
     assert rows[0]['lane_handle_ids'] == {
-        'avg': 'boss:boss_waves_replacement_product:9:avg',
-        'min': 'boss:boss_waves_replacement_product:9:min',
-        'max': 'boss:boss_waves_replacement_product:9:max',
+        'avg': 'boss:boss_waves_replacement_product:1:avg',
+        'min': 'boss:boss_waves_replacement_product:1:min',
+        'max': 'boss:boss_waves_replacement_product:1:max',
     }
     assert 'effective_damage_reduction_pct' in first_row
     assert 'boss_time_to_contact_seconds' in first_row
@@ -807,7 +832,7 @@ def test_boss_wave_payload_without_contact_time_returns_structured_incomplete_wh
     assert summary['status'] == 'incomplete'
     assert summary['failure_kind'] == 'kernel_ambiguity'
     assert 'boss_time_to_contact_seconds is required' in summary['failure_message']
-    assert summary['first_unresolved_wave'] == 9
+    assert summary['first_unresolved_wave'] == 1
     assert payload['diagnostics']['context_status'] == 'incomplete'
 
     with pytest.raises(KernelAmbiguityError, match='boss_time_to_contact_seconds is required'):
