@@ -1694,7 +1694,7 @@ def test_run_stats_writes_stats_dashboard_artifact(run_stats_single_execution):
     assert stats_dashboard.get("schema_version") == 1
     panel_ids = [panel.get("panel_id") for panel in (stats_dashboard.get("panels") or [])]
     secondary_panel_ids = [panel.get("panel_id") for panel in (stats_dashboard.get("secondary_panels") or [])]
-    assert panel_ids == ["workshop", "derived_wall_economy", "ultimate_weapons", "bots", "guardians", "modules"]
+    assert panel_ids == ["derived_wall_economy", "workshop", "ultimate_weapons", "bots", "guardians", "modules"]
     assert "modules_resolved" in secondary_panel_ids
     assert "guardians_resolved" in secondary_panel_ids
 

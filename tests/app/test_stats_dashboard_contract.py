@@ -36,8 +36,8 @@ def test_stats_dashboard_contract_and_panel_types():
     assert payload['selected_state_mode'] == 'max_progression'
     panel_pairs = [(panel.get('panel_id'), panel.get('panel_type')) for panel in (payload.get('panels') or [])]
     assert panel_pairs == [
-        ('workshop', 'workshop_stat_table'),
         ('derived_wall_economy', 'workshop_stat_table'),
+        ('workshop', 'workshop_stat_table'),
         ('ultimate_weapons', 'workshop_stat_table'),
         ('bots', 'workshop_stat_table'),
         ('guardians', 'workshop_stat_table'),
@@ -727,10 +727,10 @@ def test_stats_dashboard_primary_derived_rows_use_compact_qe_owned_table():
         'notes',
         'reconciliation_status',
     ]
-    derived_rows = {
-        row.get('name'): row
-        for row in ((derived_payload.get('sections') or [{}])[0].get('rows') or [])
-    }
+    sections = {section.get('title'): section for section in (derived_payload.get('sections') or [])}
+    assert 'Objectives' in sections
+    assert 'Derived' in sections
+    derived_rows = {row.get('name'): row for row in (sections['Derived'].get('rows') or [])}
     assert derived_rows['Wall HP']['surface_id'] == 'derived::wall.hp_final'
     assert derived_rows['Wall HP']['start_of_run_value'] == '4.44T'
     assert derived_rows['Wall HP']['max_progression_value'] == '8.88T'
@@ -1605,17 +1605,96 @@ def test_stats_dashboard_workshop_panel_includes_derived_section_rows():
     )
     derived_section = next(
         section for section in (derived_panel.get('payload', {}).get('sections') or [])
+        if section.get('title') == 'Objectives'
+    )
+    other_derived_section = next(
+        section for section in (derived_panel.get('payload', {}).get('sections') or [])
         if section.get('title') == 'Derived'
     )
     labels = [row.get('name') for row in (derived_section.get('rows') or [])]
-    canonical_row_ids = [row.get('canonical_row_id') for row in (derived_section.get('rows') or [])]
-    assert 'Wall HP (Pre-Fort)' in labels
-    assert 'Ultimate Weapon Damage' in labels
+    other_labels = [row.get('name') for row in (other_derived_section.get('rows') or [])]
+    canonical_row_ids = [row.get('canonical_row_id') for row in (other_derived_section.get('rows') or [])]
     assert 'eHP' in labels
     assert 'eEcon' in labels
     assert 'eDamage' in labels
+    assert 'Wall HP (Pre-Fort)' in other_labels
+    assert 'Ultimate Weapon Damage' in other_labels
     assert 'derived::wall.hp_pre_fort' in canonical_row_ids
     assert 'derived::wall.hp_final' in canonical_row_ids
+
+
+def test_stats_dashboard_primary_derived_panel_publishes_objective_breakdowns():
+    account_state = {
+        'default_preset': 'Farming',
+        'card_presets': {'Farming': []},
+        'module_presets': {},
+        'workshop': {},
+        'workshop_enhancement_tracks': {},
+        'cards_inventory': {},
+        'raw_sections': {},
+        'uw_tracks': {},
+        'ultimate_weapons': {},
+    }
+    input_dashboard = _build_input_dashboard_payload(account_state, {}, module_card_payloads={})
+    query_rows = {
+        'Farming': {
+            'rows': {
+                'derived::ehp': {'display_value': '10', 'final_value': 10, 'value_type': 'scalar', 'status': 'resolved'},
+                'derived::edamage': {'display_value': '20', 'final_value': 20, 'value_type': 'scalar', 'status': 'resolved'},
+                'derived::eecon': {'display_value': '30', 'final_value': 30, 'value_type': 'scalar', 'status': 'resolved'},
+                'derived::ehp.pre_defense_pool': {'display_value': '40', 'final_value': 40, 'value_type': 'scalar', 'status': 'resolved'},
+                'derived::ehp.defense_taken_factor': {'display_value': 'x5', 'final_value': 5, 'value_type': 'multiplier', 'status': 'resolved'},
+                'derived::ehp.tradeoff_defense_factor': {'display_value': 'x1.2', 'final_value': 1.2, 'value_type': 'multiplier', 'status': 'resolved'},
+                'derived::ehp.chrono_field_damage_reduction_factor': {'display_value': 'x1.3', 'final_value': 1.3, 'value_type': 'multiplier', 'status': 'resolved'},
+                'derived::ehp.chain_thunder_factor': {'display_value': 'x1.4', 'final_value': 1.4, 'value_type': 'multiplier', 'status': 'resolved'},
+                'derived::ehp.primordial_black_hole_damage_reduction_factor': {'display_value': 'x1.5', 'final_value': 1.5, 'value_type': 'multiplier', 'status': 'resolved'},
+                'derived::edamage.base_damage_stack': {'display_value': '100', 'final_value': 100, 'value_type': 'scalar', 'status': 'resolved'},
+                'derived::edamage.bullet_crit_factor': {'display_value': 'x2', 'final_value': 2, 'value_type': 'multiplier', 'status': 'resolved'},
+                'derived::edamage.bullet_pipeline_factor': {'display_value': 'x3', 'final_value': 3, 'value_type': 'scalar', 'status': 'resolved'},
+                'derived::edamage.spotlight_factor': {'display_value': 'x4', 'final_value': 4, 'value_type': 'multiplier', 'status': 'resolved'},
+                'derived::edamage.uw_total_damage': {'display_value': '200', 'final_value': 200, 'value_type': 'scalar', 'status': 'resolved'},
+                'derived::edamage.uw_crit_factor': {'display_value': 'x5', 'final_value': 5, 'value_type': 'multiplier', 'status': 'resolved'},
+                'derived::edamage.slow_factor': {'display_value': 'x6', 'final_value': 6, 'value_type': 'multiplier', 'status': 'resolved'},
+                'derived::eecon.cl_factor': {'display_value': 'x1.1', 'final_value': 1.1, 'value_type': 'multiplier', 'status': 'resolved'},
+                'derived::eecon.eom_factor': {'display_value': 'x1.2', 'final_value': 1.2, 'value_type': 'multiplier', 'status': 'resolved'},
+                'derived::eecon.sync_factor': {'display_value': 'x1.3', 'final_value': 1.3, 'value_type': 'multiplier', 'status': 'resolved'},
+                'derived::eecon.spotlight_coin_factor': {'display_value': 'x1.4', 'final_value': 1.4, 'value_type': 'multiplier', 'status': 'resolved'},
+                'derived::eecon.wave_factor': {'display_value': 'x1.5', 'final_value': 1.5, 'value_type': 'multiplier', 'status': 'resolved'},
+            }
+        }
+    }
+    payload = _build_stats_dashboard_payload(
+        account_state_payload=account_state,
+        diagnostics={},
+        input_dashboard_payload=input_dashboard,
+        module_card_payloads={},
+        query_rows_start_of_run=query_rows,
+        query_rows_max_progression=query_rows,
+        ep_compare_publishable={},
+        line_verification={},
+        selected_preset='Farming',
+        selected_state_mode='start_of_run',
+    )
+
+    derived_panel = next(panel for panel in payload['variants']['Farming']['start_of_run'] if panel.get('panel_id') == 'derived_wall_economy')
+    sections = {section.get('title'): section for section in (derived_panel.get('payload', {}).get('sections') or [])}
+    assert [section.get('title') for section in (derived_panel.get('payload', {}).get('sections') or [])[:4]] == [
+        'Objectives',
+        'eHP Breakdown',
+        'eDamage Breakdown',
+        'eEcon Breakdown',
+    ]
+    objective_rows = {row.get('name'): row for row in (sections['Objectives'].get('rows') or [])}
+    assert list(objective_rows) == ['eHP', 'eDamage', 'eEcon']
+    ehp_rows = {row.get('name'): row for row in (sections['eHP Breakdown'].get('rows') or [])}
+    assert ehp_rows['Base Pool']['surface_id'] == 'derived::ehp.pre_defense_pool'
+    assert ehp_rows['Primordial BH DR Factor']['start_of_run_value'] == 'x1.5'
+    edamage_rows = {row.get('name'): row for row in (sections['eDamage Breakdown'].get('rows') or [])}
+    assert edamage_rows['UW Total Damage']['surface_id'] == 'derived::edamage.uw_total_damage'
+    assert edamage_rows['Slow Factor']['start_of_run_value'] == 'x6'
+    eecon_rows = {row.get('name'): row for row in (sections['eEcon Breakdown'].get('rows') or [])}
+    assert eecon_rows['Meta Stack']['surface_id'] == 'derived::eecon.cl_factor'
+    assert eecon_rows['Wave Factor']['start_of_run_value'] == 'x1.5'
 
 
 def test_stats_dashboard_workshop_panel_includes_extended_attack_rows_from_layout_contract():
@@ -1776,7 +1855,11 @@ def test_stats_dashboard_derived_rows_normalize_display_values():
         selected_state_mode='start_of_run',
     )
     derived_panel = next(panel for panel in payload['variants']['Farming']['start_of_run'] if panel.get('panel_id') == 'derived_wall_economy')
-    derived_rows = ((derived_panel.get('payload', {}).get('sections') or [{}])[0].get('rows') or [])
+    derived_section = next(
+        section for section in (derived_panel.get('payload', {}).get('sections') or [])
+        if section.get('title') == 'Derived'
+    )
+    derived_rows = derived_section.get('rows') or []
     by_name = {row.get('name'): row for row in derived_rows}
     assert by_name['Ultimate Weapon Damage']['start_of_run_value'] == 'x25.12'
     assert by_name['Ultimate Weapon Damage']['max_progression_value'] == 'x25.12'

@@ -273,6 +273,68 @@ def _derived_row_reconciliation_status(start_status: str, max_status: str) -> st
     return 'amber'
 
 
+def _derived_operator_row(
+    *,
+    spec: dict[str, str],
+    rows_start: dict[str, dict[str, object]],
+    rows_max: dict[str, dict[str, object]],
+) -> dict[str, object]:
+    surface_id = spec['surface_id']
+    start_row = dict(rows_start.get(surface_id) or {})
+    max_row = dict(rows_max.get(surface_id) or {})
+    start_display = _normalize_display_text(start_row.get('display_value'))
+    max_display = _normalize_display_text(max_row.get('display_value'))
+    if not isinstance(start_display, str) or not start_display.strip():
+        start_display = '?'
+    if not isinstance(max_display, str) or not max_display.strip():
+        max_display = '?'
+    start_status = str(start_row.get('status') or 'missing')
+    max_status = str(max_row.get('status') or 'missing')
+    if start_status == 'resolved' and max_status == 'resolved':
+        row_status = 'resolved'
+    elif start_status == 'missing' and max_status == 'missing':
+        row_status = 'missing'
+    else:
+        row_status = 'partially_resolved'
+    return {
+        'canonical_row_id': str(spec.get('canonical_row_id') or surface_id),
+        'surface_id': surface_id,
+        'display_label': spec['label'],
+        'name': spec['label'],
+        'value_type': str(start_row.get('value_type') or max_row.get('value_type') or 'scalar'),
+        'start_of_run_value': start_display,
+        'max_progression_value': max_display,
+        'status': row_status,
+        'notes': str(start_row.get('notes') or max_row.get('notes') or 'QE-derived row'),
+        'reconciliation_status': _derived_row_reconciliation_status(start_status, max_status),
+        'reconciliation_cell_flags': {},
+    }
+
+
+def _derived_operator_section(
+    *,
+    stats_layout: dict[str, Any],
+    rows_start: dict[str, dict[str, object]],
+    rows_max: dict[str, dict[str, object]],
+    specs_key: str,
+    title: str,
+    include_labels: set[str] | None = None,
+    exclude_labels: set[str] | None = None,
+    surface_specs: callable,
+) -> dict[str, object] | None:
+    rows: list[dict[str, object]] = []
+    for spec in surface_specs(stats_layout, specs_key):
+        label = spec['label']
+        if include_labels is not None and label not in include_labels:
+            continue
+        if exclude_labels is not None and label in exclude_labels:
+            continue
+        rows.append(_derived_operator_row(spec=spec, rows_start=rows_start, rows_max=rows_max))
+    if not rows:
+        return None
+    return {'section_id': specs_key, 'title': title, 'rows': rows}
+
+
 def publish_derived_wall_economy_operator_payload(
     *,
     stats_layout: dict[str, Any],
@@ -280,38 +342,45 @@ def publish_derived_wall_economy_operator_payload(
     rows_max: dict[str, dict[str, object]],
     surface_specs: callable,
 ) -> dict[str, object]:
-    derived_rows: list[dict[str, object]] = []
-    for spec in surface_specs(stats_layout, 'derived_wall_economy_surfaces'):
-        surface_id = spec['surface_id']
-        start_row = dict(rows_start.get(surface_id) or {})
-        max_row = dict(rows_max.get(surface_id) or {})
-        start_display = _normalize_display_text(start_row.get('display_value'))
-        max_display = _normalize_display_text(max_row.get('display_value'))
-        if not isinstance(start_display, str) or not start_display.strip():
-            start_display = '?'
-        if not isinstance(max_display, str) or not max_display.strip():
-            max_display = '?'
-        start_status = str(start_row.get('status') or 'missing')
-        max_status = str(max_row.get('status') or 'missing')
-        if start_status == 'resolved' and max_status == 'resolved':
-            row_status = 'resolved'
-        elif start_status == 'missing' and max_status == 'missing':
-            row_status = 'missing'
-        else:
-            row_status = 'partially_resolved'
-        derived_rows.append({
-            'canonical_row_id': str(spec.get('canonical_row_id') or surface_id),
-            'surface_id': surface_id,
-            'display_label': spec['label'],
-            'name': spec['label'],
-            'value_type': str(start_row.get('value_type') or max_row.get('value_type') or 'scalar'),
-            'start_of_run_value': start_display,
-            'max_progression_value': max_display,
-            'status': row_status,
-            'notes': str(start_row.get('notes') or max_row.get('notes') or 'QE-derived row'),
-            'reconciliation_status': _derived_row_reconciliation_status(start_status, max_status),
-            'reconciliation_cell_flags': {},
-        })
+    objective_labels = {'eHP', 'eDamage', 'eEcon'}
+    sections: list[dict[str, object]] = []
+    objectives_section = _derived_operator_section(
+        stats_layout=stats_layout,
+        rows_start=rows_start,
+        rows_max=rows_max,
+        specs_key='derived_wall_economy_surfaces',
+        title='Objectives',
+        include_labels=objective_labels,
+        surface_specs=surface_specs,
+    )
+    if objectives_section is not None:
+        sections.append(objectives_section)
+    for specs_key, title in (
+        ('ehp_breakdown_surfaces', 'eHP Breakdown'),
+        ('edamage_breakdown_surfaces', 'eDamage Breakdown'),
+        ('eecon_breakdown_surfaces', 'eEcon Breakdown'),
+    ):
+        section = _derived_operator_section(
+            stats_layout=stats_layout,
+            rows_start=rows_start,
+            rows_max=rows_max,
+            specs_key=specs_key,
+            title=title,
+            surface_specs=surface_specs,
+        )
+        if section is not None:
+            sections.append(section)
+    other_derived_section = _derived_operator_section(
+        stats_layout=stats_layout,
+        rows_start=rows_start,
+        rows_max=rows_max,
+        specs_key='derived_wall_economy_surfaces',
+        title='Derived',
+        exclude_labels=objective_labels,
+        surface_specs=surface_specs,
+    )
+    if other_derived_section is not None:
+        sections.append(other_derived_section)
     return {
         'artifact': 'qe_derived_wall_economy_operator_rows',
         'owner': 'qe',
@@ -325,7 +394,7 @@ def publish_derived_wall_economy_operator_payload(
             {'key': 'notes', 'label': 'Notes'},
             {'key': 'reconciliation_status', 'label': 'Recon', 'kind': 'recon'},
         ],
-        'sections': [{'section_id': 'derived_wall_economy_surfaces', 'title': 'Derived', 'rows': derived_rows}],
+        'sections': sections,
     }
     
 

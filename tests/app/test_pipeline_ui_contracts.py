@@ -246,8 +246,8 @@ def test_pipeline_writes_stats_dashboard_contract(canonical_pipeline_artifacts):
     assert payload.get('selected_state_mode') == 'start_of_run'
     panel_ids = [panel.get('panel_id') for panel in (payload.get('panels') or [])]
     assert panel_ids == [
-        'workshop',
         'derived_wall_economy',
+        'workshop',
         'ultimate_weapons',
         'bots',
         'guardians',
@@ -284,8 +284,10 @@ def test_pipeline_writes_stats_dashboard_contract(canonical_pipeline_artifacts):
     start_modules = next(panel for panel in start_panels if panel.get('panel_id') == 'modules')
     assert start_workshop.get('payload', {}).get('sections')
     assert max_workshop.get('payload', {}).get('sections')
+    assert any(section.get('title') == 'Objectives' for section in (start_derived.get('payload', {}).get('sections') or []))
+    assert any(section.get('title') == 'eHP Breakdown' for section in (start_derived.get('payload', {}).get('sections') or []))
     assert any(section.get('title') == 'Derived' for section in (start_derived.get('payload', {}).get('sections') or []))
-    assert any(section.get('title') == 'Derived' for section in (max_derived.get('payload', {}).get('sections') or []))
+    assert any(section.get('title') == 'Objectives' for section in (max_derived.get('payload', {}).get('sections') or []))
     assert start_uw.get('payload', {}).get('sections')
     assert start_bots.get('payload', {}).get('sections')
     assert start_guardians.get('payload', {}).get('sections')

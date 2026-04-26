@@ -207,8 +207,8 @@ sections:
       - false
   stats_dashboard:
     primary_panel_order:
-      - workshop
       - derived_wall_economy
+      - workshop
       - ultimate_weapons
       - bots
       - guardians
@@ -323,6 +323,12 @@ sections:
       - label: Enemy Health Level Skip
         surface_id: state::tower.enemy_health_level_skip_pct
     derived_wall_economy_surfaces:
+      - label: eHP
+        surface_id: derived::ehp
+      - label: eDamage
+        surface_id: derived::edamage
+      - label: eEcon
+        surface_id: derived::eecon
       - label: Wall HP (Pre-Fort)
         surface_id: derived::wall.hp_pre_fort
         canonical_row_id: derived::wall.hp_pre_fort
@@ -335,12 +341,45 @@ sections:
         surface_id: state::wall.thorns_damage_pct
       - label: Ultimate Weapon Damage
         surface_id: state::tower.ultimate_damage_multiplier
-      - label: eHP
-        surface_id: derived::ehp
-      - label: eEcon
-        surface_id: derived::eecon
-      - label: eDamage
-        surface_id: derived::edamage
+    ehp_breakdown_surfaces:
+      - label: Base Pool
+        surface_id: derived::ehp.pre_defense_pool
+      - label: Defense Taken Factor
+        surface_id: derived::ehp.defense_taken_factor
+      - label: Tradeoff Defense Factor
+        surface_id: derived::ehp.tradeoff_defense_factor
+      - label: Chrono Field DR Factor
+        surface_id: derived::ehp.chrono_field_damage_reduction_factor
+      - label: Chain Thunder Factor
+        surface_id: derived::ehp.chain_thunder_factor
+      - label: Primordial BH DR Factor
+        surface_id: derived::ehp.primordial_black_hole_damage_reduction_factor
+    edamage_breakdown_surfaces:
+      - label: Base Damage Stack
+        surface_id: derived::edamage.base_damage_stack
+      - label: Bullet Crit Factor
+        surface_id: derived::edamage.bullet_crit_factor
+      - label: Bullet Pipeline Factor
+        surface_id: derived::edamage.bullet_pipeline_factor
+      - label: Spotlight Factor
+        surface_id: derived::edamage.spotlight_factor
+      - label: UW Total Damage
+        surface_id: derived::edamage.uw_total_damage
+      - label: UW Crit Factor
+        surface_id: derived::edamage.uw_crit_factor
+      - label: Slow Factor
+        surface_id: derived::edamage.slow_factor
+    eecon_breakdown_surfaces:
+      - label: Meta Stack
+        surface_id: derived::eecon.cl_factor
+      - label: EOM Factor
+        surface_id: derived::eecon.eom_factor
+      - label: Sync Factor
+        surface_id: derived::eecon.sync_factor
+      - label: Spotlight Coin Factor
+        surface_id: derived::eecon.spotlight_coin_factor
+      - label: Wave Factor
+        surface_id: derived::eecon.wave_factor
     cards_surfaces:
       - label: Berserker Bonus
         surface_id: state::cards.berserker.assumed_bonus_multiplier
