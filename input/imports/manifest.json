@@ -1,5 +1,5 @@
 {
-  "generated_utc": "2026-05-05T14:25:34.750Z",
+  "generated_utc": "2026-05-06T14:25:34.925Z",
   "spreadsheet_id": "1cRKU7cNKhDn2OyyPaGn-U5bM6priDVE8fG-FAfbB-8c",
   "dest_prefix": "input/imports/",
   "files": {
@@ -8,7 +8,7 @@
       "sheet": "Progress",
       "rangeA1": "AUTO(lastRow/lastCol)",
       "approx_lines": 106,
-      "bytes": 23187
+      "bytes": 22632
     },
     "ids.csv": {
       "github_path": "input/imports/ids.csv",
