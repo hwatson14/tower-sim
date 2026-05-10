@@ -45,7 +45,7 @@ tier,coin_bonus,bc_name,bc_level,resolved_component,resolved_value_num,resolved_
 18,33.0,Thorns Resistance,60,damage_multiplier,0.4,ratio,multiplier,resolved_exact_tier_value,repo_tier_exact,60,60,internalized_source_snapshot,Exact value resolved from repo tier battle-condition table.
 19,40.0,Armored Enemies,50,blocked_hits,50.0,hits,hits_blocked,resolved_exact_tier_value,repo_tier_exact,50,50,internalized_source_snapshot,Exact value resolved from repo tier battle-condition table.
 19,40.0,Death Ray Resistance,95,damage_multiplier,0.05,ratio,multiplier,resolved_exact_tier_value,repo_tier_exact,95,95,internalized_source_snapshot,Exact value resolved from repo tier battle-condition table.
-19,40.0,ELS Reduction,30,absolute_chance_subtract,0.08,pp,absolute_subtract,resolved_exact_tier_value,repo_tier_exact,30,30,internalized_source_snapshot,Exact value resolved from repo tier battle-condition table.
+19,40.0,ELS Reduction,30,absolute_chance_subtract,0.15,pp,absolute_subtract,resolved_exact_tier_value,repo_tier_exact,30,30,internalized_source_snapshot,Exact value resolved from repo tier battle-condition table.
 19,40.0,Knockback Resistance,80,knockback_multiplier,0.2,ratio,multiplier,resolved_exact_tier_value,repo_tier_exact,80,80,internalized_source_snapshot,Exact value resolved from repo tier battle-condition table.
 19,40.0,More Bosses,5,boss_interval_waves,5.0,waves,interval,resolved_exact_tier_value,repo_tier_exact,5,5,internalized_source_snapshot,Exact value resolved from repo tier battle-condition table.
 19,40.0,Orb Resistance,95,damage_multiplier,0.05,ratio,multiplier,resolved_exact_tier_value,repo_tier_exact,95,95,internalized_source_snapshot,Exact value resolved from repo tier battle-condition table.
@@ -55,7 +55,7 @@ tier,coin_bonus,bc_name,bc_level,resolved_component,resolved_value_num,resolved_
 19,40.0,Thorns Resistance,70,damage_multiplier,0.3,ratio,multiplier,resolved_exact_tier_value,repo_tier_exact,70,70,internalized_source_snapshot,Exact value resolved from repo tier battle-condition table.
 20,48.0,Armored Enemies,60,blocked_hits,60.0,hits,hits_blocked,resolved_exact_tier_value,repo_tier_exact,60,60,internalized_source_snapshot,Exact value resolved from repo tier battle-condition table.
 20,48.0,Death Ray Resistance,95,damage_multiplier,0.05,ratio,multiplier,resolved_exact_tier_value,repo_tier_exact,95,95,internalized_source_snapshot,Exact value resolved from repo tier battle-condition table.
-20,48.0,ELS Reduction,35,absolute_chance_subtract,0.1,pp,absolute_subtract,resolved_exact_tier_value,repo_tier_exact,35,35,internalized_source_snapshot,Exact value resolved from repo tier battle-condition table.
+20,48.0,ELS Reduction,35,absolute_chance_subtract,0.175,pp,absolute_subtract,resolved_exact_tier_value,repo_tier_exact,35,35,internalized_source_snapshot,Exact value resolved from repo tier battle-condition table.
 20,48.0,Knockback Resistance,90,knockback_multiplier,0.1,ratio,multiplier,resolved_exact_tier_value,repo_tier_exact,90,90,internalized_source_snapshot,Exact value resolved from repo tier battle-condition table.
 20,48.0,More Bosses,5,boss_interval_waves,5.0,waves,interval,resolved_exact_tier_value,repo_tier_exact,5,5,internalized_source_snapshot,Exact value resolved from repo tier battle-condition table.
 20,48.0,Orb Resistance,95,damage_multiplier,0.05,ratio,multiplier,resolved_exact_tier_value,repo_tier_exact,95,95,internalized_source_snapshot,Exact value resolved from repo tier battle-condition table.
@@ -66,7 +66,7 @@ tier,coin_bonus,bc_name,bc_level,resolved_component,resolved_value_num,resolved_
 21,60.0,Armored Enemies,70,blocked_hits,70.0,hits,hits_blocked,resolved_exact_tier_value,repo_tier_exact,70,70,internalized_source_snapshot,Exact value resolved from repo tier battle-condition table.
 21,60.0,Boss Ultimate,35,overheal_pct,0.35,ratio,multiplier,resolved_exact_tier_value,repo_tier_exact,35,35,internalized_source_snapshot,Exact value resolved from repo tier battle-condition table.
 21,60.0,Death Ray Resistance,95,damage_multiplier,0.05,ratio,multiplier,resolved_exact_tier_value,repo_tier_exact,95,95,internalized_source_snapshot,Exact value resolved from repo tier battle-condition table.
-21,60.0,ELS Reduction,40,absolute_chance_subtract,0.13,pp,absolute_subtract,resolved_exact_tier_value,repo_tier_exact,40,40,internalized_source_snapshot,Exact value resolved from repo tier battle-condition table.
+21,60.0,ELS Reduction,40,absolute_chance_subtract,0.2,pp,absolute_subtract,resolved_exact_tier_value,repo_tier_exact,40,40,internalized_source_snapshot,Exact value resolved from repo tier battle-condition table.
 21,60.0,Fast's Ultimate,50,nearby_enemies,5.0,count,count,resolved_exact_tier_value,repo_tier_exact,50,50,internalized_source_snapshot,Exact value resolved from repo tier battle-condition table.
 21,60.0,Knockback Resistance,95,knockback_multiplier,0.05,ratio,multiplier,resolved_exact_tier_value,repo_tier_exact,95,95,internalized_source_snapshot,Exact value resolved from repo tier battle-condition table.
 21,60.0,Mass Enforcement,1,mass_increase_per_wave_alive,0.02,ratio,multiplier,resolved_exact_tier_value,wiki_public_exact,1,1,internalized_source_snapshot,Exact value resolved from wiki public note: Mass Enforcement is 2% at Lvl 1.

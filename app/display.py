@@ -323,6 +323,16 @@ INPUT_DASHBOARD_CSS = """
 .workshop-stats-table tbody td:nth-child(12),.workshop-stats-table tbody td:nth-child(16),.workshop-stats-table tbody td:nth-child(18){font-weight:700;}
 .workshop-stats-table tbody td:nth-child(19){background:#f3f3f3;width:34px;min-width:34px;text-align:center;}
 .workshop-stats-table .section-row td{background:#8d8d8d;color:#fff;font-weight:700;text-align:left;}
+.objective-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;padding:10px 12px 0 12px;}
+.objective-card{background:#f3f3f3;border:1px solid rgba(0,0,0,0.55);border-radius:8px;overflow:hidden;}
+.objective-card-header{display:flex;justify-content:space-between;align-items:baseline;gap:8px;background:#666;color:#fff;padding:8px 10px;}
+.objective-card-title{font-size:0.92rem;font-weight:700;}
+.objective-card-value{font-size:0.9rem;font-weight:700;}
+.objective-card-table{width:100%;border-collapse:collapse;font-size:0.82rem;table-layout:auto;}
+.objective-card-table th,.objective-card-table td{border:1px solid rgba(0,0,0,0.2);padding:5px 8px;line-height:1.2;color:#111;background:#f3f3f3;}
+.objective-card-table th{background:#d7d7d7;text-align:left;font-weight:700;}
+.objective-card-table td:last-child,.objective-card-table th:last-child{text-align:right;}
+@media (max-width: 900px){.objective-grid{grid-template-columns:1fr;}}
 .recon-dot{display:inline-block;width:9px;height:9px;border-radius:50%;flex:0 0 9px;border:1px solid rgba(0,0,0,0.35);}
 .recon-dot.green{background:#3ccf6e;box-shadow:0 0 5px rgba(60,207,110,0.55);}
 .recon-dot.red{background:#e25252;box-shadow:0 0 5px rgba(226,82,82,0.55);}
@@ -490,12 +500,35 @@ def render_workshop_stat_table_html(payload: dict) -> str:
         class_attr = " class='recon-fail'" if flag == 'fail' else ''
         return f"<td{class_attr}>{value}</td>"
 
+    def _render_objective_tables() -> str:
+        cards = []
+        for table in (payload.get('objective_tables') or []):
+            title = html.escape(str((table or {}).get('title') or ''))
+            summary_value = html.escape(_normalize_display_text((table or {}).get('summary_value') or ''))
+            rows_html = ''.join(
+                "<tr>"
+                f"<td>{html.escape(_normalize_display_text((row or {}).get('modifier') or ''))}</td>"
+                f"<td>{html.escape(_normalize_display_text((row or {}).get('value') or ''))}</td>"
+                "</tr>"
+                for row in ((table or {}).get('rows') or [])
+            )
+            cards.append(
+                "<div class='objective-card'>"
+                f"<div class='objective-card-header'><span class='objective-card-title'>{title}</span><span class='objective-card-value'>{summary_value}</span></div>"
+                "<table class='objective-card-table'><thead><tr><th>Modifier</th><th>Value</th></tr></thead>"
+                f"<tbody>{rows_html}</tbody></table>"
+                "</div>"
+            )
+        if not cards:
+            return ''
+        return f"<div class='objective-grid'>{''.join(cards)}</div>"
+
     custom_columns = payload.get('columns') or []
     if custom_columns:
         columns = [dict(column or {}) for column in custom_columns if isinstance(column, dict)]
         header_html = "<thead><tr>" + ''.join(
             f"<th>{html.escape(str(column.get('label') or column.get('key') or ''))}</th>"
-            for column in columns
+                for column in columns
         ) + "</tr></thead>"
         body_chunks = []
         for section in (payload.get('sections') or []):
@@ -510,7 +543,11 @@ def render_workshop_stat_table_html(payload: dict) -> str:
                     else:
                         cells.append(_cell_html(row=row, key=key))
                 body_chunks.append(f"<tr>{''.join(cells)}</tr>")
-        return f"<div class='inputs-panel workshop-stats-wrap'><table class='workshop-stats-table'>{header_html}<tbody>{''.join(body_chunks)}</tbody></table></div>"
+        objective_html = _render_objective_tables() if payload.get('display_variant') == 'objective_breakdown_grid' else ''
+        table_html = ''
+        if body_chunks:
+            table_html = f"<div class='inputs-panel workshop-stats-wrap'><table class='workshop-stats-table'>{header_html}<tbody>{''.join(body_chunks)}</tbody></table></div>"
+        return f"{objective_html}{table_html}"
 
     header_html = (
         "<thead>"

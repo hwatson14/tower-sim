@@ -311,6 +311,12 @@ def _derived_operator_row(
     }
 
 
+def _derived_mode_display(row: dict[str, object], *, selected_state_mode: str) -> str:
+    if selected_state_mode == 'max_progression':
+        return str(row.get('max_progression_value') or _DASH)
+    return str(row.get('start_of_run_value') or _DASH)
+
+
 def _derived_operator_section(
     *,
     stats_layout: dict[str, Any],
@@ -340,10 +346,12 @@ def publish_derived_wall_economy_operator_payload(
     stats_layout: dict[str, Any],
     rows_start: dict[str, dict[str, object]],
     rows_max: dict[str, dict[str, object]],
+    selected_state_mode: str,
     surface_specs: callable,
 ) -> dict[str, object]:
     objective_labels = {'eHP', 'eDamage', 'eEcon'}
     sections: list[dict[str, object]] = []
+    objective_rows_by_label: dict[str, dict[str, object]] = {}
     objectives_section = _derived_operator_section(
         stats_layout=stats_layout,
         rows_start=rows_start,
@@ -354,7 +362,8 @@ def publish_derived_wall_economy_operator_payload(
         surface_specs=surface_specs,
     )
     if objectives_section is not None:
-        sections.append(objectives_section)
+        objective_rows_by_label = {str(row.get('name') or ''): row for row in (objectives_section.get('rows') or [])}
+    objective_tables: list[dict[str, object]] = []
     for specs_key, title in (
         ('ehp_breakdown_surfaces', 'eHP Breakdown'),
         ('edamage_breakdown_surfaces', 'eDamage Breakdown'),
@@ -369,7 +378,24 @@ def publish_derived_wall_economy_operator_payload(
             surface_specs=surface_specs,
         )
         if section is not None:
-            sections.append(section)
+            objective_name = title.replace(' Breakdown', '')
+            summary_row = dict(objective_rows_by_label.get(objective_name) or {})
+            objective_tables.append(
+                {
+                    'table_id': _normalize_identity(objective_name),
+                    'title': objective_name,
+                    'summary_value': _derived_mode_display(summary_row, selected_state_mode=selected_state_mode),
+                    'rows': [
+                        {
+                            'modifier': row.get('name'),
+                            'value': _derived_mode_display(row, selected_state_mode=selected_state_mode),
+                            'status': row.get('status'),
+                            'surface_id': row.get('surface_id'),
+                        }
+                        for row in (section.get('rows') or [])
+                    ],
+                }
+            )
     other_derived_section = _derived_operator_section(
         stats_layout=stats_layout,
         rows_start=rows_start,
@@ -384,6 +410,9 @@ def publish_derived_wall_economy_operator_payload(
     return {
         'artifact': 'qe_derived_wall_economy_operator_rows',
         'owner': 'qe',
+        'display_variant': 'objective_breakdown_grid',
+        'selected_state_mode': selected_state_mode,
+        'objective_tables': objective_tables,
         'columns': [
             {'key': 'name', 'label': 'Name'},
             {'key': 'surface_id', 'label': 'Surface'},
@@ -394,7 +423,7 @@ def publish_derived_wall_economy_operator_payload(
             {'key': 'notes', 'label': 'Notes'},
             {'key': 'reconciliation_status', 'label': 'Recon', 'kind': 'recon'},
         ],
-        'sections': sections,
+        'sections': [other_derived_section] if other_derived_section is not None else [],
     }
     
 
@@ -2772,6 +2801,7 @@ def build_stats_dashboard_payload(
                 stats_layout=stats_layout,
                 rows_start=rows_start,
                 rows_max=rows_max,
+                selected_state_mode=state_mode,
                 surface_specs=_stats_surface_specs,
             )
             primary_panels.append({'panel_id': 'derived_wall_economy', 'panel_type': 'workshop_stat_table', 'title': 'Derived', 'payload': derived_wall_payload})

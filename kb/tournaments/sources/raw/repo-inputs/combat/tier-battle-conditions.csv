@@ -36,9 +36,9 @@ tier,bc,kind,value,unit,notes
 16,enemy_level_skip_reduction,absolute_chance_subtract,0.075,pp,Subtract from EHLS/EALS chance (interpretation: absolute pp)
 17,enemy_level_skip_reduction,absolute_chance_subtract,0.1,pp,Subtract from EHLS/EALS chance (interpretation: absolute pp)
 18,enemy_level_skip_reduction,absolute_chance_subtract,0.125,pp,Subtract from EHLS/EALS chance (interpretation: absolute pp)
-19,enemy_level_skip_reduction,absolute_chance_subtract,0.08,pp,Subtract from EHLS/EALS chance (interpretation: absolute pp)
-20,enemy_level_skip_reduction,absolute_chance_subtract,0.1,pp,Subtract from EHLS/EALS chance (interpretation: absolute pp)
-21,enemy_level_skip_reduction,absolute_chance_subtract,0.13,pp,Subtract from EHLS/EALS chance (interpretation: absolute pp)
+19,enemy_level_skip_reduction,absolute_chance_subtract,0.15,pp,Subtract from EHLS/EALS chance (interpretation: absolute pp)
+20,enemy_level_skip_reduction,absolute_chance_subtract,0.175,pp,Subtract from EHLS/EALS chance (interpretation: absolute pp)
+21,enemy_level_skip_reduction,absolute_chance_subtract,0.2,pp,Subtract from EHLS/EALS chance (interpretation: absolute pp)
 14,more_bosses,boss_interval_waves,9.0,waves,Boss spawns every interval waves
 15,more_bosses,boss_interval_waves,8.0,waves,Boss spawns every interval waves
 16,more_bosses,boss_interval_waves,7.0,waves,Boss spawns every interval waves

@@ -304,3 +304,47 @@ def test_workshop_stats_renderer_shows_cap_before_recon():
     assert '>Cap<' in html
     assert html.index('>Cap<') < html.index('>Recon<')
     assert html.count('>98%<') >= 4
+
+
+def test_workshop_stats_renderer_renders_objective_breakdown_grid():
+    html = render_workshop_stat_table_html(
+        {
+            'display_variant': 'objective_breakdown_grid',
+            'objective_tables': [
+                {
+                    'title': 'eHP',
+                    'summary_value': '10',
+                    'rows': [
+                        {'modifier': 'Base Pool', 'value': '40'},
+                        {'modifier': 'Defense Taken Factor', 'value': 'x5'},
+                    ],
+                },
+                {
+                    'title': 'eDamage',
+                    'summary_value': '20',
+                    'rows': [
+                        {'modifier': 'Base Damage Stack', 'value': '100'},
+                    ],
+                },
+            ],
+            'columns': [
+                {'key': 'name', 'label': 'Name'},
+                {'key': 'surface_id', 'label': 'Surface'},
+            ],
+            'sections': [
+                {
+                    'title': 'Derived',
+                    'rows': [
+                        {'name': 'Wall HP', 'surface_id': 'derived::wall.hp_final'},
+                    ],
+                }
+            ],
+        }
+    )
+    assert "class='objective-grid'" in html
+    assert "class='objective-card'" in html
+    assert 'Modifier' in html
+    assert 'Base Pool' in html
+    assert 'Defense Taken Factor' in html
+    assert 'Wall HP' in html
+    assert html.index('objective-grid') < html.index('workshop-stats-wrap')

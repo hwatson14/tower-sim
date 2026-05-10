@@ -284,10 +284,9 @@ def test_pipeline_writes_stats_dashboard_contract(canonical_pipeline_artifacts):
     start_modules = next(panel for panel in start_panels if panel.get('panel_id') == 'modules')
     assert start_workshop.get('payload', {}).get('sections')
     assert max_workshop.get('payload', {}).get('sections')
-    assert any(section.get('title') == 'Objectives' for section in (start_derived.get('payload', {}).get('sections') or []))
-    assert any(section.get('title') == 'eHP Breakdown' for section in (start_derived.get('payload', {}).get('sections') or []))
     assert any(section.get('title') == 'Derived' for section in (start_derived.get('payload', {}).get('sections') or []))
-    assert any(section.get('title') == 'Objectives' for section in (max_derived.get('payload', {}).get('sections') or []))
+    assert [table.get('title') for table in (start_derived.get('payload', {}).get('objective_tables') or [])] == ['eHP', 'eDamage', 'eEcon']
+    assert [table.get('title') for table in (max_derived.get('payload', {}).get('objective_tables') or [])] == ['eHP', 'eDamage', 'eEcon']
     assert start_uw.get('payload', {}).get('sections')
     assert start_bots.get('payload', {}).get('sections')
     assert start_guardians.get('payload', {}).get('sections')

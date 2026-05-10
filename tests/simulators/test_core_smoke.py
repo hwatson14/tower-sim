@@ -48,6 +48,16 @@ def test_timing_public_api_is_importable__query_callables_exposed():
     assert callable(resolve_timing_consumer_bundle)
 
 
+def test_tier_enemy_level_skip_reduction_continues_expected_late_tier_pattern():
+    from simulators.scenario import _load_tier_battle_conditions
+
+    tier_bcs = _load_tier_battle_conditions()
+
+    assert float(tier_bcs[19]['enemy_level_skip_reduction']['value']) == pytest.approx(0.15)
+    assert float(tier_bcs[20]['enemy_level_skip_reduction']['value']) == pytest.approx(0.175)
+    assert float(tier_bcs[21]['enemy_level_skip_reduction']['value']) == pytest.approx(0.2)
+
+
 def test_simulator_modules_reference_qe_imports__expected_qe_strings_present():
     import simulators.progression as progression_module
     import simulators.timing as timing_module
