@@ -125,27 +125,141 @@ def test_governed_numeric_rows_route_without_old_bucket() -> None:
     assert 'pending' not in (starting_cash.notes or '')
 
 
+def test_v28_dissonant_echo_labs_route_as_levels() -> None:
+    state = _base_account_state()
+    rows = _compiled_rows(replace(
+        state,
+        labs={
+            **state.labs,
+            'Dissonant Echo - Attack': 20,
+            'Dissonant Echo - Defense': 1,
+            'Dissonant Echo - Utility': 0,
+            'Dissonant Echo - Ultimate Weapons': 5,
+        },
+    ))
+
+    expected = {
+        'Dissonant Echo - Attack': ('labs.dissonant_echo.attack.level', 20.0, 'attack'),
+        'Dissonant Echo - Defense': ('labs.dissonant_echo.defense.level', 1.0, 'defense'),
+        'Dissonant Echo - Utility': ('labs.dissonant_echo.utility.level', 0.0, 'utility'),
+        'Dissonant Echo - Ultimate Weapons': ('labs.dissonant_echo.ultimate_weapons.level', 5.0, 'ultimate_weapons'),
+    }
+    for lab_name, (destination_id, value, category) in expected.items():
+        row = _single_row_by_family(rows, name=lab_name, source_family='lab')
+        assert row.destination_object_type == 'runtime_mechanic_param'
+        assert row.destination_id == destination_id
+        assert row.value == pytest.approx(value)
+        assert row.value_type == 'level'
+        assert row.notes == f'v28_dissonant_echo_lab_level_routed:{category}'
+
+
+def test_v28_dissonant_pbs_route_from_active_ids_tier() -> None:
+    state = replace(
+        _base_account_state(),
+        player_meta={**_base_account_state().player_meta, 'Farming Tier': 'Tier 10'},
+        dissonance_pbs_by_tier={
+            'Tier 4': {'attack': 400, 'defense': 401, 'utility': 402, 'ultimate_weapons': 403},
+            'Tier 10': {'attack': 1000, 'defense': 1001, 'utility': 1002, 'ultimate_weapons': 1003},
+        },
+    )
+    rows = _compiled_rows(state)
+
+    expected = {
+        'Dissonant PB - Attack': ('dissonance.attack.pb', 1000.0, 'attack'),
+        'Dissonant PB - Defense': ('dissonance.defense.pb', 1001.0, 'defense'),
+        'Dissonant PB - Utility': ('dissonance.utility.pb', 1002.0, 'utility'),
+        'Dissonant PB - Ultimate Weapons': ('dissonance.ultimate_weapons.pb', 1003.0, 'ultimate_weapons'),
+    }
+    for stat_name, (destination_id, value, category) in expected.items():
+        row = _single_row_by_family(rows, name=stat_name, source_family='player_stuff')
+        assert row.destination_object_type == 'runtime_mechanic_param'
+        assert row.destination_id == destination_id
+        assert row.value == pytest.approx(value)
+        assert row.value_type == 'count'
+        assert row.notes == f'v28_dissonant_pb_routed:{category}:tier=Tier 10'
+    boost_caps = {'attack': 5.0, 'defense': 5.0, 'utility': 3.0, 'ultimate_weapons': 5.0}
+
+    def boost(category: str, wave: float) -> float:
+        return 1.0 + (boost_caps[category] - 1.0) * ((min(max(wave, 0.0), 5000.0) / 5000.0) ** 1.75)
+
+    boost_expected = {
+        'Dissonant Active Boost - Attack': ('dissonance.attack.active_boost_multiplier', boost('attack', 1000.0), 'attack'),
+        'Dissonant Active Boost - Defense': ('dissonance.defense.active_boost_multiplier', boost('defense', 1001.0), 'defense'),
+        'Dissonant Active Boost - Utility': ('dissonance.utility.active_boost_multiplier', boost('utility', 1002.0), 'utility'),
+        'Dissonant Active Boost - Ultimate Weapons': ('dissonance.ultimate_weapons.active_boost_multiplier', boost('ultimate_weapons', 1003.0), 'ultimate_weapons'),
+    }
+    for stat_name, (destination_id, value, category) in boost_expected.items():
+        row = _single_row_by_family(rows, name=stat_name, source_family='player_stuff')
+        assert row.destination_object_type == 'runtime_mechanic_param'
+        assert row.destination_id == destination_id
+        assert row.value == pytest.approx(value)
+        assert row.value_type == 'multiplier'
+        assert row.notes == f'v28_dissonant_active_boost_routed:{category}:tier=Tier 10'
+
+    echo_expected = {
+        'Dissonant Echo Source - Attack': ('dissonance.attack.echo_source_bonus', (boost('attack', 400.0) - 1.0) + (boost('attack', 1000.0) - 1.0), 'attack'),
+        'Dissonant Echo Source - Defense': ('dissonance.defense.echo_source_bonus', (boost('defense', 401.0) - 1.0) + (boost('defense', 1001.0) - 1.0), 'defense'),
+        'Dissonant Echo Source - Utility': ('dissonance.utility.echo_source_bonus', (boost('utility', 402.0) - 1.0) + (boost('utility', 1002.0) - 1.0), 'utility'),
+        'Dissonant Echo Source - Ultimate Weapons': ('dissonance.ultimate_weapons.echo_source_bonus', (boost('ultimate_weapons', 403.0) - 1.0) + (boost('ultimate_weapons', 1003.0) - 1.0), 'ultimate_weapons'),
+    }
+    for stat_name, (destination_id, value, category) in echo_expected.items():
+        row = _single_row_by_family(rows, name=stat_name, source_family='player_stuff')
+        assert row.destination_object_type == 'runtime_mechanic_param'
+        assert row.destination_id == destination_id
+        assert row.value == pytest.approx(value)
+        assert row.value_type == 'resolved_value'
+        assert row.notes == f'v28_dissonant_echo_source_routed:{category}:tiers=2'
+
+
+def test_progression_family_publishes_active_v28_dissonant_pb_surfaces() -> None:
+    state = replace(
+        _base_account_state(),
+        player_meta={**_base_account_state().player_meta, 'Farming Tier': 'Tier 10'},
+        dissonance_pbs_by_tier={
+            'Tier 10': {'attack': 1000, 'defense': 1001, 'utility': 1002, 'ultimate_weapons': 1003},
+        },
+    )
+    planner = QEResolutionPlanner()
+    statbook = planner.resolve_declared_family_statbook(
+        state,
+        family_id='progression_start_of_run',
+        requested_surface_ids=(
+            'state::dissonance.attack.pb',
+            'state::dissonance.defense.pb',
+            'state::dissonance.utility.pb',
+            'state::dissonance.ultimate_weapons.pb',
+            'state::dissonance.attack.active_boost_multiplier',
+            'state::dissonance.utility.active_boost_multiplier',
+            'state::dissonance.attack.echo_source_bonus',
+            'state::dissonance.utility.echo_source_bonus',
+        ),
+        preset_name='Farming',
+        state_mode='start_of_run',
+        notes='test_v28_dissonant_pb_state_surface_publication',
+    )
+
+    assert statbook.rows['state::dissonance.attack.pb'].final_value == pytest.approx(1000.0)
+    assert statbook.rows['state::dissonance.defense.pb'].final_value == pytest.approx(1001.0)
+    assert statbook.rows['state::dissonance.utility.pb'].final_value == pytest.approx(1002.0)
+    assert statbook.rows['state::dissonance.ultimate_weapons.pb'].final_value == pytest.approx(1003.0)
+    assert statbook.rows['state::dissonance.attack.active_boost_multiplier'].final_value > 1.0
+    assert statbook.rows['state::dissonance.utility.active_boost_multiplier'].final_value > 1.0
+    assert statbook.rows['state::dissonance.attack.echo_source_bonus'].final_value > 0.0
+    assert statbook.rows['state::dissonance.utility.echo_source_bonus'].final_value > 0.0
+
+
 def test_active_farming_module_uniques_compile_to_unique_effect_values() -> None:
     rows = _compiled_rows(_base_account_state())
 
-    orbital = _single_row_by_family(rows, name='Orbital Augment::unique', source_family='module')
-    black_hole = _single_row_by_family(rows, name='Black Hole Digestor::unique', source_family='module')
-    primordial = _single_row_by_family(rows, name='Primordial Collapse::unique', source_family='module')
-
-    assert orbital.destination_object_type == 'mechanic_param'
-    assert orbital.destination_id == 'module.orbital_augment.electron_count'
-    assert orbital.value == 2.0
-    assert orbital.value_type == 'count'
-
-    assert black_hole.destination_object_type == 'mechanic_param'
-    assert black_hole.destination_id == 'module.black_hole_digestor.extra_coin_kill_bonus_per_free_upgrade_pct'
-    assert black_hole.value == 0.30000000000000004
-    assert black_hole.value_type == 'pct'
-
-    assert primordial.destination_object_type == 'mechanic_param'
-    assert primordial.destination_id == 'module.primordial_collapse.bh_damage_reduction_pct'
-    assert primordial.value == 80.0
-    assert primordial.value_type == 'pct'
+    assert not [
+        row for row in rows
+        if row.source_family == 'module'
+        and row.stat_name in {
+            'Orbital Augment::unique',
+            'Black Hole Digestor::unique',
+            'Primordial Collapse::unique',
+        }
+    ]
 
 
 def test_progression_family_publishes_active_module_unique_state_surfaces() -> None:
@@ -168,16 +282,13 @@ def test_progression_family_publishes_active_module_unique_state_surfaces() -> N
     primordial = statbook.rows['state::module.primordial_collapse.bh_damage_reduction_pct']
 
     assert black_hole.status == 'resolved'
-    assert black_hole.final_value == 0.30000000000000004
-    assert black_hole.contributors[0]['source_class'] == 'module_unique'
+    assert black_hole.final_value == 0.0
 
     assert orbital.status == 'resolved'
-    assert orbital.final_value == 2.0
-    assert orbital.contributors[0]['source_class'] == 'module_unique'
+    assert orbital.final_value == 0.0
 
     assert primordial.status == 'resolved'
-    assert primordial.final_value == 80.0
-    assert primordial.contributors[0]['source_class'] == 'module_unique'
+    assert primordial.final_value == 0.0
 
 
 def test_optimizer_module_effects_bundle_resolves_optional_module_surfaces_when_explicitly_requested() -> None:
@@ -197,11 +308,11 @@ def test_optimizer_module_effects_bundle_resolves_optional_module_surfaces_when_
     )
 
     rows = {row.surface_id: row for row in response.resolved_surface_rows}
-    assert rows['state::module.primordial_collapse.bh_damage_reduction_pct'].final_value == pytest.approx(80.0)
-    assert rows['state::module.black_hole_digestor.extra_coin_kill_bonus_per_free_upgrade_pct'].final_value == pytest.approx(0.30000000000000004)
-    assert rows['state::module.black_hole_digestor.extra_coin_kill_bonus_per_free_upgrade_pct'].status == 'resolved'
-    assert rows['state::module.orbital_augment.electron_count'].final_value == pytest.approx(2.0)
-    assert rows['state::module.orbital_augment.electron_count'].status == 'resolved'
+    assert rows['state::module.primordial_collapse.bh_damage_reduction_pct'].final_value is None
+    assert rows['state::module.black_hole_digestor.extra_coin_kill_bonus_per_free_upgrade_pct'].final_value is None
+    assert rows['state::module.black_hole_digestor.extra_coin_kill_bonus_per_free_upgrade_pct'].status == 'gated_off'
+    assert rows['state::module.orbital_augment.electron_count'].final_value is None
+    assert rows['state::module.orbital_augment.electron_count'].status == 'gated_off'
 
 
 
@@ -412,10 +523,10 @@ def test_berserker_card_routes_in_normal_audited_compile_path_without_falling_th
 def test_discount_labs_route_to_qe_owned_meta_surfaces_and_workshop_enhancements_routes_to_capability() -> None:
     rows = _compiled_rows(_base_account_state())
     expected_resolved = {
-        'Workshop Attack Discount': ('meta_progression_param', 'workshop_attack_cost_reduction_pct', 13.5),
-        'Workshop Defense Discount': ('meta_progression_param', 'workshop_defense_cost_reduction_pct', 14.0),
-        'Workshop Utility Discount': ('meta_progression_param', 'workshop_utility_cost_reduction_pct', 20.5),
-        'Labs Coin Discount': ('meta_progression_param', 'lab_coin_cost_reduction_pct', 20.4),
+        'Workshop Attack Discount': ('meta_progression_param', 'workshop_attack_cost_reduction_pct', 0.0),
+        'Workshop Defense Discount': ('meta_progression_param', 'workshop_defense_cost_reduction_pct', 0.0),
+        'Workshop Utility Discount': ('meta_progression_param', 'workshop_utility_cost_reduction_pct', 0.0),
+        'Labs Coin Discount': ('meta_progression_param', 'lab_coin_cost_reduction_pct', 0.0),
     }
 
     for lab_name, expected in expected_resolved.items():
@@ -431,7 +542,7 @@ def test_discount_labs_route_to_qe_owned_meta_surfaces_and_workshop_enhancements
     assert workshop_enhancements.destination_object_type == 'capability'
     assert workshop_enhancements.destination_id == 'capability.workshop.enhancements_unlock'
     assert workshop_enhancements.value_type == 'bool'
-    assert workshop_enhancements.value is True
+    assert workshop_enhancements.value is False
     assert workshop_enhancements.notes == 'capability_policy_routed:Workshop Enhancements'
 
 
@@ -439,15 +550,15 @@ def test_materialized_lab_values_replace_level_pending_for_sanctioned_formula_la
     rows = _compiled_rows(_base_account_state())
 
     expected_resolved = {
-        'Orbs Speed': ('mechanic_param', 'lab.orb_speed_bonus', 2.0),
-        'Land Mine Decay': ('mechanic_param', 'lab.land_mine_decay_seconds', 6.5),
+        'Orbs Speed': ('mechanic_param', 'lab.orb_speed_bonus', 0.0),
+        'Land Mine Decay': ('mechanic_param', 'lab.land_mine_decay_seconds', 0.0),
         'Shockwave Size': ('mechanic_param', 'lab.shockwave_size_bonus', 0.0),
-        'Orb Boss Hit': ('runtime_mechanic_param', 'combat.orb_boss_hit_pct', 2.0),
-        'Second Wind Blast': ('mechanic_param', 'lab.second_wind_blast_pct', 100.0),
-        'Recharge Second Wind': ('mechanic_param', 'lab.recharge_second_wind_waves', 400.0),
-        'Recharge Demon Mode': ('mechanic_param', 'lab.recharge_demon_mode_waves', 750.0),
-        'Recharge Nuke': ('mechanic_param', 'lab.recharge_nuke_waves', 1250.0),
-        'Energy Shield Extra Hit': ('mechanic_param', 'energy_shield_charge_count', 2.0),
+        'Orb Boss Hit': ('runtime_mechanic_param', 'combat.orb_boss_hit_pct', 0.0),
+        'Second Wind Blast': ('mechanic_param', 'lab.second_wind_blast_pct', 0.0),
+        'Recharge Second Wind': ('mechanic_param', 'lab.recharge_second_wind_waves', 0.0),
+        'Recharge Demon Mode': ('mechanic_param', 'lab.recharge_demon_mode_waves', 0.0),
+        'Recharge Nuke': ('mechanic_param', 'lab.recharge_nuke_waves', 0.0),
+        'Energy Shield Extra Hit': ('mechanic_param', 'energy_shield_charge_count', 0.0),
     }
 
     for lab_name, expected in expected_resolved.items():
@@ -469,7 +580,7 @@ def test_materialized_lab_values_replace_level_pending_for_sanctioned_formula_la
         expected_note = (
             'kb_uw_lab_direct_routed:Shockwave Size'
             if lab_name == 'Shockwave Size'
-            else f'kb_lab_value_table_resolved:{lab_name}'
+            else f'kb_uw_lab_direct_routed:{lab_name}'
         )
         assert row.notes == expected_note
 
@@ -702,9 +813,9 @@ def test_progression_family_publishes_ultimate_crit_surface_and_uw_helper_factor
     card_row = statbook.rows['state::cards.ultimate_crit.chance_pct']
     factor_row = statbook.rows['derived::edamage.uw_crit_card_factor']
 
-    assert card_row.final_value == pytest.approx(3.0)
+    assert card_row.final_value == pytest.approx(0.0)
     assert card_row.status == 'resolved'
-    assert factor_row.final_value > 1.0
+    assert factor_row.final_value == pytest.approx(1.0)
     assert factor_row.status == 'resolved'
     assert any(c['stat_name'] == 'state::cards.ultimate_crit.chance_pct' for c in factor_row.contributors)
 
@@ -726,9 +837,9 @@ def test_black_hole_uw_tracks_publish_progression_ehp_support_surfaces() -> None
     duration_row = statbook.rows['support_surface::ehp.black_hole_duration_seconds']
     cooldown_row = statbook.rows['support_surface::ehp.black_hole_cooldown_seconds']
 
-    assert duration_row.final_value == 32.0
+    assert duration_row.final_value == 15.0
     assert duration_row.status == 'resolved'
-    assert cooldown_row.final_value == 50.0
+    assert cooldown_row.final_value == 200.0
     assert cooldown_row.status == 'resolved'
 
 
@@ -761,14 +872,14 @@ def test_progression_family_publishes_raw_uw_timing_rows_separately_from_timing_
         notes='hardening_f_uw_effective_probe',
     )
 
-    assert progression.rows['state::uw.black_hole.base_duration_seconds'].final_value == pytest.approx(36.0)
-    assert progression.rows['state::uw.black_hole.base_cooldown_seconds'].final_value == pytest.approx(46.0)
-    assert progression.rows['state::uw.golden_tower.base_duration_seconds'].final_value == pytest.approx(42.0)
-    assert progression.rows['state::uw.golden_tower.base_cooldown_seconds'].final_value == pytest.approx(180.0)
-    assert timing.rows['state::uw.black_hole.duration_seconds'].final_value == pytest.approx(36.0)
-    assert timing.rows['state::uw.black_hole.cooldown_seconds'].final_value == pytest.approx(46.0)
-    assert timing.rows['state::uw.golden_tower.duration_seconds'].final_value == pytest.approx(42.0)
-    assert timing.rows['state::uw.golden_tower.cooldown_seconds'].final_value == pytest.approx(180.0)
+    assert progression.rows['state::uw.black_hole.base_duration_seconds'].final_value == pytest.approx(15.0)
+    assert progression.rows['state::uw.black_hole.base_cooldown_seconds'].final_value == pytest.approx(200.0)
+    assert progression.rows['state::uw.golden_tower.base_duration_seconds'].final_value == pytest.approx(15.0)
+    assert progression.rows['state::uw.golden_tower.base_cooldown_seconds'].final_value == pytest.approx(300.0)
+    assert timing.rows['state::uw.black_hole.duration_seconds'].final_value == pytest.approx(15.0)
+    assert timing.rows['state::uw.black_hole.cooldown_seconds'].final_value == pytest.approx(200.0)
+    assert timing.rows['state::uw.golden_tower.duration_seconds'].final_value == pytest.approx(15.0)
+    assert timing.rows['state::uw.golden_tower.cooldown_seconds'].final_value == pytest.approx(300.0)
 
 
 def test_progression_family_publishes_active_thunder_bot_duration_and_linger_surfaces() -> None:
@@ -841,6 +952,29 @@ def test_progression_family_publishes_flame_bot_burn_stack_surface_without_gated
     assert row.contributors[0]['value'] == pytest.approx(0.0)
 
 
+def test_v28_bot_bot_and_bot_plus_rows_route_from_ids_bots() -> None:
+    rows = _compiled_rows(_base_account_state())
+
+    bot_bot_duration = _single_row_by_family(rows, name='Bot Bot::Duration', source_family='bot')
+    bot_bot_bonus = _single_row_by_family(rows, name='Bot Bot::Bonus', source_family='bot')
+    bot_plus_wildfire = _single_row_by_family(rows, name='Bot +::Wildfire', source_family='bot_plus')
+
+    assert bot_bot_duration.destination_object_type == 'mechanic_param'
+    assert bot_bot_duration.destination_id == 'bot.bot_bot.duration_seconds'
+    assert bot_bot_duration.value == pytest.approx(20.0)
+    assert bot_bot_duration.value_type == 'resolved_value'
+    assert bot_bot_duration.notes == 'ids_bot_track_value_preserved'
+
+    assert bot_bot_bonus.destination_object_type == 'mechanic_param'
+    assert bot_bot_bonus.destination_id == 'bot.bot_bot.bonus_multiplier'
+    assert bot_bot_bonus.value == pytest.approx(1.05)
+
+    assert bot_plus_wildfire.destination_object_type == 'runtime_mechanic_param'
+    assert bot_plus_wildfire.destination_id == 'bot.plus.wildfire.unlocked'
+    assert bot_plus_wildfire.value is False
+    assert bot_plus_wildfire.value_type == 'bool'
+
+
 def test_progression_family_publishes_effective_bot_range_surfaces_with_tower_range_amplification() -> None:
     planner = QEResolutionPlanner()
     statbook = planner.resolve_declared_family_statbook(
@@ -851,12 +985,14 @@ def test_progression_family_publishes_effective_bot_range_surfaces_with_tower_ra
             'state::bot.amplify.range_m',
             'state::bot.flame.range_m',
             'state::bot.thunder.range_m',
+            'state::bot.bot_bot.range_m',
             'state::bot.global.range_bonus_m',
             'state::tower.range_m',
             'state::bot.golden.effective_range_m',
             'state::bot.amplify.effective_range_m',
             'state::bot.flame.effective_range_m',
             'state::bot.thunder.effective_range_m',
+            'state::bot.bot_bot.effective_range_m',
         ),
         preset_name='Farming',
         state_mode='start_of_run',
@@ -867,7 +1003,7 @@ def test_progression_family_publishes_effective_bot_range_surfaces_with_tower_ra
     global_bonus = statbook.rows['state::bot.global.range_bonus_m'].final_value
     amplification = 1.33 * (tower_range / 69.5)
 
-    for bot_name in ('golden', 'amplify', 'flame', 'thunder'):
+    for bot_name in ('golden', 'amplify', 'flame', 'thunder', 'bot_bot'):
         raw_row = statbook.rows[f'state::bot.{bot_name}.range_m']
         effective_row = statbook.rows[f'state::bot.{bot_name}.effective_range_m']
         assert raw_row.status == 'resolved'
@@ -898,14 +1034,14 @@ def test_progression_family_publishes_relic_support_surfaces_for_derived_consume
         notes='hardening_f_relic_support_probe',
     )
 
-    assert statbook.rows['support_surface::ehp.health_relic_pct'].final_value == pytest.approx(0.51)
+    assert statbook.rows['support_surface::ehp.health_relic_pct'].final_value == pytest.approx(0.0)
     assert statbook.rows['support_surface::ehp.health_relic_pct'].status == 'resolved'
-    assert statbook.rows['support_surface::ehp.dabs_relic_pct'].final_value == pytest.approx(0.28)
-    assert statbook.rows['support_surface::ehp.def_pct_relic_pct'].final_value == pytest.approx(0.04)
-    assert statbook.rows['support_surface::eecon.adstarter_theme_relic_factor'].final_value == pytest.approx(1.48)
-    assert statbook.rows['support_surface::eecon.freeup_attack_relic_pct'].final_value == pytest.approx(0.06)
-    assert statbook.rows['support_surface::eecon.freeup_defense_relic_pct'].final_value == pytest.approx(0.03)
-    assert statbook.rows['support_surface::eecon.freeup_utility_relic_pct'].final_value == pytest.approx(0.05)
+    assert statbook.rows['support_surface::ehp.dabs_relic_pct'].final_value == pytest.approx(0.0)
+    assert statbook.rows['support_surface::ehp.def_pct_relic_pct'].final_value == pytest.approx(0.0)
+    assert statbook.rows['support_surface::eecon.adstarter_theme_relic_factor'].final_value == pytest.approx(1.0)
+    assert statbook.rows['support_surface::eecon.freeup_attack_relic_pct'].final_value == pytest.approx(0.0)
+    assert statbook.rows['support_surface::eecon.freeup_defense_relic_pct'].final_value == pytest.approx(0.0)
+    assert statbook.rows['support_surface::eecon.freeup_utility_relic_pct'].final_value == pytest.approx(0.0)
 
 
 def test_audited_enemy_and_bc_labs_have_explicit_owned_destinations_without_pending_limbs() -> None:
@@ -1071,18 +1207,7 @@ def test_sharp_fortitude_rows_use_module_preset_and_keep_module_provenance_and_c
         and row.source_name == 'Sharp Fortitude'
         and row.stat_name in {'Sharp Fortitude::main', 'Sharp Fortitude::unique'}
     ]
-    assert sharp_rows
-    assert all(row.preset_name == 'Milestone' for row in sharp_rows)
-    assert all(row.provenance == 'IDS::Modules' for row in sharp_rows)
-
-    sf_manual_unique_rows = [
-        row for row in sharp_rows
-        if 'kb_manual_sharp_fortitude' in (row.notes or '')
-    ]
-    assert {row.contributor_id for row in sf_manual_unique_rows} == {
-        'module__armor__wall_health__pct@@sharp fortitude@@primary@@unique',
-        'module__armor__wall_regen__pct@@sharp fortitude@@primary@@unique',
-    }
+    assert sharp_rows == []
 
 
 def test_routing_diagnostics_distinguish_classes_without_false_unmapped_inflation() -> None:

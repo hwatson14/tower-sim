@@ -24,6 +24,8 @@ _WORKSHOP_MULTIPLICATIVE_SURFACE_OVERRIDES: frozenset[str] = frozenset({
     'state::economy.coins_per_wave',
     'state::tower.knockback_force',
     'state::tower.orb_speed_rpm',
+    'state::tower.range_m',
+    'state::tower.shockwave_size_m',
 })
 
 _WORKSHOP_FRACTIONAL_MODULE_PCT_SURFACES: frozenset[str] = frozenset({
@@ -34,6 +36,7 @@ _AUDIT_SURFACE_CAPS: dict[str, dict[str, object]] = {
     'state::tower.defense_pct': {'cap_type': 'max', 'cap_value': 98.0},
     'state::wall.rebuild_seconds': {'cap_type': 'min', 'cap_value': 150.0},
     'state::tower.shockwave_interval_seconds': {'cap_type': 'min', 'cap_value': 7.0},
+    'state::tower.orb_count': {'cap_type': 'min', 'cap_value': 1.0},
 }
 
 _WORKSHOP_DECIMAL_BASE_SURFACES: frozenset[str] = frozenset({
@@ -48,6 +51,11 @@ _WORKSHOP_ADDITIVE_POST_MULTIPLIER_SURFACES: frozenset[str] = frozenset({
 
 _WORKSHOP_IDENTITY_LAB_SURFACES: frozenset[str] = frozenset({
     'state::tower.range_m',
+})
+
+_ZERO_BASE_AS_FACTOR_SURFACES: frozenset[str] = frozenset({
+    'state::economy.cash_per_wave',
+    'state::economy.coins_per_wave',
 })
 
 
@@ -447,6 +455,7 @@ def _apply_effect_to_workshop_value(
     effect: tuple[float, float, bool],
     family: str,
     workshop_value: float | None,
+    surface_id: str = '',
 ) -> float | None:
     if workshop_value is None:
         return None
@@ -454,6 +463,8 @@ def _apply_effect_to_workshop_value(
     if not has_value:
         return workshop_value
     if family == 'multiplicative':
+        if surface_id in _ZERO_BASE_AS_FACTOR_SURFACES and abs(workshop_value) < 1e-12:
+            return factor_total
         return workshop_value * factor_total
     if family == 'decimal_base_multiplicative':
         return 1.0 + ((workshop_value + additive_total) / 1000.0) * factor_total
@@ -591,6 +602,7 @@ def _strict_reconciliation_audit(
         effect=start_total_effect,
         family=family,
         workshop_value=workshop_value,
+        surface_id=surface_id,
     )
     expected_start_value_numeric = _apply_audit_surface_cap(surface_id=surface_id, value=expected_start_value_numeric)
     expected_start_value = (
@@ -610,6 +622,7 @@ def _strict_reconciliation_audit(
         effect=max_workshop_modifier_effect,
         family=family,
         workshop_value=max_workshop_value,
+        surface_id=surface_id,
     )
     expected_max_workshop_numeric = _apply_audit_surface_cap(surface_id=surface_id, value=expected_max_workshop_numeric)
     expected_max_workshop_value = (
@@ -626,6 +639,7 @@ def _strict_reconciliation_audit(
         effect=expected_max_progression_effect,
         family=family,
         workshop_value=max_workshop_value,
+        surface_id=surface_id,
     )
     expected_max_progression_numeric = _apply_audit_surface_cap(surface_id=surface_id, value=expected_max_progression_numeric)
     expected_max_progression_value = (
@@ -685,16 +699,18 @@ def _strict_reconciliation_audit(
 
     forbidden_effect_tokens = {'x 1', 'x1', '+ 0', '+0', '+ 0%', '+0%', '0%'}
     forbidden_effect_cells = [
-        base_subtotal_text,
-        base_loadout_subtotal_text,
-        start_modifier_total_text,
-        other_text,
-        max_workshop_total_text,
-        perk_text,
+        (expected_base_subtotal, base_subtotal_text),
+        (expected_base_loadout_subtotal, base_loadout_subtotal_text),
+        (expected_start_modifier_total, start_modifier_total_text),
+        (expected_other, other_text),
+        (expected_max_workshop_total, max_workshop_total_text),
+        (expected_perk, perk_text),
     ]
     checks['forbidden_cells_ok'] = not any(
-        isinstance(text, str) and text.strip() in forbidden_effect_tokens
-        for text in forbidden_effect_cells
+        isinstance(actual_text, str)
+        and actual_text.strip() in forbidden_effect_tokens
+        and not _display_matches(expected_text=expected_text, actual_text=actual_text)
+        for expected_text, actual_text in forbidden_effect_cells
     )
 
     cell_check_map = {
@@ -1259,6 +1275,7 @@ def build_workshop_reconciliation_row(
             effect=max_workshop_modifier_effect,
             family=family,
             workshop_value=max_workshop_contribution,
+            surface_id=surface_id,
         ),
         surface_id=surface_id,
         value_type=value_type,

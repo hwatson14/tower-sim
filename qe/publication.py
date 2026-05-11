@@ -2318,6 +2318,19 @@ def _build_stats_uw_operator_panel(
                 surface_id=surface_id,
                 fallback_value=start_expected if start_expected is not None else metadata.get('final'),
             )
+            if any(
+                str((contributor or {}).get('source_class') or '') == 'scenario_rules'
+                for contributor in (start_row.get('contributors') or [])
+            ):
+                start_number, start_suffix = _parse_display_number(start_value)
+                if start_expected is not None and start_number is not None:
+                    scenario_delta = start_number - start_expected
+                    if abs(scenario_delta) >= 0.011:
+                        other_text = _format_value_with_hint(
+                            scenario_delta,
+                            suffix_hint=start_suffix or _semantic_suffix_for_display(start_value, fallback_surface_id=surface_id),
+                        )
+                        start_expected, _suffix = _sum_display_terms(stone_text, lab_text, module_text, other_text)
             max_value = _surface_display_value(
                 max_row,
                 surface_id=surface_id,

@@ -29,6 +29,24 @@ _YAML_LOADER = getattr(yaml, 'CSafeLoader', yaml.SafeLoader)
 _COMPATIBILITY_SURFACE_ID_ALIASES = {
     legacy_canonical_surface_id('free_upgrade_multiplier'): 'support_surface::free_upgrade_multiplier',
     'canonical_stat::free_upgrade_multiplier': 'support_surface::free_upgrade_multiplier',
+    legacy_mechanic_surface_id('labs.dissonant_echo.attack.level'): 'state::labs.dissonant_echo.attack.level',
+    legacy_mechanic_surface_id('labs.dissonant_echo.defense.level'): 'state::labs.dissonant_echo.defense.level',
+    legacy_mechanic_surface_id('labs.dissonant_echo.utility.level'): 'state::labs.dissonant_echo.utility.level',
+    legacy_mechanic_surface_id('labs.dissonant_echo.ultimate_weapons.level'): 'state::labs.dissonant_echo.ultimate_weapons.level',
+    legacy_mechanic_surface_id('dissonance.attack.pb'): 'state::dissonance.attack.pb',
+    legacy_mechanic_surface_id('dissonance.defense.pb'): 'state::dissonance.defense.pb',
+    legacy_mechanic_surface_id('dissonance.utility.pb'): 'state::dissonance.utility.pb',
+    legacy_mechanic_surface_id('dissonance.ultimate_weapons.pb'): 'state::dissonance.ultimate_weapons.pb',
+    legacy_mechanic_surface_id('dissonance.attack.active_boost_multiplier'): 'state::dissonance.attack.active_boost_multiplier',
+    legacy_mechanic_surface_id('dissonance.defense.active_boost_multiplier'): 'state::dissonance.defense.active_boost_multiplier',
+    legacy_mechanic_surface_id('dissonance.utility.active_boost_multiplier'): 'state::dissonance.utility.active_boost_multiplier',
+    legacy_mechanic_surface_id('dissonance.ultimate_weapons.active_boost_multiplier'): 'state::dissonance.ultimate_weapons.active_boost_multiplier',
+    legacy_mechanic_surface_id('dissonance.attack.echo_source_bonus'): 'state::dissonance.attack.echo_source_bonus',
+    legacy_mechanic_surface_id('dissonance.defense.echo_source_bonus'): 'state::dissonance.defense.echo_source_bonus',
+    legacy_mechanic_surface_id('dissonance.utility.echo_source_bonus'): 'state::dissonance.utility.echo_source_bonus',
+    legacy_mechanic_surface_id('dissonance.ultimate_weapons.echo_source_bonus'): 'state::dissonance.ultimate_weapons.echo_source_bonus',
+    legacy_mechanic_surface_id('cards.ultimate_crit.chance_pct'): 'state::cards.ultimate_crit.chance_pct',
+    legacy_mechanic_surface_id('cards.plasma_cannon.effect_pct'): 'state::cards.plasma_cannon.effect_pct',
     legacy_mechanic_surface_id('module.galaxy_compressor.uw_cooldown_reduction_seconds'): 'support_surface::timing.gcomp_cooldown_reduction_seconds',
     # PH4-C tranche 5: the compiler routes this module's contribution under the legacy
     # destination_id 'module.primordial_collapse.in_bh_enemy_damage_reduction_pct'; the QE
@@ -287,6 +305,7 @@ _SOURCE_CLASS_BY_FAMILY = {
     'uw': 'ultimate_weapons',
     'uw_plus': 'ultimate_weapons',
     'bot': 'bots',
+    'bot_plus': 'bots',
     'guardian': 'base',
     'vault': 'base',
     'player_stuff': 'base',
@@ -664,8 +683,27 @@ def _surface_id_candidates(row: StatInput) -> tuple[str, ...]:
         return ()
     raw_surface_id = f'{row.destination_object_type}::{row.destination_id}'
     aliased_surface_id = _COMPATIBILITY_SURFACE_ID_ALIASES.get(raw_surface_id, raw_surface_id)
+    runtime_mechanic_state_id = (
+        legacy_mechanic_surface_id(row.destination_id)
+        if row.destination_object_type == 'runtime_mechanic_param'
+        else None
+    )
+    aliased_runtime_mechanic_state_id = (
+        _COMPATIBILITY_SURFACE_ID_ALIASES.get(runtime_mechanic_state_id, runtime_mechanic_state_id)
+        if runtime_mechanic_state_id is not None
+        else None
+    )
     candidates: list[str] = []
-    for candidate in (raw_surface_id, aliased_surface_id, to_v2_surface_id(aliased_surface_id), legacy_surface_id(aliased_surface_id)):
+    for candidate in (
+        raw_surface_id,
+        aliased_surface_id,
+        runtime_mechanic_state_id,
+        aliased_runtime_mechanic_state_id,
+        to_v2_surface_id(aliased_surface_id),
+        legacy_surface_id(aliased_surface_id),
+    ):
+        if candidate is None:
+            continue
         if candidate not in candidates:
             candidates.append(candidate)
     return tuple(candidates)

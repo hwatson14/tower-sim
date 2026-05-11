@@ -1580,8 +1580,8 @@ def _boss_wave_default_ttk_inputs(
     oa_electron_count = max(0.0, float(primitives.get('orbital_augment_electron_count') or 0.0))
     default_electron_total_pct = max(0.0, min(100.0, oa_electron_count * float(electron_boss_remaining_hp_pct) * 100.0))
     return {
-        'orb_boss_total_damage_pct': float(explicit_orb_total) if explicit_orb_total is not None else 2.0,
-        'orb_boss_total_damage_source': 'runtime_input' if explicit_orb_total is not None else 'default_orb_boss_total_damage_pct_2',
+        'orb_boss_total_damage_pct': float(explicit_orb_total) if explicit_orb_total is not None else 6.0,
+        'orb_boss_total_damage_source': 'runtime_input' if explicit_orb_total is not None else 'default_orb_boss_total_damage_pct_6',
         'electron_total_damage_pct': float(explicit_electron_total) if explicit_electron_total is not None else default_electron_total_pct,
         'electron_total_damage_source': 'runtime_input' if explicit_electron_total is not None else 'orbital_augment_electron_count_times_boss_electron_pct',
         'orbital_augment_electron_count': oa_electron_count,
@@ -2561,6 +2561,7 @@ def _merged_perk_policy(base_policy: dict | None, override: dict[str, object] | 
     merged = dict(base_policy or {})
     if not override:
         return merged
+    merged['_base_banned_perks_count'] = len(_resolve_policy_banned_perk_names(base_policy or {}))
     for key in ("seed", "target_wave", "banned_perks", "priority_order", "first_perk_choice"):
         if key not in override:
             continue
@@ -2595,7 +2596,7 @@ def _perk_policy_validation_ledger(policy_payload: dict, context: dict) -> dict[
     banned = [str(name).strip() for name in (policy_payload.get("banned_perks") or []) if str(name).strip()]
     priority = [str(name).strip() for name in (policy_payload.get("priority_order") or []) if str(name).strip()]
     first_choice = str(policy_payload.get("first_perk_choice") or "").strip()
-    lab_ban_capacity = int(context.get("ban_perks_capacity_ids") or 0)
+    lab_ban_capacity = int(policy_payload.get("ban_perks_capacity") or context.get("ban_perks_capacity_ids") or 0)
     if len(banned) > lab_ban_capacity:
         errors.append(f"banned_perks has {len(banned)} entries but Ban Perks lab capacity is {lab_ban_capacity}")
     for name in banned:
@@ -2604,7 +2605,8 @@ def _perk_policy_validation_ledger(policy_payload: dict, context: dict) -> dict[
         _check_known(name, "priority_order")
     if first_choice:
         _check_known(first_choice, "first_perk_choice")
-        if int(context.get("first_perk_choice_level") or 0) <= 0:
+        first_choice_unlocked = int(context.get("first_perk_choice_level") or 0) > 0 or bool(context.get("configured_first_perk_choice"))
+        if not first_choice_unlocked:
             errors.append("first_perk_choice is configured but First Perk Choice lab is not unlocked")
         if first_choice in banned:
             errors.append(f"first_perk_choice {first_choice!r} is also banned")
@@ -2623,7 +2625,7 @@ def _perk_policy_validation_ledger(policy_payload: dict, context: dict) -> dict[
         "warnings": warnings,
         "ban_perks_used": len(banned),
         "ban_perks_capacity": lab_ban_capacity,
-        "first_perk_choice_unlocked": int(context.get("first_perk_choice_level") or 0) > 0,
+        "first_perk_choice_unlocked": int(context.get("first_perk_choice_level") or 0) > 0 or bool(context.get("configured_first_perk_choice")),
     }
 
 
@@ -2724,7 +2726,7 @@ def _perk_policy_context(ids_raw, perk_policy: dict) -> tuple[dict, dict]:
         'waves_required_lab': int(labs.get('Waves Required', 0) or 0),
         'standard_perk_bonus': float(standard_perk_bonus_level) / 100.0,
         'perk_option_quantity': _ids_player_value(ids_raw, 'Perk Option Quantity', 0),
-        'ban_perks_capacity': max(_ids_player_value(ids_raw, 'Ban Perks', 0), len(banned_names)),
+        'ban_perks_capacity': max(_ids_player_value(ids_raw, 'Ban Perks', 0), int(policy.get('_base_banned_perks_count', len(banned_names)) or 0)),
         'banned_perks': banned_names,
         'priority_order': configured_priority,
         'first_perk_choice': configured_first_perk_choice,
@@ -2735,6 +2737,7 @@ def _perk_policy_context(ids_raw, perk_policy: dict) -> tuple[dict, dict]:
         'standard_perk_bonus_level': standard_perk_bonus_level,
         'tradeoff_bonus_level': tradeoff_bonus_level,
         'first_perk_choice_level': first_perk_choice_level,
+        'configured_first_perk_choice': configured_first_perk_choice,
         'configured_priority_order': configured_priority,
         'ban_perks_capacity_ids': _ids_player_value(ids_raw, 'Ban Perks', 0),
         'banned_perk_aliases': list(policy.get('banned_perk_aliases', []) or []),

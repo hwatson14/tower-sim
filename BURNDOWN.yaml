@@ -1,11 +1,11 @@
 version: 1
 prepared: '2026-04-15'
 status:
-  mode: v49_streamlit_product_completion
-  baseline: prior hardening and maintenance stabilization are complete, but the active program is now the v49 Streamlit-first canonical stat and max-wave simulator scope
-  active_tranche: v49_streamlit_stat_and_simulator_program
-  active_tranche_name: V49 Streamlit-first canonical stat and simulator program
-  overall_state: boss_waves_replacement_owned_perk_policy_surface_wired
+  mode: v28_source_truth_migration
+  baseline: prior hardening and maintenance stabilization are complete; v49 remains the last completed product architecture baseline, but the current source imports have moved to v28 and require staged KB/QE/simulator migration
+  active_tranche: v28_a_b_source_snapshot_parser_and_dissonant_echo_kb
+  active_tranche_name: V28-A/B source snapshot, parser validation, and Dissonant Echo KB/QE routing
+  overall_state: v28_ids_parser_gate_eecon_fail_closed_and_echo_lab_routing_in_progress
   confidence:
     high_signal_suites_green: true
     full_suite_recertified_here: true

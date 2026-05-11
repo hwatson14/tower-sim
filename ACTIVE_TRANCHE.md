@@ -22,9 +22,15 @@ Machine-readable state lives in:
 
 ## Current state
 
-The repo is **not in broad rebuild territory**.
+The repo is **not in broad rebuild territory**, but it has entered a v28 source-truth migration.
 The repo has completed the prior hardening closeout sequence and the maintenance stabilization / hygiene tranche.
-The active program is now the v49 Streamlit-first product scope reset:
+The active implementation focus is now the v28 source-truth migration through V28-A/V28-B:
+- accept the v28 `_IDS` layout only where the source shape is explicitly validated
+- fail closed when v28 source migration leaves required economy contributors missing or null
+- route Dissonant Echo lab levels through KB/QE-owned surfaces and publish Echo multipliers from QE
+- keep v28 mechanics work staged through KB/QE/simulator owner layers rather than patching UI-local truth
+
+The v49 Streamlit-first product scope remains the last completed product architecture baseline:
 - make every current-scope canonical, user-relevant stat visible in Streamlit
 - keep those visible stats KB/QE-aligned, provenance-bearing, and contract-governed
 - replace the Boss Waves row-engine target with a staged Table 1 / Table 2 / combat kernel while preserving the current product surface until cutover is explicitly in scope

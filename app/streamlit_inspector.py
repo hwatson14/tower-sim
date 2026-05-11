@@ -1799,7 +1799,7 @@ def _render_boss_waves(request: PipelineRunRequest, *, perk_policy_override: dic
 
     with st.expander('Manual combat assumptions', expanded=False):
         runtime_cols = st.columns(5)
-        orb_boss_total_damage_pct = runtime_cols[0].number_input('Orb damage to boss (total %)', min_value=0.0, max_value=100.0, value=2.0, step=0.1)
+        orb_boss_total_damage_pct = runtime_cols[0].number_input('Orb damage to boss (total %)', min_value=0.0, max_value=100.0, value=6.0, step=0.1)
         electron_total_damage_pct = runtime_cols[1].number_input('Electron damage override (total %)', min_value=0.0, max_value=100.0, value=0.0, step=0.1)
         flame_bot_boss_hit_chance_pct = runtime_cols[2].number_input('Flame Bot boss hit chance (%)', min_value=0.0, max_value=100.0, value=50.0, step=1.0)
         boss_time_to_contact_seconds = runtime_cols[3].number_input('Boss time to contact (s)', min_value=0.0, max_value=120.0, value=1.0, step=0.1)

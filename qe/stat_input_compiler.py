@@ -162,6 +162,7 @@ LAB_VALUES_PATH = KB / 'labs' / 'tables' / 'lab-values.csv'
 WORKSHOP_VALUES_PATH = KB / 'workshop' / 'tables' / 'workshop-values.csv'
 WORKSHOP_VALUES_DERIVED_PATH = KB / 'workshop' / 'derived' / 'materialized' / 'workshop-values.csv'
 CARD_LADDERS_PATH = KB / 'cards' / 'tables' / 'card-base-ladders.csv'
+CARD_ENTITY_REGISTRY_PATH = KB / 'cards' / 'tables' / 'card-entity-registry.csv'
 CARD_MASTERIES_PATH = KB / 'cards' / 'tables' / 'card-masteries.csv'
 CARD_EFFECT_REGISTRY_PATH = KB / 'cards' / 'tables' / 'card-effect-registry.csv'
 MODULE_SUBSTATS_TABLE_PATH = KB / 'modules' / 'tables' / 'module-substats.csv'
@@ -398,6 +399,20 @@ def _load_card_ladders() -> Dict[Tuple[str, int], Dict[str, str]]:
 
 
 @lru_cache(maxsize=1)
+def _load_card_entity_ids() -> Dict[str, str]:
+    out: Dict[str, str] = {}
+    if not CARD_ENTITY_REGISTRY_PATH.exists():
+        return out
+    with CARD_ENTITY_REGISTRY_PATH.open(newline='', encoding='utf-8-sig') as handle:
+        for row in csv.DictReader(handle):
+            name = str(row.get('canonical_name') or '').strip()
+            card_id = str(row.get('card_id') or '').strip()
+            if name and card_id:
+                out[name] = card_id
+    return out
+
+
+@lru_cache(maxsize=1)
 def _load_bot_track_values() -> Dict[Tuple[str, str, int], float]:
     out: Dict[Tuple[str, str, int], float] = {}
     with BOT_TRACK_VALUES_PATH.open(newline='') as f:
@@ -436,24 +451,53 @@ BOT_UPGRADE_BINDINGS = {
     ('Thunder Bot', 'Cooldown'): ('bot_upgrade__thunder_bot__cooldown__seconds', 'cooldown_seconds'),
     ('Thunder Bot', 'Range'): ('bot_upgrade__thunder_bot__range__m', 'range_meters'),
     ('Thunder Bot', 'Linger'): ('bot_upgrade__thunder_bot__linger_slow__pct', 'linger_seconds'),
+    ('Bot Bot', 'Duration'): ('bot_upgrade__bot_bot__duration__seconds', 'duration_seconds'),
+    ('Bot Bot', 'Cooldown'): ('bot_upgrade__bot_bot__cooldown__seconds', 'cooldown_seconds'),
+    ('Bot Bot', 'Bonus'): ('bot_upgrade__bot_bot__bonus__multiplier', 'bonus_multiplier_x'),
+    ('Bot Bot', 'Range'): ('bot_upgrade__bot_bot__range__m', 'range_meters'),
+    ('Bot Bot', 'Maximum Power'): ('bot_upgrade__bot_bot__maximum_power__multiplier', 'maximum_power_multiplier_x'),
 }
 
 BOT_RANGE_CANONICALS = [
     ('mechanic_param', 'bot.global.range_bonus_m'),
     ('mechanic_param', 'bot.golden.range_m'),
-    ('mechanic_param', 'bot.amplify.range_m'),
-    ('mechanic_param', 'bot.flame.range_m'),
-    ('mechanic_param', 'bot.thunder.range_m'),
+        ('mechanic_param', 'bot.amplify.range_m'),
+        ('mechanic_param', 'bot.flame.range_m'),
+        ('mechanic_param', 'bot.thunder.range_m'),
+        ('mechanic_param', 'bot.bot_bot.range_m'),
 ]
 
 BOT_LAB_BINDINGS = {
     'Amp Bot - Cooldown': ('amplify_bot_cooldown', -1.0),
     'Amp Bot - Duration': ('amplify_bot_duration', 0.5),
+    'Bot Bot - Cooldown': ('bot_bot_cooldown', -1.0),
+    'Bot Bot - Duration': ('bot_bot_duration', 0.5),
     'Flame Bot - Cooldown': ('flame_bot_cooldown', -1.0),
     'Gold Bot - Cooldown': ('golden_bot_cooldown', -1.0),
     'Gold Bot - Duration': ('golden_bot_duration', 0.5),
     'Thunder Bot - Cooldown': ('thunder_bot_cooldown', -1.0),
     'Thunder Bot - Linger Time': ('thunder_bot_linger_time', 0.5),
+}
+
+DISSONANT_ECHO_LAB_CATEGORIES = {
+    'Dissonant Echo - Attack': 'attack',
+    'Dissonant Echo - Defense': 'defense',
+    'Dissonant Echo - Utility': 'utility',
+    'Dissonant Echo - Ultimate Weapons': 'ultimate_weapons',
+}
+
+DISSONANT_PB_CATEGORIES: tuple[tuple[str, str], ...] = (
+    ('attack', 'Attack'),
+    ('defense', 'Defense'),
+    ('utility', 'Utility'),
+    ('ultimate_weapons', 'Ultimate Weapons'),
+)
+
+DISSONANT_BOOST_CAPS = {
+    'attack': 5.0,
+    'defense': 5.0,
+    'utility': 3.0,
+    'ultimate_weapons': 5.0,
 }
 
 
@@ -708,6 +752,40 @@ def _coerce_level_number(level: object) -> float | None:
         return None
 
 
+def _normalize_tier_label(value: object) -> str | None:
+    text = str(value or '').strip()
+    if not text:
+        return None
+    match = re.search(r'(\d+)', text)
+    if match is None:
+        return None
+    return f'Tier {int(match.group(1))}'
+
+
+def _active_dissonant_pb_tier_label(account_state: AccountState, dissonance_pbs_by_tier: Dict[str, Dict[str, int]]) -> str | None:
+    player_meta = getattr(account_state, 'player_meta', {}) or {}
+    candidates = (
+        player_meta.get('Farming Tier'),
+        getattr(account_state, 'highest_tier_unlocked_label', None),
+    )
+    for candidate in candidates:
+        label = _normalize_tier_label(candidate)
+        if label in dissonance_pbs_by_tier:
+            return label
+    if dissonance_pbs_by_tier:
+        return sorted(dissonance_pbs_by_tier, key=lambda label: int(re.search(r'(\d+)', label).group(1)) if re.search(r'(\d+)', label) else 0)[-1]
+    return None
+
+
+def _dissonant_boost_from_pb(category: str, wave_pb: object) -> float:
+    try:
+        wave = max(0.0, min(5000.0, float(wave_pb)))
+    except (TypeError, ValueError):
+        wave = 0.0
+    cap = DISSONANT_BOOST_CAPS[category]
+    return 1.0 + (cap - 1.0) * ((wave / 5000.0) ** 1.75)
+
+
 def _parse_mastery_value_token(raw: str) -> Tuple[float | None, str]:
     token = str(raw or '').strip()
     if not token:
@@ -869,22 +947,26 @@ def _bind_governed_numeric_row(
         match = re.match(r'^Assist Module Substats - (Armor|Cannon|Core|Generator)$', name)
         if match is not None:
             exact_values = _load_assist_module_substat_values()
-    if exact_values is not None and isinstance(level, int) and level in exact_values:
-        _set_row_field(row, 'value', exact_values[level])
+    numeric_level = _coerce_level_number(level)
+    lookup_level = int(numeric_level) if numeric_level is not None and float(numeric_level).is_integer() else None
+    if exact_values is not None and lookup_level is not None and lookup_level in exact_values:
+        _set_row_field(row, 'value', exact_values[lookup_level])
         _set_row_field(row, 'value_type', 'resolved_value')
         return True
-    if exact_values is not None and level == 0:
+    if exact_values is not None and lookup_level == 0:
         _set_row_field(row, 'value', 0.0)
         _set_row_field(row, 'value_type', 'resolved_value')
         return True
-    lab_value = _lab_value_with_fallback(name, level if isinstance(level, int) else None, lab_values, lab_summary)
+    lab_value = _lab_value_with_fallback(name, lookup_level, lab_values, lab_summary)
     if lab_value is not None:
         _set_row_field(row, 'value', lab_value)
         _set_row_field(row, 'value_type', 'resolved_value')
+    elif lookup_level == 0:
+        _set_row_field(row, 'value', 0.0)
+        _set_row_field(row, 'value_type', 'resolved_value')
     elif level is not None:
-        numeric = _coerce_level_number(level)
-        if numeric is not None:
-            _set_row_field(row, 'value', numeric)
+        if numeric_level is not None:
+            _set_row_field(row, 'value', numeric_level)
             _set_row_field(row, 'value_type', 'level')
             _set_row_field(row, 'notes', f'governed_numeric_pending_value:{name}')
     return True
@@ -1076,6 +1158,7 @@ def compile_stat_inputs(
     lab_summary = _load_lab_summary_lookup()
     workshop_values = _load_workshop_value_lookup()
     card_ladders = _load_card_ladders()
+    card_entity_ids = _load_card_entity_ids()
     card_effect_targets = load_card_effect_targets()
     module_substat_units = _load_module_substat_units()
     perk_entities = _load_perk_entities()
@@ -1150,7 +1233,11 @@ def compile_stat_inputs(
                 if destination is not None:
                     bind_destination(row, destination, canonical_stats, note='kb_lab_application_registry_routed')
                     operation_type = str(app.get('operation_type', '')).strip().lower()
-                    if operation_type in {'enable', 'set_bool', 'set_boolean'}:
+                    if name in DISSONANT_ECHO_LAB_CATEGORIES and level is not None:
+                        _set_row_field(row, 'value', float(level))
+                        _set_row_field(row, 'value_type', 'level')
+                        _set_row_field(row, 'notes', f'v28_dissonant_echo_lab_level_routed:{DISSONANT_ECHO_LAB_CATEGORIES[name]}')
+                    elif operation_type in {'enable', 'set_bool', 'set_boolean'}:
                         _set_row_field(row, 'value', bool(level and float(level) > 0))
                         _set_row_field(row, 'value_type', 'bool')
                     else:
@@ -1300,6 +1387,10 @@ def compile_stat_inputs(
                             _set_row_field(row, 'value', bool(level and float(level) > 0))
                             _set_row_field(row, 'value_type', 'bool')
                             _set_row_field(row, 'notes', f'kb_lab_capability_{"resolved" if row.value else "locked"}:{name}')
+                        elif name in DISSONANT_ECHO_LAB_CATEGORIES and level is not None:
+                            _set_row_field(row, 'value', float(level))
+                            _set_row_field(row, 'value_type', 'level')
+                            _set_row_field(row, 'notes', f'v28_dissonant_echo_lab_level_routed:{DISSONANT_ECHO_LAB_CATEGORIES[name]}')
                         elif name == 'Max Rend Armor Multiplier' and level is not None:
                             _set_row_field(row, 'value', 0.25 * float(level))
                             _set_row_field(row, 'value_type', 'resolved_value')
@@ -1319,8 +1410,9 @@ def compile_stat_inputs(
                                 actual_level=level,
                                 active_lab_adjusters=active_lab_adjusters,
                             )
-                            lab_value = _lab_value_with_fallback(name, effective_level, lab_values, lab_summary)
-                            wiki_val = uw_lab_wiki_values.get((name, effective_level)) if effective_level is not None else None
+                            lookup_level = int(effective_level) if effective_level is not None and float(effective_level).is_integer() else None
+                            lab_value = _lab_value_with_fallback(name, lookup_level, lab_values, lab_summary)
+                            wiki_val = uw_lab_wiki_values.get((name, lookup_level)) if lookup_level is not None else None
                             if lab_value is not None:
                                 _set_row_field(row, 'value', lab_value)
                                 _set_row_field(row, 'value_type', 'resolved_value')
@@ -1329,6 +1421,9 @@ def compile_stat_inputs(
                                 _set_row_field(row, 'value', wiki_val)
                                 _set_row_field(row, 'value_type', 'resolved_value')
                                 _set_row_field(row, 'notes', f'kb_uw_lab_wiki_verified:{name}')
+                            elif lookup_level == 0:
+                                _set_row_field(row, 'value', 0.0)
+                                _set_row_field(row, 'value_type', 'resolved_value')
                             elif level is not None and level > 0:
                                 _set_row_field(row, 'value', float(level))
                                 _set_row_field(row, 'value_type', 'level')
@@ -1472,6 +1567,70 @@ def compile_stat_inputs(
         bind_kb_fields(row, contributor_id, mapping_index, canonical_stats)
         _append(out, row)
 
+    dissonance_pbs_by_tier = getattr(account_state, 'dissonance_pbs_by_tier', {}) or {}
+    active_dissonance_tier = _active_dissonant_pb_tier_label(account_state, dissonance_pbs_by_tier)
+    if active_dissonance_tier is not None:
+        active_dissonance_pbs = dissonance_pbs_by_tier.get(active_dissonance_tier, {})
+        for category, display_name in DISSONANT_PB_CATEGORIES:
+            pb_value = active_dissonance_pbs.get(category)
+            if pb_value is None:
+                continue
+            active_boost = _dissonant_boost_from_pb(category, pb_value)
+            row = StatInput(
+                stat_name=f'Dissonant PB - {display_name}',
+                source_family='player_stuff',
+                source_name=f'{active_dissonance_tier} {display_name} Dissonant PB',
+                value=float(pb_value),
+                value_type='count',
+                stage='account_state',
+                provenance='IDS::Player & Stuff',
+            )
+            bind_destination(
+                row,
+                ('runtime_mechanic_param', f'dissonance.{category}.pb'),
+                canonical_stats,
+                note=f'v28_dissonant_pb_routed:{category}:tier={active_dissonance_tier}',
+            )
+            _append(out, row)
+            boost_row = StatInput(
+                stat_name=f'Dissonant Active Boost - {display_name}',
+                source_family='player_stuff',
+                source_name=f'{active_dissonance_tier} {display_name} Dissonant Boost',
+                value=active_boost,
+                value_type='multiplier',
+                stage='account_state',
+                provenance='IDS::Player & Stuff',
+            )
+            bind_destination(
+                boost_row,
+                ('runtime_mechanic_param', f'dissonance.{category}.active_boost_multiplier'),
+                canonical_stats,
+                note=f'v28_dissonant_active_boost_routed:{category}:tier={active_dissonance_tier}',
+            )
+            _append(out, boost_row)
+    if dissonance_pbs_by_tier:
+        for category, display_name in DISSONANT_PB_CATEGORIES:
+            echo_source_bonus = sum(
+                max(0.0, _dissonant_boost_from_pb(category, tier_pbs.get(category, 0)) - 1.0)
+                for tier_pbs in dissonance_pbs_by_tier.values()
+            )
+            row = StatInput(
+                stat_name=f'Dissonant Echo Source - {display_name}',
+                source_family='player_stuff',
+                source_name=f'{display_name} Dissonant Echo Source',
+                value=echo_source_bonus,
+                value_type='resolved_value',
+                stage='account_state',
+                provenance='IDS::Player & Stuff',
+            )
+            bind_destination(
+                row,
+                ('runtime_mechanic_param', f'dissonance.{category}.echo_source_bonus'),
+                canonical_stats,
+                note=f'v28_dissonant_echo_source_routed:{category}:tiers={len(dissonance_pbs_by_tier)}',
+            )
+            _append(out, row)
+
     # Relics: registry-only direct values from IDS. These are already account-state effects, not spend levels.
     for name, value in account_state.relics.items():
         if value is None:
@@ -1549,6 +1708,7 @@ def compile_stat_inputs(
         'amplify bot': 'amplify',
         'flame bot': 'flame',
         'thunder bot': 'thunder',
+        'bot bot': 'bot_bot',
     }
     owned_bot_aliases = set()
     for name in account_state.bots:
@@ -1588,25 +1748,44 @@ def compile_stat_inputs(
             for attr, level in upgrades.items()
         ]
     for bot_name, attr, level, ids_resolved_value, ids_resolved_unit in bot_track_rows:
+        if bot_name == 'Bot +':
+            attr_slug = slug_text(attr).replace(' ', '_')
+            row = StatInput(
+                stat_name=f'{bot_name}::{attr}',
+                source_family='bot_plus',
+                source_name=bot_name,
+                value=level is not None or ids_resolved_value is not None,
+                value_type='bool',
+                stage='account_state',
+                provenance='IDS::Bots',
+                notes='v28_bot_plus_unlock_flag_preserved',
+            )
+            _set_row_field(row, 'destination_object_type', 'runtime_mechanic_param')
+            _set_row_field(row, 'destination_id', f'bot.plus.{attr_slug}.unlocked')
+            _set_row_field(row, 'resolver_id', 'standard_bool')
+            _set_row_field(row, 'kb_mapped', True)
+            _append(out, row)
+            continue
         if level is None:
             continue
         binding = BOT_UPGRADE_BINDINGS.get((bot_name, attr))
         contributor_id, track_name = binding if binding is not None else (None, None)
         resolved = bot_track_values.get((bot_name, track_name, level)) if track_name is not None and level is not None else None
-        row = StatInput(stat_name=f'{bot_name}::{attr}', source_family='bot', source_name=bot_name, value=resolved if resolved is not None else level, value_type='resolved_value' if resolved is not None else 'level', stage='account_state', provenance='IDS::Bots', notes='kb_bot_track_resolved' if resolved is not None else 'runtime_surface_preserved_pending_bot_track_lookup')
+        value = resolved if resolved is not None else (ids_resolved_value if ids_resolved_value is not None else level)
+        row = StatInput(stat_name=f'{bot_name}::{attr}', source_family='bot', source_name=bot_name, value=value, value_type='resolved_value' if (resolved is not None or ids_resolved_value is not None) else 'level', stage='account_state', provenance='IDS::Bots', notes='kb_bot_track_resolved' if resolved is not None else ('ids_bot_track_value_preserved' if ids_resolved_value is not None else 'runtime_surface_preserved_pending_bot_track_lookup'))
         _set_row_field(row, 'raw_level', level)
         _set_row_field(row, 'resolved_value', float(resolved if resolved is not None else ids_resolved_value) if (resolved is not None or ids_resolved_value is not None) else None)
         _set_row_field(row, 'resolved_unit', ids_resolved_unit)
         if contributor_id is not None:
             bind_kb_fields(row, contributor_id, mapping_index, canonical_stats)
-            _set_row_field(row, 'kb_mapped', resolved is not None)
+            _set_row_field(row, 'kb_mapped', resolved is not None or ids_resolved_value is not None)
         else:
             _set_row_field(row, 'destination_object_type', 'runtime_mechanic_param')
             bot_slug = slug_text(bot_name).replace(' ', '_')
             attr_slug = (track_name or slug_text(attr)).replace(' ', '_')
             _set_row_field(row, 'destination_id', f'bot.{bot_slug}.{attr_slug}')
             _set_row_field(row, 'resolver_id', 'standard_scalar_param')
-            _set_row_field(row, 'kb_mapped', resolved is not None)
+            _set_row_field(row, 'kb_mapped', resolved is not None or ids_resolved_value is not None)
         _append(out, row)
 
     guardian_attr_map = {
@@ -1770,8 +1949,12 @@ def compile_stat_inputs(
                 value = float(ladder['raw_value'])
             except (ValueError, TypeError):
                 value = None
+        if value is None and snap.level == 0:
+            value = 0.0
         row = StatInput(stat_name=card_name, source_family='card', source_name=card_name, value=value if value is not None else snap.level, value_type='resolved_value' if value is not None else 'level', stage='loadout_resolved', preset_name=card_preset, provenance='IDS::Cards')
-        card_id = (ladder or {}).get('card_id') if ladder else None
+        card_id = ((ladder or {}).get('card_id') if ladder else None) or card_entity_ids.get(card_name)
+        if card_id is None and snap.level == 0:
+            card_id = slug_text(card_name).replace(' ', '_').upper()
         destination = card_effect_targets.get(card_id or '')
         if card_id == 'AREA_OF_EFFECT':
             active_row = StatInput(**{field: getattr(row, field) for field in StatInput.__dataclass_fields__.keys()})

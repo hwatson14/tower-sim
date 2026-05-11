@@ -2,7 +2,13 @@ from __future__ import annotations
 
 import pytest
 
-from input.ids_parser import SECTION_SPECS, _fail_unknown_sections
+from pathlib import Path
+
+from input.ids_parser import SECTION_SPECS, _fail_unknown_sections, parse_ids
+from input.runtime_state import build_runtime_state
+
+
+ROOT = Path(__file__).resolve().parents[2]
 
 
 def _base_rows() -> list[list[str]]:
@@ -36,3 +42,40 @@ def test_fail_unknown_sections__reports_unknown_header_and_column_context() -> N
 
     with pytest.raises(ValueError, match=r"'Mystery Header' at column 43\. First row value: 'payload'"):
         _fail_unknown_sections(rows)
+
+
+def test_fail_unknown_sections__accepts_v28_ref_placeholders_inside_known_header_width() -> None:
+    rows = _base_rows()
+    rows[0].extend([""] * 4)
+    rows[1].extend([""] * 4)
+    rows[0][2] = "#REF!"
+    rows[0][80] = "#REF!"
+    _fail_unknown_sections(rows)
+
+
+def test_fail_unknown_sections__accepts_v28_ref_placeholders_in_shifted_trailing_columns() -> None:
+    rows = _base_rows()
+    rows[0].extend([""] * 9)
+    rows[1].extend([""] * 9)
+    rows[0][85] = "#REF!"
+
+    _fail_unknown_sections(rows)
+
+
+def test_parse_ids_accepts_current_v28_import_shifted_header_layout() -> None:
+    parsed = parse_ids(ROOT / "input" / "imports" / "ids.csv")
+
+    assert parsed.raw_sections["Labs"]
+    assert parsed.raw_sections["WS"]
+    assert parsed.raw_sections["Cards"]
+    assert parsed.raw_sections["Player & Stuff"]
+
+
+def test_runtime_state_parses_v28_dissonant_pbs_from_player_stuff() -> None:
+    parsed = parse_ids(ROOT / "input" / "imports" / "ids.csv")
+    state = build_runtime_state(parsed)
+
+    assert "Tier 1" in state.dissonance_pbs_by_tier
+    assert set(state.dissonance_pbs_by_tier["Tier 1"]) == {"attack", "defense", "utility", "ultimate_weapons"}
+    assert state.dissonance_pbs_by_tier["Tier 1"]["attack"] == 0
+    assert state.tier_progression_waves["Tier 1"] == 0

@@ -52,6 +52,73 @@ def test_publish_derived_composites_publishes_wall_hp_pre_fort_surface() -> None
     assert pre_fort.value_type == 'hp'
 
 
+def test_publish_derived_composites_publishes_v28_dissonant_echo_multipliers() -> None:
+    rows = {
+        'state::labs.dissonant_echo.attack.level': StatRow(stat_name='state::labs.dissonant_echo.attack.level', final_value=20.0, value_type='level', source_count=1, status='resolved', contributors=[], schema=None),
+        'state::labs.dissonant_echo.defense.level': StatRow(stat_name='state::labs.dissonant_echo.defense.level', final_value=1.0, value_type='level', source_count=1, status='resolved', contributors=[], schema=None),
+        'state::labs.dissonant_echo.utility.level': StatRow(stat_name='state::labs.dissonant_echo.utility.level', final_value=0.0, value_type='level', source_count=1, status='resolved', contributors=[], schema=None),
+        'state::dissonance.attack.active_boost_multiplier': StatRow(stat_name='state::dissonance.attack.active_boost_multiplier', final_value=5.0, value_type='multiplier', source_count=1, status='resolved', contributors=[], schema=None),
+        'state::dissonance.attack.echo_source_bonus': StatRow(stat_name='state::dissonance.attack.echo_source_bonus', final_value=8.0, value_type='scalar', source_count=1, status='resolved', contributors=[], schema=None),
+    }
+
+    derived.publish_derived_composites(rows)
+
+    assert rows['derived::dissonance.attack.echo_multiplier'].final_value == pytest.approx(0.105)
+    assert rows['derived::dissonance.defense.echo_multiplier'].final_value == pytest.approx(0.010)
+    assert rows['derived::dissonance.utility.echo_multiplier'].final_value == pytest.approx(0.005)
+    assert rows['derived::dissonance.attack.echo_bonus_multiplier'].final_value == pytest.approx(0.84)
+    assert rows['derived::dissonance.attack.total_multiplier'].final_value == pytest.approx(5.84)
+    assert rows['derived::dissonance.defense.total_multiplier'].final_value == pytest.approx(1.0)
+    assert rows['derived::dissonance.attack.echo_multiplier'].value_type == 'ratio'
+    assert '10.5%' in (rows['derived::dissonance.attack.echo_multiplier'].notes or '')
+
+
+def test_publish_derived_composites_applies_v28_utility_dissonance_to_eecon() -> None:
+    base_rows = {
+        'state::economy.coins_per_kill_bonus': StatRow(stat_name='state::economy.coins_per_kill_bonus', final_value=2.0, value_type='multiplier', source_count=1, status='resolved', contributors=[], schema=None),
+    }
+    dissonant_rows = dict(base_rows)
+    dissonant_rows.update({
+        'state::dissonance.utility.active_boost_multiplier': StatRow(stat_name='state::dissonance.utility.active_boost_multiplier', final_value=3.0, value_type='multiplier', source_count=1, status='resolved', contributors=[], schema=None),
+        'state::dissonance.utility.echo_source_bonus': StatRow(stat_name='state::dissonance.utility.echo_source_bonus', final_value=2.0, value_type='scalar', source_count=1, status='resolved', contributors=[], schema=None),
+        'state::labs.dissonant_echo.utility.level': StatRow(stat_name='state::labs.dissonant_echo.utility.level', final_value=0.0, value_type='level', source_count=1, status='resolved', contributors=[], schema=None),
+    })
+
+    derived.publish_derived_composites(base_rows)
+    derived.publish_derived_composites(dissonant_rows)
+
+    assert dissonant_rows['derived::dissonance.utility.total_multiplier'].final_value == pytest.approx(3.01)
+    assert dissonant_rows['derived::eecon.utility_dissonance_factor'].final_value == pytest.approx(3.01)
+    assert dissonant_rows['derived::eecon'].final_value == pytest.approx(base_rows['derived::eecon'].final_value * 3.01)
+
+
+def test_publish_derived_composites_applies_v28_attack_dissonance_restrictions() -> None:
+    rows = {
+        'state::tower.damage': StatRow(stat_name='state::tower.damage', final_value=100.0, value_type='damage', source_count=1, status='resolved', contributors=[], schema=None),
+        'state::tower.attack_speed': StatRow(stat_name='state::tower.attack_speed', final_value=10.0, value_type='rate', source_count=1, status='resolved', contributors=[], schema=None),
+        'state::tower.damage_per_meter_multiplier': StatRow(stat_name='state::tower.damage_per_meter_multiplier', final_value=5.0, value_type='multiplier', source_count=1, status='resolved', contributors=[], schema=None),
+        'state::tower.range_m': StatRow(stat_name='state::tower.range_m', final_value=100.0, value_type='distance', source_count=1, status='resolved', contributors=[], schema=None),
+        'state::tower.crit_chance_pct': StatRow(stat_name='state::tower.crit_chance_pct', final_value=100.0, value_type='pct', source_count=1, status='resolved', contributors=[], schema=None),
+        'state::tower.crit_multiplier': StatRow(stat_name='state::tower.crit_multiplier', final_value=10.0, value_type='multiplier', source_count=1, status='resolved', contributors=[], schema=None),
+        'state::tower.supercrit_chance_pct': StatRow(stat_name='state::tower.supercrit_chance_pct', final_value=100.0, value_type='pct', source_count=1, status='resolved', contributors=[], schema=None),
+        'state::tower.supercrit_multiplier': StatRow(stat_name='state::tower.supercrit_multiplier', final_value=10.0, value_type='multiplier', source_count=1, status='resolved', contributors=[], schema=None),
+        'support_surface::amp_strike.damage_multiplier': StatRow(stat_name='support_surface::amp_strike.damage_multiplier', final_value=3.0, value_type='multiplier', source_count=1, status='resolved', contributors=[], schema=None),
+        'support_surface::dissonance.attack_run_active': StatRow(stat_name='support_surface::dissonance.attack_run_active', final_value=True, value_type='bool', source_count=1, status='resolved', contributors=[], schema=None),
+        'state::dissonance.attack.active_boost_multiplier': StatRow(stat_name='state::dissonance.attack.active_boost_multiplier', final_value=5.0, value_type='multiplier', source_count=1, status='resolved', contributors=[], schema=None),
+    }
+
+    derived.publish_derived_composites(rows)
+
+    assert rows['derived::edamage.attack_dissonance_restricted'].final_value == pytest.approx(1.0)
+    assert rows['derived::edamage.base_damage_stack'].final_value == pytest.approx(3.0)
+    assert rows['derived::edamage.bullet_crit_factor'].final_value == pytest.approx(1.0)
+    assert rows['derived::edamage.multishot_factor'].final_value == pytest.approx(1.0)
+    assert rows['derived::edamage.bounce_factor'].final_value == pytest.approx(1.0)
+    assert rows['derived::edamage.rapidfire_factor'].final_value == pytest.approx(1.0)
+    assert rows['derived::edamage.range_dpm_factor'].final_value == pytest.approx(1.0)
+    assert rows['derived::edamage.rend_factor'].final_value == pytest.approx(1.0)
+
+
 def test_publish_derived_composites_falls_back_to_final_wall_hp_divided_by_fortification() -> None:
     rows = {
         'state::tower.hp': StatRow(stat_name='state::tower.hp', final_value=100.0, value_type='hp', source_count=1, status='resolved', contributors=[], schema=None),
@@ -132,6 +199,42 @@ def test_publish_derived_composites_consumes_relic_support_surfaces_for_ehp_and_
     assert rows['derived::eecon.base_meta_factor'].final_value == pytest.approx(1.48)
 
 
+def test_publish_derived_composites_fails_closed_when_eecon_coin_kill_source_is_missing() -> None:
+    rows = {
+        'support_surface::eecon.adstarter_theme_relic_factor': StatRow(stat_name='support_surface::eecon.adstarter_theme_relic_factor', final_value=1.48, value_type='multiplier', source_count=1, status='resolved', contributors=[], schema=None),
+    }
+
+    derived.publish_derived_composites(rows)
+
+    assert rows['derived::eecon.base_meta_factor'].final_value == pytest.approx(1.48)
+    assert rows['derived::eecon'].final_value is None
+    assert rows['derived::eecon'].status == 'mapped_not_resolved'
+    assert rows['derived::eecon.base_coin_income'].final_value is None
+    assert 'coin-kill' in (rows['derived::eecon'].notes or '')
+
+
+def test_publish_derived_composites_fails_closed_when_eecon_coin_kill_source_is_null() -> None:
+    rows = {
+        'state::economy.coins_per_kill_bonus': StatRow(stat_name='state::economy.coins_per_kill_bonus', final_value=None, value_type='multiplier', source_count=1, status='mapped_not_resolved', contributors=[], schema=None),
+    }
+
+    derived.publish_derived_composites(rows)
+
+    assert rows['derived::eecon'].final_value is None
+    assert rows['derived::eecon'].status == 'mapped_not_resolved'
+
+
+def test_publish_derived_composites_publishes_eecon_when_coin_kill_source_is_resolved() -> None:
+    rows = {
+        'state::economy.coins_per_kill_bonus': StatRow(stat_name='state::economy.coins_per_kill_bonus', final_value=2.49, value_type='multiplier', source_count=1, status='resolved', contributors=[], schema=None),
+    }
+
+    derived.publish_derived_composites(rows)
+
+    assert rows['derived::eecon'].final_value is not None
+    assert rows['derived::eecon'].status == 'resolved'
+
+
 def test_publish_derived_composites_publishes_effective_bot_range_surfaces() -> None:
     rows = {
         'state::tower.range_m': StatRow(stat_name='state::tower.range_m', final_value=130.66, value_type='distance', source_count=1, status='resolved', contributors=[], schema=None),
@@ -140,6 +243,7 @@ def test_publish_derived_composites_publishes_effective_bot_range_surfaces() -> 
         'state::bot.amplify.range_m': StatRow(stat_name='state::bot.amplify.range_m', final_value=25.0, value_type='distance', source_count=1, status='resolved', contributors=[], schema=None),
         'state::bot.flame.range_m': StatRow(stat_name='state::bot.flame.range_m', final_value=46.0, value_type='distance', source_count=1, status='resolved', contributors=[], schema=None),
         'state::bot.thunder.range_m': StatRow(stat_name='state::bot.thunder.range_m', final_value=25.0, value_type='distance', source_count=1, status='resolved', contributors=[], schema=None),
+        'state::bot.bot_bot.range_m': StatRow(stat_name='state::bot.bot_bot.range_m', final_value=20.0, value_type='distance', source_count=1, status='resolved', contributors=[], schema=None),
     }
 
     derived.publish_derived_composites(rows)
@@ -149,6 +253,26 @@ def test_publish_derived_composites_publishes_effective_bot_range_surfaces() -> 
     assert rows['state::bot.amplify.effective_range_m'].final_value == pytest.approx((25.0 + 24.0) * amplification)
     assert rows['state::bot.flame.effective_range_m'].final_value == pytest.approx((46.0 + 24.0) * amplification)
     assert rows['state::bot.thunder.effective_range_m'].final_value == pytest.approx((25.0 + 24.0) * amplification)
+    assert rows['state::bot.bot_bot.effective_range_m'].final_value == pytest.approx((20.0 + 24.0) * amplification)
+
+
+def test_publish_derived_composites_publishes_v28_synchronicity_unlock_surfaces() -> None:
+    rows = {
+        surface_id: StatRow(stat_name=surface_id, final_value=True, value_type='bool', source_count=1, status='resolved', contributors=[], schema=None)
+        for surface_id in (
+            'state::bot.plus.wildfire.unlocked',
+            'state::bot.plus.titan_shock.unlocked',
+            'state::bot.plus.bonus_cell.unlocked',
+            'state::bot.plus.echoing_shot.unlocked',
+            'state::bot.plus.maximum_power.unlocked',
+        )
+    }
+
+    derived.publish_derived_composites(rows)
+
+    assert rows['derived::bot.plus.unlocked_count'].final_value == pytest.approx(5.0)
+    assert rows['derived::bot.plus.all_unlocked'].final_value == pytest.approx(1.0)
+    assert rows['derived::bot.synchronicity.base_slots_unlocked'].final_value == pytest.approx(2.0)
 
 
 def test_publish_derived_composites_consumes_ultimate_crit_card_for_uw_damage_helpers() -> None:

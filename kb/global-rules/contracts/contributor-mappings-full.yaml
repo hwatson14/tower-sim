@@ -781,6 +781,26 @@ source_families:
     destination_object_type: mechanic_param
     destination_id: bot.thunder.linger_slow_pct
     resolver: pct_capped_param
+  - contributor_id: bot_upgrade__bot_bot__duration__seconds
+    destination_object_type: mechanic_param
+    destination_id: bot.bot_bot.duration_seconds
+    resolver: standard_scalar_param
+  - contributor_id: bot_upgrade__bot_bot__cooldown__seconds
+    destination_object_type: mechanic_param
+    destination_id: bot.bot_bot.cooldown_seconds
+    resolver: cooldown_param
+  - contributor_id: bot_upgrade__bot_bot__bonus__multiplier
+    destination_object_type: mechanic_param
+    destination_id: bot.bot_bot.bonus_multiplier
+    resolver: standard_scalar_param
+  - contributor_id: bot_upgrade__bot_bot__range__m
+    destination_object_type: mechanic_param
+    destination_id: bot.bot_bot.range_m
+    resolver: standard_scalar_param
+  - contributor_id: bot_upgrade__bot_bot__maximum_power__multiplier
+    destination_object_type: mechanic_param
+    destination_id: bot.bot_bot.maximum_power_multiplier
+    resolver: standard_scalar_param
   guardian_upgrade:
   - contributor_id: guardian_upgrade__attack__cooldown__seconds
     destination_object_type: mechanic_param

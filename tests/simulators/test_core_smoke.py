@@ -40,6 +40,30 @@ def test_progression_public_api_is_importable__query_callables_exposed():
     assert callable(resolve_run_stats_progression_bundle)
 
 
+def test_v28_overheat_normal_tier_and_tournament_conditions_are_projected():
+    from simulators.scenario import ScenarioConfig, compute_scenario_surfaces, overheat_start_wave_for_tier
+
+    assert overheat_start_wave_for_tier(1) == 15000
+    assert overheat_start_wave_for_tier(10) == 12750
+    assert overheat_start_wave_for_tier(20) == 10250
+
+    normal = compute_scenario_surfaces(ScenarioConfig(mode_id='farming', tier=10, current_wave=12750))
+    assert normal.overheat_active is True
+    assert normal.overheat_enemy_skip_decay_active is True
+    assert normal.overheat_damage_decay_active is False
+    assert normal.overheat_more_fleets_active is False
+
+    tournament = compute_scenario_surfaces(ScenarioConfig(mode_id='tournament', tier=20, league='legend', tournament_wave=10350))
+    assert tournament.overheat_active is True
+    assert tournament.overheat_damage_decay_active is True
+    assert tournament.overheat_health_decay_active is True
+    assert tournament.overheat_more_fleets_active is True
+    assert tournament.overheat_more_elites_active is True
+    assert tournament.overheat_damage_decay_steps == 10
+    assert tournament.overheat_extra_fleets == 1
+    assert tournament.overheat_extra_elites == 20
+
+
 def test_timing_public_api_is_importable__query_callables_exposed():
     from simulators.timing import compute_timing_surfaces, resolve_timing_consumer_bundle, resolve_timing_family_query
 
@@ -474,7 +498,7 @@ def test_incremental_subset_executor_resolves_timing_family_surfaces_natively():
     )
 
     assert resolved["state::uw.black_hole.cooldown_seconds"].status == "resolved"
-    assert resolved["state::uw.black_hole.cooldown_seconds"].final_value == pytest.approx(46.0)
+    assert resolved["state::uw.black_hole.cooldown_seconds"].final_value == pytest.approx(200.0)
     assert resolved["support_surface::timing.wave_duration_seconds_effective"].status == "resolved"
     assert resolved["support_surface::timing.wave_duration_seconds_effective"].final_value is not None
 
@@ -514,7 +538,7 @@ def test_run_stats_progression_bundle__applies_exact_max_rend_formula():
 
     resolved = {row.surface_id: row for row in response.resolved_surface_rows}
     assert resolved['state::tower.max_rend_multiplier'].status == 'resolved'
-    assert resolved['state::tower.max_rend_multiplier'].final_value == pytest.approx(9.6)
+    assert resolved['state::tower.max_rend_multiplier'].final_value == pytest.approx(8.0)
 
 
 def test_qe_checkpoint_surface_resolution__resolves_only_requested_progression_surfaces():

@@ -17,6 +17,10 @@ LAB_DEATH_WAVE_ARMOR_STRIPPING,Death Wave Armor Stripping,1,10,1.0,10.0,count,li
 LAB_DEATH_WAVE_CELLS_BONUS,Death Wave Cells Bonus,1,20,1.1,3.0,multiplier,linear,0.1,kb/formulas/tables/canonical-formula-registry.csv#wiki_death_wave_cell_bonus_levels_full_value_multiplier,bundled_formula_verified
 LAB_DEATH_WAVE_DAMAGE_AMPLIFIER,Death Wave Damage Amplifier,1,30,6.5,50.0,multiplier,linear,1.5,kb/ultimate-weapons/tables/wiki-verified-death-wave-damage-amplifier.csv,bundled_row_table_verified
 LAB_DEFENSE_PERCENT,Defense %,1,50,0.2,10.0,percent_points,linear,0.2,tables/cache/wiki/lab_defense.csv,externally_verified_live_wiki_2026-03-14
+LAB_DISSONANT_ECHO_ATTACK,Dissonant Echo - Attack,0,20,0.5,10.5,percent,linear,0.5,Effective Paths v5.06.02 DVT_Laboratory + formula extraction,v28_ep_formula_authority_with_public_10pct_conflict
+LAB_DISSONANT_ECHO_DEFENSE,Dissonant Echo - Defense,0,20,0.5,10.5,percent,linear,0.5,Effective Paths v5.06.02 DVT_Laboratory + formula extraction,v28_ep_formula_authority_with_public_10pct_conflict
+LAB_DISSONANT_ECHO_UTILITY,Dissonant Echo - Utility,0,20,0.5,10.5,percent,linear,0.5,Effective Paths v5.06.02 DVT_Laboratory + formula extraction,v28_ep_formula_authority_with_public_10pct_conflict
+LAB_DISSONANT_ECHO_ULTIMATE_WEAPONS,Dissonant Echo - Ultimate Weapons,0,20,0.5,10.5,percent,linear,0.5,Effective Paths v5.06.02 DVT_Laboratory + formula extraction,v28_ep_formula_authority_with_public_10pct_conflict
 LAB_ENEMY_ATTACK_LEVEL_SKIP,Enemy Attack Level Skip,1,20,0.1,2.0,percent_points,linear,0.1,kb/labs/tables/wiki-lab-enemy-attack-level-skip.csv,externally_verified_live_wiki_2026-03-14
 LAB_ENEMY_HEALTH_LEVEL_SKIP,Enemy Health Level Skip,1,20,0.1,2.0,percent_points,linear,0.1,kb/labs/tables/wiki-lab-enemy-health-level-skip.csv,externally_verified_live_wiki_2026-03-14
 LAB_ENHANCEMENT_ATTACK_COIN_DISCOUNT,Enhancement Attack - Coin Discount,1,,0.3,,percent,linear,0.3,kb/ledgers/tables/towersim-static-ledger.csv#Enhancement_Coin_Discount,bundled_static_ledger_verified_shared_formula_max_unconfirmed

@@ -278,6 +278,48 @@ domains:
     unit: pct
     resolver: pct_capped_param
     status: keep_now
+  bot.bot_bot:
+  - id: bot.bot_bot.duration_seconds
+    unit: seconds
+    resolver: standard_scalar_param
+    status: keep_now
+  - id: bot.bot_bot.cooldown_seconds
+    unit: seconds
+    resolver: cooldown_param
+    status: keep_now
+  - id: bot.bot_bot.bonus_multiplier
+    unit: multiplier
+    resolver: standard_scalar_param
+    status: keep_now
+  - id: bot.bot_bot.range_m
+    unit: m
+    resolver: standard_scalar_param
+    status: keep_now
+  - id: bot.bot_bot.maximum_power_multiplier
+    unit: multiplier
+    resolver: standard_scalar_param
+    status: keep_now
+  bot.plus:
+  - id: bot.plus.wildfire.unlocked
+    unit: bool
+    resolver: standard_bool
+    status: keep_now
+  - id: bot.plus.titan_shock.unlocked
+    unit: bool
+    resolver: standard_bool
+    status: keep_now
+  - id: bot.plus.bonus_cell.unlocked
+    unit: bool
+    resolver: standard_bool
+    status: keep_now
+  - id: bot.plus.echoing_shot.unlocked
+    unit: bool
+    resolver: standard_bool
+    status: keep_now
+  - id: bot.plus.maximum_power.unlocked
+    unit: bool
+    resolver: standard_bool
+    status: keep_now
   guardian.attack:
   - id: guardian.attack.cooldown_seconds
     unit: seconds

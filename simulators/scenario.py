@@ -64,6 +64,7 @@ class ScenarioConfig:
     tier: int = 14                             # farming/milestone active tier (14-21)
     league: Optional[str] = None               # tournament league
     tournament_wave: int = 0                   # tournament wave for BC magnitude lookup
+    current_wave: int = 0                      # current/target wave for late-run overlays such as v28 Overheat
 
     # BC reduction lab levels (4 groups per KB note-derived-battle-condition-groups.csv)
     #   Group 1: PC/orb/thorns/DR/knockback resistance + more_bosses
@@ -148,6 +149,20 @@ class ScenarioSurfaces:
     # KB: energy_shields_down reduces energy shield effectiveness by magnitude (fraction)
     bc_death_defy_down_pp: float = 0.0
     bc_energy_shields_down_fraction: float = 0.0
+
+    # v28 Overheat late-run limiter
+    overheat_visible_after_any_tier_wave: int = 4500
+    overheat_start_wave: int = 0
+    overheat_active: bool = False
+    overheat_enemy_skip_decay_active: bool = False
+    overheat_damage_decay_active: bool = False
+    overheat_health_decay_active: bool = False
+    overheat_more_fleets_active: bool = False
+    overheat_more_elites_active: bool = False
+    overheat_damage_decay_steps: int = 0
+    overheat_health_decay_steps: int = 0
+    overheat_extra_fleets: int = 0
+    overheat_extra_elites: int = 0
 
     # ── Boss wave interval ──
     # KB: wiki-verified-boss-summary.csv: every 10 waves default
@@ -316,6 +331,11 @@ def _uptime(duration: float, cooldown: float) -> float:
     return max(0.0, min(1.0, duration / total))
 
 
+def overheat_start_wave_for_tier(tier: int) -> int:
+    """v28 normal-tier Overheat starts: T1 W15000, T10 W12750, T20 W10250."""
+    return max(0, 15000 - 250 * max(0, int(tier) - 1))
+
+
 # ═══════════════════════════════════════════════════════════════════════
 #  Stat engine bridge
 # ═══════════════════════════════════════════════════════════════════════
@@ -348,6 +368,7 @@ def config_from_statbook(
     tier: int = 14,
     league: Optional[str] = None,
     tournament_wave: int = 0,
+    current_wave: int = 0,
     bc_reduction_group1_pct: float = 0.0,
     bc_reduction_group2_pct: float = 0.0,
     bc_reduction_group3_pct: float = 0.0,
@@ -389,6 +410,7 @@ def config_from_statbook(
         tier=tier,
         league=league,
         tournament_wave=tournament_wave,
+        current_wave=current_wave,
         bc_reduction_group1_pct=bc_reduction_group1_pct,
         bc_reduction_group2_pct=bc_reduction_group2_pct,
         bc_reduction_group3_pct=bc_reduction_group3_pct,
@@ -441,6 +463,7 @@ def compute_scenario_surfaces(config: ScenarioConfig) -> ScenarioSurfaces:
     boss_resist = _load_boss_enemy_class_resistances()
 
     is_tournament = config.mode_id == "tournament" and config.league
+    active_wave = max(0, int(config.tournament_wave if is_tournament else config.current_wave))
     g1r = config.bc_reduction_group1_pct
     g2r = config.bc_reduction_group2_pct
     g4r = config.bc_reduction_group4_pct
@@ -544,6 +567,20 @@ def compute_scenario_surfaces(config: ScenarioConfig) -> ScenarioSurfaces:
     # ── Boss hit interval (base 2.0s, adjusted by enemy_attack_speed) ──
     # KB: boss-hit-interval.csv: 2.0s. Behavior: "increased by x%".
     # Formula: base / (1 + increase_pct / 100)
+    s.overheat_start_wave = overheat_start_wave_for_tier(config.tier)
+    s.overheat_active = s.overheat_start_wave > 0 and active_wave >= s.overheat_start_wave
+    s.overheat_enemy_skip_decay_active = s.overheat_active
+    if is_tournament and s.overheat_active:
+        overheat_waves = max(0, active_wave - s.overheat_start_wave)
+        s.overheat_damage_decay_active = True
+        s.overheat_health_decay_active = True
+        s.overheat_more_fleets_active = True
+        s.overheat_more_elites_active = True
+        s.overheat_damage_decay_steps = overheat_waves // 10
+        s.overheat_health_decay_steps = overheat_waves // 10
+        s.overheat_extra_fleets = overheat_waves // 100
+        s.overheat_extra_elites = overheat_waves // 5
+
     base_hit_interval = 2.0
     if s.bc_enemy_attack_speed_increase_pct > 0:
         s.boss_hit_interval_seconds = base_hit_interval / (1.0 + s.bc_enemy_attack_speed_increase_pct / 100.0)

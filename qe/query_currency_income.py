@@ -222,7 +222,7 @@ def publish_currency_income_surfaces(
     manual_advisory_inputs: Dict[str, Dict[str, Any]] | None = None,
 ) -> None:
     eecon_base = rows.get('derived::eecon.base_coin_income')
-    if eecon_base is not None:
+    if eecon_base is not None and eecon_base.final_value is not None and eecon_base.status == 'resolved':
         _publish_surface(
             rows,
             surface_id='derived::economy.income.coins',

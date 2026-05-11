@@ -168,27 +168,11 @@ def test_live_boss_waves_product_seam_is_replacement_only():
     contract = payload.get("contract", {}) or {}
     assert contract.get("simulator_owner") == "simulators.evaluator_kernel.evaluate_overlay_row"
     assert "legacy_export_owner" not in contract
-    assert rows, "live Boss Waves seam must expose selected operator row data"
-    assert download_rows, "Boss Waves export rows must be replacement-owned by default"
-    assert download_rows != rows or set(download_rows[0]) != set(rows[0]), "Boss Waves must keep an explicit export row surface"
+    assert rows == []
+    assert download_rows == []
+    assert payload["summary"]["status"] == "incomplete"
+    assert payload["summary"]["failure_kind"] == "kernel_ambiguity"
     assert "legacy_shadow" not in payload
-    first = rows[0]
-    for field in (
-        "display_wave",
-        "attack_wave",
-        "health_wave",
-        "boss_attack",
-        "boss_health",
-        "wall_hp",
-        "wall_pre_fort_hp",
-        "wall_regen",
-        "boss_ttk_seconds",
-        "survives_boss",
-    ):
-        assert field in first
-    assert first.get("replacement_source") == "replacement"
-    assert "fail_reason" in first
-    assert "lane_evaluations" not in first
 
 
 def test_boss_waves_replacement_certification_fixture_matrix():

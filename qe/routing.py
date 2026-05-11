@@ -22,7 +22,7 @@ from qe.compat.legacy_surface_ids import (
 )
 from qe.contracts import normalize_surface_id_to_contract, to_v2_surface_id
 from qe.models import BoundStatInputs, StateIdentity, StateIdentityBinding, compile_stat_inputs_with_identity
-from qe.consumer_registry import resolve_consumer_bundle
+from qe.consumer_registry import load_consumer_bundle_definitions, resolve_consumer_bundle
 from qe.dependency_registry import DependencyRegistry
 from qe.materializer import BaselineContributorRow
 from qe.kernel import QueryResponse, ResolvedSurfaceRow, StatQueryKernel, get_default_query_kernel
@@ -910,56 +910,15 @@ _TIMING_V1_SURFACE_IDS: tuple[str, ...] = (
     'state::cards.wave_skip.chance_pct',
 )
 
+def _run_stats_progression_surface_ids() -> tuple[str, ...]:
+    definition = load_consumer_bundle_definitions()[('run_stats', 'progression_core_stats')]
+    return tuple(dict.fromkeys(definition.required_surface_ids + definition.optional_surface_ids))
+
+
 # Declared progression-family surface set. All three declared progression families share the
 # same surface denominator at the flat statbook compatibility boundary; their semantic split
 # only matters once bounded runtime/overlay execution begins inside the QE-owned progression stack.
-_PROGRESSION_V1_SURFACE_IDS: tuple[str, ...] = (
-    'state::tower.hp',
-    'state::wall.hp',
-    'state::wall.regen',
-    'state::wall.fortification_multiplier',
-    'state::tower.defense_pct',
-    'state::tower.defense_absolute',
-    'state::tower.thorns_damage_pct',
-    'state::wall.thorns_damage_pct',
-    'state::tower.orb_count',
-    'state::tower.orb_speed_rpm',
-    'state::cards.plasma_cannon.effect_pct',
-    'state::cards.berserker.assumed_bonus_multiplier',
-    'state::uw.black_hole.duration_seconds',
-    'state::uw.black_hole.cooldown_seconds',
-    'state::uw.black_hole.base_duration_seconds',
-    'state::uw.black_hole.base_cooldown_seconds',
-    'state::uw.chrono_field.duration_seconds',
-    'state::uw.chrono_field.cooldown_seconds',
-    'state::uw.chrono_field.damage_reduction_pct',
-    'state::uw.chrono_field.slow_pct',
-    'state::uw.golden_tower.base_duration_seconds',
-    'state::uw.golden_tower.base_cooldown_seconds',
-    _state('module.orbital_augment.electron_count'),
-    _state('module.black_hole_digestor.extra_coin_kill_bonus_per_free_upgrade_pct'),
-    _state('module.primordial_collapse.bh_damage_reduction_pct'),
-    'state::bot.thunder.cooldown_seconds',
-    'state::bot.thunder.duration_seconds',
-    'state::bot.thunder.linger_duration_seconds',
-    'state::bot.thunder.linger_slow_pct',
-    'state::bot.thunder.range_m',
-    'support_surface::ehp.health_relic_pct',
-    'support_surface::ehp.dabs_relic_pct',
-    'support_surface::ehp.def_pct_relic_pct',
-    'support_surface::eecon.adstarter_theme_relic_factor',
-    'support_surface::eecon.freeup_attack_relic_pct',
-    'support_surface::eecon.freeup_defense_relic_pct',
-    'support_surface::eecon.freeup_utility_relic_pct',
-    'support_surface::ehp.black_hole_duration_seconds',
-    'support_surface::ehp.black_hole_cooldown_seconds',
-    'state::tower.free_attack_upgrade_chance_pct',
-    'state::tower.free_defense_upgrade_chance_pct',
-    'state::tower.free_utility_upgrade_chance_pct',
-    'state::tower.enemy_attack_level_skip_pct',
-    'state::tower.enemy_health_level_skip_pct',
-    'support_surface::free_upgrade_multiplier',
-)
+_PROGRESSION_V1_SURFACE_IDS: tuple[str, ...] = _run_stats_progression_surface_ids()
 
 _TIMING_SURFACE_IDS: tuple[str, ...] = _TIMING_V1_SURFACE_IDS
 _PROGRESSION_SURFACE_ID_SET = frozenset(_PROGRESSION_V1_SURFACE_IDS)
@@ -977,6 +936,13 @@ _DELEGATED_FAMILY_SURFACE_IDS: dict[str, tuple[str, ...]] = {
     _PROGRESSION_RUNTIME_NO_PERKS: _PROGRESSION_V1_SURFACE_IDS,
     _PROGRESSION_RUNTIME_WITH_PERKS: _PROGRESSION_V1_SURFACE_IDS,
 }
+
+_GATED_OFF_ZERO_DEFAULT_SURFACES: frozenset[str] = frozenset({
+    'state::cards.plasma_cannon.effect_pct',
+    'state::module.black_hole_digestor.extra_coin_kill_bonus_per_free_upgrade_pct',
+    'state::module.orbital_augment.electron_count',
+    'state::module.primordial_collapse.bh_damage_reduction_pct',
+})
 
 # Unambiguous preset-name → declared timing family mapping used by _infer_manifest_approved_family.
 # timing_scenario_probe is not included: it has no fixed preset-name convention and is not
@@ -1610,18 +1576,18 @@ def query_response_to_statbook(
                 'provenance_ref': contributor.provenance_ref,
             }
         )
-    rows = {
-        row.surface_id: StatRow(
+    rows = {}
+    for row in response.resolved_surface_rows:
+        zero_default_gated_off = row.status == 'gated_off' and row.surface_id in _GATED_OFF_ZERO_DEFAULT_SURFACES
+        rows[row.surface_id] = StatRow(
             stat_name=row.surface_id,
-            final_value=row.final_value,
+            final_value=0.0 if zero_default_gated_off else row.final_value,
             value_type=row.value_type,
             source_count=len(contributors_by_surface.get(row.surface_id, ())),
-            status=row.status,
+            status='resolved' if zero_default_gated_off else row.status,
             notes=notes,
             contributors=contributors_by_surface.get(row.surface_id, []),
         )
-        for row in response.resolved_surface_rows
-    }
     merged_diagnostics = dict(diagnostics or {})
     merged_diagnostics.setdefault('family_id', response.family_id)
     merged_diagnostics['qe_resolution_interface'] = 'native_family_query'

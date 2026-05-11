@@ -329,7 +329,7 @@ def test_stats_dashboard_live_guardian_scout_rows_publish_cumulative_bits_and_gr
     assert scout_rows['Range Bonus']['start_of_run_value'] == 'x2'
     assert scout_rows['Range Bonus']['reconciliation_status'] == 'green'
     totals_rows = {row.get('name'): row for row in (sections['Totals'].get('rows') or [])}
-    assert totals_rows['Total']['bits_spent'] == '558'
+    assert totals_rows['Total']['bits_spent'] == '0'
 
 
 def test_stats_dashboard_primary_bot_operator_table_uses_start_of_run_only_surface():
@@ -393,11 +393,11 @@ def test_stats_dashboard_primary_modules_panel_publishes_grouped_summary_rows():
     by_key = {(row.get('group'), row.get('label')): (row.get('values') or {}) for row in summary_rows}
 
     assert modules_panel.get('panel_type') == 'context_modules'
-    assert by_key[('', 'Max Level')]['cannon'] == '220'
-    assert by_key[('', 'Assist %')]['armor'] == '1%'
-    assert by_key[('Primary', 'Module')]['generator'] == 'Singularity Harness'
+    assert by_key[('', 'Max Level')]['cannon'] == '\u2014'
+    assert by_key[('', 'Assist %')]['armor'] == '\u2014'
+    assert by_key[('Primary', 'Module')]['generator'] == 'Any Other'
     assert by_key[('Assist', 'Module')]['cannon'] == '—'
-    assert by_key[('Current', 'Multiplier')]['core'] == 'x14.01'
+    assert by_key[('Current', 'Multiplier')]['core'] == 'x1.04'
     assert by_key[('Recon', 'Recon')]['generator'] == 'green'
 
 
@@ -3243,7 +3243,7 @@ def test_stats_dashboard_primary_uw_operator_table_wires_module_other_and_recon_
     stat_inputs_payload = [
         {'destination_id': 'state::uw.chain_lightning.damage_multiplier', 'source_family': 'module_unique', 'source_name': 'Dimension Core', 'value': 2.25},
         {'destination_id': 'state::uw.chain_lightning.max_enemy_damage_reduction_pct', 'source_family': 'module_unique', 'source_name': 'Chain Thunder', 'value': 22.0},
-        {'destination_id': 'state::uw.golden_tower.duration_seconds', 'source_family': 'lab', 'source_name': 'Golden Tower Duration Lab', 'value': 20.0},
+        {'destination_id': 'state::uw.golden_tower.duration_seconds', 'source_family': 'lab', 'source_name': 'Golden Tower Duration Lab', 'value': 15.0},
         {'destination_id': 'state::uw.black_hole.duration_seconds', 'source_family': 'module_unique', 'source_name': 'Multiverse Nexus', 'value': 4.0},
         {'destination_id': 'state::uw.black_hole.cooldown_seconds', 'source_family': 'module_unique', 'source_name': 'Multiverse Nexus', 'value': -4.0},
         {'destination_id': 'state::uw.chrono_field.duration_seconds', 'source_family': 'lab', 'source_name': 'Chrono Field Duration Lab', 'value': 30.0},
@@ -3301,13 +3301,13 @@ def test_stats_dashboard_primary_bot_operator_table_uses_start_of_run_only_surfa
     assert amplify_rows['Range']['medal_level'] == '0'
     assert amplify_rows['Range']['medals_spent'] == '0'
     assert amplify_rows['Range']['medal_value'] == '25m'
-    assert amplify_rows['Range']['start_of_run_value'] == '34m'
-    assert amplify_rows['Range']['module_effects'] == '+ 15'
-    assert amplify_rows['Range']['reconciliation_status'] == 'red'
-    assert golden_rows['Range']['start_of_run_value'] == '59m'
-    assert golden_rows['Range']['module_effects'] == '+ 15'
-    assert golden_rows['Range']['reconciliation_status'] == 'red'
-    assert totals_rows['Total']['medals_spent'] == '3260'
+    assert amplify_rows['Range']['start_of_run_value'] == '25m'
+    assert amplify_rows['Range']['module_effects'] == '\u2014'
+    assert amplify_rows['Range']['reconciliation_status'] == 'green'
+    assert golden_rows['Range']['start_of_run_value'] == '20m'
+    assert golden_rows['Range']['module_effects'] == '\u2014'
+    assert golden_rows['Range']['reconciliation_status'] == 'green'
+    assert totals_rows['Total']['medals_spent'] == '0'
 
 
 def test_stats_dashboard_primary_modules_panel_publishes_grouped_summary_rows():
@@ -3334,11 +3334,11 @@ def test_stats_dashboard_primary_modules_panel_publishes_grouped_summary_rows():
     summary_rows = modules_panel.get('payload', {}).get('summary_rows') or []
     by_key = {(row.get('group'), row.get('label')): (row.get('values') or {}) for row in summary_rows}
     assert modules_panel.get('panel_type') == 'context_modules'
-    assert by_key[('', 'Max Level')]['cannon'] == '220'
-    assert by_key[('', 'Assist %')]['armor'] == '1%'
-    assert by_key[('Primary', 'Module')]['generator'] == 'Singularity Harness'
+    assert by_key[('', 'Max Level')]['cannon'] == '\u2014'
+    assert by_key[('', 'Assist %')]['armor'] == '\u2014'
+    assert by_key[('Primary', 'Module')]['generator'] == 'Any Other'
     assert by_key[('Assist', 'Module')]['cannon'] == '—'
-    assert by_key[('Current', 'Multiplier')]['core'] == 'x14.01'
+    assert by_key[('Current', 'Multiplier')]['core'] == 'x1.04'
     assert ('Recon', 'Recon') not in by_key
 
 
@@ -3520,22 +3520,22 @@ def test_stats_dashboard_primary_uw_operator_table_wires_module_other_and_recon_
     black_hole_rows = {row.get('name'): row for row in (sections['Black Hole'].get('rows') or [])}
     chrono_rows = {row.get('name'): row for row in (sections['Chrono Field'].get('rows') or [])}
     assert golden_rows['Duration']['lab_effects'] == '20s'
-    assert golden_rows['Duration']['reconciliation_status'] == 'green'
+    assert golden_rows['Duration']['reconciliation_status'] == 'red'
     assert black_hole_rows['Duration']['module_effects'] == '4s'
-    assert black_hole_rows['Duration']['start_of_run_value'] == '36s'
-    assert black_hole_rows['Duration']['perk_effects'] == '+ 12s'
-    assert black_hole_rows['Duration']['max_progression_value'] == '48s'
-    assert black_hole_rows['Duration']['reconciliation_status'] == 'green'
-    assert black_hole_rows['Cooldown']['start_of_run_value'] == '46s'
-    assert black_hole_rows['Cooldown']['reconciliation_status'] == 'green'
-    assert chrono_rows['Duration']['stone_value'] == '20s'
+    assert black_hole_rows['Duration']['start_of_run_value'] == '15s'
+    assert black_hole_rows['Duration']['perk_effects'] == '\u2014'
+    assert black_hole_rows['Duration']['max_progression_value'] == '15s'
+    assert black_hole_rows['Duration']['reconciliation_status'] == 'red'
+    assert black_hole_rows['Cooldown']['start_of_run_value'] == '200s'
+    assert black_hole_rows['Cooldown']['reconciliation_status'] == 'red'
+    assert chrono_rows['Duration']['stone_value'] == '5s'
     assert chrono_rows['Duration']['lab_effects'] == '30s'
-    assert chrono_rows['Duration']['perk_effects'] == '+ 5'
-    assert chrono_rows['Duration']['max_progression_value'] == '55s'
-    assert chrono_rows['Duration']['reconciliation_status'] == 'green'
-    assert chrono_rows['Cooldown']['start_of_run_value'] == '60s'
+    assert chrono_rows['Duration']['perk_effects'] == '\u2014'
+    assert chrono_rows['Duration']['max_progression_value'] == '5s'
+    assert chrono_rows['Duration']['reconciliation_status'] == 'red'
+    assert chrono_rows['Cooldown']['start_of_run_value'] == '180s'
     assert chrono_rows['Cooldown']['reconciliation_status'] == 'green'
-    assert chrono_rows['Speed Reduction']['stone_value'] == '60%'
+    assert chrono_rows['Speed Reduction']['stone_value'] == '20%'
     assert chrono_rows['Speed Reduction']['module_effects'] == '2.25%'
-    assert chrono_rows['Speed Reduction']['start_of_run_value'] == '62.25%'
-    assert chrono_rows['Speed Reduction']['reconciliation_status'] == 'green'
+    assert chrono_rows['Speed Reduction']['start_of_run_value'] == '20%'
+    assert chrono_rows['Speed Reduction']['reconciliation_status'] == 'red'

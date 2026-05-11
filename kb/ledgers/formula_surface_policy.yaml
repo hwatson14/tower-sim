@@ -108,6 +108,31 @@ surfaces:
     publish_policy: allow_if_resolved
     compare_policy: helper_or_non_ep_surface
     rationale: "Effective Thunder Bot active range is distinct from the raw medal/lab track row. Formula: (state::bot.thunder.range_m + state::bot.global.range_bonus_m) * 1.33 * (state::tower.range_m / 69.5). Provenance: raw range track in bot-track-registry and towersim-static-ledger; shared flat bonus in compiler-routing-policy and Singularity Harness; amplification factor sanctioned in bot-runtime-contract from verified wiki evidence."
+  state::bot.plus.wildfire.unlocked:
+    formula_class: v28_optional_unlock_flag
+    publish_policy: allow_if_resolved
+    compare_policy: helper_or_non_ep_surface
+    rationale: "v28 Bot+ Wildfire unlock flag is input-state truth. Missing _IDS state means the optional ability is not currently publishable as an owned unlocked flag; derived Bot+ counts default absent flags to false."
+  state::bot.plus.titan_shock.unlocked:
+    formula_class: v28_optional_unlock_flag
+    publish_policy: allow_if_resolved
+    compare_policy: helper_or_non_ep_surface
+    rationale: "v28 Bot+ Titan Shock unlock flag is input-state truth. Missing _IDS state means the optional ability is not currently publishable as an owned unlocked flag; derived Bot+ counts default absent flags to false."
+  state::bot.plus.bonus_cell.unlocked:
+    formula_class: v28_optional_unlock_flag
+    publish_policy: allow_if_resolved
+    compare_policy: helper_or_non_ep_surface
+    rationale: "v28 Bot+ Bonus Cells unlock flag is input-state truth. Missing _IDS state means the optional ability is not currently publishable as an owned unlocked flag; derived Bot+ counts default absent flags to false."
+  state::bot.plus.echoing_shot.unlocked:
+    formula_class: v28_optional_unlock_flag
+    publish_policy: allow_if_resolved
+    compare_policy: helper_or_non_ep_surface
+    rationale: "v28 Bot+ Echoing Shot unlock flag is input-state truth. Missing _IDS state means the optional ability is not currently publishable as an owned unlocked flag; derived Bot+ counts default absent flags to false."
+  state::bot.plus.maximum_power.unlocked:
+    formula_class: v28_optional_unlock_flag
+    publish_policy: allow_if_resolved
+    compare_policy: helper_or_non_ep_surface
+    rationale: "v28 Bot+ Maximum Power unlock flag is input-state truth. Missing _IDS state means the optional ability is not currently publishable as an owned unlocked flag; derived Bot+ counts default absent flags to false."
   state::tower.multishot_chance_pct:
     formula_class: generic_validated
     publish_policy: allow

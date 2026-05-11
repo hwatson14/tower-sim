@@ -72,6 +72,8 @@ EP_LABEL_TO_DESTINATION = {
 
 
 def verdict_from_verification(verification_status: str, compare_status: str | None) -> str:
+    if verification_status == 'not_applicable':
+        return 'pass'
     if verification_status in {'not_resolved', 'blocked', 'needs_work'}:
         return 'fail' if verification_status in {'not_resolved', 'blocked'} else 'needs_work'
     if verification_status == 'trace_only':
@@ -126,9 +128,13 @@ def build_line_by_line_verification(statbook_dict, ep_compare, formula_ledger, f
         for c in contributors:
             vt = c.get('value_type')
             notes = str(c.get('notes') or '').lower()
+            defaulted_if_missing = c.get('defaulted_if_missing') is True
             if vt == 'level':
                 level_rows.append(c.get('source_name') or c.get('stat_name'))
-            if c.get('value') is None or 'unresolved' in notes or vt in {'missing_inventory', 'raw_text', 'display_token'}:
+            if (
+                not defaulted_if_missing
+                and (c.get('value') is None or 'unresolved' in notes or vt in {'missing_inventory', 'raw_text', 'display_token'})
+            ):
                 unresolved.append(c.get('source_name') or c.get('stat_name'))
             if allowed and vt is not None and vt not in allowed:
                 semantic_mismatch.append({
@@ -156,15 +162,28 @@ def build_line_by_line_verification(statbook_dict, ep_compare, formula_ledger, f
         if compare_status == 'stage_scope_mismatch':
             issues.append('ep_reference_stage_scope_mismatch')
         verification_status = 'publishable'
+        publish_policy = str(contract.get('publish_policy') or '').strip()
+        row_status = row.get('status')
         if key.startswith('raw::'):
             verification_status = 'trace_only'
-        elif row.get('status') != 'resolved':
+        elif (
+            row_status == 'gated_off'
+            or (
+                row_status == 'mapped_not_resolved'
+                and key.startswith('state::bot.plus.')
+                and key.endswith('.unlocked')
+            )
+        ) and publish_policy == 'allow_if_resolved':
+            verification_status = 'not_applicable'
+        elif row_status not in {'resolved', 'partially_resolved'} or row.get('final_value') is None:
             verification_status = 'not_resolved'
         if issues:
             if key.startswith('raw::'):
                 verification_status = 'trace_only'
+            elif verification_status == 'not_applicable':
+                verification_status = 'not_applicable'
             else:
-                verification_status = 'blocked' if row.get('status') == 'resolved' else 'needs_work'
+                verification_status = 'blocked' if row_status in {'resolved', 'partially_resolved'} else 'needs_work'
         kb_alignment_status = kb_alignment_status_from_compare_status(compare_status)
         verdict = verdict_from_verification(verification_status, compare_status)
         verification[key] = {

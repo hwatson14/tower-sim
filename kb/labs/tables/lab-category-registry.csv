@@ -16,6 +16,10 @@ Workshop Enhancements,main_research,main,main,ids_exact_name + wiki_category_mod
 Enhancement Attack - Coin Discount,main_research,main,main,ids_exact_name + wiki_category_model,high,
 Enhancement Defense - Coin Discount,main_research,main,main,ids_exact_name + wiki_category_model,high,
 Enhancement Utility - Coin Discount,main_research,main,main,ids_exact_name + wiki_category_model,high,
+Dissonant Echo - Attack,attack_research,attack,dissonant_echo,ids_exact_name + v28_echo_lab_source,high,Targets Attack Dissonance echo boost.
+Dissonant Echo - Defense,defense_research,defense,dissonant_echo,ids_exact_name + v28_echo_lab_source,high,Targets Defense Dissonance echo boost.
+Dissonant Echo - Utility,utility_research,utility,dissonant_echo,ids_exact_name + v28_echo_lab_source,high,Targets Utility Dissonance echo boost.
+Dissonant Echo - Ultimate Weapons,ultimate_weapon_research,ultimate_weapons,dissonant_echo,ids_exact_name + v28_echo_lab_source,high,Targets Ultimate Weapon Dissonance echo boost.
 Damage,attack_research,attack,attack,ids_exact_name + wiki_category_model,high,
 Attack Speed,attack_research,attack,attack,ids_exact_name + wiki_category_model,high,
 Critical Factor,attack_research,attack,attack,ids_exact_name + wiki_category_model,high,
@@ -114,10 +118,12 @@ Flame Bot - Cooldown,bot_research,bots,bot,ids_exact_name + wiki_category_model,
 Thunder Bot - Cooldown,bot_research,bots,bot,ids_exact_name + wiki_category_model,high,
 Gold Bot - Cooldown,bot_research,bots,bot,ids_exact_name + wiki_category_model,high,
 Amp Bot - Cooldown,bot_research,bots,bot,ids_exact_name + wiki_category_model,high,
+Bot Bot - Cooldown,bot_research,bots,bot,ids_exact_name + v28_bot_lab_source,high,
 Flame Bot - Burn Stack,bot_research,bots,bot,ids_exact_name + wiki_category_model,high,
 Thunder Bot - Linger Time,bot_research,bots,bot,ids_exact_name + wiki_category_model,high,
 Gold Bot - Duration,bot_research,bots,bot,ids_exact_name + wiki_category_model,high,
 Amp Bot - Duration,bot_research,bots,bot,ids_exact_name + wiki_category_model,high,
+Bot Bot - Duration,bot_research,bots,bot,ids_exact_name + v28_bot_lab_source,high,
 Common Enemy Health,enemies_research,enemies,enemy,ids_exact_name + wiki_category_model,high,
 Common Enemy Attack,enemies_research,enemies,enemy,ids_exact_name + wiki_category_model,high,
 Fast Enemy Health,enemies_research,enemies,enemy,ids_exact_name + wiki_category_model,high,

@@ -51,3 +51,21 @@ def test_publish_currency_income_surfaces__uses_exact_package_draw_ev_when_promo
     publish_currency_income_surfaces(rows)
 
     assert rows["derived::economy.income.shards"].final_value == pytest.approx(63.25)
+
+
+def test_publish_currency_income_surfaces__does_not_publish_coin_income_from_unresolved_eecon_base():
+    rows = {
+        "derived::eecon.base_coin_income": StatRow(
+            stat_name="derived::eecon.base_coin_income",
+            final_value=None,
+            value_type="scalar",
+            source_count=1,
+            status="mapped_not_resolved",
+            contributors=[],
+            schema={"unit": "coins_income_proxy"},
+        )
+    }
+
+    publish_currency_income_surfaces(rows)
+
+    assert "derived::economy.income.coins" not in rows

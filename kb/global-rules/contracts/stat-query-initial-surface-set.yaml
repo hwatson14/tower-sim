@@ -1545,6 +1545,149 @@ families:
       debug_only: false
       scenario_scoped: false
       semantics: effective Thunder Bot active range in meters after shared flat bot-range bonuses and tower-range amplification.
+    - surface_id: state::bot.bot_bot.duration_seconds
+      surface_kind: runtime_mechanic_surface
+      surface_class: surface
+      domain: bots
+      owning_families: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: true
+      debug_only: false
+      scenario_scoped: false
+      semantics: v28 Bot Bot duration in seconds parsed from _IDS Bots.
+    - surface_id: state::bot.bot_bot.cooldown_seconds
+      surface_kind: runtime_mechanic_surface
+      surface_class: surface
+      domain: bots
+      owning_families: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: true
+      debug_only: false
+      scenario_scoped: false
+      semantics: v28 Bot Bot cooldown in seconds parsed from _IDS Bots.
+    - surface_id: state::bot.bot_bot.bonus_multiplier
+      surface_kind: runtime_mechanic_surface
+      surface_class: surface
+      domain: bots
+      owning_families: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: true
+      debug_only: false
+      scenario_scoped: false
+      semantics: v28 Bot Bot boost multiplier parsed from _IDS Bots.
+    - surface_id: state::bot.bot_bot.range_m
+      surface_kind: runtime_mechanic_surface
+      surface_class: surface
+      domain: bots
+      owning_families: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: true
+      debug_only: false
+      scenario_scoped: false
+      semantics: v28 Bot Bot range in meters parsed from _IDS Bots.
+    - surface_id: state::bot.bot_bot.effective_range_m
+      surface_kind: runtime_mechanic_surface
+      surface_class: surface
+      domain: bots
+      owning_families: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: true
+      debug_only: false
+      scenario_scoped: false
+      semantics: effective Bot Bot active range in meters after shared flat bot-range bonuses and tower-range amplification.
+    - surface_id: state::bot.bot_bot.maximum_power_multiplier
+      surface_kind: runtime_mechanic_surface
+      surface_class: surface
+      domain: bots
+      owning_families: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: true
+      debug_only: false
+      scenario_scoped: false
+      semantics: v28 Bot Bot Maximum Power multiplier when present in _IDS Bots.
+    - surface_id: state::bot.plus.wildfire.unlocked
+      surface_kind: runtime_mechanic_surface
+      surface_class: surface
+      domain: bots
+      owning_families: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: true
+      publish_default: false
+      debug_only: false
+      scenario_scoped: false
+      semantics: v28 Bot+ Wildfire unlock flag parsed from _IDS Bots.
+    - surface_id: state::bot.plus.titan_shock.unlocked
+      surface_kind: runtime_mechanic_surface
+      surface_class: surface
+      domain: bots
+      owning_families: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: true
+      publish_default: false
+      debug_only: false
+      scenario_scoped: false
+      semantics: v28 Bot+ Titan Shock unlock flag parsed from _IDS Bots.
+    - surface_id: state::bot.plus.bonus_cell.unlocked
+      surface_kind: runtime_mechanic_surface
+      surface_class: surface
+      domain: bots
+      owning_families: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: true
+      publish_default: false
+      debug_only: false
+      scenario_scoped: false
+      semantics: v28 Bot+ Bonus Cell unlock flag parsed from _IDS Bots.
+    - surface_id: state::bot.plus.echoing_shot.unlocked
+      surface_kind: runtime_mechanic_surface
+      surface_class: surface
+      domain: bots
+      owning_families: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: true
+      publish_default: false
+      debug_only: false
+      scenario_scoped: false
+      semantics: v28 Bot+ Echoing Shot unlock flag parsed from _IDS Bots.
+    - surface_id: state::bot.plus.maximum_power.unlocked
+      surface_kind: runtime_mechanic_surface
+      surface_class: surface
+      domain: bots
+      owning_families: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: true
+      publish_default: false
+      debug_only: false
+      scenario_scoped: false
+      semantics: v28 Bot+ Maximum Power unlock flag parsed from _IDS Bots.
     - surface_id: state::guardian.attack.cooldown_seconds
       surface_kind: runtime_mechanic_surface
       surface_class: surface
@@ -1952,6 +2095,278 @@ families:
       debug_only: false
       scenario_scoped: true
       semantics: progression-scoped relic utility free-upgrade contribution consumed by eEcon derived layers.
+    - surface_id: state::labs.dissonant_echo.attack.level
+      surface_kind: state_surface
+      surface_class: surface
+      domain: progression
+      query_value_type: level
+      owning_families:
+      - progression_start_of_run
+      - progression_runtime_no_perks
+      - progression_runtime_with_perks
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: true
+      publish_default: false
+      debug_only: false
+      scenario_scoped: true
+      semantics: v28 Attack Dissonant Echo lab level; QE derives derived::dissonance.attack.echo_multiplier.
+    - surface_id: state::labs.dissonant_echo.defense.level
+      surface_kind: state_surface
+      surface_class: surface
+      domain: progression
+      query_value_type: level
+      owning_families:
+      - progression_start_of_run
+      - progression_runtime_no_perks
+      - progression_runtime_with_perks
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: true
+      publish_default: false
+      debug_only: false
+      scenario_scoped: true
+      semantics: v28 Defense Dissonant Echo lab level; QE derives derived::dissonance.defense.echo_multiplier.
+    - surface_id: state::labs.dissonant_echo.utility.level
+      surface_kind: state_surface
+      surface_class: surface
+      domain: progression
+      query_value_type: level
+      owning_families:
+      - progression_start_of_run
+      - progression_runtime_no_perks
+      - progression_runtime_with_perks
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: true
+      publish_default: false
+      debug_only: false
+      scenario_scoped: true
+      semantics: v28 Utility Dissonant Echo lab level; QE derives derived::dissonance.utility.echo_multiplier.
+    - surface_id: state::labs.dissonant_echo.ultimate_weapons.level
+      surface_kind: state_surface
+      surface_class: surface
+      domain: progression
+      query_value_type: level
+      owning_families:
+      - progression_start_of_run
+      - progression_runtime_no_perks
+      - progression_runtime_with_perks
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: true
+      publish_default: false
+      debug_only: false
+      scenario_scoped: true
+      semantics: v28 Ultimate Weapons Dissonant Echo lab level; QE derives derived::dissonance.ultimate_weapons.echo_multiplier.
+    - surface_id: state::dissonance.attack.pb
+      surface_kind: state_surface
+      surface_class: surface
+      domain: progression
+      query_value_type: count
+      owning_families:
+      - progression_start_of_run
+      - progression_runtime_no_perks
+      - progression_runtime_with_perks
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: true
+      publish_default: false
+      debug_only: false
+      scenario_scoped: true
+      semantics: v28 active-tier Attack Dissonant Run personal-best wave parsed from _IDS Player & Stuff.
+    - surface_id: state::dissonance.defense.pb
+      surface_kind: state_surface
+      surface_class: surface
+      domain: progression
+      query_value_type: count
+      owning_families:
+      - progression_start_of_run
+      - progression_runtime_no_perks
+      - progression_runtime_with_perks
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: true
+      publish_default: false
+      debug_only: false
+      scenario_scoped: true
+      semantics: v28 active-tier Defense Dissonant Run personal-best wave parsed from _IDS Player & Stuff.
+    - surface_id: state::dissonance.utility.pb
+      surface_kind: state_surface
+      surface_class: surface
+      domain: progression
+      query_value_type: count
+      owning_families:
+      - progression_start_of_run
+      - progression_runtime_no_perks
+      - progression_runtime_with_perks
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: true
+      publish_default: false
+      debug_only: false
+      scenario_scoped: true
+      semantics: v28 active-tier Utility Dissonant Run personal-best wave parsed from _IDS Player & Stuff.
+    - surface_id: state::dissonance.ultimate_weapons.pb
+      surface_kind: state_surface
+      surface_class: surface
+      domain: progression
+      query_value_type: count
+      owning_families:
+      - progression_start_of_run
+      - progression_runtime_no_perks
+      - progression_runtime_with_perks
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: true
+      publish_default: false
+      debug_only: false
+      scenario_scoped: true
+      semantics: v28 active-tier Ultimate Weapons Dissonant Run personal-best wave parsed from _IDS Player & Stuff.
+    - surface_id: state::dissonance.attack.active_boost_multiplier
+      surface_kind: state_surface
+      surface_class: surface
+      domain: progression
+      query_value_type: scalar
+      owning_families:
+      - progression_start_of_run
+      - progression_runtime_no_perks
+      - progression_runtime_with_perks
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: true
+      publish_default: false
+      debug_only: false
+      scenario_scoped: true
+      semantics: v28 active-tier Attack Dissonant Boost multiplier derived from _IDS tier PB.
+    - surface_id: state::dissonance.defense.active_boost_multiplier
+      surface_kind: state_surface
+      surface_class: surface
+      domain: progression
+      query_value_type: scalar
+      owning_families:
+      - progression_start_of_run
+      - progression_runtime_no_perks
+      - progression_runtime_with_perks
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: true
+      publish_default: false
+      debug_only: false
+      scenario_scoped: true
+      semantics: v28 active-tier Defense Dissonant Boost multiplier derived from _IDS tier PB.
+    - surface_id: state::dissonance.utility.active_boost_multiplier
+      surface_kind: state_surface
+      surface_class: surface
+      domain: progression
+      query_value_type: scalar
+      owning_families:
+      - progression_start_of_run
+      - progression_runtime_no_perks
+      - progression_runtime_with_perks
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: true
+      publish_default: false
+      debug_only: false
+      scenario_scoped: true
+      semantics: v28 active-tier Utility Dissonant Boost multiplier derived from _IDS tier PB.
+    - surface_id: state::dissonance.ultimate_weapons.active_boost_multiplier
+      surface_kind: state_surface
+      surface_class: surface
+      domain: progression
+      query_value_type: scalar
+      owning_families:
+      - progression_start_of_run
+      - progression_runtime_no_perks
+      - progression_runtime_with_perks
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: true
+      publish_default: false
+      debug_only: false
+      scenario_scoped: true
+      semantics: v28 active-tier Ultimate Weapons Dissonant Boost multiplier derived from _IDS tier PB.
+    - surface_id: state::dissonance.attack.echo_source_bonus
+      surface_kind: state_surface
+      surface_class: surface
+      domain: progression
+      query_value_type: scalar
+      owning_families:
+      - progression_start_of_run
+      - progression_runtime_no_perks
+      - progression_runtime_with_perks
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: true
+      publish_default: false
+      debug_only: false
+      scenario_scoped: true
+      semantics: v28 Attack Dissonant Echo source bonus; sum of active boost deltas across _IDS tier PBs.
+    - surface_id: state::dissonance.defense.echo_source_bonus
+      surface_kind: state_surface
+      surface_class: surface
+      domain: progression
+      query_value_type: scalar
+      owning_families:
+      - progression_start_of_run
+      - progression_runtime_no_perks
+      - progression_runtime_with_perks
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: true
+      publish_default: false
+      debug_only: false
+      scenario_scoped: true
+      semantics: v28 Defense Dissonant Echo source bonus; sum of active boost deltas across _IDS tier PBs.
+    - surface_id: state::dissonance.utility.echo_source_bonus
+      surface_kind: state_surface
+      surface_class: surface
+      domain: progression
+      query_value_type: scalar
+      owning_families:
+      - progression_start_of_run
+      - progression_runtime_no_perks
+      - progression_runtime_with_perks
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: true
+      publish_default: false
+      debug_only: false
+      scenario_scoped: true
+      semantics: v28 Utility Dissonant Echo source bonus; sum of active boost deltas across _IDS tier PBs.
+    - surface_id: state::dissonance.ultimate_weapons.echo_source_bonus
+      surface_kind: state_surface
+      surface_class: surface
+      domain: progression
+      query_value_type: scalar
+      owning_families:
+      - progression_start_of_run
+      - progression_runtime_no_perks
+      - progression_runtime_with_perks
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: true
+      publish_default: false
+      debug_only: false
+      scenario_scoped: true
+      semantics: v28 Ultimate Weapons Dissonant Echo source bonus; sum of active boost deltas across _IDS tier PBs.
     runtime_consumers:
     - runtime_consumer::wave_progression.attack_wave
     - runtime_consumer::wave_progression.health_wave
@@ -1959,6 +2374,22 @@ families:
     - bundle_id: progression_core_stats
       surface_ids:
       - state::tower.damage
+      - state::labs.dissonant_echo.attack.level
+      - state::labs.dissonant_echo.defense.level
+      - state::labs.dissonant_echo.utility.level
+      - state::labs.dissonant_echo.ultimate_weapons.level
+      - state::dissonance.attack.pb
+      - state::dissonance.defense.pb
+      - state::dissonance.utility.pb
+      - state::dissonance.ultimate_weapons.pb
+      - state::dissonance.attack.active_boost_multiplier
+      - state::dissonance.defense.active_boost_multiplier
+      - state::dissonance.utility.active_boost_multiplier
+      - state::dissonance.ultimate_weapons.active_boost_multiplier
+      - state::dissonance.attack.echo_source_bonus
+      - state::dissonance.defense.echo_source_bonus
+      - state::dissonance.utility.echo_source_bonus
+      - state::dissonance.ultimate_weapons.echo_source_bonus
       - state::tower.attack_speed
       - state::tower.hp
       - state::tower.regen
@@ -2031,6 +2462,17 @@ families:
       - state::bot.thunder.linger_slow_pct
       - state::bot.thunder.range_m
       - state::bot.thunder.effective_range_m
+      - state::bot.bot_bot.duration_seconds
+      - state::bot.bot_bot.cooldown_seconds
+      - state::bot.bot_bot.bonus_multiplier
+      - state::bot.bot_bot.range_m
+      - state::bot.bot_bot.effective_range_m
+      - state::bot.bot_bot.maximum_power_multiplier
+      - state::bot.plus.wildfire.unlocked
+      - state::bot.plus.titan_shock.unlocked
+      - state::bot.plus.bonus_cell.unlocked
+      - state::bot.plus.echoing_shot.unlocked
+      - state::bot.plus.maximum_power.unlocked
       - state::guardian.attack.cooldown_seconds
       - state::guardian.attack.missing_health_damage_pct
       - state::guardian.attack.targets_count

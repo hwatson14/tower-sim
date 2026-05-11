@@ -106,7 +106,7 @@ def build_runtime_state(ids_raw: IdsRaw, *, default_preset: str = "Farming", loa
     bots, bot_upgrades, bot_upgrade_tracks = _parse_bots(raw_sections.get("Bots", []))
     guardians = _parse_table(raw_sections.get("Guardians", []))
     guardian_tracks = _parse_guardians(raw_sections.get("Guardians", []))
-    player_meta, tier_progression_waves, highest_tier_unlocked_number, highest_tier_unlocked_label = _parse_player_meta(raw_sections.get("Player & Stuff", []))
+    player_meta, tier_progression_waves, dissonance_pbs_by_tier, highest_tier_unlocked_number, highest_tier_unlocked_label = _parse_player_meta(raw_sections.get("Player & Stuff", []))
     theme_song_coin_multiplier = _parse_theme_song_coin_multiplier(raw_sections.get("Themes & Songs", []))
     cards_inventory, card_slots_unlocked, card_presets = _parse_cards(ids_raw.section_headers.get("Cards", []), raw_sections.get("Cards", []), labs)
     module_system_state, module_presets, modules_inventory = _parse_modules(raw_sections.get("Modules", []))
@@ -149,6 +149,7 @@ def build_runtime_state(ids_raw: IdsRaw, *, default_preset: str = "Farming", loa
         active_module_preset=active_module_preset,
         default_preset=default_preset,
         raw_sections=raw_sections,
+        dissonance_pbs_by_tier=dissonance_pbs_by_tier,
     )
 
 
@@ -495,27 +496,50 @@ def _extract_tier_number(tier_label: str) -> Optional[int]:
     return int(match.group(1))
 
 
-def _parse_player_meta(rows: List[List[str]]) -> Tuple[Dict[str, Optional[str]], Dict[str, int], Optional[int], Optional[str]]:
+_DISSONANT_PB_COLUMNS: tuple[tuple[str, int], ...] = (
+    ('attack', 2),
+    ('defense', 3),
+    ('utility', 4),
+    ('ultimate_weapons', 5),
+)
+
+
+def _parse_player_meta(rows: List[List[str]]) -> Tuple[Dict[str, Optional[str]], Dict[str, int], Dict[str, Dict[str, int]], Optional[int], Optional[str]]:
     out: Dict[str, Optional[str]] = {}
     tier_progression_waves: Dict[str, int] = {}
+    dissonance_pbs_by_tier: Dict[str, Dict[str, int]] = {}
     highest_tier_unlocked_number: Optional[int] = None
     for row in rows:
         left_key = _safe_cell(row, 0).strip()
-        if left_key == 'Tier':
+        tier_label = ''
+        tier_number = _extract_tier_number(left_key)
+        wave: Optional[int] = None
+        if tier_number is not None:
+            tier_label = left_key
+            wave = _parse_optional_int(_safe_cell(row, 1))
+            dissonance_pbs: Dict[str, int] = {}
+            for category, col_idx in _DISSONANT_PB_COLUMNS:
+                parsed_pb = _parse_optional_int(_safe_cell(row, col_idx))
+                if parsed_pb is not None:
+                    dissonance_pbs[category] = parsed_pb
+            if dissonance_pbs:
+                dissonance_pbs_by_tier[tier_label] = dissonance_pbs
+        elif left_key == 'Tier':
             tier_label = _safe_cell(row, 1).strip()
             tier_number = _extract_tier_number(tier_label)
             wave = _parse_optional_int(_safe_cell(row, 2))
-            if tier_number is not None and wave is not None:
-                tier_progression_waves[tier_label] = wave
-                if wave > 0 and (highest_tier_unlocked_number is None or tier_number > highest_tier_unlocked_number):
-                    highest_tier_unlocked_number = tier_number
         elif left_key:
             out[left_key] = _optional_str(_safe_cell(row, 1))
-        right_key = _safe_cell(row, 4).strip()
-        if right_key and right_key != 'Stat':
-            out[right_key] = _optional_str(_safe_cell(row, 5))
+        if tier_number is not None and wave is not None:
+            tier_progression_waves[tier_label] = wave
+            if wave > 0 and (highest_tier_unlocked_number is None or tier_number > highest_tier_unlocked_number):
+                highest_tier_unlocked_number = tier_number
+        for key_col, value_col in ((4, 5), (8, 9)):
+            right_key = _safe_cell(row, key_col).strip()
+            if right_key and right_key != 'Stat':
+                out[right_key] = _optional_str(_safe_cell(row, value_col))
     highest_tier_unlocked_label = f"Tier {highest_tier_unlocked_number}" if highest_tier_unlocked_number is not None else None
-    return out, tier_progression_waves, highest_tier_unlocked_number, highest_tier_unlocked_label
+    return out, tier_progression_waves, dissonance_pbs_by_tier, highest_tier_unlocked_number, highest_tier_unlocked_label
 
 
 def _parse_bots(rows: List[List[str]]) -> Tuple[List[str], Dict[str, Dict[str, int]], Dict[str, List[BotUpgradeSnapshot]]]:
@@ -627,7 +651,10 @@ def _parse_cards(section_header: List[str], rows: List[List[str]], labs: Dict[st
         name = _safe_cell(row, 0).strip()
         if not name:
             continue
-        level = _parse_optional_int(_safe_cell(row, 1))
+        level_token = _safe_cell(row, 1).strip()
+        level = _parse_optional_int(level_token)
+        if level is None and level_token.lower() == 'locked':
+            level = 0
         if level is not None:
             inventory[name] = CardSnapshot(
                 name=name,

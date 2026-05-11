@@ -81,6 +81,11 @@ consumers:
     - state::bot.flame.effective_range_m
     - state::bot.golden.effective_range_m
     - state::bot.thunder.effective_range_m
+    - state::bot.bot_bot.duration_seconds
+    - state::bot.bot_bot.cooldown_seconds
+    - state::bot.bot_bot.bonus_multiplier
+    - state::bot.bot_bot.range_m
+    - state::bot.bot_bot.effective_range_m
     - state::guardian.attack.cooldown_seconds
     - state::guardian.attack.missing_health_damage_pct
     - state::guardian.attack.targets_count
@@ -110,6 +115,28 @@ consumers:
     - state::tower.enemy_health_level_skip_pct
     - support_surface::free_upgrade_multiplier
     optional_surface_ids:
+    - state::labs.dissonant_echo.attack.level
+    - state::labs.dissonant_echo.defense.level
+    - state::labs.dissonant_echo.utility.level
+    - state::labs.dissonant_echo.ultimate_weapons.level
+    - state::dissonance.attack.pb
+    - state::dissonance.defense.pb
+    - state::dissonance.utility.pb
+    - state::dissonance.ultimate_weapons.pb
+    - state::dissonance.attack.active_boost_multiplier
+    - state::dissonance.defense.active_boost_multiplier
+    - state::dissonance.utility.active_boost_multiplier
+    - state::dissonance.ultimate_weapons.active_boost_multiplier
+    - state::dissonance.attack.echo_source_bonus
+    - state::dissonance.defense.echo_source_bonus
+    - state::dissonance.utility.echo_source_bonus
+    - state::dissonance.ultimate_weapons.echo_source_bonus
+    - state::bot.bot_bot.maximum_power_multiplier
+    - state::bot.plus.wildfire.unlocked
+    - state::bot.plus.titan_shock.unlocked
+    - state::bot.plus.bonus_cell.unlocked
+    - state::bot.plus.echoing_shot.unlocked
+    - state::bot.plus.maximum_power.unlocked
     - state::cards.berserker.assumed_bonus_multiplier
     - state::cards.ultimate_crit.chance_pct
     - state::uw.black_hole.base_duration_seconds

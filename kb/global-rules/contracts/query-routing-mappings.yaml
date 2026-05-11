@@ -32,6 +32,18 @@ uw_lab_direct_destination:
   Swamp Rend - Additional Enemies:
   - mechanic_param
   - uw.poison_swamp.rend_additional_enemies
+  Dissonant Echo - Attack:
+  - runtime_mechanic_param
+  - labs.dissonant_echo.attack.level
+  Dissonant Echo - Defense:
+  - runtime_mechanic_param
+  - labs.dissonant_echo.defense.level
+  Dissonant Echo - Utility:
+  - runtime_mechanic_param
+  - labs.dissonant_echo.utility.level
+  Dissonant Echo - Ultimate Weapons:
+  - runtime_mechanic_param
+  - labs.dissonant_echo.ultimate_weapons.level
   Inner Mine Stun:
   - capability
   - capability.uw.inner_land_mines.stun
@@ -212,6 +224,12 @@ uw_lab_direct_destination:
   Thunder Bot - Linger Time:
   - mechanic_param
   - bot.thunder.linger_duration_seconds
+  Bot Bot - Cooldown:
+  - mechanic_param
+  - bot.bot.cooldown_seconds
+  Bot Bot - Duration:
+  - mechanic_param
+  - bot.bot.duration_seconds
 workshop_ids_to_contributor:
   Damage: workshop__tower__damage__flat
   Attack Speed: workshop__tower__attack_speed__flat
@@ -482,6 +500,22 @@ lab_application_target_to_destination:
   destination_field: damage_amplifier_multiplier_per_effect_wave
   destination_object_type: mechanic_param
   destination_id: uw.death_wave.damage_amplifier_multiplier_per_effect_wave
+- destination_namespace: dissonance_attack
+  destination_field: echo_level
+  destination_object_type: runtime_mechanic_param
+  destination_id: labs.dissonant_echo.attack.level
+- destination_namespace: dissonance_defense
+  destination_field: echo_level
+  destination_object_type: runtime_mechanic_param
+  destination_id: labs.dissonant_echo.defense.level
+- destination_namespace: dissonance_utility
+  destination_field: echo_level
+  destination_object_type: runtime_mechanic_param
+  destination_id: labs.dissonant_echo.utility.level
+- destination_namespace: dissonance_ultimate_weapons
+  destination_field: echo_level
+  destination_object_type: runtime_mechanic_param
+  destination_id: labs.dissonant_echo.ultimate_weapons.level
 - destination_namespace: ultimate_weapon_golden_tower
   destination_field: duration_seconds
   destination_object_type: mechanic_param

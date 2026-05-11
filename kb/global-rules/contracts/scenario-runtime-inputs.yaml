@@ -20,6 +20,7 @@ fields:
       - state::combat.orb_boss_total_damage_pct
     min: 0.0
     max: 100.0
+    default: 6.0
     ownership_class: scenario_runtime_input
     owned_by: manual_or_explicit_runtime_input
     rationale: Boss Waves product path uses total orb damage dealt while the boss crosses the orb line, not continuous cadence.

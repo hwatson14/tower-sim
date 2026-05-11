@@ -630,6 +630,7 @@ def _ep_chain_thunder_factor(rows: Dict[str, StatRow]) -> float:
 def _contributor(rows: Dict[str, StatRow], key: str, destination: str) -> Dict[str, Any]:
     resolved_key = normalize_surface_id_to_contract(key)
     row = _row(rows, key)
+    defaulted_if_missing = row is None or row.final_value is None
     return {
         'stat_name': resolved_key,
         'source_family': 'published_surface',
@@ -641,6 +642,7 @@ def _contributor(rows: Dict[str, StatRow], key: str, destination: str) -> Dict[s
         'destination_id': destination,
         'resolver_id': 'query_derived_composites',
         'kb_mapped': row is not None,
+        'defaulted_if_missing': defaulted_if_missing,
     }
 
 
@@ -648,8 +650,9 @@ def _publish(rows: Dict[str, StatRow], name: str, value: float, value_type: str,
     existing = rows.get(name)
     if existing is not None:
         if isinstance(existing.schema, dict) and existing.schema.get('resolver') == 'query_derived_composites':
-            return
-        raise ValueError(f'Query publication collision for {name}')
+            rows.pop(name, None)
+        else:
+            raise ValueError(f'Query publication collision for {name}')
     rows[name] = StatRow(
         stat_name=name,
         final_value=value,
@@ -662,12 +665,89 @@ def _publish(rows: Dict[str, StatRow], name: str, value: float, value_type: str,
     )
 
 
+def _publish_unresolved(rows: Dict[str, StatRow], name: str, value_type: str, contributors: list[Dict[str, Any]], notes: str) -> None:
+    existing = rows.get(name)
+    if existing is not None:
+        if isinstance(existing.schema, dict) and existing.schema.get('resolver') == 'query_derived_composites':
+            return
+        raise ValueError(f'Query publication collision for {name}')
+    rows[name] = StatRow(
+        stat_name=name,
+        final_value=None,
+        value_type=value_type,
+        source_count=len(contributors),
+        status='mapped_not_resolved',
+        notes=notes,
+        contributors=contributors,
+        schema={'resolver': 'query_derived_composites'},
+    )
+
+
+_DISSONANT_ECHO_LEVEL_SURFACES = {
+    'attack': 'state::labs.dissonant_echo.attack.level',
+    'defense': 'state::labs.dissonant_echo.defense.level',
+    'utility': 'state::labs.dissonant_echo.utility.level',
+    'ultimate_weapons': 'state::labs.dissonant_echo.ultimate_weapons.level',
+}
+
+
+def _dissonance_total_multiplier(rows: Dict[str, StatRow], category: str) -> float:
+    return _get_first(rows, [f'derived::dissonance.{category}.total_multiplier'], 1.0)
+
+
+def _publish_dissonance_surfaces(rows: Dict[str, StatRow]) -> None:
+    for category, level_surface in _DISSONANT_ECHO_LEVEL_SURFACES.items():
+        level_row = _row(rows, level_surface)
+        echo_fraction = 0.0
+        try:
+            if level_row is not None and level_row.final_value is not None:
+                echo_fraction = (1.0 + float(level_row.final_value)) * 0.005
+        except (TypeError, ValueError):
+            echo_fraction = 0.0
+        if level_row is not None:
+            _publish(
+                rows,
+                f'derived::dissonance.{category}.echo_multiplier',
+                echo_fraction,
+                'ratio',
+                [_contributor(rows, level_surface, f'dissonance.{category}.echo_multiplier')],
+                'v28 Dissonant Echo formula from EP v5.06.02: (1 + level) * 0.5%; public max wording says 10.0% while EP level 20 implies 10.5%.',
+            )
+        active_boost_surface = f'state::dissonance.{category}.active_boost_multiplier'
+        echo_source_surface = f'state::dissonance.{category}.echo_source_bonus'
+        active_boost = _get_first(rows, [active_boost_surface], 1.0)
+        echo_source_bonus = _get_first(rows, [echo_source_surface], 0.0)
+        echo_bonus = max(0.0, echo_source_bonus) * max(0.0, echo_fraction)
+        total_multiplier = active_boost + echo_bonus
+        contributors = [
+            _contributor(rows, active_boost_surface, f'dissonance.{category}.total_multiplier'),
+            _contributor(rows, echo_source_surface, f'dissonance.{category}.total_multiplier'),
+            _contributor(rows, level_surface, f'dissonance.{category}.total_multiplier'),
+        ]
+        _publish(
+            rows,
+            f'derived::dissonance.{category}.echo_bonus_multiplier',
+            echo_bonus,
+            'multiplier',
+            contributors[1:],
+            'v28 Dissonant Echo additive bonus: sum(max(Dissonant Boost - 1, 0) across _IDS tier PBs) * Echo lab fraction.',
+        )
+        _publish(
+            rows,
+            f'derived::dissonance.{category}.total_multiplier',
+            total_multiplier,
+            'multiplier',
+            contributors,
+            'v28 total Dissonance multiplier: active-tier Dissonant Boost plus all-tier Dissonant Echo additive bonus.',
+        )
+
+
 def _publish_effective_bot_ranges(rows: Dict[str, StatRow]) -> None:
     tower_range_m = _get(rows, 'state::tower.range_m')
     global_range_bonus_m = _get(rows, 'state::bot.global.range_bonus_m')
     tower_amplification = 1.33 * (tower_range_m / 69.5) if tower_range_m > 0.0 else 0.0
 
-    for bot_name in ('golden', 'amplify', 'flame', 'thunder'):
+    for bot_name in ('golden', 'amplify', 'flame', 'thunder', 'bot_bot'):
         raw_surface = f'state::bot.{bot_name}.range_m'
         effective_surface = f'state::bot.{bot_name}.effective_range_m'
         existing = rows.get(effective_surface)
@@ -691,8 +771,49 @@ def _publish_effective_bot_ranges(rows: Dict[str, StatRow]) -> None:
         )
 
 
+_BOT_PLUS_UNLOCK_SURFACES = (
+    'state::bot.plus.wildfire.unlocked',
+    'state::bot.plus.titan_shock.unlocked',
+    'state::bot.plus.bonus_cell.unlocked',
+    'state::bot.plus.echoing_shot.unlocked',
+    'state::bot.plus.maximum_power.unlocked',
+)
+
+
+def _publish_bot_plus_surfaces(rows: Dict[str, StatRow]) -> None:
+    unlocked_count = sum(1 for surface_id in _BOT_PLUS_UNLOCK_SURFACES if _bool(rows, [surface_id], False))
+    all_unlocked = unlocked_count == len(_BOT_PLUS_UNLOCK_SURFACES)
+    contributors = [_contributor(rows, surface_id, 'bot.plus.all_unlocked') for surface_id in _BOT_PLUS_UNLOCK_SURFACES]
+    _publish(
+        rows,
+        'derived::bot.plus.unlocked_count',
+        float(unlocked_count),
+        'count',
+        contributors,
+        'v28 Bot+ unlocked ability count from _IDS Bot+ flags.',
+    )
+    _publish(
+        rows,
+        'derived::bot.plus.all_unlocked',
+        1.0 if all_unlocked else 0.0,
+        'bool',
+        contributors,
+        'v28 Synchronicity unlock condition: all five Bot+ abilities unlocked.',
+    )
+    _publish(
+        rows,
+        'derived::bot.synchronicity.base_slots_unlocked',
+        2.0 if all_unlocked else 0.0,
+        'count',
+        contributors,
+        'v28 Synchronicity grants two synchronized pathing slots once all five Bot+ abilities are unlocked; extra stone slots remain input-state growth.',
+    )
+
+
 def publish_derived_composites(rows: Dict[str, StatRow]) -> None:
+    _publish_dissonance_surfaces(rows)
     _publish_effective_bot_ranges(rows)
+    _publish_bot_plus_surfaces(rows)
     # eHP: closer to EP CN5 structure
     health_factor = _get_first(rows, ['support_surface::ehp.health_factor', _compat_runtime('ehp.health_factor')], 0.0)
     health_ws = _get_first(rows, [_compat_canon('tower_hp'), 'support_surface::ehp.health_ws'], 0.0)
@@ -721,6 +842,8 @@ def publish_derived_composites(rows: Dict[str, StatRow]) -> None:
     health_factor_fallback = health_ws * health_lab_factor * health_card_factor * health_wse_factor * health_perk_factor * health_cto_factor * health_rto_factor * health_relic_factor * health_vault_factor * health_dwhp_factor
     if health_factor <= 0.0:
         health_factor = health_factor_fallback
+    defense_dissonance_factor = _dissonance_total_multiplier(rows, 'defense')
+    health_factor *= defense_dissonance_factor
 
     armor_primary_factor = _get_first(rows, [
         'support_surface::ehp.armor_primary_factor',
@@ -861,6 +984,7 @@ def publish_derived_composites(rows: Dict[str, StatRow]) -> None:
     _publish(rows, 'derived::ehp.health_relic_factor', health_relic_factor, 'multiplier', [], 'EPH_HEALTH relic factor [EP helper support surface]')
     _publish(rows, 'derived::ehp.health_vault_factor', health_vault_factor, 'multiplier', [], 'EPH_HEALTH vault factor [EP helper support surface]')
     _publish(rows, 'derived::ehp.health_dwhp_factor', health_dwhp_factor, 'multiplier', [], 'EPH_HEALTH death-wave HP factor [EP helper support surface]')
+    _publish(rows, 'derived::ehp.defense_dissonance_factor', defense_dissonance_factor, 'multiplier', [_contributor(rows, 'derived::dissonance.defense.total_multiplier', 'ehp.defense_dissonance_factor')], 'v28 Health Dissonance/Echo multiplier applied to the eHP health factor.')
     _publish(rows, 'derived::ehp.health_factor', health_factor, 'scalar', ehp_contrib, 'EPH_HEALTH-like health factor [EP helper support surface]')
     _publish(rows, 'derived::ehp.armor_primary_factor', armor_primary_factor, 'multiplier', [], 'EPH_ARMOR primary factor [EP helper support surface]')
     _publish(rows, 'derived::ehp.armor_assist_factor', armor_assist_factor, 'multiplier', [], 'EPH_ARMOR assist factor [EP helper support surface]')
@@ -980,6 +1104,19 @@ def publish_derived_composites(rows: Dict[str, StatRow]) -> None:
     dpm = _get(rows, _compat_canon('tower_damage_per_meter_multiplier'))
     rng = _get(rows, _compat_canon('tower_range_m'))
     kill_at_range = _get_first(rows, ['support_surface::timing.kill_at_range_multiplier', _compat_runtime('targeting.kill_at_range_multiplier'), _compat_mech('targeting.kill_at_range_multiplier')], 1.0)
+    attack_dissonance_active = _bool(
+        rows,
+        [
+            'support_surface::dissonance.attack_run_active',
+            'state::dissonance.attack.run_active',
+            'context::dissonance.attack_run_active',
+        ],
+        False,
+    )
+    if attack_dissonance_active:
+        asp = 1.0
+        dpm = 0.0
+        rng = 30.0
 
     perk_damage_factor = _get_first(rows, ['support_surface::perk.damage_multiplier', _compat_runtime('perk.damage_multiplier'), _compat_mech('perk.damage_multiplier')], 1.0)
     tradeoff_damage_factor = _get_first(rows, ['support_surface::perk.tradeoff_damage_multiplier', _compat_runtime('perk.tradeoff_damage_multiplier'), _compat_mech('perk.tradeoff_damage_multiplier')], 1.0)
@@ -1018,12 +1155,21 @@ def publish_derived_composites(rows: Dict[str, StatRow]) -> None:
     )
     amp_strike_factor = _get_first(rows, ['support_surface::amp_strike.damage_multiplier', _compat_mech('amp_strike.damage_multiplier')], 1.0)
 
-    base_damage_stack = td * perk_damage_factor * tradeoff_damage_factor * shock_factor * card_damage_mastery_factor * berserker_factor * cannon_assist_factor * acp_factor * amp_strike_factor
+    attack_dissonance_factor = _dissonance_total_multiplier(rows, 'attack')
+    if attack_dissonance_active:
+        base_damage_stack = acp_factor * amp_strike_factor
+    else:
+        base_damage_stack = td * perk_damage_factor * tradeoff_damage_factor * shock_factor * card_damage_mastery_factor * berserker_factor * cannon_assist_factor * acp_factor * amp_strike_factor * attack_dissonance_factor
 
     cc = _get(rows, _compat_canon('tower_crit_chance_pct'))
     cf = _get(rows, _compat_canon('tower_crit_multiplier'))
     scc = _get(rows, _compat_canon('tower_supercrit_chance_pct'))
     scm = _get(rows, _compat_canon('tower_supercrit_multiplier'))
+    if attack_dissonance_active:
+        cc = 0.0
+        cf = 1.0
+        scc = 0.0
+        scm = 1.0
     ultimate_crit_card_chance_pct = _get_first(
         rows,
         [
@@ -1047,6 +1193,11 @@ def publish_derived_composites(rows: Dict[str, StatRow]) -> None:
     )
     rapidfire_factor = _ep_rapidfire_factor(_get(rows, _compat_canon('tower_rapid_fire_chance_pct')), _get(rows, _compat_canon('tower_rapid_fire_duration_seconds')), bps)
     range_dpm_factor = _ep_rangedpm(rng, dpm, kill_at_range)
+    if attack_dissonance_active:
+        multishot_factor = 1.0
+        bounce_factor = 1.0
+        rapidfire_factor = 1.0
+        range_dpm_factor = 1.0
 
     sl_quantity = _get_first(rows, [_compat_mech('uw.spotlight.quantity'), _compat_runtime('uw.spotlight.quantity')], 0.0)
     sl_angle = _get_first(rows, [_compat_mech('uw.spotlight.angle_degrees'), _compat_runtime('uw.spotlight.angle_degrees'), _compat_canon('uw.spotlight.angle_degrees')], 0.0)
@@ -1078,6 +1229,8 @@ def publish_derived_composites(rows: Dict[str, StatRow]) -> None:
         _get_first(rows, [_compat_runtime('rend.substat'), _compat_mech('rend.substat')], 0.0),
         _get_first(rows, [_compat_runtime('rend.enhancement_level'), _compat_mech('rend.enhancement_level')], 0.0),
     )
+    if attack_dissonance_active:
+        rend_factor = 1.0
     bullet_pipeline_factor = multishot_factor * bounce_factor * bps * rapidfire_factor * range_dpm_factor * super_tower_factor * rend_factor
 
     multi_rapid_bounce = multishot_factor * bounce_factor * rapidfire_factor
@@ -1156,7 +1309,8 @@ def publish_derived_composites(rows: Dict[str, StatRow]) -> None:
         has_aoe_card,
         aoe_card_level,
     )
-    uw_damage_boost = _get_first(rows, ['support_surface::uw.total_damage_boost_multiplier', _compat_mech('uw.damage_boost_multiplier')], 1.0)
+    uw_dissonance_factor = _dissonance_total_multiplier(rows, 'ultimate_weapons')
+    uw_damage_boost = _get_first(rows, ['support_surface::uw.total_damage_boost_multiplier', _compat_mech('uw.damage_boost_multiplier')], 1.0) * uw_dissonance_factor
     st_uw_mastery = _get_first(
         rows,
         [
@@ -1181,6 +1335,8 @@ def publish_derived_composites(rows: Dict[str, StatRow]) -> None:
     _publish(rows, 'derived::edamage.base_damage_stack', base_damage_stack, 'scalar', [_contributor(rows, _compat_canon('tower_damage'), 'edamage.base_damage_stack')], 'EP EM5 DC5-like base damage stack [EP helper support surface]')
     _publish(rows, 'derived::edamage.berserker_bonus_multiplier', berserker_bonus_multiplier, 'multiplier', [_contributor(rows, 'state::cards.berserker.assumed_bonus_multiplier', 'edamage.berserker_bonus_multiplier')], 'Explicit Berserker full-stack bonus multiplier assumption [EP helper support surface]')
     _publish(rows, 'derived::edamage.berserker_factor', berserker_factor, 'multiplier', [_contributor(rows, 'state::cards.berserker.assumed_bonus_multiplier', 'edamage.berserker_factor')], 'Explicit Berserker full-stack factor applied to projected eDamage [EP helper support surface]')
+    _publish(rows, 'derived::edamage.attack_dissonance_factor', attack_dissonance_factor, 'multiplier', [_contributor(rows, 'derived::dissonance.attack.total_multiplier', 'edamage.attack_dissonance_factor')], 'v28 Attack Dissonance/Echo multiplier; not applied during an active Attack Dissonant Run because EP restricts that branch to ACP * Amp Strike.')
+    _publish(rows, 'derived::edamage.attack_dissonance_restricted', 1.0 if attack_dissonance_active else 0.0, 'bool', [_contributor(rows, 'support_surface::dissonance.attack_run_active', 'edamage.attack_dissonance_restricted')], 'v28 Attack Dissonant Run branch: damage stack is ACP * Amp Strike, crits/projectile multipliers/range/DPM/rend are forced to EP restricted values.')
     _publish(rows, 'derived::edamage.acp_factor', acp_factor, 'multiplier', [_contributor(rows, _compat_mech('module.anti_cube_portal.damage_multiplier'), 'edamage.acp_factor')], 'EP EPD_SHOCKWAVE_DAMAGE-aligned ACP factor [EP helper support surface]')
     _publish(rows, 'derived::edamage.bullet_crit_factor', bullet_crit_factor, 'multiplier', [_contributor(rows, _compat_canon('tower_crit_chance_pct'), 'edamage.bullet_crit_factor'), _contributor(rows, _compat_canon('tower_supercrit_chance_pct'), 'edamage.bullet_crit_factor')], 'EPD_CRITICAL-aligned bullet crit factor [EP helper support surface]')
     _publish(rows, 'derived::edamage.uw_crit_card_factor', uw_crit_card_factor, 'multiplier', [_contributor(rows, 'state::cards.ultimate_crit.chance_pct', 'edamage.uw_crit_card_factor'), _contributor(rows, _compat_canon('tower_crit_multiplier'), 'edamage.uw_crit_card_factor')], 'Ultimate Crit card factor applied to aggregate UW damage [EP helper support surface]')
@@ -1202,6 +1358,7 @@ def publish_derived_composites(rows: Dict[str, StatRow]) -> None:
     _publish(rows, 'derived::edamage.uw.spotlight_missiles_dps', slm, 'scalar', [_contributor(rows, _compat_mech('uw.spotlight_missiles.damage_multiplier'), 'edamage.uw.spotlight_missiles_dps')], 'spotlight missiles DPS or proxy [EP helper support surface]')
     _publish(rows, 'derived::edamage.uw.poison_swamp_dps', ps, 'scalar', [_contributor(rows, _compat_mech('uw.poison_swamp.damage_multiplier'), 'edamage.uw.poison_swamp_dps')], 'poison swamp DPS or proxy [EP helper support surface]')
     _publish(rows, 'derived::edamage.uw.ilm_dps', ilm, 'scalar', [_contributor(rows, _compat_mech('uw.inner_land_mines.damage_multiplier'), 'edamage.uw.ilm_dps')], 'EP_ILM_DPS-like inner land mine DPS including Space Displacer contribution [EP helper support surface]')
+    _publish(rows, 'derived::edamage.uw_dissonance_factor', uw_dissonance_factor, 'multiplier', [_contributor(rows, 'derived::dissonance.ultimate_weapons.total_multiplier', 'edamage.uw_dissonance_factor')], 'v28 Ultimate Weapon Dissonance/Echo multiplier applied to the UW damage boost path.')
     _publish(rows, 'derived::edamage.uw_total_damage', uw_total_damage, 'scalar', [_contributor(rows, _compat_mech('uw.chain_lightning.damage_multiplier'), 'edamage.uw_total_damage')], 'EP_UW_TOTAL_DAMAGE-like aggregate UW damage [EP helper support surface]')
     _publish(rows, 'derived::edamage.uw_crit_factor', uw_crit_factor, 'multiplier', [_contributor(rows, _compat_canon('tower_crit_chance_pct'), 'edamage.uw_crit_factor')], 'EPD_UWCRITICAL-aligned UW crit factor [EP helper support surface]')
     _publish(rows, 'derived::edamage.slow_factor', slow_factor, 'multiplier', [_contributor(rows, _compat_mech('uw.chrono_field.slow_pct'), 'edamage.slow_factor')], 'EP Chrono Field slow exposure multiplier [EP helper support surface]')
@@ -1220,10 +1377,20 @@ def publish_derived_composites(rows: Dict[str, StatRow]) -> None:
 
     # eEcon: closer to EP DI5 structure (CL * CM * DC * DG * DH)
     adstarter_theme_relic_factor = _get_first(rows, ['support_surface::eecon.adstarter_theme_relic_factor', 'support_surface::eecon.base_meta_factor'], 1.0)
+    cpk_source_keys = [
+        'support_surface::eecon.cpk_factor',
+        'state::economy.coins_per_kill_bonus',
+        'state::economy.coin_kill_multiplier',
+        _compat_canon('coins_per_kill_bonus'),
+        _compat_canon('coin_kill_multiplier'),
+        'support_surface::eecon.coin_kill_ws',
+    ]
+    cpk_source_row = next((row for key in cpk_source_keys if (row := _row(rows, key)) is not None and row.final_value is not None), None)
+    cpk_contributor_key = cpk_source_row.stat_name if cpk_source_row is not None else 'state::economy.coins_per_kill_bonus'
     cpk_factor = _get_first(rows, ['support_surface::eecon.cpk_factor'], 0.0)
     if cpk_factor <= 0.0:
         cpk_factor = _ep_cpk(
-            _get_first(rows, [_compat_canon('coin_kill_multiplier'), 'support_surface::eecon.coin_kill_ws'], 0.0),
+            _get_first(rows, cpk_source_keys[1:], 0.0),
             _get_first(rows, ['support_surface::eecon.coin_kill_lab_level'], 0.0),
             _get_first(rows, ['support_surface::eecon.stone_sac_pct'], 0.0),
             _get_first(rows, ['support_surface::eecon.lab_sac_pct'], 0.0),
@@ -1236,6 +1403,14 @@ def publish_derived_composites(rows: Dict[str, StatRow]) -> None:
             _get_first(rows, ['support_surface::eecon.ito_level'], 0.0),
             _get_first(rows, ['support_surface::eecon.coin_vault_pct'], 0.0),
         )
+    if cpk_source_row is None:
+        coin_kill_contributors = [_contributor(rows, cpk_contributor_key, 'eecon')]
+        _publish(rows, 'derived::eecon.base_meta_factor', adstarter_theme_relic_factor, 'multiplier', [], 'ad starter / theme / relic factor [EP helper support surface]')
+        _publish_unresolved(rows, 'derived::eecon.cpk_factor', 'multiplier', coin_kill_contributors, 'Blocked: v28 eEcon requires a resolved coin-kill source; missing/null coin-kill must not publish as zero.')
+        _publish_unresolved(rows, 'derived::eecon.base_coin_income', 'scalar', coin_kill_contributors, 'Blocked: v28 eEcon base income requires resolved coin-kill input.')
+        _publish_unresolved(rows, 'derived::eecon', 'scalar', coin_kill_contributors, 'Blocked: v28 eEcon requires resolved coin-kill input instead of silently publishing zero.')
+        _publish_unresolved(rows, 'derived::eecon_ep', 'scalar', coin_kill_contributors, 'Blocked: v28 EP eEcon requires resolved coin-kill input instead of silently publishing zero.')
+        return
     freeup_factor = _get_first(rows, ['support_surface::eecon.freeup_factor'], 0.0)
     if freeup_factor <= 0.0:
         has_freeup = _bool(rows, ['support_surface::eecon.freeup_enabled'], default=bool(_get_first(rows, ['support_surface::eecon.freeup_percent'], 0.0)))
@@ -1538,9 +1713,10 @@ def publish_derived_composites(rows: Dict[str, StatRow]) -> None:
         denom = max(1e-9, wam - is_reduction - ws_total)
         wave_factor = 6500.0 / denom
 
-    eecon = cl_factor * eom_factor * sync_factor * spotlight_coin_factor * wave_factor
+    utility_dissonance_factor = _dissonance_total_multiplier(rows, 'utility')
+    eecon = cl_factor * eom_factor * sync_factor * spotlight_coin_factor * wave_factor * utility_dissonance_factor
     _publish(rows, 'derived::eecon.base_meta_factor', adstarter_theme_relic_factor, 'multiplier', [], 'ad starter / theme / relic factor [EP helper support surface]')
-    _publish(rows, 'derived::eecon.cpk_factor', cpk_factor, 'multiplier', [_contributor(rows, _compat_canon('coin_kill_multiplier'), 'eecon.cpk_factor')], 'EPC_CPK-like coin-per-kill factor [EP helper support surface]')
+    _publish(rows, 'derived::eecon.cpk_factor', cpk_factor, 'multiplier', [_contributor(rows, cpk_contributor_key, 'eecon.cpk_factor')], 'EPC_CPK-like coin-per-kill factor [EP helper support surface]')
     _publish(rows, 'derived::eecon.freeup_factor', freeup_factor, 'multiplier', [], 'free-up factor [EP helper support surface]')
     _publish(rows, 'derived::eecon.coin_card_factor', coin_card_factor, 'multiplier', [_contributor(rows, _compat_runtime('cards.coins.multiplier'), 'eecon.coin_card_factor')], 'EPC_CARD_COINS factor [EP helper support surface]')
     _publish(rows, 'derived::eecon.module_factor', module_factor, 'multiplier', [], 'generator module factor [EP helper support surface]')
@@ -1569,9 +1745,10 @@ def publish_derived_composites(rows: Dict[str, StatRow]) -> None:
     _publish(rows, 'derived::eecon_ep_helper.dg_spotlight_coin_coverage', spotlight_coin_coverage, 'ratio', [_contributor(rows, 'support_surface::eecon.sl_quantity', 'eecon_ep_helper.dg_spotlight_coin_coverage'), _contributor(rows, 'support_surface::eecon.sl_angle', 'eecon_ep_helper.dg_spotlight_coin_coverage')], 'EP eEcon DG workbook coverage alias [EP helper surface]')
     _publish(rows, 'derived::eecon_ep_helper.dg_spotlight_coin_factor', spotlight_coin_factor, 'multiplier', [_contributor(rows, _compat_runtime('uw.spotlight.coin_bonus_multiplier'), 'eecon_ep_helper.dg_spotlight_coin_factor')], 'EP eEcon DG workbook factor alias [EP helper surface]')
     _publish(rows, 'derived::eecon.wave_factor', wave_factor, 'multiplier', [], 'EP eEcon DH term [EP helper support surface]')
-    _publish(rows, 'derived::eecon.base_coin_income', eecon, 'scalar', [_contributor(rows, _compat_canon('coin_kill_multiplier'), 'eecon.base_coin_income')], 'Deterministic coin-income proxy surface derived from the governed eEcon line [query support surface]')
-    _publish(rows, 'derived::eecon', eecon, 'scalar', [_contributor(rows, _compat_canon('coin_kill_multiplier'), 'eecon')], 'Native eEcon objective line; currently equal to EP line')
-    _publish(rows, 'derived::eecon_ep', eecon, 'scalar', [_contributor(rows, _compat_canon('coin_kill_multiplier'), 'eecon_ep')], 'Exact Effective Paths eEcon objective line')
+    _publish(rows, 'derived::eecon.utility_dissonance_factor', utility_dissonance_factor, 'multiplier', [_contributor(rows, 'derived::dissonance.utility.total_multiplier', 'eecon.utility_dissonance_factor')], 'v28 Utility Dissonance/Echo multiplier applied to the final eEcon chain.')
+    _publish(rows, 'derived::eecon.base_coin_income', eecon, 'scalar', [_contributor(rows, cpk_contributor_key, 'eecon.base_coin_income')], 'Deterministic coin-income proxy surface derived from the governed eEcon line [query support surface]')
+    _publish(rows, 'derived::eecon', eecon, 'scalar', [_contributor(rows, cpk_contributor_key, 'eecon')], 'Native eEcon objective line; currently equal to EP line')
+    _publish(rows, 'derived::eecon_ep', eecon, 'scalar', [_contributor(rows, cpk_contributor_key, 'eecon_ep')], 'Exact Effective Paths eEcon objective line')
 
 
 def compute_derived_ehp(rows):

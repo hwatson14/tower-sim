@@ -435,8 +435,9 @@ def _load_formula_ledger(path: Path) -> dict:
 
 def _formula_contract(ledger: dict, destination: str) -> dict:
     surface = dict((ledger.get('surfaces') or {}).get(destination) or {})
+    policy = ledger.get('policy') or {}
     surface.setdefault('formula_class', 'unclassified')
-    surface.setdefault('publish_policy', 'allow')
+    surface.setdefault('publish_policy', policy.get('publish_default', 'allow_if_resolved'))
     surface.setdefault('compare_policy', 'normal')
     surface.setdefault('rationale', '')
     return surface

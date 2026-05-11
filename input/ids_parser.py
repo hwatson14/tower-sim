@@ -47,11 +47,16 @@ SECTION_SPECS = [
     SectionSpec("Player & Stuff", 77, 77, 82),
 ]
 
+_SECTION_SPEC_BY_NAME = {spec.name: spec for spec in SECTION_SPECS}
+_SECTION_ORDER = [spec.name for spec in SECTION_SPECS]
+
 
 IDS_HEADER_ALLOWLIST = {
     "exact": {"?", "Cards Presets"},
     "prefixes": ("http",),
 }
+
+IDS_HEADER_ERROR_PLACEHOLDERS = {"#REF!"}
 
 _IDS_VERSION_TOKEN_RE = re.compile(r"^v\d+(\.\d+)*$")
 
@@ -79,26 +84,44 @@ def _collect_section_rows(rows: List[List[str]], spec: SectionSpec) -> List[List
     return out
 
 
+def _section_specs_for_header(header: List[str]) -> List[SectionSpec]:
+    specs: List[SectionSpec] = []
+    last_header_col = -1
+    for name in _SECTION_ORDER:
+        try:
+            header_col = next(idx for idx, value in enumerate(header) if value.strip() == name)
+        except StopIteration as exc:
+            expected = _SECTION_SPEC_BY_NAME[name]
+            raise ValueError(
+                f"Missing section header for {name!r}; expected near column {expected.header_col}."
+            ) from exc
+        if header_col <= last_header_col:
+            raise ValueError(
+                "Unexpected section header order in _IDS.csv: "
+                f"{name!r} found at column {header_col} after column {last_header_col}."
+            )
+        base = _SECTION_SPEC_BY_NAME[name]
+        start_col = header_col + (base.start_col - base.header_col)
+        specs.append(SectionSpec(name, header_col, start_col, len(header) - 1))
+        last_header_col = header_col
+    for idx, spec in enumerate(specs[:-1]):
+        specs[idx] = SectionSpec(spec.name, spec.header_col, spec.start_col, specs[idx + 1].header_col - 1)
+    return specs
+
+
 def _fail_unknown_sections(rows: List[List[str]]) -> None:
     header = rows[0] if rows else []
-    known = {spec.name for spec in SECTION_SPECS}
-    cards_spec = next(spec for spec in SECTION_SPECS if spec.name == "Cards")
-    for spec in SECTION_SPECS:
-        if spec.header_col >= len(header):
-            raise ValueError(
-                f"Missing section header for {spec.name!r} at column {spec.header_col}."
-            )
-        if header[spec.header_col].strip() != spec.name:
-            raise ValueError(
-                "Unexpected section header location in _IDS.csv: "
-                f"expected {spec.name!r} at column {spec.header_col}, "
-                f"found {header[spec.header_col]!r}."
-            )
+    specs = _section_specs_for_header(header)
+    known = {spec.name for spec in specs}
+    known_header_width = max(spec.end_col for spec in specs) + 1
+    cards_spec = next(spec for spec in specs if spec.name == "Cards")
     for idx, cell in enumerate(header):
         value = cell.strip()
         if value == "" or value in known:
             continue
         if value in IDS_HEADER_ALLOWLIST["exact"]:
+            continue
+        if value in IDS_HEADER_ERROR_PLACEHOLDERS and idx < known_header_width:
             continue
         if any(value.startswith(prefix) for prefix in IDS_HEADER_ALLOWLIST["prefixes"]):
             continue
@@ -122,7 +145,7 @@ def parse_ids(path: Path) -> IdsRaw:
     _fail_unknown_sections(rows)
     raw_sections: Dict[str, List[List[str]]] = {}
     section_headers: Dict[str, List[str]] = {}
-    for spec in SECTION_SPECS:
+    for spec in _section_specs_for_header(rows[0]):
         raw_sections[spec.name] = _collect_section_rows(rows, spec)
         section_headers[spec.name] = _slice_row(rows[0], spec.start_col, spec.end_col)
     return IdsRaw(ids_path=path, header=rows[0], raw_sections=raw_sections, section_headers=section_headers)

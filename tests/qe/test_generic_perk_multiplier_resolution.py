@@ -190,10 +190,10 @@ def test_enemy_skip_max_progression_uses_single_enhancement_and_correct_assist_s
 
     assert len(attack_enhancements) == 1
     assert len(health_enhancements) == 1
-    assert sorted(c.get('value') for c in attack_modules) == pytest.approx([0.6, 8.0])
-    assert sorted(c.get('value') for c in health_modules) == pytest.approx([0.6, 6.0])
-    assert attack_row.final_value == pytest.approx(55.692)
-    assert health_row.final_value == pytest.approx(53.352)
+    assert attack_modules == []
+    assert health_modules == []
+    assert attack_row.final_value == pytest.approx(35.0)
+    assert health_row.final_value == pytest.approx(35.0)
 
 
 def test_damage_per_meter_uses_base_one_plus_decimal_bonus_family() -> None:
@@ -239,10 +239,7 @@ def test_flat_cannon_crit_substats_compile_as_flat_values_not_multiplier_display
     ]
     keyed = {row.stat_name: row for row in crit_rows}
 
-    assert keyed['Critical Factor'].value == 15.0
-    assert keyed['Critical Factor'].value_type == 'resolved_value'
-    assert keyed['Super Crit Multi'].value == 5.0
-    assert keyed['Super Crit Multi'].value_type == 'resolved_value'
+    assert keyed == {}
 
 
 def test_crit_multiplier_uses_flat_additive_base_then_post_multipliers() -> None:

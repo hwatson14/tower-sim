@@ -1176,6 +1176,94 @@ nodes:
     verification_status: analysis_provisional
     blocker_reason: ''
     notes: Query-owned Thunder Bot effective-range surface.
+  - node_id: state::bot.bot_bot.duration_seconds
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_default
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned v28 Bot Bot duration surface.
+  - node_id: state::bot.bot_bot.cooldown_seconds
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_default
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned v28 Bot Bot cooldown surface.
+  - node_id: state::bot.bot_bot.bonus_multiplier
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_default
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned v28 Bot Bot boost multiplier surface.
+  - node_id: state::bot.bot_bot.range_m
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_default
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned v28 Bot Bot range surface.
+  - node_id: state::bot.bot_bot.effective_range_m
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_default
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned v28 Bot Bot effective-range surface.
+  - node_id: state::bot.bot_bot.maximum_power_multiplier
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_on_request
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned v28 Bot Bot Maximum Power surface.
+  - node_id: state::bot.plus.wildfire.unlocked
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_on_request
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned v28 Bot+ Wildfire unlock surface.
+  - node_id: state::bot.plus.titan_shock.unlocked
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_on_request
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned v28 Bot+ Titan Shock unlock surface.
+  - node_id: state::bot.plus.bonus_cell.unlocked
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_on_request
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned v28 Bot+ Bonus Cell unlock surface.
+  - node_id: state::bot.plus.echoing_shot.unlocked
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_on_request
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned v28 Bot+ Echoing Shot unlock surface.
+  - node_id: state::bot.plus.maximum_power.unlocked
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_on_request
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned v28 Bot+ Maximum Power unlock surface.
   - node_id: state::guardian.attack.cooldown_seconds
     node_kind: surface
     family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
@@ -1416,6 +1504,22 @@ nodes:
     verification_status: analysis_provisional
     blocker_reason: ''
     notes: Thunder Bot base source.
+  - node_id: source_input::bot:Bot Bot
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: v28 Bot Bot base source.
+  - node_id: source_input::bot:Bot +
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: v28 Bot+ unlock source.
   - node_id: source_input::lab:Flame Bot - Burn Stack
     node_kind: source_input
     family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
@@ -1945,7 +2049,375 @@ nodes:
     verification_status: analysis_provisional
     blocker_reason: ''
     notes: Published derived economy income bits surface.
+  - node_id: source_input::lab:Dissonant Echo - Attack
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: v28 Dissonant Echo Attack lab level parsed from _IDS Labs.
+  - node_id: source_input::lab:Dissonant Echo - Defense
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: v28 Dissonant Echo Defense lab level parsed from _IDS Labs.
+  - node_id: source_input::lab:Dissonant Echo - Utility
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: v28 Dissonant Echo Utility lab level parsed from _IDS Labs.
+  - node_id: source_input::lab:Dissonant Echo - Ultimate Weapons
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: v28 Dissonant Echo Ultimate Weapons lab level parsed from _IDS Labs.
+  - node_id: source_input::player_stuff:Dissonant PB - Attack
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: v28 active-tier Attack Dissonant PB parsed from _IDS Player & Stuff.
+  - node_id: source_input::player_stuff:Dissonant PB - Defense
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: v28 active-tier Defense Dissonant PB parsed from _IDS Player & Stuff.
+  - node_id: source_input::player_stuff:Dissonant PB - Utility
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: v28 active-tier Utility Dissonant PB parsed from _IDS Player & Stuff.
+  - node_id: source_input::player_stuff:Dissonant PB - Ultimate Weapons
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: v28 active-tier Ultimate Weapons Dissonant PB parsed from _IDS Player & Stuff.
+  - node_id: source_input::player_stuff:Dissonant Active Boost - Attack
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: v28 active-tier Attack Dissonant Boost derived from _IDS Player & Stuff PB.
+  - node_id: source_input::player_stuff:Dissonant Active Boost - Defense
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: v28 active-tier Defense Dissonant Boost derived from _IDS Player & Stuff PB.
+  - node_id: source_input::player_stuff:Dissonant Active Boost - Utility
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: v28 active-tier Utility Dissonant Boost derived from _IDS Player & Stuff PB.
+  - node_id: source_input::player_stuff:Dissonant Active Boost - Ultimate Weapons
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: v28 active-tier Ultimate Weapons Dissonant Boost derived from _IDS Player & Stuff PB.
+  - node_id: source_input::player_stuff:Dissonant Echo Source - Attack
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: v28 Attack Echo source bonus summed from _IDS tier PB boost deltas.
+  - node_id: source_input::player_stuff:Dissonant Echo Source - Defense
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: v28 Defense Echo source bonus summed from _IDS tier PB boost deltas.
+  - node_id: source_input::player_stuff:Dissonant Echo Source - Utility
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: v28 Utility Echo source bonus summed from _IDS tier PB boost deltas.
+  - node_id: source_input::player_stuff:Dissonant Echo Source - Ultimate Weapons
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: v28 Ultimate Weapons Echo source bonus summed from _IDS tier PB boost deltas.
+  - node_id: state::labs.dissonant_echo.attack.level
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_on_request
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned v28 Attack Dissonant Echo lab level.
+  - node_id: state::labs.dissonant_echo.defense.level
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_on_request
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned v28 Defense Dissonant Echo lab level.
+  - node_id: state::labs.dissonant_echo.utility.level
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_on_request
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned v28 Utility Dissonant Echo lab level.
+  - node_id: state::labs.dissonant_echo.ultimate_weapons.level
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_on_request
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned v28 Ultimate Weapons Dissonant Echo lab level.
+  - node_id: state::dissonance.attack.pb
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_on_request
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned v28 active-tier Attack Dissonant PB.
+  - node_id: state::dissonance.defense.pb
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_on_request
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned v28 active-tier Defense Dissonant PB.
+  - node_id: state::dissonance.utility.pb
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_on_request
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned v28 active-tier Utility Dissonant PB.
+  - node_id: state::dissonance.ultimate_weapons.pb
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_on_request
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned v28 active-tier Ultimate Weapons Dissonant PB.
+  - node_id: state::dissonance.attack.active_boost_multiplier
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_on_request
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned v28 active-tier Attack Dissonant Boost multiplier.
+  - node_id: state::dissonance.defense.active_boost_multiplier
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_on_request
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned v28 active-tier Defense Dissonant Boost multiplier.
+  - node_id: state::dissonance.utility.active_boost_multiplier
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_on_request
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned v28 active-tier Utility Dissonant Boost multiplier.
+  - node_id: state::dissonance.ultimate_weapons.active_boost_multiplier
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_on_request
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned v28 active-tier Ultimate Weapons Dissonant Boost multiplier.
+  - node_id: state::dissonance.attack.echo_source_bonus
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_on_request
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned v28 Attack Dissonant Echo source bonus.
+  - node_id: state::dissonance.defense.echo_source_bonus
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_on_request
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned v28 Defense Dissonant Echo source bonus.
+  - node_id: state::dissonance.utility.echo_source_bonus
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_on_request
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned v28 Utility Dissonant Echo source bonus.
+  - node_id: state::dissonance.ultimate_weapons.echo_source_bonus
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_on_request
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned v28 Ultimate Weapons Dissonant Echo source bonus.
 edges:
+  - upstream_node_id: source_input::lab:Dissonant Echo - Attack
+    downstream_node_id: state::labs.dissonant_echo.attack.level
+    invalidation_semantics: recompute_downstream
+    mutation_classes: []
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: Dissonant Echo Attack lab level routes to the v28 echo state surface.
+  - upstream_node_id: source_input::lab:Dissonant Echo - Defense
+    downstream_node_id: state::labs.dissonant_echo.defense.level
+    invalidation_semantics: recompute_downstream
+    mutation_classes: []
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: Dissonant Echo Defense lab level routes to the v28 echo state surface.
+  - upstream_node_id: source_input::lab:Dissonant Echo - Utility
+    downstream_node_id: state::labs.dissonant_echo.utility.level
+    invalidation_semantics: recompute_downstream
+    mutation_classes: []
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: Dissonant Echo Utility lab level routes to the v28 echo state surface.
+  - upstream_node_id: source_input::lab:Dissonant Echo - Ultimate Weapons
+    downstream_node_id: state::labs.dissonant_echo.ultimate_weapons.level
+    invalidation_semantics: recompute_downstream
+    mutation_classes: []
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: Dissonant Echo Ultimate Weapons lab level routes to the v28 echo state surface.
+  - upstream_node_id: source_input::player_stuff:Dissonant PB - Attack
+    downstream_node_id: state::dissonance.attack.pb
+    invalidation_semantics: recompute_downstream
+    mutation_classes: []
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: Active-tier Attack Dissonant PB routes from _IDS Player & Stuff.
+  - upstream_node_id: source_input::player_stuff:Dissonant PB - Defense
+    downstream_node_id: state::dissonance.defense.pb
+    invalidation_semantics: recompute_downstream
+    mutation_classes: []
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: Active-tier Defense Dissonant PB routes from _IDS Player & Stuff.
+  - upstream_node_id: source_input::player_stuff:Dissonant PB - Utility
+    downstream_node_id: state::dissonance.utility.pb
+    invalidation_semantics: recompute_downstream
+    mutation_classes: []
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: Active-tier Utility Dissonant PB routes from _IDS Player & Stuff.
+  - upstream_node_id: source_input::player_stuff:Dissonant PB - Ultimate Weapons
+    downstream_node_id: state::dissonance.ultimate_weapons.pb
+    invalidation_semantics: recompute_downstream
+    mutation_classes: []
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: Active-tier Ultimate Weapons Dissonant PB routes from _IDS Player & Stuff.
+  - upstream_node_id: source_input::player_stuff:Dissonant Active Boost - Attack
+    downstream_node_id: state::dissonance.attack.active_boost_multiplier
+    invalidation_semantics: recompute_downstream
+    mutation_classes: []
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: Active-tier Attack Dissonant Boost routes from _IDS Player & Stuff.
+  - upstream_node_id: source_input::player_stuff:Dissonant Active Boost - Defense
+    downstream_node_id: state::dissonance.defense.active_boost_multiplier
+    invalidation_semantics: recompute_downstream
+    mutation_classes: []
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: Active-tier Defense Dissonant Boost routes from _IDS Player & Stuff.
+  - upstream_node_id: source_input::player_stuff:Dissonant Active Boost - Utility
+    downstream_node_id: state::dissonance.utility.active_boost_multiplier
+    invalidation_semantics: recompute_downstream
+    mutation_classes: []
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: Active-tier Utility Dissonant Boost routes from _IDS Player & Stuff.
+  - upstream_node_id: source_input::player_stuff:Dissonant Active Boost - Ultimate Weapons
+    downstream_node_id: state::dissonance.ultimate_weapons.active_boost_multiplier
+    invalidation_semantics: recompute_downstream
+    mutation_classes: []
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: Active-tier Ultimate Weapons Dissonant Boost routes from _IDS Player & Stuff.
+  - upstream_node_id: source_input::player_stuff:Dissonant Echo Source - Attack
+    downstream_node_id: state::dissonance.attack.echo_source_bonus
+    invalidation_semantics: recompute_downstream
+    mutation_classes: []
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: Attack Echo source bonus routes from _IDS Player & Stuff.
+  - upstream_node_id: source_input::player_stuff:Dissonant Echo Source - Defense
+    downstream_node_id: state::dissonance.defense.echo_source_bonus
+    invalidation_semantics: recompute_downstream
+    mutation_classes: []
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: Defense Echo source bonus routes from _IDS Player & Stuff.
+  - upstream_node_id: source_input::player_stuff:Dissonant Echo Source - Utility
+    downstream_node_id: state::dissonance.utility.echo_source_bonus
+    invalidation_semantics: recompute_downstream
+    mutation_classes: []
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: Utility Echo source bonus routes from _IDS Player & Stuff.
+  - upstream_node_id: source_input::player_stuff:Dissonant Echo Source - Ultimate Weapons
+    downstream_node_id: state::dissonance.ultimate_weapons.echo_source_bonus
+    invalidation_semantics: recompute_downstream
+    mutation_classes: []
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: Ultimate Weapons Echo source bonus routes from _IDS Player & Stuff.
   - upstream_node_id: source_input::workshop:Health
     downstream_node_id: state::tower.hp
     invalidation_semantics: recompute_downstream
@@ -2661,6 +3133,83 @@ edges:
     publication_relevance: publishable_path
     verification_status: analysis_provisional
     notes: Thunder Bot range and shared-range modifiers route to effective range.
+  - upstream_node_id: source_input::bot:Bot Bot
+    downstream_node_id: state::bot.bot_bot.duration_seconds
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [bot_upgrade_mutation]
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: v28 Bot Bot base source routes to duration.
+  - upstream_node_id: source_input::bot:Bot Bot
+    downstream_node_id: state::bot.bot_bot.cooldown_seconds
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [bot_upgrade_mutation]
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: v28 Bot Bot base source routes to cooldown.
+  - upstream_node_id: source_input::bot:Bot Bot
+    downstream_node_id: state::bot.bot_bot.bonus_multiplier
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [bot_upgrade_mutation]
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: v28 Bot Bot base source routes to boost multiplier.
+  - upstream_node_id: source_input::bot:Bot Bot
+    downstream_node_id: state::bot.bot_bot.range_m
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [bot_upgrade_mutation]
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: v28 Bot Bot base source routes to range.
+  - upstream_node_id: source_input::bot:Bot Bot
+    downstream_node_id: state::bot.bot_bot.effective_range_m
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [bot_upgrade_mutation, vault_mutation, workshop_mutation]
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: v28 Bot Bot range and shared-range modifiers route to effective range.
+  - upstream_node_id: source_input::bot:Bot Bot
+    downstream_node_id: state::bot.bot_bot.maximum_power_multiplier
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [bot_upgrade_mutation]
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: v28 Bot Bot Maximum Power routes when present in _IDS.
+  - upstream_node_id: source_input::bot:Bot +
+    downstream_node_id: state::bot.plus.wildfire.unlocked
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [bot_upgrade_mutation]
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: v28 Bot+ Wildfire unlock routes from _IDS.
+  - upstream_node_id: source_input::bot:Bot +
+    downstream_node_id: state::bot.plus.titan_shock.unlocked
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [bot_upgrade_mutation]
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: v28 Bot+ Titan Shock unlock routes from _IDS.
+  - upstream_node_id: source_input::bot:Bot +
+    downstream_node_id: state::bot.plus.bonus_cell.unlocked
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [bot_upgrade_mutation]
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: v28 Bot+ Bonus Cell unlock routes from _IDS.
+  - upstream_node_id: source_input::bot:Bot +
+    downstream_node_id: state::bot.plus.echoing_shot.unlocked
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [bot_upgrade_mutation]
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: v28 Bot+ Echoing Shot unlock routes from _IDS.
+  - upstream_node_id: source_input::bot:Bot +
+    downstream_node_id: state::bot.plus.maximum_power.unlocked
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [bot_upgrade_mutation]
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: v28 Bot+ Maximum Power unlock routes from _IDS.
   - upstream_node_id: source_input::guardian:Attack
     downstream_node_id: state::guardian.attack.cooldown_seconds
     invalidation_semantics: recompute_downstream

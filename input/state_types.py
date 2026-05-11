@@ -180,6 +180,7 @@ class AccountState:
     active_module_preset: str
     default_preset: str
     raw_sections: Dict[str, List[List[str]]]
+    dissonance_pbs_by_tier: Dict[str, Dict[str, int]] = field(default_factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
         return asdict(self)
