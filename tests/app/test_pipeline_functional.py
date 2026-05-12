@@ -271,6 +271,16 @@ def test_build_boss_wave_payload_publishes_summary_and_runtime_assumptions(monke
     assert diagnostics['stop_on_failure'] is True
     assert diagnostics['perk_timeline_rows'] >= 0
     assert diagnostics['scenario_runtime_inputs']['orb_boss_hit_pct'] == 2.5
+    assert diagnostics['milestone_alignment'] == {
+        'source': 'IDS::Player & Stuff.tier_progression_waves',
+        'tier_column': 'Tier 14',
+        'reference_wave': 30,
+        'calculated_max_surviving_wave': 30,
+        'comparison_status': 'comparison_available',
+        'delta_waves': 0,
+        'abs_delta_waves': 0,
+        'calculated_to_reference_ratio': 1.0,
+    }
 
 
 def _install_fake_boss_wave_app_dependencies(monkeypatch, pipeline_mod):
@@ -291,6 +301,7 @@ def _install_fake_boss_wave_app_dependencies(monkeypatch, pipeline_mod):
             (),
             {
                 'player_meta': {},
+                'tier_progression_waves': {'Tier 14': 30},
                 'labs': {'Wall Thorns': 16},
                 'active_perk_preset': 'Farming',
                 'workshop': {

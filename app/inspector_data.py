@@ -673,4 +673,9 @@ def input_lineage_rows_frame(stat_inputs_payload: Any, *, account_state_payload:
         )
     if not rows:
         return pd.DataFrame(columns=columns)
-    return pd.DataFrame(rows, columns=columns)
+    frame = pd.DataFrame(rows, columns=columns)
+    frame['resolved_surface_id'] = pd.Series(
+        [None if pd.isna(value) else value for value in frame['resolved_surface_id'].tolist()],
+        dtype='object',
+    )
+    return frame

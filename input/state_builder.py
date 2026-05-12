@@ -534,7 +534,7 @@ def _parse_player_meta(rows: List[List[str]]) -> Tuple[Dict[str, Optional[str]],
             tier_progression_waves[tier_label] = wave
             if wave > 0 and (highest_tier_unlocked_number is None or tier_number > highest_tier_unlocked_number):
                 highest_tier_unlocked_number = tier_number
-        for key_col, value_col in ((4, 5), (8, 9)):
+        for key_col, value_col in ((8, 9),):
             right_key = _safe_cell(row, key_col).strip()
             if right_key and right_key != 'Stat':
                 out[right_key] = _optional_str(_safe_cell(row, value_col))

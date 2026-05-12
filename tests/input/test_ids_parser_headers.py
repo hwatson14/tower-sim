@@ -79,3 +79,5 @@ def test_runtime_state_parses_v28_dissonant_pbs_from_player_stuff() -> None:
     assert set(state.dissonance_pbs_by_tier["Tier 1"]) == {"attack", "defense", "utility", "ultimate_weapons"}
     assert state.dissonance_pbs_by_tier["Tier 1"]["attack"] == 0
     assert state.tier_progression_waves["Tier 1"] == 0
+    assert "Utility" not in state.player_meta
+    assert "0" not in state.player_meta

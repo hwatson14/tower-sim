@@ -454,8 +454,11 @@ def _build_publishable_statbook(statbook_dict: dict, formula_ledger: dict) -> di
             row['publishable'] = False
             row['publish_notes'] = 'Trace-only raw surface.'
             continue
-        if row.get('status') != 'resolved':
+        row_status = row.get('status')
+        if row_status not in {'resolved', 'partially_resolved'} or row.get('final_value') is None:
             row['publishable'] = False
+            if row_status == 'gated_off' and contract.get('publish_policy') == 'allow_if_resolved':
+                row['publish_notes'] = 'Not applicable until an input contributor resolves this optional surface.'
     out.setdefault('diagnostics', {})
     out['diagnostics']['formula_ledger_version'] = formula_ledger.get('version')
     out['diagnostics']['oracle_policy'] = 'forbidden_for_publish'

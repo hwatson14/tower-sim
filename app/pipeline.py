@@ -592,6 +592,7 @@ def build_boss_wave_payload(
         download_rows=download_rows,
         summary=selected_summary,
         stop_on_failure=bool(stop_on_failure),
+        account_state=account_state,
         primitive_inputs=primitive_inputs,
         primitive_semantics_ledger=primitive_semantics_ledger,
     )
@@ -1736,11 +1737,17 @@ def _build_replacement_diagnostics(
     download_rows: list[dict[str, object]],
     summary: dict[str, object],
     stop_on_failure: bool,
+    account_state,
     primitive_inputs: dict[str, float] | None = None,
     primitive_semantics_ledger: dict[str, object] | None = None,
 ) -> dict[str, object]:
     lane_order = ['avg', 'min', 'max']
     first_row = operator_rows[0] if operator_rows else {}
+    milestone_alignment = _boss_wave_milestone_alignment(
+        account_state=account_state,
+        tier_number=int(config['tier_number']),
+        summary=summary,
+    )
     return {
         'preset_name': preset_name,
         'mode_id': config['mode_id'],
@@ -1837,6 +1844,7 @@ def _build_replacement_diagnostics(
             'values': dict(primitive_inputs or {}),
         },
         'replacement_primitive_semantics_ledger': dict(primitive_semantics_ledger or {}),
+        'milestone_alignment': milestone_alignment,
         'replacement_display_derivation': {
             'wall_hp': 'operator_rows.wall_hp = table2.final_wall_hp_pre_fort * table1.wall_fortification_multiplier * scenario.wall_fortification_multiplier; pre-fort wall HP is derived from tower_hp * wall_health_ratio * wall_health_multipliers',
             'wall_regen': 'operator_rows.wall_regen = resolved tower_regen * wall_regen_percent_points / 100, after Table 1 contributor re-derivation and Table 2 scenario transforms',
@@ -1858,6 +1866,36 @@ def _build_replacement_diagnostics(
             'first_unresolved_wave': summary.get('first_unresolved_wave'),
         },
     }
+
+
+def _boss_wave_milestone_alignment(*, account_state, tier_number: int, summary: dict[str, object]) -> dict[str, object]:
+    tier_label = f'Tier {int(tier_number)}'
+    raw_reference = (getattr(account_state, 'tier_progression_waves', {}) or {}).get(tier_label)
+    reference_wave = _extract_optional_wave_number(raw_reference)
+    calculated_wave = int(summary.get('max_surviving_wave') or summary.get('max_wave') or 0)
+    out: dict[str, object] = {
+        'source': 'IDS::Player & Stuff.tier_progression_waves',
+        'tier_column': tier_label,
+        'reference_wave': reference_wave,
+        'calculated_max_surviving_wave': calculated_wave,
+        'comparison_status': 'no_ids_milestone_reference',
+    }
+    if reference_wave is None or reference_wave <= 0:
+        return out
+    delta = calculated_wave - int(reference_wave)
+    out.update(
+        {
+            'comparison_status': (
+                'solver_incomplete'
+                if str(summary.get('status') or 'complete') != 'complete'
+                else 'comparison_available'
+            ),
+            'delta_waves': delta,
+            'abs_delta_waves': abs(delta),
+            'calculated_to_reference_ratio': calculated_wave / float(reference_wave),
+        }
+    )
+    return out
 
 
 def _boss_wave_debug_ledger(operator_rows: list[dict[str, object]]) -> dict[str, object]:
@@ -4021,7 +4059,11 @@ def _build_pipeline_trace_from_artifacts(
             elapsed_ms=float(((diagnostics.get('session') or {}).get('account_state_build_ms')) or 0.0),
             outputs_summary={
                 'ids_path': _relpath_str(request.ids),
-                'manual_inputs_path': _relpath_str(_effective_manual_inputs_path(request.manual_inputs)),
+                'manual_inputs_path': (
+                    request.manual_inputs.as_posix()
+                    if request.manual_inputs is not None
+                    else _relpath_str(_effective_manual_inputs_path(request.manual_inputs))
+                ),
                 'section_names': diagnostics.get('section_names', []),
                 'section_row_counts': diagnostics.get('section_row_counts', {}),
             },

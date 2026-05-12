@@ -1873,6 +1873,7 @@ def _render_boss_waves(request: PipelineRunRequest, *, perk_policy_override: dic
         'snapshot_reuse_count': int(payload_diagnostics.get('snapshot_reuse_count') or 0),
         'qe_dirty_reresolve_count': int(payload_diagnostics.get('qe_dirty_reresolve_count') or 0),
         'delta_fallback_count': int(payload_diagnostics.get('delta_fallback_count') or 0),
+        'milestone_alignment': dict(payload_diagnostics.get('milestone_alignment') or {}),
     }
 
     summary_cols = st.columns(4)
@@ -1885,6 +1886,13 @@ def _render_boss_waves(request: PipelineRunRequest, *, perk_policy_override: dic
     summary_cols_2[1].metric('Boss cadence', diagnostics['actual_boss_interval_waves'] or '—')
     summary_cols_2[2].metric('Execution mode', diagnostics['execution_mode'] or '—')
     summary_cols_2[3].metric('Row/result agreement', 'Yes' if diagnostics['result_consistent_with_rows'] else 'No')
+    milestone_alignment = diagnostics['milestone_alignment']
+    milestone_reference = milestone_alignment.get('reference_wave')
+    if milestone_reference:
+        st.caption(
+            f"IDS milestone reference: `{milestone_alignment.get('tier_column')}` wave `{milestone_reference}`; "
+            f"solver delta `{milestone_alignment.get('delta_waves')}` waves."
+        )
     contract = dict(boss_payload.get('contract') or {})
     st.caption(
         "Start state: "

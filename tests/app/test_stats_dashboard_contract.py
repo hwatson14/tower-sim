@@ -3520,14 +3520,14 @@ def test_stats_dashboard_primary_uw_operator_table_wires_module_other_and_recon_
     black_hole_rows = {row.get('name'): row for row in (sections['Black Hole'].get('rows') or [])}
     chrono_rows = {row.get('name'): row for row in (sections['Chrono Field'].get('rows') or [])}
     assert golden_rows['Duration']['lab_effects'] == '20s'
-    assert golden_rows['Duration']['reconciliation_status'] == 'red'
+    assert golden_rows['Duration']['reconciliation_status'] == 'green'
     assert black_hole_rows['Duration']['module_effects'] == '4s'
     assert black_hole_rows['Duration']['start_of_run_value'] == '15s'
     assert black_hole_rows['Duration']['perk_effects'] == '\u2014'
     assert black_hole_rows['Duration']['max_progression_value'] == '15s'
-    assert black_hole_rows['Duration']['reconciliation_status'] == 'red'
+    assert black_hole_rows['Duration']['reconciliation_status'] == 'green'
     assert black_hole_rows['Cooldown']['start_of_run_value'] == '200s'
-    assert black_hole_rows['Cooldown']['reconciliation_status'] == 'red'
+    assert black_hole_rows['Cooldown']['reconciliation_status'] == 'green'
     assert chrono_rows['Duration']['stone_value'] == '5s'
     assert chrono_rows['Duration']['lab_effects'] == '30s'
     assert chrono_rows['Duration']['perk_effects'] == '\u2014'
