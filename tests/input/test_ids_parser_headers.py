@@ -77,7 +77,16 @@ def test_runtime_state_parses_v28_dissonant_pbs_from_player_stuff() -> None:
 
     assert "Tier 1" in state.dissonance_pbs_by_tier
     assert set(state.dissonance_pbs_by_tier["Tier 1"]) == {"attack", "defense", "utility", "ultimate_weapons"}
-    assert state.dissonance_pbs_by_tier["Tier 1"]["attack"] == 0
-    assert state.tier_progression_waves["Tier 1"] == 0
+    assert state.dissonance_pbs_by_tier["Tier 1"]["attack"] == 5000
+    assert state.dissonance_pbs_by_tier["Tier 14"] == {
+        "attack": 5000,
+        "defense": 5000,
+        "utility": 3915,
+        "ultimate_weapons": 4310,
+    }
+    assert state.tier_progression_waves["Tier 1"] == 10210
+    assert state.tier_progression_waves["Tier 19"] == 201
+    assert state.highest_tier_unlocked_number == 19
+    assert state.highest_tier_unlocked_label == "Tier 19"
     assert "Utility" not in state.player_meta
     assert "0" not in state.player_meta

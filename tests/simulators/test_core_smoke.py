@@ -498,7 +498,7 @@ def test_incremental_subset_executor_resolves_timing_family_surfaces_natively():
     )
 
     assert resolved["state::uw.black_hole.cooldown_seconds"].status == "resolved"
-    assert resolved["state::uw.black_hole.cooldown_seconds"].final_value == pytest.approx(200.0)
+    assert resolved["state::uw.black_hole.cooldown_seconds"].final_value == pytest.approx(46.0)
     assert resolved["support_surface::timing.wave_duration_seconds_effective"].status == "resolved"
     assert resolved["support_surface::timing.wave_duration_seconds_effective"].final_value is not None
 
@@ -538,7 +538,7 @@ def test_run_stats_progression_bundle__applies_exact_max_rend_formula():
 
     resolved = {row.surface_id: row for row in response.resolved_surface_rows}
     assert resolved['state::tower.max_rend_multiplier'].status == 'resolved'
-    assert resolved['state::tower.max_rend_multiplier'].final_value == pytest.approx(8.0)
+    assert resolved['state::tower.max_rend_multiplier'].final_value == pytest.approx(9.6)
 
 
 def test_qe_checkpoint_surface_resolution__resolves_only_requested_progression_surfaces():

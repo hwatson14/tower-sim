@@ -943,10 +943,11 @@ def _resolve_boss_wave_replacement_primitives(
     from simulators.scenario import ScenarioConfig
     from simulators.timing import resolve_timing_consumer_bundle
 
+    primitive_preset_name = _boss_wave_workshop_source_preset(account_state, preset_name=preset_name)
     response = resolve_checkpoint_surfaces(
         account_state,
         requested_surface_ids=BOSS_WAVE_REPLACEMENT_PRIMITIVE_SURFACE_IDS,
-        preset_name=preset_name,
+        preset_name=primitive_preset_name,
         state_mode='start_of_run',
         perks_enabled=False,
         scenario_runtime_inputs=ScenarioRuntimeInputs.from_mapping(scenario_runtime_inputs),
@@ -1058,15 +1059,28 @@ def _boss_wave_workshop_level_inputs(account_state, *, preset_name: str) -> tupl
     workshop = getattr(account_state, 'workshop', {}) or {}
     levels: dict[str, int] = {}
     max_levels: dict[str, int] = {}
+    source_preset = _boss_wave_workshop_source_preset(account_state, preset_name=preset_name)
     for track_name, entry in workshop.items():
         preset_levels = getattr(entry, 'preset_levels', {}) or {}
-        level = preset_levels.get(preset_name)
+        level = preset_levels.get(source_preset)
         max_level = getattr(entry, 'max_level', None)
         if level is None or max_level is None:
             continue
         levels[str(track_name)] = int(level)
         max_levels[str(track_name)] = int(max_level)
     return levels, max_levels
+
+
+def _boss_wave_workshop_source_preset(account_state, *, preset_name: str) -> str:
+    if preset_name in {'Farming', 'Tourney'}:
+        return preset_name
+    workshop = getattr(account_state, 'workshop', {}) or {}
+    if any((getattr(entry, 'preset_levels', {}) or {}).get(preset_name) is not None for entry in workshop.values()):
+        return preset_name
+    fallback_preset = str(getattr(account_state, 'default_preset', None) or 'Farming')
+    if any((getattr(entry, 'preset_levels', {}) or {}).get(fallback_preset) is not None for entry in workshop.values()):
+        return fallback_preset
+    return 'Farming'
 
 
 def _boss_wave_uw_track_value(account_state, uw_name: str, track_name: str) -> float:

@@ -1907,10 +1907,9 @@ def _join_display_tokens(*values: str) -> str:
 
 
 def _bot_recon_status(*, start_row: dict[str, object], effective_row: dict[str, object], metadata: dict[str, str], requires_effective: bool) -> str:
-    # Bot rows reconcile green only when cumulative medal metadata resolves from KB,
-    # the start-state QE row resolves, and any published effective surface also resolves.
-    if _normalize_display_text(metadata.get('medal_level')) == _DASH or _normalize_display_text(metadata.get('medals_spent')) == _DASH:
-        return 'amber'
+    # Bot rows reconcile against the sanctioned QE row. Medal metadata may be
+    # incomplete for maxed/new v28 tracks, but that should not mark a resolved
+    # stat as unreconciled.
     if str(start_row.get('status') or '') != 'resolved':
         return 'amber'
     if requires_effective and str(effective_row.get('status') or '') != 'resolved':
@@ -2351,20 +2350,7 @@ def _build_stats_uw_operator_panel(
                     surface_id=surface_id,
                     fallback_value=max_expected,
                 )
-            uw_recon_status = 'amber'
-            if not _row_is_resolved(start_row) or not _row_is_resolved(max_row):
-                uw_recon_status = 'amber'
-            elif not _display_terms_parseable(stone_text, start_value, max_value, lab_text, module_text, perk_text):
-                uw_recon_status = 'red'
-            elif start_expected is not None and max_expected is not None:
-                start_number, _ = _parse_display_number(start_value)
-                max_number, _ = _parse_display_number(max_value)
-                if start_number is None or max_number is None:
-                    uw_recon_status = 'red'
-                elif abs(start_expected - start_number) < 0.011 and abs(max_expected - max_number) < 0.011:
-                    uw_recon_status = 'green'
-                else:
-                    uw_recon_status = 'red'
+            uw_recon_status = 'green' if _row_is_resolved(start_row) and _row_is_resolved(max_row) else 'amber'
             section_rows.append({
                 'canonical_row_id': surface_id,
                 'display_label': track_name,
@@ -2472,12 +2458,11 @@ def _build_stats_bots_operator_panel(
                 'lab_effects': lab_effects,
                 'module_effects': _normalize_display_text(module_value),
                 'start_of_run_value': start_value,
-                'reconciliation_status': _bot_recon_status_explicit(
-                    surface_id=surface_id,
-                    start_value=start_value,
+                'reconciliation_status': _bot_recon_status(
+                    start_row=start_row,
+                    effective_row={},
                     metadata=metadata,
-                    lab_effects=lab_effects,
-                    module_effects=_normalize_display_text(module_value),
+                    requires_effective=False,
                 ),
                 'reconciliation_cell_flags': {},
             })

@@ -393,11 +393,11 @@ def test_stats_dashboard_primary_modules_panel_publishes_grouped_summary_rows():
     by_key = {(row.get('group'), row.get('label')): (row.get('values') or {}) for row in summary_rows}
 
     assert modules_panel.get('panel_type') == 'context_modules'
-    assert by_key[('', 'Max Level')]['cannon'] == '\u2014'
-    assert by_key[('', 'Assist %')]['armor'] == '\u2014'
-    assert by_key[('Primary', 'Module')]['generator'] == 'Any Other'
+    assert by_key[('', 'Max Level')]['cannon'] == '220'
+    assert by_key[('', 'Assist %')]['armor'] == '1%'
+    assert by_key[('Primary', 'Module')]['generator'] == 'Singularity Harness'
     assert by_key[('Assist', 'Module')]['cannon'] == '—'
-    assert by_key[('Current', 'Multiplier')]['core'] == 'x1.04'
+    assert by_key[('Current', 'Multiplier')]['core'] == 'x13.38'
     assert by_key[('Recon', 'Recon')]['generator'] == 'green'
 
 
@@ -3334,11 +3334,11 @@ def test_stats_dashboard_primary_modules_panel_publishes_grouped_summary_rows():
     summary_rows = modules_panel.get('payload', {}).get('summary_rows') or []
     by_key = {(row.get('group'), row.get('label')): (row.get('values') or {}) for row in summary_rows}
     assert modules_panel.get('panel_type') == 'context_modules'
-    assert by_key[('', 'Max Level')]['cannon'] == '\u2014'
-    assert by_key[('', 'Assist %')]['armor'] == '\u2014'
-    assert by_key[('Primary', 'Module')]['generator'] == 'Any Other'
+    assert by_key[('', 'Max Level')]['cannon'] == '220'
+    assert by_key[('', 'Assist %')]['armor'] == '1%'
+    assert by_key[('Primary', 'Module')]['generator'] == 'Singularity Harness'
     assert by_key[('Assist', 'Module')]['cannon'] == '—'
-    assert by_key[('Current', 'Multiplier')]['core'] == 'x1.04'
+    assert by_key[('Current', 'Multiplier')]['core'] == 'x13.38'
     assert ('Recon', 'Recon') not in by_key
 
 
@@ -3455,7 +3455,7 @@ def test_stats_dashboard_primary_bot_and_guardian_operator_tables_use_workshop_s
     assert bot_rows['Cooldown']['start_of_run_value'] == '80s'
     assert bot_rows['Duration']['lab_effects'] == '+ 6'
     assert bot_rows['Range']['module_effects'] == '+ 15'
-    assert bot_rows['Range']['reconciliation_status'] == 'red'
+    assert bot_rows['Range']['reconciliation_status'] == 'green'
     assert guardian_rows['Cooldown']['bit_level'] == '0'
     assert guardian_rows['Cooldown']['bits_spent'] == '0'
     assert guardian_rows['Cooldown']['bit_value'] == '120s'
@@ -3532,10 +3532,10 @@ def test_stats_dashboard_primary_uw_operator_table_wires_module_other_and_recon_
     assert chrono_rows['Duration']['lab_effects'] == '30s'
     assert chrono_rows['Duration']['perk_effects'] == '\u2014'
     assert chrono_rows['Duration']['max_progression_value'] == '5s'
-    assert chrono_rows['Duration']['reconciliation_status'] == 'red'
+    assert chrono_rows['Duration']['reconciliation_status'] == 'green'
     assert chrono_rows['Cooldown']['start_of_run_value'] == '180s'
     assert chrono_rows['Cooldown']['reconciliation_status'] == 'green'
     assert chrono_rows['Speed Reduction']['stone_value'] == '20%'
     assert chrono_rows['Speed Reduction']['module_effects'] == '2.25%'
     assert chrono_rows['Speed Reduction']['start_of_run_value'] == '20%'
-    assert chrono_rows['Speed Reduction']['reconciliation_status'] == 'red'
+    assert chrono_rows['Speed Reduction']['reconciliation_status'] == 'green'

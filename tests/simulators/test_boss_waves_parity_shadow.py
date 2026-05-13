@@ -168,10 +168,11 @@ def test_live_boss_waves_product_seam_is_replacement_only():
     contract = payload.get("contract", {}) or {}
     assert contract.get("simulator_owner") == "simulators.evaluator_kernel.evaluate_overlay_row"
     assert "legacy_export_owner" not in contract
-    assert rows == []
-    assert download_rows == []
-    assert payload["summary"]["status"] == "incomplete"
-    assert payload["summary"]["failure_kind"] == "kernel_ambiguity"
+    assert rows
+    assert download_rows
+    assert len(rows) == len(download_rows)
+    assert payload["summary"]["status"] == "complete"
+    assert payload["summary"]["failure_kind"] is None
     assert "legacy_shadow" not in payload
 
 
