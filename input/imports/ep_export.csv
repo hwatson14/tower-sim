@@ -1,37 +1,37 @@
 Oracle Outputs (Effective Paths),,,,
-EP id,1HOIkxWbbciTIAzVruaahEGADlM8rS0-w86uBXj4PwNQ,,,
-EP Base URL,https://docs.google.com/spreadsheets/d/1HOIkxWbbciTIAzVruaahEGADlM8rS0-w86uBXj4PwNQ,,,
+EP id,1eAli1sN54nfC3dPdZjsjqvUw2UCmiR96k2NK3-bR8yg,,,
+EP Base URL,https://docs.google.com/spreadsheets/d/1eAli1sN54nfC3dPdZjsjqvUw2UCmiR96k2NK3-bR8yg,,,
 ,,,,
 ,,,,
 suite,key,label,value,import
-edmg,edmg,eDMG,,
-edmg,damage,Damage,,
-edmg,attack_speed,Attack Speed,,
-edmg,crit_chance,Critical Chance,,
-edmg,crit_factor,Critical Factor,,
-edmg,range,Range,,
-edmg,damage_per_meter,Damage / Meter,,
-edmg,multishot_chance,Multishot Chance,,
-edmg,multishot_targets,Multishot Targets,,
-edmg,rapid_fire_chance,Rapid Fire Chance,,
-edmg,rapid_fire_duration,Rapid Fire Duration,,
-edmg,bounce_shot_chance,Bounce Shot Chance,,
-edmg,bounce_shot_targets,Bounce Shot Targets,,
-edmg,super_crit_chance,Super Crit Chance,,
-edmg,super_crit_multiplier,Super Crit Multiplier,,
-edmg,max_rend_mult,Max Rend Mult,,
-edmg,recovery_package_chance,Recovery Package Chance,,
-ehp,ehp,eHP,#REF!,#REF!
-ehp,health,Health,#REF!,#REF!
-ehp,health_regen,Health Regen,,
-ehp,defense_absolute,Defense Absolute,,
-ehp,defense_percent,Defense %,,
-ehp,wall_health,Wall Health,,
-ehp,wall_fortification,Wall Fortification,,
-ehp,wall_regen,Wall Regen,,
+edmg,edmg,eDMG,821.3 N,821.3 N
+edmg,damage,Damage,43.6 T,43.6 T
+edmg,attack_speed,Attack Speed,40.012688520000005,40.012688520000005
+edmg,crit_chance,Critical Chance,1.06,1.06
+edmg,crit_factor,Critical Factor,186.82811999999998,186.82811999999998
+edmg,range,Range,127.9223999157052,127.9223999157052
+edmg,damage_per_meter,Damage / Meter,0.1355112,0.1355112
+edmg,multishot_chance,Multishot Chance,0.495,0.495
+edmg,multishot_targets,Multishot Targets,13,13
+edmg,rapid_fire_chance,Rapid Fire Chance,0.34,0.34
+edmg,rapid_fire_duration,Rapid Fire Duration,5.55,5.55
+edmg,bounce_shot_chance,Bounce Shot Chance,0.8,0.8
+edmg,bounce_shot_targets,Bounce Shot Targets,8,8
+edmg,super_crit_chance,Super Crit Chance,0.34900000000000003,0.34900000000000003
+edmg,super_crit_multiplier,Super Crit Multiplier,x39.21,x39.21
+edmg,max_rend_mult,Max Rend Mult,9.6,9.6
+edmg,recovery_package_chance,Recovery Package Chance,0.831,0.831
+ehp,ehp,eHP,860.62 q,860.62 q
+ehp,health,Health,32.85 T,32.85 T
+ehp,health_regen,Health Regen,45.36 T,45.36 T
+ehp,defense_absolute,Defense Absolute,323.92 M,323.92 M
+ehp,defense_percent,Defense %,0.98,0.98
+ehp,wall_health,Wall Health,574.83 T,574.83 T
+ehp,wall_fortification,Wall Fortification,6.09 q,6.09 q
+ehp,wall_regen,Wall Regen,238.16 T,238.16 T
 ehp,max_recovery,Max Recovery,,
-eecon,cpk_average,Average CpK,#REF!,#REF!
-eecon,coins_per_kill_bonus,Coins / Kill Bonus,#REF!,#REF!
-eecon,free_attack_upgrade,Free Attack Upgrade,,
-eecon,free_defense_upgrade,Free Defense Upgrade,,
-eecon,free_utility_upgrade,Free Utility Upgrade,,
+eecon,cpk_average,Average CpK,431.19 M,431.19 M
+eecon,coins_per_kill_bonus,Coins / Kill Bonus,47.08343351250001,47.08343351250001
+eecon,free_attack_upgrade,Free Attack Upgrade,1.2351649999999998,1.2351649999999998
+eecon,free_defense_upgrade,Free Defense Upgrade,1.1243925,1.1243925
+eecon,free_utility_upgrade,Free Utility Upgrade,1.2651842,1.2651842
