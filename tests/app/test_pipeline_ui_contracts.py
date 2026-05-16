@@ -333,6 +333,36 @@ def test_pipeline_run_stats_query_rows_publish_qe_derived_wall_semantics(canonic
     assert start_farming['derived::eecon.base_meta_factor']['final_value'] == pytest.approx(1.48)
 
 
+def test_pipeline_tier_scoped_dissonance_reconciles_t14_ep_panels(tmp_path):
+    from app.pipeline import PipelineRunRequest, execute_pipeline
+
+    out_dir = tmp_path / "tier14_pipeline_out"
+    result = execute_pipeline(
+        PipelineRunRequest(
+            ids=ROOT / 'input' / 'imports' / 'ids.csv',
+            out=out_dir,
+            preset='Farming',
+            state_mode='max_progression',
+            tier=14,
+        )
+    )
+    assert result.exit_code == 0
+    rows = json.loads((out_dir / 'run_stats_query_rows_max_progression.json').read_text(encoding='utf-8'))['Farming']['rows']
+
+    assert rows['derived::dissonance.defense.total_multiplier']['final_value'] == pytest.approx(5.084125491313515)
+    assert rows['derived::ehp.health_factor']['final_value'] == pytest.approx(32.696146228571496e12)
+    assert rows['state::uw.chain_lightning.max_enemy_damage_reduction_pct']['final_value'] == pytest.approx(36.0)
+    assert rows['derived::ehp.chain_thunder_factor']['final_value'] == pytest.approx(1.5625)
+    assert rows['derived::ehp']['final_value'] == pytest.approx(861.5267299565655e15)
+    assert rows['state::tower.regen']['final_value'] == pytest.approx(45.364325790446484e12)
+    assert rows['state::wall.fortification_multiplier']['final_value'] == pytest.approx(10.6)
+    assert rows['derived::wall.hp_pre_fort']['final_value'] == pytest.approx(572.051774415087e12)
+    assert rows['derived::wall.hp_final']['final_value'] == pytest.approx(6.063748808799922e15)
+    assert rows['derived::wall.regen_hp_per_second']['final_value'] == pytest.approx(238.16271039984403e12)
+    assert rows['state::tower.defense_absolute']['status'] == 'resolved'
+    assert rows['state::economy.coins_per_kill_bonus']['final_value'] == pytest.approx(46.42479765)
+
+
 def test_pipeline_cards_payload_publishes_selected_rows_by_preset(canonical_pipeline_artifacts):
     out_dir = canonical_pipeline_artifacts['out_dir']
     dashboard = canonical_pipeline_artifacts['dashboards']['input_dashboard']

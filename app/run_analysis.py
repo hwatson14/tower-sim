@@ -18,6 +18,7 @@ def main() -> int:
     parser.add_argument('--ids', type=Path, default=ROOT / 'input' / 'imports' / 'ids.csv')
     parser.add_argument('--out', '--output-dir', dest='out', type=Path, default=ROOT / 'out')
     parser.add_argument('--preset', type=str, default='Farming')
+    parser.add_argument('--tier', type=int, default=None, help='Optional farming tier override for tier-scoped stat surfaces such as Dissonance.')
     parser.add_argument('--state-mode', type=str, default='max_progression')
     parser.add_argument(
         '--manual-inputs',

@@ -4,7 +4,7 @@ import csv
 import re
 from functools import lru_cache
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Mapping, Optional, Tuple
 
 import yaml
 
@@ -762,9 +762,17 @@ def _normalize_tier_label(value: object) -> str | None:
     return f'Tier {int(match.group(1))}'
 
 
-def _active_dissonant_pb_tier_label(account_state: AccountState, dissonance_pbs_by_tier: Dict[str, Dict[str, int]]) -> str | None:
+def _active_dissonant_pb_tier_label(
+    account_state: AccountState,
+    dissonance_pbs_by_tier: Dict[str, Dict[str, int]],
+    *,
+    scenario_context: Mapping[str, Any] | None = None,
+) -> str | None:
     player_meta = getattr(account_state, 'player_meta', {}) or {}
     candidates = (
+        (scenario_context or {}).get('tier'),
+        (scenario_context or {}).get('tier_number'),
+        (scenario_context or {}).get('tier_column'),
         player_meta.get('Farming Tier'),
         getattr(account_state, 'highest_tier_unlocked_label', None),
     )
@@ -1127,6 +1135,7 @@ def compile_stat_inputs(
     perk_preset_name: str | None = None,
     perks_enabled: bool | None = None,
     scenario_projection_state: ScenarioProjectionState | None = None,
+    scenario_context: Mapping[str, Any] | None = None,
 ) -> List[StatInput]:
     preset = preset_name or account_state.default_preset
     active_perk_preset = getattr(account_state, 'active_perk_preset', None)
@@ -1568,7 +1577,11 @@ def compile_stat_inputs(
         _append(out, row)
 
     dissonance_pbs_by_tier = getattr(account_state, 'dissonance_pbs_by_tier', {}) or {}
-    active_dissonance_tier = _active_dissonant_pb_tier_label(account_state, dissonance_pbs_by_tier)
+    active_dissonance_tier = _active_dissonant_pb_tier_label(
+        account_state,
+        dissonance_pbs_by_tier,
+        scenario_context=scenario_context,
+    )
     if active_dissonance_tier is not None:
         active_dissonance_pbs = dissonance_pbs_by_tier.get(active_dissonance_tier, {})
         for category, display_name in DISSONANT_PB_CATEGORIES:

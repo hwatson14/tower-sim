@@ -1,0 +1,5089 @@
+{
+  "schema_version": 2,
+  "selected_preset": "Farming",
+  "preset_options": [
+    "Farming",
+    "Tourney",
+    "Milestone",
+    "Preset 4",
+    "Preset 5"
+  ],
+  "upstream_gaps": [
+    {
+      "panel_id": "ultimate_weapons",
+      "gap_id": "lab_column_not_published_upstream",
+      "detail": "Lab column missing for Chain Lightning::Damage"
+    },
+    {
+      "panel_id": "ultimate_weapons",
+      "gap_id": "module_column_not_published_upstream",
+      "detail": "Module column missing for Chain Lightning::Damage"
+    },
+    {
+      "panel_id": "ultimate_weapons",
+      "gap_id": "perk_column_not_published_upstream",
+      "detail": "Perk column missing for Chain Lightning::Damage"
+    },
+    {
+      "panel_id": "ultimate_weapons",
+      "gap_id": "final_column_not_published_upstream",
+      "detail": "Final column missing for Chain Lightning::Damage"
+    },
+    {
+      "panel_id": "ultimate_weapons",
+      "gap_id": "lab_column_not_published_upstream",
+      "detail": "Lab column missing for Chain Lightning::Quantity"
+    },
+    {
+      "panel_id": "ultimate_weapons",
+      "gap_id": "module_column_not_published_upstream",
+      "detail": "Module column missing for Chain Lightning::Quantity"
+    },
+    {
+      "panel_id": "ultimate_weapons",
+      "gap_id": "perk_column_not_published_upstream",
+      "detail": "Perk column missing for Chain Lightning::Quantity"
+    },
+    {
+      "panel_id": "ultimate_weapons",
+      "gap_id": "final_column_not_published_upstream",
+      "detail": "Final column missing for Chain Lightning::Quantity"
+    },
+    {
+      "panel_id": "ultimate_weapons",
+      "gap_id": "lab_column_not_published_upstream",
+      "detail": "Lab column missing for Chain Lightning::Chance"
+    },
+    {
+      "panel_id": "ultimate_weapons",
+      "gap_id": "module_column_not_published_upstream",
+      "detail": "Module column missing for Chain Lightning::Chance"
+    },
+    {
+      "panel_id": "ultimate_weapons",
+      "gap_id": "perk_column_not_published_upstream",
+      "detail": "Perk column missing for Chain Lightning::Chance"
+    },
+    {
+      "panel_id": "ultimate_weapons",
+      "gap_id": "final_column_not_published_upstream",
+      "detail": "Final column missing for Chain Lightning::Chance"
+    },
+    {
+      "panel_id": "ultimate_weapons",
+      "gap_id": "lab_column_not_published_upstream",
+      "detail": "Lab column missing for Smart Missiles::Damage"
+    },
+    {
+      "panel_id": "ultimate_weapons",
+      "gap_id": "module_column_not_published_upstream",
+      "detail": "Module column missing for Smart Missiles::Damage"
+    },
+    {
+      "panel_id": "ultimate_weapons",
+      "gap_id": "perk_column_not_published_upstream",
+      "detail": "Perk column missing for Smart Missiles::Damage"
+    },
+    {
+      "panel_id": "ultimate_weapons",
+      "gap_id": "final_column_not_published_upstream",
+      "detail": "Final column missing for Smart Missiles::Damage"
+    },
+    {
+      "panel_id": "ultimate_weapons",
+      "gap_id": "lab_column_not_published_upstream",
+      "detail": "Lab column missing for Smart Missiles::Quantity"
+    },
+    {
+      "panel_id": "ultimate_weapons",
+      "gap_id": "module_column_not_published_upstream",
+      "detail": "Module column missing for Smart Missiles::Quantity"
+    },
+    {
+      "panel_id": "ultimate_weapons",
+      "gap_id": "perk_column_not_published_upstream",
+      "detail": "Perk column missing for Smart Missiles::Quantity"
+    },
+    {
+      "panel_id": "ultimate_weapons",
+      "gap_id": "final_column_not_published_upstream",
+      "detail": "Final column missing for Smart Missiles::Quantity"
+    },
+    {
+      "panel_id": "ultimate_weapons",
+      "gap_id": "lab_column_not_published_upstream",
+      "detail": "Lab column missing for Smart Missiles::Cooldown"
+    },
+    {
+      "panel_id": "ultimate_weapons",
+      "gap_id": "module_column_not_published_upstream",
+      "detail": "Module column missing for Smart Missiles::Cooldown"
+    },
+    {
+      "panel_id": "ultimate_weapons",
+      "gap_id": "perk_column_not_published_upstream",
+      "detail": "Perk column missing for Smart Missiles::Cooldown"
+    },
+    {
+      "panel_id": "ultimate_weapons",
+      "gap_id": "final_column_not_published_upstream",
+      "detail": "Final column missing for Smart Missiles::Cooldown"
+    },
+    {
+      "panel_id": "ultimate_weapons",
+      "gap_id": "lab_column_not_published_upstream",
+      "detail": "Lab column missing for Death Wave::Damage"
+    },
+    {
+      "panel_id": "ultimate_weapons",
+      "gap_id": "module_column_not_published_upstream",
+      "detail": "Module column missing for Death Wave::Damage"
+    },
+    {
+      "panel_id": "ultimate_weapons",
+      "gap_id": "perk_column_not_published_upstream",
+      "detail": "Perk column missing for Death Wave::Damage"
+    },
+    {
+      "panel_id": "ultimate_weapons",
+      "gap_id": "final_column_not_published_upstream",
+      "detail": "Final column missing for Death Wave::Damage"
+    },
+    {
+      "panel_id": "ultimate_weapons",
+      "gap_id": "lab_column_not_published_upstream",
+      "detail": "Lab column missing for Death Wave::Quantity"
+    },
+    {
+      "panel_id": "ultimate_weapons",
+      "gap_id": "module_column_not_published_upstream",
+      "detail": "Module column missing for Death Wave::Quantity"
+    },
+    {
+      "panel_id": "ultimate_weapons",
+      "gap_id": "perk_column_not_published_upstream",
+      "detail": "Perk column missing for Death Wave::Quantity"
+    },
+    {
+      "panel_id": "ultimate_weapons",
+      "gap_id": "final_column_not_published_upstream",
+      "detail": "Final column missing for Death Wave::Quantity"
+    },
+    {
+      "panel_id": "ultimate_weapons",
+      "gap_id": "lab_column_not_published_upstream",
+      "detail": "Lab column missing for Death Wave::Cooldown"
+    },
+    {
+      "panel_id": "ultimate_weapons",
+      "gap_id": "module_column_not_published_upstream",
+      "detail": "Module column missing for Death Wave::Cooldown"
+    },
+    {
+      "panel_id": "ultimate_weapons",
+      "gap_id": "perk_column_not_published_upstream",
+      "detail": "Perk column missing for Death Wave::Cooldown"
+    },
+    {
+      "panel_id": "ultimate_weapons",
+      "gap_id": "final_column_not_published_upstream",
+      "detail": "Final column missing for Death Wave::Cooldown"
+    },
+    {
+      "panel_id": "ultimate_weapons",
+      "gap_id": "lab_column_not_published_upstream",
+      "detail": "Lab column missing for Chrono Field::Duration"
+    },
+    {
+      "panel_id": "ultimate_weapons",
+      "gap_id": "module_column_not_published_upstream",
+      "detail": "Module column missing for Chrono Field::Duration"
+    },
+    {
+      "panel_id": "ultimate_weapons",
+      "gap_id": "perk_column_not_published_upstream",
+      "detail": "Perk column missing for Chrono Field::Duration"
+    },
+    {
+      "panel_id": "ultimate_weapons",
+      "gap_id": "lab_column_not_published_upstream",
+      "detail": "Lab column missing for Chrono Field::Speed Reduction"
+    },
+    {
+      "panel_id": "ultimate_weapons",
+      "gap_id": "module_column_not_published_upstream",
+      "detail": "Module column missing for Chrono Field::Speed Reduction"
+    },
+    {
+      "panel_id": "ultimate_weapons",
+      "gap_id": "perk_column_not_published_upstream",
+      "detail": "Perk column missing for Chrono Field::Speed Reduction"
+    },
+    {
+      "panel_id": "ultimate_weapons",
+      "gap_id": "lab_column_not_published_upstream",
+      "detail": "Lab column missing for Chrono Field::Cooldown"
+    },
+    {
+      "panel_id": "ultimate_weapons",
+      "gap_id": "module_column_not_published_upstream",
+      "detail": "Module column missing for Chrono Field::Cooldown"
+    },
+    {
+      "panel_id": "ultimate_weapons",
+      "gap_id": "perk_column_not_published_upstream",
+      "detail": "Perk column missing for Chrono Field::Cooldown"
+    },
+    {
+      "panel_id": "ultimate_weapons",
+      "gap_id": "lab_column_not_published_upstream",
+      "detail": "Lab column missing for Inner Land Mines::Damage"
+    },
+    {
+      "panel_id": "ultimate_weapons",
+      "gap_id": "module_column_not_published_upstream",
+      "detail": "Module column missing for Inner Land Mines::Damage"
+    },
+    {
+      "panel_id": "ultimate_weapons",
+      "gap_id": "perk_column_not_published_upstream",
+      "detail": "Perk column missing for Inner Land Mines::Damage"
+    },
+    {
+      "panel_id": "ultimate_weapons",
+      "gap_id": "final_column_not_published_upstream",
+      "detail": "Final column missing for Inner Land Mines::Damage"
+    },
+    {
+      "panel_id": "ultimate_weapons",
+      "gap_id": "lab_column_not_published_upstream",
+      "detail": "Lab column missing for Inner Land Mines::Quantity"
+    },
+    {
+      "panel_id": "ultimate_weapons",
+      "gap_id": "module_column_not_published_upstream",
+      "detail": "Module column missing for Inner Land Mines::Quantity"
+    },
+    {
+      "panel_id": "ultimate_weapons",
+      "gap_id": "perk_column_not_published_upstream",
+      "detail": "Perk column missing for Inner Land Mines::Quantity"
+    },
+    {
+      "panel_id": "ultimate_weapons",
+      "gap_id": "final_column_not_published_upstream",
+      "detail": "Final column missing for Inner Land Mines::Quantity"
+    },
+    {
+      "panel_id": "ultimate_weapons",
+      "gap_id": "lab_column_not_published_upstream",
+      "detail": "Lab column missing for Inner Land Mines::Cooldown"
+    },
+    {
+      "panel_id": "ultimate_weapons",
+      "gap_id": "module_column_not_published_upstream",
+      "detail": "Module column missing for Inner Land Mines::Cooldown"
+    },
+    {
+      "panel_id": "ultimate_weapons",
+      "gap_id": "perk_column_not_published_upstream",
+      "detail": "Perk column missing for Inner Land Mines::Cooldown"
+    },
+    {
+      "panel_id": "ultimate_weapons",
+      "gap_id": "final_column_not_published_upstream",
+      "detail": "Final column missing for Inner Land Mines::Cooldown"
+    },
+    {
+      "panel_id": "ultimate_weapons",
+      "gap_id": "lab_column_not_published_upstream",
+      "detail": "Lab column missing for Golden Tower::Multiplier"
+    },
+    {
+      "panel_id": "ultimate_weapons",
+      "gap_id": "module_column_not_published_upstream",
+      "detail": "Module column missing for Golden Tower::Multiplier"
+    },
+    {
+      "panel_id": "ultimate_weapons",
+      "gap_id": "perk_column_not_published_upstream",
+      "detail": "Perk column missing for Golden Tower::Multiplier"
+    },
+    {
+      "panel_id": "ultimate_weapons",
+      "gap_id": "final_column_not_published_upstream",
+      "detail": "Final column missing for Golden Tower::Multiplier"
+    },
+    {
+      "panel_id": "ultimate_weapons",
+      "gap_id": "lab_column_not_published_upstream",
+      "detail": "Lab column missing for Golden Tower::Duration"
+    },
+    {
+      "panel_id": "ultimate_weapons",
+      "gap_id": "module_column_not_published_upstream",
+      "detail": "Module column missing for Golden Tower::Duration"
+    },
+    {
+      "panel_id": "ultimate_weapons",
+      "gap_id": "perk_column_not_published_upstream",
+      "detail": "Perk column missing for Golden Tower::Duration"
+    },
+    {
+      "panel_id": "ultimate_weapons",
+      "gap_id": "lab_column_not_published_upstream",
+      "detail": "Lab column missing for Golden Tower::Cooldown"
+    },
+    {
+      "panel_id": "ultimate_weapons",
+      "gap_id": "module_column_not_published_upstream",
+      "detail": "Module column missing for Golden Tower::Cooldown"
+    },
+    {
+      "panel_id": "ultimate_weapons",
+      "gap_id": "perk_column_not_published_upstream",
+      "detail": "Perk column missing for Golden Tower::Cooldown"
+    },
+    {
+      "panel_id": "ultimate_weapons",
+      "gap_id": "lab_column_not_published_upstream",
+      "detail": "Lab column missing for Poison Swamp::Damage"
+    },
+    {
+      "panel_id": "ultimate_weapons",
+      "gap_id": "module_column_not_published_upstream",
+      "detail": "Module column missing for Poison Swamp::Damage"
+    },
+    {
+      "panel_id": "ultimate_weapons",
+      "gap_id": "perk_column_not_published_upstream",
+      "detail": "Perk column missing for Poison Swamp::Damage"
+    },
+    {
+      "panel_id": "ultimate_weapons",
+      "gap_id": "final_column_not_published_upstream",
+      "detail": "Final column missing for Poison Swamp::Damage"
+    },
+    {
+      "panel_id": "ultimate_weapons",
+      "gap_id": "lab_column_not_published_upstream",
+      "detail": "Lab column missing for Poison Swamp::Duration"
+    },
+    {
+      "panel_id": "ultimate_weapons",
+      "gap_id": "module_column_not_published_upstream",
+      "detail": "Module column missing for Poison Swamp::Duration"
+    },
+    {
+      "panel_id": "ultimate_weapons",
+      "gap_id": "perk_column_not_published_upstream",
+      "detail": "Perk column missing for Poison Swamp::Duration"
+    },
+    {
+      "panel_id": "ultimate_weapons",
+      "gap_id": "final_column_not_published_upstream",
+      "detail": "Final column missing for Poison Swamp::Duration"
+    },
+    {
+      "panel_id": "ultimate_weapons",
+      "gap_id": "lab_column_not_published_upstream",
+      "detail": "Lab column missing for Poison Swamp::Cooldown"
+    },
+    {
+      "panel_id": "ultimate_weapons",
+      "gap_id": "module_column_not_published_upstream",
+      "detail": "Module column missing for Poison Swamp::Cooldown"
+    },
+    {
+      "panel_id": "ultimate_weapons",
+      "gap_id": "perk_column_not_published_upstream",
+      "detail": "Perk column missing for Poison Swamp::Cooldown"
+    },
+    {
+      "panel_id": "ultimate_weapons",
+      "gap_id": "final_column_not_published_upstream",
+      "detail": "Final column missing for Poison Swamp::Cooldown"
+    },
+    {
+      "panel_id": "ultimate_weapons",
+      "gap_id": "lab_column_not_published_upstream",
+      "detail": "Lab column missing for Black Hole::Size"
+    },
+    {
+      "panel_id": "ultimate_weapons",
+      "gap_id": "module_column_not_published_upstream",
+      "detail": "Module column missing for Black Hole::Size"
+    },
+    {
+      "panel_id": "ultimate_weapons",
+      "gap_id": "perk_column_not_published_upstream",
+      "detail": "Perk column missing for Black Hole::Size"
+    },
+    {
+      "panel_id": "ultimate_weapons",
+      "gap_id": "final_column_not_published_upstream",
+      "detail": "Final column missing for Black Hole::Size"
+    },
+    {
+      "panel_id": "ultimate_weapons",
+      "gap_id": "lab_column_not_published_upstream",
+      "detail": "Lab column missing for Black Hole::Duration"
+    },
+    {
+      "panel_id": "ultimate_weapons",
+      "gap_id": "module_column_not_published_upstream",
+      "detail": "Module column missing for Black Hole::Duration"
+    },
+    {
+      "panel_id": "ultimate_weapons",
+      "gap_id": "perk_column_not_published_upstream",
+      "detail": "Perk column missing for Black Hole::Duration"
+    },
+    {
+      "panel_id": "ultimate_weapons",
+      "gap_id": "lab_column_not_published_upstream",
+      "detail": "Lab column missing for Black Hole::Cooldown"
+    },
+    {
+      "panel_id": "ultimate_weapons",
+      "gap_id": "module_column_not_published_upstream",
+      "detail": "Module column missing for Black Hole::Cooldown"
+    },
+    {
+      "panel_id": "ultimate_weapons",
+      "gap_id": "perk_column_not_published_upstream",
+      "detail": "Perk column missing for Black Hole::Cooldown"
+    },
+    {
+      "panel_id": "ultimate_weapons",
+      "gap_id": "lab_column_not_published_upstream",
+      "detail": "Lab column missing for Spotlight::Multiplier"
+    },
+    {
+      "panel_id": "ultimate_weapons",
+      "gap_id": "module_column_not_published_upstream",
+      "detail": "Module column missing for Spotlight::Multiplier"
+    },
+    {
+      "panel_id": "ultimate_weapons",
+      "gap_id": "perk_column_not_published_upstream",
+      "detail": "Perk column missing for Spotlight::Multiplier"
+    },
+    {
+      "panel_id": "ultimate_weapons",
+      "gap_id": "final_column_not_published_upstream",
+      "detail": "Final column missing for Spotlight::Multiplier"
+    },
+    {
+      "panel_id": "ultimate_weapons",
+      "gap_id": "lab_column_not_published_upstream",
+      "detail": "Lab column missing for Spotlight::Angle"
+    },
+    {
+      "panel_id": "ultimate_weapons",
+      "gap_id": "module_column_not_published_upstream",
+      "detail": "Module column missing for Spotlight::Angle"
+    },
+    {
+      "panel_id": "ultimate_weapons",
+      "gap_id": "perk_column_not_published_upstream",
+      "detail": "Perk column missing for Spotlight::Angle"
+    },
+    {
+      "panel_id": "ultimate_weapons",
+      "gap_id": "final_column_not_published_upstream",
+      "detail": "Final column missing for Spotlight::Angle"
+    },
+    {
+      "panel_id": "ultimate_weapons",
+      "gap_id": "lab_column_not_published_upstream",
+      "detail": "Lab column missing for Spotlight::Quantity"
+    },
+    {
+      "panel_id": "ultimate_weapons",
+      "gap_id": "module_column_not_published_upstream",
+      "detail": "Module column missing for Spotlight::Quantity"
+    },
+    {
+      "panel_id": "ultimate_weapons",
+      "gap_id": "perk_column_not_published_upstream",
+      "detail": "Perk column missing for Spotlight::Quantity"
+    },
+    {
+      "panel_id": "ultimate_weapons",
+      "gap_id": "final_column_not_published_upstream",
+      "detail": "Final column missing for Spotlight::Quantity"
+    }
+  ],
+  "panels": [
+    {
+      "panel_id": "labs",
+      "panel_type": "labs_bucket_grid",
+      "title": "Labs",
+      "payload": {
+        "column_headers": [
+          "Name",
+          "Level",
+          "Max"
+        ],
+        "bucket_order": [
+          "main",
+          "attack",
+          "defense",
+          "utility",
+          "ultimate_weapons",
+          "cards",
+          "perks",
+          "bots",
+          "enemies",
+          "modules",
+          "battle_conditions",
+          "misc"
+        ],
+        "buckets": [
+          {
+            "bucket_id": "main",
+            "bucket_label": "Main",
+            "rows": [
+              {
+                "name": "Game Speed",
+                "level": "7",
+                "max": "7"
+              },
+              {
+                "name": "Starting Cash",
+                "level": "6",
+                "max": "99"
+              },
+              {
+                "name": "Workshop Attack Discount",
+                "level": "27",
+                "max": "99"
+              },
+              {
+                "name": "Workshop Defense Discount",
+                "level": "28",
+                "max": "99"
+              },
+              {
+                "name": "Workshop Utility Discount",
+                "level": "41",
+                "max": "99"
+              },
+              {
+                "name": "Labs Coin Discount",
+                "level": "68",
+                "max": "99"
+              },
+              {
+                "name": "Labs Speed",
+                "level": "99",
+                "max": "99"
+              },
+              {
+                "name": "Buy Multiplier",
+                "level": "4",
+                "max": "4"
+              },
+              {
+                "name": "More Round Stats",
+                "level": "1",
+                "max": "1"
+              },
+              {
+                "name": "Target Priority",
+                "level": "2",
+                "max": "2"
+              },
+              {
+                "name": "Card Presets",
+                "level": "1",
+                "max": "1"
+              },
+              {
+                "name": "Workshop Respec",
+                "level": "1",
+                "max": "1"
+              },
+              {
+                "name": "Reroll Daily Mission",
+                "level": "1",
+                "max": "1"
+              },
+              {
+                "name": "Workshop Enhancements",
+                "level": "1",
+                "max": "1"
+              },
+              {
+                "name": "Enhancement Attack - Coin Discount",
+                "level": "0",
+                "max": "100"
+              },
+              {
+                "name": "Enhancement Defense - Coin Discount",
+                "level": "0",
+                "max": "100"
+              },
+              {
+                "name": "Enhancement Utility - Coin Discount",
+                "level": "0",
+                "max": "100"
+              }
+            ]
+          },
+          {
+            "bucket_id": "attack",
+            "bucket_label": "Attack",
+            "rows": [
+              {
+                "name": "Dissonant Echo - Attack",
+                "level": "2",
+                "max": "20"
+              },
+              {
+                "name": "Damage",
+                "level": "79",
+                "max": "100"
+              },
+              {
+                "name": "Attack Speed",
+                "level": "76",
+                "max": "99"
+              },
+              {
+                "name": "Critical Factor",
+                "level": "94",
+                "max": "99"
+              },
+              {
+                "name": "Range",
+                "level": "50",
+                "max": "80"
+              },
+              {
+                "name": "Damage / Meter",
+                "level": "16",
+                "max": "99"
+              },
+              {
+                "name": "Super Crit Chance",
+                "level": "9",
+                "max": "50"
+              },
+              {
+                "name": "Super Crit Multi",
+                "level": "13",
+                "max": "40"
+              },
+              {
+                "name": "Max Rend Armor Multiplier",
+                "level": "0",
+                "max": "30"
+              },
+              {
+                "name": "Light Speed Shots",
+                "level": "1",
+                "max": "1"
+              }
+            ]
+          },
+          {
+            "bucket_id": "defense",
+            "bucket_label": "Defense",
+            "rows": [
+              {
+                "name": "Dissonant Echo - Defense",
+                "level": "1",
+                "max": "20"
+              },
+              {
+                "name": "Health",
+                "level": "68",
+                "max": "100"
+              },
+              {
+                "name": "Health Regen",
+                "level": "68",
+                "max": "100"
+              },
+              {
+                "name": "Defense Absolute",
+                "level": "14",
+                "max": "100"
+              },
+              {
+                "name": "Defense %",
+                "level": "28",
+                "max": "50"
+              },
+              {
+                "name": "Orbs Speed",
+                "level": "20",
+                "max": "20"
+              },
+              {
+                "name": "Land Mine Damage",
+                "level": "0",
+                "max": "20"
+              },
+              {
+                "name": "Land Mine Decay",
+                "level": "13",
+                "max": "35"
+              },
+              {
+                "name": "Shockwave Size",
+                "level": "20",
+                "max": "20"
+              },
+              {
+                "name": "Orb Boss Hit",
+                "level": "10",
+                "max": "10"
+              },
+              {
+                "name": "Wall Health",
+                "level": "50",
+                "max": "50"
+              },
+              {
+                "name": "Wall Rebuild",
+                "level": "20",
+                "max": "20"
+              },
+              {
+                "name": "Wall Regen",
+                "level": "21",
+                "max": "30"
+              },
+              {
+                "name": "Wall Thorns",
+                "level": "16",
+                "max": "20"
+              },
+              {
+                "name": "Wall Invincibility",
+                "level": "0",
+                "max": "10"
+              },
+              {
+                "name": "Wall Fortification",
+                "level": "48",
+                "max": "60"
+              },
+              {
+                "name": "Garlic Thorns",
+                "level": "10",
+                "max": "10"
+              }
+            ]
+          },
+          {
+            "bucket_id": "utility",
+            "bucket_label": "Utility",
+            "rows": [
+              {
+                "name": "Dissonant Echo - Utility",
+                "level": "3",
+                "max": "20"
+              },
+              {
+                "name": "Cash Bonus",
+                "level": "36",
+                "max": "99"
+              },
+              {
+                "name": "Cash / Wave",
+                "level": "8",
+                "max": "99"
+              },
+              {
+                "name": "Coins / Kill Bonus",
+                "level": "94",
+                "max": "99"
+              },
+              {
+                "name": "Coins / Wave",
+                "level": "6",
+                "max": "99"
+              },
+              {
+                "name": "Interest",
+                "level": "11",
+                "max": "99"
+              },
+              {
+                "name": "Max Interest",
+                "level": "8",
+                "max": "15"
+              },
+              {
+                "name": "Package After Boss",
+                "level": "1",
+                "max": "1"
+              },
+              {
+                "name": "Recovery Package Amount",
+                "level": "0",
+                "max": "20"
+              },
+              {
+                "name": "Recovery Package Max",
+                "level": "0",
+                "max": "20"
+              },
+              {
+                "name": "Recovery Package Chance",
+                "level": "20",
+                "max": "20"
+              },
+              {
+                "name": "Enemy Attack Level Skip",
+                "level": "20",
+                "max": "20"
+              },
+              {
+                "name": "Enemy Health Level Skip",
+                "level": "20",
+                "max": "20"
+              }
+            ]
+          },
+          {
+            "bucket_id": "ultimate_weapons",
+            "bucket_label": "Ultimate Weapons",
+            "rows": [
+              {
+                "name": "Dissonant Echo - Ultimate Weapons",
+                "level": "2",
+                "max": "20"
+              },
+              {
+                "name": "Missile Despawn Time",
+                "level": "0",
+                "max": "20"
+              },
+              {
+                "name": "Missiles Explosion",
+                "level": "0",
+                "max": "1"
+              },
+              {
+                "name": "Missile Radius",
+                "level": "0",
+                "max": "20"
+              },
+              {
+                "name": "Chrono Field Duration",
+                "level": "30",
+                "max": "30"
+              },
+              {
+                "name": "Chrono Field Damage Reduction",
+                "level": "1",
+                "max": "1"
+              },
+              {
+                "name": "Chrono Field Reduction %",
+                "level": "20",
+                "max": "30"
+              },
+              {
+                "name": "Swamp Radius",
+                "level": "0",
+                "max": "30"
+              },
+              {
+                "name": "Swamp Stun",
+                "level": "0",
+                "max": "1"
+              },
+              {
+                "name": "Swamp Stun Chance",
+                "level": "0",
+                "max": "30"
+              },
+              {
+                "name": "Swamp Stun Time",
+                "level": "0",
+                "max": "30"
+              },
+              {
+                "name": "Golden Tower Bonus",
+                "level": "25",
+                "max": "25"
+              },
+              {
+                "name": "Golden Tower Duration",
+                "level": "20",
+                "max": "20"
+              },
+              {
+                "name": "Chain Lightning Shock",
+                "level": "1",
+                "max": "1"
+              },
+              {
+                "name": "Shock Chance",
+                "level": "18",
+                "max": "30"
+              },
+              {
+                "name": "Shock Multiplier",
+                "level": "14",
+                "max": "14"
+              },
+              {
+                "name": "Death Wave Health",
+                "level": "30",
+                "max": "30"
+              },
+              {
+                "name": "Death Wave Coin Bonus",
+                "level": "20",
+                "max": "20"
+              },
+              {
+                "name": "Inner Mine Blast Radius",
+                "level": "0",
+                "max": "20"
+              },
+              {
+                "name": "Inner Mine Rotation Speed",
+                "level": "0",
+                "max": "20"
+              },
+              {
+                "name": "Chrono Field Range",
+                "level": "20",
+                "max": "20"
+              },
+              {
+                "name": "Missile Amplifier",
+                "level": "0",
+                "max": "25"
+              },
+              {
+                "name": "Missile Barrage",
+                "level": "0",
+                "max": "1"
+              },
+              {
+                "name": "Missile Barrage Quantity",
+                "level": "0",
+                "max": "6"
+              },
+              {
+                "name": "Inner Mine Stun",
+                "level": "0",
+                "max": "1"
+              },
+              {
+                "name": "Black Hole Damage",
+                "level": "10",
+                "max": "10"
+              },
+              {
+                "name": "Extra Black Hole",
+                "level": "1",
+                "max": "1"
+              },
+              {
+                "name": "Black Hole Coin Bonus",
+                "level": "20",
+                "max": "20"
+              },
+              {
+                "name": "Spotlight Coin Bonus",
+                "level": "20",
+                "max": "20"
+              },
+              {
+                "name": "Spotlight Missiles",
+                "level": "1",
+                "max": "18"
+              },
+              {
+                "name": "Black Hole Disable Ranged Enemies",
+                "level": "1",
+                "max": "1"
+              },
+              {
+                "name": "Recharge Missile Barrage",
+                "level": "0",
+                "max": "7"
+              },
+              {
+                "name": "Swamp Rend",
+                "level": "0",
+                "max": "30"
+              },
+              {
+                "name": "Swamp Rend - Additional Enemies",
+                "level": "0",
+                "max": "6"
+              },
+              {
+                "name": "Chain Thunder",
+                "level": "12",
+                "max": "30"
+              },
+              {
+                "name": "Lightning Amplifier - Scatter",
+                "level": "9",
+                "max": "30"
+              },
+              {
+                "name": "Death Wave Cells Bonus",
+                "level": "20",
+                "max": "20"
+              },
+              {
+                "name": "Death Wave Damage Amplifier",
+                "level": "2",
+                "max": "30"
+              },
+              {
+                "name": "Death Wave Armor Stripping",
+                "level": "0",
+                "max": "10"
+              },
+              {
+                "name": "Inner Land Mine - Chrono Jump",
+                "level": "0",
+                "max": "10"
+              }
+            ]
+          },
+          {
+            "bucket_id": "cards",
+            "bucket_label": "Cards",
+            "rows": [
+              {
+                "name": "Second Wind Blast",
+                "level": "4",
+                "max": "4"
+              },
+              {
+                "name": "Double Death Ray",
+                "level": "10",
+                "max": "30"
+              },
+              {
+                "name": "Extra Orb Adjuster",
+                "level": "1",
+                "max": "1"
+              },
+              {
+                "name": "Extra Extra Orbs",
+                "level": "2",
+                "max": "2"
+              },
+              {
+                "name": "Energy Shield Extra Hit",
+                "level": "2",
+                "max": "2"
+              },
+              {
+                "name": "Super Tower Bonus",
+                "level": "16",
+                "max": "30"
+              },
+              {
+                "name": "Recharge Second Wind",
+                "level": "7",
+                "max": "7"
+              },
+              {
+                "name": "Recharge Demon Mode",
+                "level": "4",
+                "max": "7"
+              },
+              {
+                "name": "Recharge Nuke",
+                "level": "2",
+                "max": "7"
+              },
+              {
+                "name": "Damage Mastery",
+                "level": "3",
+                "max": "9"
+              },
+              {
+                "name": "Attack Speed Mastery",
+                "level": "0",
+                "max": "9"
+              },
+              {
+                "name": "Health Mastery",
+                "level": "0",
+                "max": "9"
+              },
+              {
+                "name": "Health Regen Mastery",
+                "level": "0",
+                "max": "9"
+              },
+              {
+                "name": "Range Mastery",
+                "level": "0",
+                "max": "9"
+              },
+              {
+                "name": "Cash Mastery",
+                "level": "1",
+                "max": "9"
+              },
+              {
+                "name": "Coins Mastery",
+                "level": "0",
+                "max": "9"
+              },
+              {
+                "name": "Slow Aura Mastery",
+                "level": "0",
+                "max": "9"
+              },
+              {
+                "name": "Critical Chance Mastery",
+                "level": "0",
+                "max": "9"
+              },
+              {
+                "name": "Enemy Balance Mastery",
+                "level": "0",
+                "max": "9"
+              },
+              {
+                "name": "Extra Defense Mastery",
+                "level": "0",
+                "max": "9"
+              },
+              {
+                "name": "Fortress Mastery",
+                "level": "0",
+                "max": "9"
+              },
+              {
+                "name": "Free Upgrades Mastery",
+                "level": "0",
+                "max": "9"
+              },
+              {
+                "name": "Extra Orb Mastery",
+                "level": "0",
+                "max": "9"
+              },
+              {
+                "name": "Plasma Cannon Mastery",
+                "level": "0",
+                "max": "9"
+              },
+              {
+                "name": "Critical Coin Mastery",
+                "level": "0",
+                "max": "9"
+              },
+              {
+                "name": "Wave Skip Mastery",
+                "level": "0",
+                "max": "9"
+              },
+              {
+                "name": "Intro Sprint Mastery",
+                "level": "4",
+                "max": "9"
+              },
+              {
+                "name": "Land Mine Stun Mastery",
+                "level": "0",
+                "max": "9"
+              },
+              {
+                "name": "Recovery Package Chance Mastery",
+                "level": "4",
+                "max": "9"
+              },
+              {
+                "name": "Death Ray Mastery",
+                "level": "0",
+                "max": "9"
+              },
+              {
+                "name": "Energy Net Mastery",
+                "level": "0",
+                "max": "9"
+              },
+              {
+                "name": "Super Tower Mastery",
+                "level": "0",
+                "max": "9"
+              },
+              {
+                "name": "Second Wind Mastery",
+                "level": "0",
+                "max": "9"
+              },
+              {
+                "name": "Demon Mode Mastery",
+                "level": "0",
+                "max": "9"
+              },
+              {
+                "name": "Energy Shield Mastery",
+                "level": "0",
+                "max": "9"
+              },
+              {
+                "name": "Wave Accelerator Mastery",
+                "level": "0",
+                "max": "9"
+              },
+              {
+                "name": "Berserker Mastery",
+                "level": "4",
+                "max": "9"
+              },
+              {
+                "name": "Ultimate Crit Mastery",
+                "level": "0",
+                "max": "9"
+              },
+              {
+                "name": "Nuke Mastery",
+                "level": "0",
+                "max": "9"
+              },
+              {
+                "name": "Area of Effect Mastery",
+                "level": "0",
+                "max": "9"
+              }
+            ]
+          },
+          {
+            "bucket_id": "perks",
+            "bucket_label": "Perks",
+            "rows": [
+              {
+                "name": "Unlock Perks",
+                "level": "1",
+                "max": "1"
+              },
+              {
+                "name": "Waves Required",
+                "level": "13",
+                "max": "100"
+              },
+              {
+                "name": "Auto Pick Perks",
+                "level": "1",
+                "max": "1"
+              },
+              {
+                "name": "Standard Perks Bonus",
+                "level": "25",
+                "max": "25"
+              },
+              {
+                "name": "Perk Option Quantity",
+                "level": "2",
+                "max": "2"
+              },
+              {
+                "name": "First Perk Choice",
+                "level": "1",
+                "max": "1"
+              },
+              {
+                "name": "Ban Perks",
+                "level": "6",
+                "max": "8"
+              },
+              {
+                "name": "Improve Trade-off Perks",
+                "level": "10",
+                "max": "10"
+              },
+              {
+                "name": "Auto Pick Ranking",
+                "level": "12",
+                "max": "32"
+              }
+            ]
+          },
+          {
+            "bucket_id": "bots",
+            "bucket_label": "Bots",
+            "rows": [
+              {
+                "name": "Flame Bot - Cooldown",
+                "level": "25",
+                "max": "25"
+              },
+              {
+                "name": "Thunder Bot - Cooldown",
+                "level": "0",
+                "max": "25"
+              },
+              {
+                "name": "Gold Bot - Cooldown",
+                "level": "21",
+                "max": "25"
+              },
+              {
+                "name": "Amp Bot - Cooldown",
+                "level": "0",
+                "max": "25"
+              },
+              {
+                "name": "Bot Bot - Cooldown",
+                "level": "10",
+                "max": "25"
+              },
+              {
+                "name": "Flame Bot - Burn Stack",
+                "level": "0",
+                "max": "5"
+              },
+              {
+                "name": "Thunder Bot - Linger Time",
+                "level": "0",
+                "max": "20"
+              },
+              {
+                "name": "Gold Bot - Duration",
+                "level": "12",
+                "max": "20"
+              },
+              {
+                "name": "Amp Bot - Duration",
+                "level": "0",
+                "max": "20"
+              },
+              {
+                "name": "Bot Bot - Duration",
+                "level": "2",
+                "max": "20"
+              }
+            ]
+          },
+          {
+            "bucket_id": "enemies",
+            "bucket_label": "Enemies",
+            "rows": [
+              {
+                "name": "Common Enemy Health",
+                "level": "0",
+                "max": "30"
+              },
+              {
+                "name": "Common Enemy Attack",
+                "level": "0",
+                "max": "30"
+              },
+              {
+                "name": "Fast Enemy Health",
+                "level": "0",
+                "max": "30"
+              },
+              {
+                "name": "Fast Enemy Attack",
+                "level": "0",
+                "max": "30"
+              },
+              {
+                "name": "Fast Enemy Speed",
+                "level": "0",
+                "max": "30"
+              },
+              {
+                "name": "Tank Enemy Health",
+                "level": "0",
+                "max": "30"
+              },
+              {
+                "name": "Tank Enemy Attack",
+                "level": "0",
+                "max": "30"
+              },
+              {
+                "name": "Ranged Enemy Health",
+                "level": "0",
+                "max": "30"
+              },
+              {
+                "name": "Ranged Enemy Attack",
+                "level": "0",
+                "max": "30"
+              },
+              {
+                "name": "Boss Health",
+                "level": "0",
+                "max": "30"
+              },
+              {
+                "name": "Boss Attack",
+                "level": "0",
+                "max": "30"
+              },
+              {
+                "name": "Protector Health",
+                "level": "0",
+                "max": "30"
+              },
+              {
+                "name": "Protector Radius",
+                "level": "0",
+                "max": "30"
+              },
+              {
+                "name": "Protector Damage Reduction",
+                "level": "0",
+                "max": "20"
+              },
+              {
+                "name": "Ray Enemy Attack",
+                "level": "0",
+                "max": "30"
+              },
+              {
+                "name": "Ray Enemy Health",
+                "level": "0",
+                "max": "30"
+              },
+              {
+                "name": "Vampire Enemy Attack",
+                "level": "0",
+                "max": "30"
+              },
+              {
+                "name": "Vampire Enemy Health",
+                "level": "0",
+                "max": "30"
+              },
+              {
+                "name": "Scatter Enemy Attack",
+                "level": "0",
+                "max": "30"
+              },
+              {
+                "name": "Scatter Enemy Health",
+                "level": "0",
+                "max": "30"
+              },
+              {
+                "name": "Ranged Enemy Range",
+                "level": "0",
+                "max": "30"
+              }
+            ]
+          },
+          {
+            "bucket_id": "modules",
+            "bucket_label": "Modules",
+            "rows": [
+              {
+                "name": "Common Drop Chance",
+                "level": "10",
+                "max": "10"
+              },
+              {
+                "name": "Reroll Shards",
+                "level": "100",
+                "max": "100"
+              },
+              {
+                "name": "Daily Mission Shards",
+                "level": "50",
+                "max": "50"
+              },
+              {
+                "name": "Module Shards Cost",
+                "level": "30",
+                "max": "30"
+              },
+              {
+                "name": "Module Coin Cost",
+                "level": "30",
+                "max": "30"
+              },
+              {
+                "name": "Rare Drop Chance",
+                "level": "10",
+                "max": "10"
+              },
+              {
+                "name": "Unmerge Module",
+                "level": "1",
+                "max": "1"
+              },
+              {
+                "name": "Shatter Shards",
+                "level": "5",
+                "max": "5"
+              },
+              {
+                "name": "Cannon Effect Bans",
+                "level": "2",
+                "max": "4"
+              },
+              {
+                "name": "Armor Effect Bans",
+                "level": "2",
+                "max": "4"
+              },
+              {
+                "name": "Generator Effect Bans",
+                "level": "1",
+                "max": "3"
+              },
+              {
+                "name": "Core Effect Bans",
+                "level": "4",
+                "max": "7"
+              },
+              {
+                "name": "Assist Module Substats - Cannon",
+                "level": "0",
+                "max": "30"
+              },
+              {
+                "name": "Assist Module Substats - Armor",
+                "level": "0",
+                "max": "30"
+              },
+              {
+                "name": "Assist Module Substats - Generator",
+                "level": "0",
+                "max": "30"
+              },
+              {
+                "name": "Assist Module Substats - Core",
+                "level": "0",
+                "max": "30"
+              },
+              {
+                "name": "Assist Module Bonus - Cannon",
+                "level": "0",
+                "max": "30"
+              },
+              {
+                "name": "Assist Module Bonus - Armor",
+                "level": "0",
+                "max": "30"
+              },
+              {
+                "name": "Assist Module Bonus - Generator",
+                "level": "0",
+                "max": "30"
+              },
+              {
+                "name": "Assist Module Bonus - Core",
+                "level": "0",
+                "max": "30"
+              }
+            ]
+          },
+          {
+            "bucket_id": "battle_conditions",
+            "bucket_label": "Battle Conditions",
+            "rows": [
+              {
+                "name": "Battle Condition Reduction",
+                "level": "0",
+                "max": "10"
+              },
+              {
+                "name": "Knockback Resistance",
+                "level": "0",
+                "max": "20"
+              },
+              {
+                "name": "Thorns Resistance",
+                "level": "0",
+                "max": "20"
+              },
+              {
+                "name": "Orb Resistance",
+                "level": "0",
+                "max": "20"
+              },
+              {
+                "name": "Plasma Cannon Resistance",
+                "level": "0",
+                "max": "20"
+              },
+              {
+                "name": "Death Ray Resistance",
+                "level": "0",
+                "max": "20"
+              },
+              {
+                "name": "Armored Enemies",
+                "level": "0",
+                "max": "20"
+              },
+              {
+                "name": "Enemy Speed",
+                "level": "0",
+                "max": "20"
+              },
+              {
+                "name": "More Enemies",
+                "level": "0",
+                "max": "20"
+              },
+              {
+                "name": "Enemy Attack Speed",
+                "level": "0",
+                "max": "20"
+              },
+              {
+                "name": "Fast's Ultimate",
+                "level": "0",
+                "max": "10"
+              },
+              {
+                "name": "Ranged Ultimate",
+                "level": "0",
+                "max": "10"
+              },
+              {
+                "name": "Boss's Ultimate",
+                "level": "0",
+                "max": "10"
+              },
+              {
+                "name": "Basic's Ultimate",
+                "level": "0",
+                "max": "10"
+              },
+              {
+                "name": "Tank's Ultimate",
+                "level": "0",
+                "max": "10"
+              },
+              {
+                "name": "Protector's Ultimate",
+                "level": "0",
+                "max": "10"
+              },
+              {
+                "name": "Ultimate Weapon Durations",
+                "level": "0",
+                "max": "10"
+              },
+              {
+                "name": "Death Defy Down",
+                "level": "0",
+                "max": "10"
+              },
+              {
+                "name": "Energy Shields Down",
+                "level": "0",
+                "max": "10"
+              },
+              {
+                "name": "Enemy Level Skip Reduction",
+                "level": "0",
+                "max": "10"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "panel_id": "workshop",
+      "panel_type": "grouped_workshop_table",
+      "title": "Workshop",
+      "payload": {
+        "column_headers": [
+          "Unlock",
+          "Name",
+          "Coin Level",
+          "Coin Value",
+          "Max Level",
+          "Max Value"
+        ],
+        "groups": {
+          "offense": [
+            {
+              "unlock": "true",
+              "name": "Damage",
+              "coin_level": "6000",
+              "coin_value": "9.75B",
+              "max_level": "6000",
+              "max_value": "9.75B"
+            },
+            {
+              "unlock": "true",
+              "name": "Attack Speed",
+              "coin_level": "99",
+              "coin_value": "40.013",
+              "max_level": "99",
+              "max_value": "40.013"
+            },
+            {
+              "unlock": "true",
+              "name": "Critical Chance",
+              "coin_level": "79",
+              "coin_value": "95%",
+              "max_level": "79",
+              "max_value": "95%"
+            },
+            {
+              "unlock": "true",
+              "name": "Critical Factor",
+              "coin_level": "150",
+              "coin_value": "x196.172",
+              "max_level": "150",
+              "max_value": "x196.172"
+            },
+            {
+              "unlock": "true",
+              "name": "Range",
+              "coin_level": "79",
+              "coin_value": "69.5",
+              "max_level": "79",
+              "max_value": "69.5"
+            },
+            {
+              "unlock": "true",
+              "name": "Damage / Meter",
+              "coin_level": "180",
+              "coin_value": "x1.136",
+              "max_level": "200",
+              "max_value": "x1.136"
+            },
+            {
+              "unlock": "true",
+              "name": "Multishot Chance",
+              "coin_level": "99",
+              "coin_value": "50%",
+              "max_level": "99",
+              "max_value": "50%"
+            },
+            {
+              "unlock": "true",
+              "name": "Multishot Targets",
+              "coin_level": "7",
+              "coin_value": "13",
+              "max_level": "7",
+              "max_value": "13"
+            },
+            {
+              "unlock": "true",
+              "name": "Rapid Fire Chance",
+              "coin_level": "85",
+              "coin_value": "34.4%",
+              "max_level": "85",
+              "max_value": "34.4%"
+            },
+            {
+              "unlock": "true",
+              "name": "Rapid Fire Duration",
+              "coin_level": "99",
+              "coin_value": "5.55",
+              "max_level": "99",
+              "max_value": "5.55"
+            },
+            {
+              "unlock": "true",
+              "name": "Bounce Shot Chance",
+              "coin_level": "85",
+              "coin_value": "80.8%",
+              "max_level": "85",
+              "max_value": "80.8%"
+            },
+            {
+              "unlock": "true",
+              "name": "Bounce Shot Targets",
+              "coin_level": "7",
+              "coin_value": "14",
+              "max_level": "7",
+              "max_value": "14"
+            },
+            {
+              "unlock": "true",
+              "name": "Bounce Shot Range",
+              "coin_level": "60",
+              "coin_value": "8",
+              "max_level": "60",
+              "max_value": "8"
+            },
+            {
+              "unlock": "true",
+              "name": "Rend Armor Chance",
+              "coin_level": "120",
+              "coin_value": "36%",
+              "max_level": "299",
+              "max_value": "36%"
+            }
+          ],
+          "defense": [
+            {
+              "unlock": "true",
+              "name": "Health",
+              "coin_level": "6000",
+              "coin_value": "6.43T",
+              "max_level": "6000",
+              "max_value": "6.43T"
+            },
+            {
+              "unlock": "true",
+              "name": "Health Regen",
+              "coin_level": "6000",
+              "coin_value": "58.8T",
+              "max_level": "6000",
+              "max_value": "58.8T"
+            },
+            {
+              "unlock": "true",
+              "name": "Defense %",
+              "coin_level": "99",
+              "coin_value": "98%",
+              "max_level": "99",
+              "max_value": "98%"
+            },
+            {
+              "unlock": "true",
+              "name": "Defense Absolute",
+              "coin_level": "5000",
+              "coin_value": "148M",
+              "max_level": "5000",
+              "max_value": "148M"
+            },
+            {
+              "unlock": "true",
+              "name": "Thorn Damage",
+              "coin_level": "99",
+              "coin_value": "121%",
+              "max_level": "99",
+              "max_value": "121%"
+            },
+            {
+              "unlock": "true",
+              "name": "Lifesteal",
+              "coin_level": "80",
+              "coin_value": "12.266%",
+              "max_level": "80",
+              "max_value": "12.266%"
+            },
+            {
+              "unlock": "true",
+              "name": "Knockback Chance",
+              "coin_level": "80",
+              "coin_value": "81%",
+              "max_level": "80",
+              "max_value": "81%"
+            },
+            {
+              "unlock": "true",
+              "name": "Knockback Force",
+              "coin_level": "40",
+              "coin_value": "4.367",
+              "max_level": "40",
+              "max_value": "4.367"
+            },
+            {
+              "unlock": "true",
+              "name": "Orb Speed",
+              "coin_level": "38",
+              "coin_value": "7.137",
+              "max_level": "38",
+              "max_value": "7.137"
+            },
+            {
+              "unlock": "true",
+              "name": "Orbs",
+              "coin_level": "4",
+              "coin_value": "9",
+              "max_level": "4",
+              "max_value": "9"
+            },
+            {
+              "unlock": "true",
+              "name": "Shockwave Size",
+              "coin_level": "35",
+              "coin_value": "2.35",
+              "max_level": "35",
+              "max_value": "2.35"
+            },
+            {
+              "unlock": "true",
+              "name": "Shockwave Frequency",
+              "coin_level": "40",
+              "coin_value": "14",
+              "max_level": "40",
+              "max_value": "14"
+            },
+            {
+              "unlock": "true",
+              "name": "Land Mine Chance",
+              "coin_level": "50",
+              "coin_value": "30%",
+              "max_level": "50",
+              "max_value": "30%"
+            },
+            {
+              "unlock": "true",
+              "name": "Land Mine Damage",
+              "coin_level": "170",
+              "coin_value": "2.1k",
+              "max_level": "200",
+              "max_value": "2.1k"
+            },
+            {
+              "unlock": "true",
+              "name": "Land Mine Radius",
+              "coin_level": "50",
+              "coin_value": "1.5",
+              "max_level": "50",
+              "max_value": "1.5"
+            },
+            {
+              "unlock": "true",
+              "name": "Death Defy",
+              "coin_level": "75",
+              "coin_value": "30%",
+              "max_level": "75",
+              "max_value": "30%"
+            }
+          ],
+          "utility": [
+            {
+              "unlock": "true",
+              "name": "Super Critical Chance",
+              "coin_level": "100",
+              "coin_value": "35.1%",
+              "max_level": "100",
+              "max_value": "35.1%"
+            },
+            {
+              "unlock": "true",
+              "name": "Super Critical Mult",
+              "coin_level": "110",
+              "coin_value": "x40.314",
+              "max_level": "120",
+              "max_value": "x40.314"
+            },
+            {
+              "unlock": "true",
+              "name": "Rend Armor Mult",
+              "coin_level": "90",
+              "coin_value": "x0.36",
+              "max_level": "299",
+              "max_value": "x0.36"
+            },
+            {
+              "unlock": "true",
+              "name": "Wall Health",
+              "coin_level": "1700",
+              "coin_value": "192M",
+              "max_level": "1800",
+              "max_value": "192M"
+            },
+            {
+              "unlock": "true",
+              "name": "Wall Rebuild",
+              "coin_level": "300",
+              "coin_value": "398",
+              "max_level": "300",
+              "max_value": "398"
+            },
+            {
+              "unlock": "true",
+              "name": "Cash Bonus",
+              "coin_level": "149",
+              "coin_value": "x28.181",
+              "max_level": "149",
+              "max_value": "x28.181"
+            },
+            {
+              "unlock": "true",
+              "name": "Cash / Wave",
+              "coin_level": "149",
+              "coin_value": "9.13k",
+              "max_level": "149",
+              "max_value": "9.13k"
+            },
+            {
+              "unlock": "true",
+              "name": "Coin / Kill Bonus",
+              "coin_level": "149",
+              "coin_value": "x46.425",
+              "max_level": "149",
+              "max_value": "x46.425"
+            },
+            {
+              "unlock": "true",
+              "name": "Coin / Wave",
+              "coin_level": "149",
+              "coin_value": "168",
+              "max_level": "149",
+              "max_value": "168"
+            },
+            {
+              "unlock": "true",
+              "name": "Free Attack Upgrade",
+              "coin_level": "99",
+              "coin_value": "114.755%",
+              "max_level": "99",
+              "max_value": "114.755%"
+            },
+            {
+              "unlock": "true",
+              "name": "Free Defense Upgrade",
+              "coin_level": "99",
+              "coin_value": "113.575%",
+              "max_level": "99",
+              "max_value": "113.575%"
+            },
+            {
+              "unlock": "true",
+              "name": "Free Utility Upgrade",
+              "coin_level": "99",
+              "coin_value": "127.027%",
+              "max_level": "99",
+              "max_value": "127.027%"
+            },
+            {
+              "unlock": "true",
+              "name": "Interest / Wave",
+              "coin_level": "99",
+              "coin_value": "7.16%",
+              "max_level": "99",
+              "max_value": "7.16%"
+            },
+            {
+              "unlock": "true",
+              "name": "Recovery Amount",
+              "coin_level": "300",
+              "coin_value": "145%",
+              "max_level": "300",
+              "max_value": "145%"
+            },
+            {
+              "unlock": "true",
+              "name": "Max Amount",
+              "coin_level": "500",
+              "coin_value": "x16.5",
+              "max_level": "500",
+              "max_value": "x16.5"
+            },
+            {
+              "unlock": "true",
+              "name": "Package Chance",
+              "coin_level": "60",
+              "coin_value": "60.0",
+              "max_level": "60",
+              "max_value": "60.0"
+            },
+            {
+              "unlock": "true",
+              "name": "Enemy Attack Level Skip",
+              "coin_level": "350",
+              "coin_value": "55.692%",
+              "max_level": "699",
+              "max_value": "55.692%"
+            },
+            {
+              "unlock": "true",
+              "name": "Enemy Health Level Skip",
+              "coin_level": "340",
+              "coin_value": "53.352%",
+              "max_level": "699",
+              "max_value": "53.352%"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "panel_id": "workshop_enhancements",
+      "panel_type": "grouped_enhancement_table",
+      "title": "Workshop Enhancements",
+      "payload": {
+        "column_headers": [
+          "Name",
+          "Level",
+          "Max",
+          "Value"
+        ],
+        "groups": {
+          "offense": [
+            {
+              "name": "Damage +",
+              "level": "59",
+              "max": "400",
+              "value": "1.5899999999999999"
+            },
+            {
+              "name": "Damage / Meter +",
+              "level": "20",
+              "max": "400",
+              "value": "1.2"
+            },
+            {
+              "name": "Attack Speed +",
+              "level": "16",
+              "max": "75",
+              "value": "1.16"
+            }
+          ],
+          "defense": [
+            {
+              "name": "Health +",
+              "level": "62",
+              "max": "400",
+              "value": "1.62"
+            },
+            {
+              "name": "Health Regen +",
+              "level": "60",
+              "max": "400",
+              "value": "1.6"
+            },
+            {
+              "name": "Defense Absolute +",
+              "level": "0",
+              "max": "400",
+              "value": "1.0"
+            },
+            {
+              "name": "Land Mine Damage +",
+              "level": "0",
+              "max": "400",
+              "value": "1.0"
+            },
+            {
+              "name": "Orb Size +",
+              "level": "24",
+              "max": "200",
+              "value": "1.24"
+            }
+          ],
+          "utility": [
+            {
+              "name": "Rend Armor Mult +",
+              "level": "20",
+              "max": "400",
+              "value": "1.2"
+            },
+            {
+              "name": "Critical Factor +",
+              "level": "62",
+              "max": "400",
+              "value": "1.62"
+            },
+            {
+              "name": "Super Crit Multi +",
+              "level": "58",
+              "max": "400",
+              "value": "1.58"
+            },
+            {
+              "name": "Wall Health +",
+              "level": "62",
+              "max": "400",
+              "value": "1.62"
+            },
+            {
+              "name": "Cash Bonus +",
+              "level": "30",
+              "max": "400",
+              "value": "1.3"
+            },
+            {
+              "name": "Coin Bonus +",
+              "level": "39",
+              "max": "200",
+              "value": "1.3900000000000001"
+            },
+            {
+              "name": "Cells / Kill Bonus +",
+              "level": "30",
+              "max": "200",
+              "value": "1.3"
+            },
+            {
+              "name": "Free Upgrades +",
+              "level": "18",
+              "max": "100",
+              "value": "1.18"
+            },
+            {
+              "name": "Recovery Package +",
+              "level": "0",
+              "max": "300",
+              "value": "1.0"
+            },
+            {
+              "name": "Enemy Level Skips +",
+              "level": "17",
+              "max": "60",
+              "value": "1.17"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "panel_id": "ultimate_weapons",
+      "panel_type": "uw_track_table",
+      "title": "Ultimate Weapons",
+      "payload": {
+        "column_headers": [
+          "Unlock",
+          "UW",
+          "Track",
+          "Stone Level",
+          "Stone Value",
+          "Lab",
+          "Module",
+          "Perk",
+          "Final",
+          "UW+"
+        ],
+        "rows": [
+          {
+            "unlock": "true",
+            "uw": "Chain Lightning",
+            "track": "Damage",
+            "stone_level": "19",
+            "stone_value": "898.0",
+            "lab": "",
+            "module": "",
+            "perk": "",
+            "final": "",
+            "uw_plus": ""
+          },
+          {
+            "unlock": "true",
+            "uw": "Chain Lightning",
+            "track": "Quantity",
+            "stone_level": "3",
+            "stone_value": "4.0",
+            "lab": "",
+            "module": "",
+            "perk": "",
+            "final": "",
+            "uw_plus": ""
+          },
+          {
+            "unlock": "true",
+            "uw": "Chain Lightning",
+            "track": "Chance",
+            "stone_level": "9",
+            "stone_value": "0.185",
+            "lab": "",
+            "module": "",
+            "perk": "",
+            "final": "",
+            "uw_plus": ""
+          },
+          {
+            "unlock": "false",
+            "uw": "Smart Missiles",
+            "track": "Damage",
+            "stone_level": "0",
+            "stone_value": "10.0",
+            "lab": "",
+            "module": "",
+            "perk": "",
+            "final": "",
+            "uw_plus": ""
+          },
+          {
+            "unlock": "false",
+            "uw": "Smart Missiles",
+            "track": "Quantity",
+            "stone_level": "0",
+            "stone_value": "5.0",
+            "lab": "",
+            "module": "",
+            "perk": "",
+            "final": "",
+            "uw_plus": ""
+          },
+          {
+            "unlock": "false",
+            "uw": "Smart Missiles",
+            "track": "Cooldown",
+            "stone_level": "0",
+            "stone_value": "180.0",
+            "lab": "",
+            "module": "",
+            "perk": "",
+            "final": "",
+            "uw_plus": ""
+          },
+          {
+            "unlock": "true",
+            "uw": "Death Wave",
+            "track": "Damage",
+            "stone_level": "8",
+            "stone_value": "63.0",
+            "lab": "",
+            "module": "",
+            "perk": "",
+            "final": "",
+            "uw_plus": ""
+          },
+          {
+            "unlock": "true",
+            "uw": "Death Wave",
+            "track": "Quantity",
+            "stone_level": "2",
+            "stone_value": "3.0",
+            "lab": "",
+            "module": "",
+            "perk": "",
+            "final": "",
+            "uw_plus": ""
+          },
+          {
+            "unlock": "true",
+            "uw": "Death Wave",
+            "track": "Cooldown",
+            "stone_level": "12",
+            "stone_value": "180.0",
+            "lab": "",
+            "module": "",
+            "perk": "",
+            "final": "",
+            "uw_plus": ""
+          },
+          {
+            "unlock": "true",
+            "uw": "Chrono Field",
+            "track": "Duration",
+            "stone_level": "15",
+            "stone_value": "20.0",
+            "lab": "",
+            "module": "",
+            "perk": "",
+            "final": "55",
+            "uw_plus": ""
+          },
+          {
+            "unlock": "true",
+            "uw": "Chrono Field",
+            "track": "Speed Reduction",
+            "stone_level": "10",
+            "stone_value": "0.7",
+            "lab": "",
+            "module": "",
+            "perk": "",
+            "final": "20%",
+            "uw_plus": ""
+          },
+          {
+            "unlock": "true",
+            "uw": "Chrono Field",
+            "track": "Cooldown",
+            "stone_level": "12",
+            "stone_value": "60.0",
+            "lab": "",
+            "module": "",
+            "perk": "",
+            "final": "60",
+            "uw_plus": ""
+          },
+          {
+            "unlock": "false",
+            "uw": "Inner Land Mines",
+            "track": "Damage",
+            "stone_level": "0",
+            "stone_value": "10.0",
+            "lab": "",
+            "module": "",
+            "perk": "",
+            "final": "",
+            "uw_plus": ""
+          },
+          {
+            "unlock": "false",
+            "uw": "Inner Land Mines",
+            "track": "Quantity",
+            "stone_level": "0",
+            "stone_value": "3.0",
+            "lab": "",
+            "module": "",
+            "perk": "",
+            "final": "",
+            "uw_plus": ""
+          },
+          {
+            "unlock": "false",
+            "uw": "Inner Land Mines",
+            "track": "Cooldown",
+            "stone_level": "0",
+            "stone_value": "200.0",
+            "lab": "",
+            "module": "",
+            "perk": "",
+            "final": "",
+            "uw_plus": ""
+          },
+          {
+            "unlock": "true",
+            "uw": "Golden Tower",
+            "track": "Multiplier",
+            "stone_level": "12",
+            "stone_value": "14.600000000000005",
+            "lab": "",
+            "module": "",
+            "perk": "",
+            "final": "",
+            "uw_plus": ""
+          },
+          {
+            "unlock": "true",
+            "uw": "Golden Tower",
+            "track": "Duration",
+            "stone_level": "7",
+            "stone_value": "22.0",
+            "lab": "",
+            "module": "",
+            "perk": "",
+            "final": "42",
+            "uw_plus": ""
+          },
+          {
+            "unlock": "true",
+            "uw": "Golden Tower",
+            "track": "Cooldown",
+            "stone_level": "12",
+            "stone_value": "180.0",
+            "lab": "",
+            "module": "",
+            "perk": "",
+            "final": "180",
+            "uw_plus": ""
+          },
+          {
+            "unlock": "false",
+            "uw": "Poison Swamp",
+            "track": "Damage",
+            "stone_level": "0",
+            "stone_value": "10.0",
+            "lab": "",
+            "module": "",
+            "perk": "",
+            "final": "",
+            "uw_plus": ""
+          },
+          {
+            "unlock": "false",
+            "uw": "Poison Swamp",
+            "track": "Duration",
+            "stone_level": "0",
+            "stone_value": "30.0",
+            "lab": "",
+            "module": "",
+            "perk": "",
+            "final": "",
+            "uw_plus": ""
+          },
+          {
+            "unlock": "false",
+            "uw": "Poison Swamp",
+            "track": "Cooldown",
+            "stone_level": "0",
+            "stone_value": "125.0",
+            "lab": "",
+            "module": "",
+            "perk": "",
+            "final": "",
+            "uw_plus": ""
+          },
+          {
+            "unlock": "true",
+            "uw": "Black Hole",
+            "track": "Size",
+            "stone_level": "9",
+            "stone_value": "48.0",
+            "lab": "",
+            "module": "",
+            "perk": "",
+            "final": "",
+            "uw_plus": ""
+          },
+          {
+            "unlock": "true",
+            "uw": "Black Hole",
+            "track": "Duration",
+            "stone_level": "17",
+            "stone_value": "32.0",
+            "lab": "",
+            "module": "",
+            "perk": "",
+            "final": "48",
+            "uw_plus": ""
+          },
+          {
+            "unlock": "true",
+            "uw": "Black Hole",
+            "track": "Cooldown",
+            "stone_level": "15",
+            "stone_value": "50.0",
+            "lab": "",
+            "module": "",
+            "perk": "",
+            "final": "46",
+            "uw_plus": ""
+          },
+          {
+            "unlock": "true",
+            "uw": "Spotlight",
+            "track": "Multiplier",
+            "stone_level": "9",
+            "stone_value": "20.599999999999998",
+            "lab": "",
+            "module": "",
+            "perk": "",
+            "final": "",
+            "uw_plus": ""
+          },
+          {
+            "unlock": "true",
+            "uw": "Spotlight",
+            "track": "Angle",
+            "stone_level": "9",
+            "stone_value": "39.0",
+            "lab": "",
+            "module": "",
+            "perk": "",
+            "final": "",
+            "uw_plus": ""
+          },
+          {
+            "unlock": "true",
+            "uw": "Spotlight",
+            "track": "Quantity",
+            "stone_level": "2",
+            "stone_value": "3.0",
+            "lab": "",
+            "module": "",
+            "perk": "",
+            "final": "",
+            "uw_plus": ""
+          }
+        ]
+      }
+    },
+    {
+      "panel_id": "cards",
+      "panel_type": "cards_inventory_and_preset",
+      "title": "Cards",
+      "payload": {
+        "inventory_rows": [
+          {
+            "name": "Damage",
+            "level": 7,
+            "mastery": 3
+          },
+          {
+            "name": "Attack Speed",
+            "level": 7,
+            "mastery": ""
+          },
+          {
+            "name": "Health",
+            "level": 7,
+            "mastery": ""
+          },
+          {
+            "name": "Health Regen",
+            "level": 7,
+            "mastery": ""
+          },
+          {
+            "name": "Range",
+            "level": 7,
+            "mastery": ""
+          },
+          {
+            "name": "Cash",
+            "level": 7,
+            "mastery": 1
+          },
+          {
+            "name": "Coins",
+            "level": 7,
+            "mastery": ""
+          },
+          {
+            "name": "Slow Aura",
+            "level": 7,
+            "mastery": ""
+          },
+          {
+            "name": "Critical Chance",
+            "level": 7,
+            "mastery": ""
+          },
+          {
+            "name": "Enemy Balance",
+            "level": 7,
+            "mastery": ""
+          },
+          {
+            "name": "Extra Defense",
+            "level": 7,
+            "mastery": ""
+          },
+          {
+            "name": "Fortress",
+            "level": 7,
+            "mastery": ""
+          },
+          {
+            "name": "Free Upgrades",
+            "level": 7,
+            "mastery": ""
+          },
+          {
+            "name": "Extra Orb",
+            "level": 7,
+            "mastery": ""
+          },
+          {
+            "name": "Plasma Cannon",
+            "level": 7,
+            "mastery": ""
+          },
+          {
+            "name": "Critical Coin",
+            "level": 7,
+            "mastery": ""
+          },
+          {
+            "name": "Wave Skip",
+            "level": 7,
+            "mastery": ""
+          },
+          {
+            "name": "Intro Sprint",
+            "level": 7,
+            "mastery": 4
+          },
+          {
+            "name": "Land Mine Stun",
+            "level": 7,
+            "mastery": ""
+          },
+          {
+            "name": "Recovery Package Chance",
+            "level": 7,
+            "mastery": 4
+          },
+          {
+            "name": "Death Ray",
+            "level": 7,
+            "mastery": ""
+          },
+          {
+            "name": "Energy Net",
+            "level": 7,
+            "mastery": ""
+          },
+          {
+            "name": "Super Tower",
+            "level": 7,
+            "mastery": ""
+          },
+          {
+            "name": "Second Wind",
+            "level": 7,
+            "mastery": ""
+          },
+          {
+            "name": "Demon Mode",
+            "level": 7,
+            "mastery": ""
+          },
+          {
+            "name": "Energy Shield",
+            "level": 7,
+            "mastery": ""
+          },
+          {
+            "name": "Wave Accelerator",
+            "level": 7,
+            "mastery": ""
+          },
+          {
+            "name": "Berserker",
+            "level": 7,
+            "mastery": 4
+          },
+          {
+            "name": "Ultimate Crit",
+            "level": 7,
+            "mastery": ""
+          },
+          {
+            "name": "Nuke",
+            "level": 7,
+            "mastery": ""
+          },
+          {
+            "name": "Area of Effect",
+            "level": "",
+            "mastery": ""
+          }
+        ],
+        "preset_rows": [
+          {
+            "name": "Area of Effect",
+            "selected": ""
+          },
+          {
+            "name": "Attack Speed",
+            "selected": "Yes"
+          },
+          {
+            "name": "Berserker",
+            "selected": ""
+          },
+          {
+            "name": "Cash",
+            "selected": "Yes"
+          },
+          {
+            "name": "Coins",
+            "selected": "Yes"
+          },
+          {
+            "name": "Critical Chance",
+            "selected": ""
+          },
+          {
+            "name": "Critical Coin",
+            "selected": "Yes"
+          },
+          {
+            "name": "Damage",
+            "selected": ""
+          },
+          {
+            "name": "Death Ray",
+            "selected": ""
+          },
+          {
+            "name": "Demon Mode",
+            "selected": ""
+          },
+          {
+            "name": "Enemy Balance",
+            "selected": "Yes"
+          },
+          {
+            "name": "Energy Net",
+            "selected": ""
+          },
+          {
+            "name": "Energy Shield",
+            "selected": "Yes"
+          },
+          {
+            "name": "Extra Defense",
+            "selected": "Yes"
+          },
+          {
+            "name": "Extra Orb",
+            "selected": "Yes"
+          },
+          {
+            "name": "Fortress",
+            "selected": ""
+          },
+          {
+            "name": "Free Upgrades",
+            "selected": "Yes"
+          },
+          {
+            "name": "Health",
+            "selected": "Yes"
+          },
+          {
+            "name": "Health Regen",
+            "selected": "Yes"
+          },
+          {
+            "name": "Intro Sprint",
+            "selected": "Yes"
+          },
+          {
+            "name": "Land Mine Stun",
+            "selected": "Yes"
+          },
+          {
+            "name": "Nuke",
+            "selected": ""
+          },
+          {
+            "name": "Plasma Cannon",
+            "selected": "Yes"
+          },
+          {
+            "name": "Range",
+            "selected": ""
+          },
+          {
+            "name": "Recovery Package Chance",
+            "selected": "Yes"
+          },
+          {
+            "name": "Second Wind",
+            "selected": "Yes"
+          },
+          {
+            "name": "Slow Aura",
+            "selected": ""
+          },
+          {
+            "name": "Super Tower",
+            "selected": ""
+          },
+          {
+            "name": "Ultimate Crit",
+            "selected": ""
+          },
+          {
+            "name": "Wave Accelerator",
+            "selected": "Yes"
+          },
+          {
+            "name": "Wave Skip",
+            "selected": "Yes"
+          }
+        ],
+        "preset_rows_by_preset": {
+          "Farming": [
+            {
+              "name": "Area of Effect",
+              "selected": ""
+            },
+            {
+              "name": "Attack Speed",
+              "selected": "Yes"
+            },
+            {
+              "name": "Berserker",
+              "selected": ""
+            },
+            {
+              "name": "Cash",
+              "selected": "Yes"
+            },
+            {
+              "name": "Coins",
+              "selected": "Yes"
+            },
+            {
+              "name": "Critical Chance",
+              "selected": ""
+            },
+            {
+              "name": "Critical Coin",
+              "selected": "Yes"
+            },
+            {
+              "name": "Damage",
+              "selected": ""
+            },
+            {
+              "name": "Death Ray",
+              "selected": ""
+            },
+            {
+              "name": "Demon Mode",
+              "selected": ""
+            },
+            {
+              "name": "Enemy Balance",
+              "selected": "Yes"
+            },
+            {
+              "name": "Energy Net",
+              "selected": ""
+            },
+            {
+              "name": "Energy Shield",
+              "selected": "Yes"
+            },
+            {
+              "name": "Extra Defense",
+              "selected": "Yes"
+            },
+            {
+              "name": "Extra Orb",
+              "selected": "Yes"
+            },
+            {
+              "name": "Fortress",
+              "selected": ""
+            },
+            {
+              "name": "Free Upgrades",
+              "selected": "Yes"
+            },
+            {
+              "name": "Health",
+              "selected": "Yes"
+            },
+            {
+              "name": "Health Regen",
+              "selected": "Yes"
+            },
+            {
+              "name": "Intro Sprint",
+              "selected": "Yes"
+            },
+            {
+              "name": "Land Mine Stun",
+              "selected": "Yes"
+            },
+            {
+              "name": "Nuke",
+              "selected": ""
+            },
+            {
+              "name": "Plasma Cannon",
+              "selected": "Yes"
+            },
+            {
+              "name": "Range",
+              "selected": ""
+            },
+            {
+              "name": "Recovery Package Chance",
+              "selected": "Yes"
+            },
+            {
+              "name": "Second Wind",
+              "selected": "Yes"
+            },
+            {
+              "name": "Slow Aura",
+              "selected": ""
+            },
+            {
+              "name": "Super Tower",
+              "selected": ""
+            },
+            {
+              "name": "Ultimate Crit",
+              "selected": ""
+            },
+            {
+              "name": "Wave Accelerator",
+              "selected": "Yes"
+            },
+            {
+              "name": "Wave Skip",
+              "selected": "Yes"
+            }
+          ],
+          "Tourney": [
+            {
+              "name": "Area of Effect",
+              "selected": ""
+            },
+            {
+              "name": "Attack Speed",
+              "selected": "Yes"
+            },
+            {
+              "name": "Berserker",
+              "selected": "Yes"
+            },
+            {
+              "name": "Cash",
+              "selected": ""
+            },
+            {
+              "name": "Coins",
+              "selected": ""
+            },
+            {
+              "name": "Critical Chance",
+              "selected": "Yes"
+            },
+            {
+              "name": "Critical Coin",
+              "selected": ""
+            },
+            {
+              "name": "Damage",
+              "selected": "Yes"
+            },
+            {
+              "name": "Death Ray",
+              "selected": ""
+            },
+            {
+              "name": "Demon Mode",
+              "selected": ""
+            },
+            {
+              "name": "Enemy Balance",
+              "selected": ""
+            },
+            {
+              "name": "Energy Net",
+              "selected": "Yes"
+            },
+            {
+              "name": "Energy Shield",
+              "selected": "Yes"
+            },
+            {
+              "name": "Extra Defense",
+              "selected": "Yes"
+            },
+            {
+              "name": "Extra Orb",
+              "selected": "Yes"
+            },
+            {
+              "name": "Fortress",
+              "selected": ""
+            },
+            {
+              "name": "Free Upgrades",
+              "selected": ""
+            },
+            {
+              "name": "Health",
+              "selected": "Yes"
+            },
+            {
+              "name": "Health Regen",
+              "selected": "Yes"
+            },
+            {
+              "name": "Intro Sprint",
+              "selected": ""
+            },
+            {
+              "name": "Land Mine Stun",
+              "selected": "Yes"
+            },
+            {
+              "name": "Nuke",
+              "selected": ""
+            },
+            {
+              "name": "Plasma Cannon",
+              "selected": "Yes"
+            },
+            {
+              "name": "Range",
+              "selected": ""
+            },
+            {
+              "name": "Recovery Package Chance",
+              "selected": "Yes"
+            },
+            {
+              "name": "Second Wind",
+              "selected": "Yes"
+            },
+            {
+              "name": "Slow Aura",
+              "selected": "Yes"
+            },
+            {
+              "name": "Super Tower",
+              "selected": ""
+            },
+            {
+              "name": "Ultimate Crit",
+              "selected": "Yes"
+            },
+            {
+              "name": "Wave Accelerator",
+              "selected": "Yes"
+            },
+            {
+              "name": "Wave Skip",
+              "selected": "Yes"
+            }
+          ],
+          "Milestone": [
+            {
+              "name": "Area of Effect",
+              "selected": ""
+            },
+            {
+              "name": "Attack Speed",
+              "selected": ""
+            },
+            {
+              "name": "Berserker",
+              "selected": ""
+            },
+            {
+              "name": "Cash",
+              "selected": ""
+            },
+            {
+              "name": "Coins",
+              "selected": ""
+            },
+            {
+              "name": "Critical Chance",
+              "selected": ""
+            },
+            {
+              "name": "Critical Coin",
+              "selected": ""
+            },
+            {
+              "name": "Damage",
+              "selected": ""
+            },
+            {
+              "name": "Death Ray",
+              "selected": ""
+            },
+            {
+              "name": "Demon Mode",
+              "selected": ""
+            },
+            {
+              "name": "Enemy Balance",
+              "selected": ""
+            },
+            {
+              "name": "Energy Net",
+              "selected": ""
+            },
+            {
+              "name": "Energy Shield",
+              "selected": ""
+            },
+            {
+              "name": "Extra Defense",
+              "selected": ""
+            },
+            {
+              "name": "Extra Orb",
+              "selected": ""
+            },
+            {
+              "name": "Fortress",
+              "selected": ""
+            },
+            {
+              "name": "Free Upgrades",
+              "selected": ""
+            },
+            {
+              "name": "Health",
+              "selected": ""
+            },
+            {
+              "name": "Health Regen",
+              "selected": ""
+            },
+            {
+              "name": "Intro Sprint",
+              "selected": ""
+            },
+            {
+              "name": "Land Mine Stun",
+              "selected": ""
+            },
+            {
+              "name": "Nuke",
+              "selected": ""
+            },
+            {
+              "name": "Plasma Cannon",
+              "selected": ""
+            },
+            {
+              "name": "Range",
+              "selected": ""
+            },
+            {
+              "name": "Recovery Package Chance",
+              "selected": ""
+            },
+            {
+              "name": "Second Wind",
+              "selected": ""
+            },
+            {
+              "name": "Slow Aura",
+              "selected": ""
+            },
+            {
+              "name": "Super Tower",
+              "selected": ""
+            },
+            {
+              "name": "Ultimate Crit",
+              "selected": ""
+            },
+            {
+              "name": "Wave Accelerator",
+              "selected": ""
+            },
+            {
+              "name": "Wave Skip",
+              "selected": ""
+            }
+          ],
+          "Preset 4": [
+            {
+              "name": "Area of Effect",
+              "selected": ""
+            },
+            {
+              "name": "Attack Speed",
+              "selected": ""
+            },
+            {
+              "name": "Berserker",
+              "selected": ""
+            },
+            {
+              "name": "Cash",
+              "selected": ""
+            },
+            {
+              "name": "Coins",
+              "selected": ""
+            },
+            {
+              "name": "Critical Chance",
+              "selected": ""
+            },
+            {
+              "name": "Critical Coin",
+              "selected": ""
+            },
+            {
+              "name": "Damage",
+              "selected": ""
+            },
+            {
+              "name": "Death Ray",
+              "selected": ""
+            },
+            {
+              "name": "Demon Mode",
+              "selected": ""
+            },
+            {
+              "name": "Enemy Balance",
+              "selected": ""
+            },
+            {
+              "name": "Energy Net",
+              "selected": ""
+            },
+            {
+              "name": "Energy Shield",
+              "selected": ""
+            },
+            {
+              "name": "Extra Defense",
+              "selected": ""
+            },
+            {
+              "name": "Extra Orb",
+              "selected": ""
+            },
+            {
+              "name": "Fortress",
+              "selected": ""
+            },
+            {
+              "name": "Free Upgrades",
+              "selected": ""
+            },
+            {
+              "name": "Health",
+              "selected": ""
+            },
+            {
+              "name": "Health Regen",
+              "selected": ""
+            },
+            {
+              "name": "Intro Sprint",
+              "selected": ""
+            },
+            {
+              "name": "Land Mine Stun",
+              "selected": ""
+            },
+            {
+              "name": "Nuke",
+              "selected": ""
+            },
+            {
+              "name": "Plasma Cannon",
+              "selected": ""
+            },
+            {
+              "name": "Range",
+              "selected": ""
+            },
+            {
+              "name": "Recovery Package Chance",
+              "selected": ""
+            },
+            {
+              "name": "Second Wind",
+              "selected": ""
+            },
+            {
+              "name": "Slow Aura",
+              "selected": ""
+            },
+            {
+              "name": "Super Tower",
+              "selected": ""
+            },
+            {
+              "name": "Ultimate Crit",
+              "selected": ""
+            },
+            {
+              "name": "Wave Accelerator",
+              "selected": ""
+            },
+            {
+              "name": "Wave Skip",
+              "selected": ""
+            }
+          ],
+          "Preset 5": [
+            {
+              "name": "Area of Effect",
+              "selected": ""
+            },
+            {
+              "name": "Attack Speed",
+              "selected": ""
+            },
+            {
+              "name": "Berserker",
+              "selected": ""
+            },
+            {
+              "name": "Cash",
+              "selected": ""
+            },
+            {
+              "name": "Coins",
+              "selected": ""
+            },
+            {
+              "name": "Critical Chance",
+              "selected": ""
+            },
+            {
+              "name": "Critical Coin",
+              "selected": ""
+            },
+            {
+              "name": "Damage",
+              "selected": ""
+            },
+            {
+              "name": "Death Ray",
+              "selected": ""
+            },
+            {
+              "name": "Demon Mode",
+              "selected": ""
+            },
+            {
+              "name": "Enemy Balance",
+              "selected": ""
+            },
+            {
+              "name": "Energy Net",
+              "selected": ""
+            },
+            {
+              "name": "Energy Shield",
+              "selected": ""
+            },
+            {
+              "name": "Extra Defense",
+              "selected": ""
+            },
+            {
+              "name": "Extra Orb",
+              "selected": ""
+            },
+            {
+              "name": "Fortress",
+              "selected": ""
+            },
+            {
+              "name": "Free Upgrades",
+              "selected": ""
+            },
+            {
+              "name": "Health",
+              "selected": ""
+            },
+            {
+              "name": "Health Regen",
+              "selected": ""
+            },
+            {
+              "name": "Intro Sprint",
+              "selected": ""
+            },
+            {
+              "name": "Land Mine Stun",
+              "selected": ""
+            },
+            {
+              "name": "Nuke",
+              "selected": ""
+            },
+            {
+              "name": "Plasma Cannon",
+              "selected": ""
+            },
+            {
+              "name": "Range",
+              "selected": ""
+            },
+            {
+              "name": "Recovery Package Chance",
+              "selected": ""
+            },
+            {
+              "name": "Second Wind",
+              "selected": ""
+            },
+            {
+              "name": "Slow Aura",
+              "selected": ""
+            },
+            {
+              "name": "Super Tower",
+              "selected": ""
+            },
+            {
+              "name": "Ultimate Crit",
+              "selected": ""
+            },
+            {
+              "name": "Wave Accelerator",
+              "selected": ""
+            },
+            {
+              "name": "Wave Skip",
+              "selected": ""
+            }
+          ]
+        },
+        "slot_count": 18
+      }
+    },
+    {
+      "panel_id": "bots",
+      "panel_type": "track_table",
+      "title": "Bots",
+      "payload": {
+        "entity_key": "bot",
+        "column_headers": [
+          "Unlock",
+          "Bot",
+          "Track",
+          "Level",
+          "Value"
+        ],
+        "rows": [
+          {
+            "unlock": "",
+            "bot": "Flame Bot",
+            "track": "Damage R.",
+            "level": "5",
+            "value": "0.3500000000000001"
+          },
+          {
+            "unlock": "",
+            "bot": "Flame Bot",
+            "track": "Cooldown",
+            "level": "8",
+            "value": "51.0"
+          },
+          {
+            "unlock": "",
+            "bot": "Flame Bot",
+            "track": "Damage",
+            "level": "0",
+            "value": "50.0"
+          },
+          {
+            "unlock": "",
+            "bot": "Flame Bot",
+            "track": "Range",
+            "level": "4",
+            "value": "46.0"
+          },
+          {
+            "unlock": "",
+            "bot": "Bot +",
+            "track": "Wildfire",
+            "level": "",
+            "value": ""
+          },
+          {
+            "unlock": "",
+            "bot": "Bot +",
+            "track": "Titan Shock",
+            "level": "",
+            "value": ""
+          },
+          {
+            "unlock": "",
+            "bot": "Bot +",
+            "track": "Bonus Cell",
+            "level": "",
+            "value": ""
+          },
+          {
+            "unlock": "",
+            "bot": "Bot +",
+            "track": "Echoing shot",
+            "level": "0",
+            "value": "3.0"
+          },
+          {
+            "unlock": "",
+            "bot": "Bot +",
+            "track": "Maximum Power",
+            "level": "0",
+            "value": "1.25"
+          },
+          {
+            "unlock": "",
+            "bot": "Thunder Bot",
+            "track": "Duration",
+            "level": "0",
+            "value": "5.0"
+          },
+          {
+            "unlock": "",
+            "bot": "Thunder Bot",
+            "track": "Cooldown",
+            "level": "0",
+            "value": "120.0"
+          },
+          {
+            "unlock": "",
+            "bot": "Thunder Bot",
+            "track": "Linger",
+            "level": "0",
+            "value": "0.2"
+          },
+          {
+            "unlock": "",
+            "bot": "Thunder Bot",
+            "track": "Range",
+            "level": "0",
+            "value": "25.0"
+          },
+          {
+            "unlock": "",
+            "bot": "Golden Bot",
+            "track": "Duration",
+            "level": "13",
+            "value": "26.5"
+          },
+          {
+            "unlock": "",
+            "bot": "Golden Bot",
+            "track": "Cooldown",
+            "level": "3",
+            "value": "111.0"
+          },
+          {
+            "unlock": "",
+            "bot": "Golden Bot",
+            "track": "Bonus",
+            "level": "23",
+            "value": "6.600000000000004"
+          },
+          {
+            "unlock": "",
+            "bot": "Golden Bot",
+            "track": "Range",
+            "level": "16",
+            "value": "52.0"
+          },
+          {
+            "unlock": "",
+            "bot": "Amplify Bot",
+            "track": "Duration",
+            "level": "0",
+            "value": "20.0"
+          },
+          {
+            "unlock": "",
+            "bot": "Amplify Bot",
+            "track": "Cooldown",
+            "level": "0",
+            "value": "120.0"
+          },
+          {
+            "unlock": "",
+            "bot": "Amplify Bot",
+            "track": "Bonus",
+            "level": "0",
+            "value": "3.5"
+          },
+          {
+            "unlock": "",
+            "bot": "Amplify Bot",
+            "track": "Range",
+            "level": "0",
+            "value": "25.0"
+          },
+          {
+            "unlock": "",
+            "bot": "Bot Bot",
+            "track": "Duration",
+            "level": "0",
+            "value": "20.0"
+          },
+          {
+            "unlock": "",
+            "bot": "Bot Bot",
+            "track": "Cooldown",
+            "level": "0",
+            "value": "120.0"
+          },
+          {
+            "unlock": "",
+            "bot": "Bot Bot",
+            "track": "Bonus",
+            "level": "0",
+            "value": "1.05"
+          },
+          {
+            "unlock": "",
+            "bot": "Bot Bot",
+            "track": "Range",
+            "level": "0",
+            "value": "20.0"
+          }
+        ]
+      }
+    },
+    {
+      "panel_id": "relics",
+      "panel_type": "simple_bonus_table",
+      "title": "Relics",
+      "payload": {
+        "column_headers": [
+          "Name",
+          "Bonus"
+        ],
+        "rows": [
+          {
+            "name": "Relics",
+            "bonus": "Owned"
+          },
+          {
+            "name": "Event Relics",
+            "bonus": "123"
+          },
+          {
+            "name": "Guild Relics",
+            "bonus": "15"
+          },
+          {
+            "name": "Other Relics",
+            "bonus": "23"
+          },
+          {
+            "name": "Total Relics",
+            "bonus": "161"
+          },
+          {
+            "name": "Total Bonuses",
+            "bonus": "Active"
+          },
+          {
+            "name": "Misc.",
+            "bonus": ""
+          },
+          {
+            "name": "Lab Speed",
+            "bonus": "0.395"
+          },
+          {
+            "name": "Bot Range",
+            "bonus": "9"
+          },
+          {
+            "name": "Damage?",
+            "bonus": ""
+          },
+          {
+            "name": "Damage",
+            "bonus": "0.59"
+          },
+          {
+            "name": "Ultimate Damage",
+            "bonus": "0.22000000000000003"
+          },
+          {
+            "name": "Attack Speed",
+            "bonus": "0.07"
+          },
+          {
+            "name": "Crit Chance",
+            "bonus": "0.07"
+          },
+          {
+            "name": "Crit Factor",
+            "bonus": "0.5"
+          },
+          {
+            "name": "Damage / Meter",
+            "bonus": "0.44999999999999996"
+          },
+          {
+            "name": "Super Critical Chance",
+            "bonus": "0.04"
+          },
+          {
+            "name": "Super Critical Mult",
+            "bonus": "0.05"
+          },
+          {
+            "name": "Rend Armor Mult",
+            "bonus": "0"
+          },
+          {
+            "name": "Defense",
+            "bonus": ""
+          },
+          {
+            "name": "Health",
+            "bonus": "0.5299999999999999"
+          },
+          {
+            "name": "Health Regen",
+            "bonus": "0.25"
+          },
+          {
+            "name": "Defense %",
+            "bonus": "0.04"
+          },
+          {
+            "name": "Defense Absolute",
+            "bonus": "0.30000000000000004"
+          },
+          {
+            "name": "Thorns",
+            "bonus": "0.11000000000000001"
+          },
+          {
+            "name": "Knockback Force",
+            "bonus": "0.26"
+          },
+          {
+            "name": "Orb Speed",
+            "bonus": "0.17"
+          },
+          {
+            "name": "Wall Rebuild",
+            "bonus": "2"
+          },
+          {
+            "name": "Utility",
+            "bonus": ""
+          },
+          {
+            "name": "Cash",
+            "bonus": "0.11"
+          },
+          {
+            "name": "Coins",
+            "bonus": "0.48"
+          },
+          {
+            "name": "Free Attack Upgrade",
+            "bonus": "0.060000000000000005"
+          },
+          {
+            "name": "Free Defense Upgrade",
+            "bonus": "0.05"
+          },
+          {
+            "name": "Free Utility Upgrade",
+            "bonus": "0.06"
+          },
+          {
+            "name": "Recovery Amount",
+            "bonus": "0.11"
+          },
+          {
+            "name": "Enemy Attack Level Skip",
+            "bonus": "0.02"
+          },
+          {
+            "name": "Enemy Health Level Skip",
+            "bonus": "0.02"
+          }
+        ]
+      }
+    },
+    {
+      "panel_id": "modules",
+      "panel_type": "module_slot_stack",
+      "title": "Modules",
+      "payload": {
+        "selected_preset": "Farming",
+        "slot_order": [
+          "cannon",
+          "armor",
+          "generator",
+          "core"
+        ],
+        "summary_rows": [
+          {
+            "group": "",
+            "label": "Max Level",
+            "values": {
+              "cannon": "220",
+              "armor": "200",
+              "generator": "240",
+              "core": "260"
+            }
+          },
+          {
+            "group": "",
+            "label": "Assist %",
+            "values": {
+              "cannon": "\u2014",
+              "armor": "1%",
+              "generator": "10%",
+              "core": "15%"
+            }
+          },
+          {
+            "group": "Primary",
+            "label": "Module",
+            "values": {
+              "cannon": "Amplifying Strike",
+              "armor": "Sharp Fortitude",
+              "generator": "Singularity Harness",
+              "core": "Primordial Collapse"
+            }
+          },
+          {
+            "group": "Primary",
+            "label": "Rarity",
+            "values": {
+              "cannon": "Ancestral 1*",
+              "armor": "Ancestral",
+              "generator": "Ancestral 2*",
+              "core": "Ancestral 3*"
+            }
+          },
+          {
+            "group": "Assist",
+            "label": "Module",
+            "values": {
+              "cannon": "\u2014",
+              "armor": "Orbital Augment",
+              "generator": "Black Hole Digestor",
+              "core": "Dimension Core"
+            }
+          },
+          {
+            "group": "Assist",
+            "label": "Rarity",
+            "values": {
+              "cannon": "\u2014",
+              "armor": "Ancestral 2*",
+              "generator": "Mythic+",
+              "core": "Ancestral"
+            }
+          },
+          {
+            "group": "Current",
+            "label": "Multiplier",
+            "values": {
+              "cannon": "x11.65",
+              "armor": "x8.44",
+              "generator": "x1.73",
+              "core": "x13.38"
+            }
+          },
+          {
+            "group": "Current",
+            "label": "Effect",
+            "values": {
+              "cannon": "Damage",
+              "armor": "Health",
+              "generator": "Coins / Kill Bonus",
+              "core": "Ultimate Weapon Damage"
+            }
+          }
+        ],
+        "slots": {
+          "cannon": {
+            "primary": {
+              "module_name": "Amplifying Strike",
+              "slot_type": "cannon",
+              "role": "primary",
+              "rarity_text": "Ancestral 1*",
+              "rarity_key": "ancestral",
+              "stars": 1,
+              "displayed_level": 175,
+              "displayed_level_cap": 220,
+              "level_text": "Lv. 175 / 220",
+              "role_bar_label_text": "Primary",
+              "role_bar_detail_text": "",
+              "main_value_text": "x11.65",
+              "main_label_text": "Damage",
+              "unique_value_text": "26s",
+              "unique_measure": "seconds",
+              "unique_text": {
+                "prefix_text": "Killing a boss or elite grants 5x tower damage for ",
+                "value_text": "26s",
+                "suffix_text": " seconds; a new valid kill refreshes timer rather than stacking multiplier."
+              },
+              "effect_slots": [
+                {
+                  "slot_index": 1,
+                  "state": "populated",
+                  "unlock_level": 1,
+                  "rarity_key": "ancestral",
+                  "rarity_text": "Ancestral",
+                  "value_text": "+7x",
+                  "label_text": "Super Crit Multi"
+                },
+                {
+                  "slot_index": 2,
+                  "state": "populated",
+                  "unlock_level": 1,
+                  "rarity_key": "ancestral",
+                  "rarity_text": "Ancestral",
+                  "value_text": "+12%",
+                  "label_text": "Bounce Shot Chance"
+                },
+                {
+                  "slot_index": 3,
+                  "state": "populated",
+                  "unlock_level": 41,
+                  "rarity_key": "ancestral",
+                  "rarity_text": "Ancestral",
+                  "value_text": "+4",
+                  "label_text": "Multishot Targets"
+                },
+                {
+                  "slot_index": 4,
+                  "state": "populated",
+                  "unlock_level": 101,
+                  "rarity_key": "ancestral",
+                  "rarity_text": "Ancestral",
+                  "value_text": "+15x",
+                  "label_text": "Crit Factor"
+                },
+                {
+                  "slot_index": 5,
+                  "state": "populated",
+                  "unlock_level": 141,
+                  "rarity_key": "ancestral",
+                  "rarity_text": "Ancestral",
+                  "value_text": "+10%",
+                  "label_text": "Super Crit Chance"
+                },
+                {
+                  "slot_index": 6,
+                  "state": "populated",
+                  "unlock_level": 161,
+                  "rarity_key": null,
+                  "rarity_text": null,
+                  "value_text": "+8%",
+                  "label_text": "Critical Chance"
+                },
+                {
+                  "slot_index": 7,
+                  "state": "locked",
+                  "unlock_level": 201,
+                  "rarity_key": null,
+                  "rarity_text": null,
+                  "value_text": "Locked",
+                  "label_text": "Unlocks at Lv. 201"
+                },
+                {
+                  "slot_index": 8,
+                  "state": "locked",
+                  "unlock_level": 241,
+                  "rarity_key": null,
+                  "rarity_text": null,
+                  "value_text": "Locked",
+                  "label_text": "Unlocks at Lv. 241"
+                }
+              ]
+            },
+            "assist": null
+          },
+          "armor": {
+            "primary": {
+              "module_name": "Sharp Fortitude",
+              "slot_type": "armor",
+              "role": "primary",
+              "rarity_text": "Ancestral",
+              "rarity_key": "ancestral",
+              "stars": 0,
+              "displayed_level": 161,
+              "displayed_level_cap": 200,
+              "level_text": "Lv. 161 / 200",
+              "role_bar_label_text": "Primary",
+              "role_bar_detail_text": "",
+              "main_value_text": "x8.44",
+              "main_label_text": "Health",
+              "unique_value_text": "x2.5",
+              "unique_measure": "multiplier",
+              "unique_text": {
+                "prefix_text": "Multiply wall HP and wall regen by ",
+                "value_text": "x2.5",
+                "suffix_text": " factor, and for repeated wall-thorns hits on same enemy add +1% wall-thorns damage taken per subsequent hit."
+              },
+              "effect_slots": [
+                {
+                  "slot_index": 1,
+                  "state": "populated",
+                  "unlock_level": 1,
+                  "rarity_key": "ancestral",
+                  "rarity_text": "Ancestral",
+                  "value_text": "+400%",
+                  "label_text": "Health Regen"
+                },
+                {
+                  "slot_index": 2,
+                  "state": "populated",
+                  "unlock_level": 1,
+                  "rarity_key": "mythic",
+                  "rarity_text": "Mythic",
+                  "value_text": "+0.9",
+                  "label_text": "Knockback Force"
+                },
+                {
+                  "slot_index": 3,
+                  "state": "populated",
+                  "unlock_level": 41,
+                  "rarity_key": "ancestral",
+                  "rarity_text": "Ancestral",
+                  "value_text": "+8%",
+                  "label_text": "Defense"
+                },
+                {
+                  "slot_index": 4,
+                  "state": "populated",
+                  "unlock_level": 101,
+                  "rarity_key": "ancestral",
+                  "rarity_text": "Ancestral",
+                  "value_text": "+120%",
+                  "label_text": "Wall Health"
+                },
+                {
+                  "slot_index": 5,
+                  "state": "populated",
+                  "unlock_level": 141,
+                  "rarity_key": "ancestral",
+                  "rarity_text": "Ancestral",
+                  "value_text": "+10%",
+                  "label_text": "Thorns Damage"
+                },
+                {
+                  "slot_index": 6,
+                  "state": "populated",
+                  "unlock_level": 161,
+                  "rarity_key": "epic",
+                  "rarity_text": "Epic",
+                  "value_text": "+1",
+                  "label_text": "Orb Speed"
+                },
+                {
+                  "slot_index": 7,
+                  "state": "locked",
+                  "unlock_level": 201,
+                  "rarity_key": null,
+                  "rarity_text": null,
+                  "value_text": "Locked",
+                  "label_text": "Unlocks at Lv. 201"
+                },
+                {
+                  "slot_index": 8,
+                  "state": "locked",
+                  "unlock_level": 241,
+                  "rarity_key": null,
+                  "rarity_text": null,
+                  "value_text": "Locked",
+                  "label_text": "Unlocks at Lv. 241"
+                }
+              ]
+            },
+            "assist": {
+              "module_name": "Orbital Augment",
+              "slot_type": "armor",
+              "role": "assist",
+              "rarity_text": "Ancestral 2*",
+              "rarity_key": "ancestral",
+              "stars": 2,
+              "displayed_level": 41,
+              "displayed_level_cap": null,
+              "level_text": "Lv. 41",
+              "role_bar_label_text": "Assist",
+              "role_bar_detail_text": "Epic | Main 0.01x | Substats 0.10x",
+              "main_value_text": "x1",
+              "main_label_text": "Health",
+              "unique_value_text": "2",
+              "unique_measure": "count",
+              "unique_text": {
+                "prefix_text": "Spawn ",
+                "value_text": "2",
+                "suffix_text": " number of Electrons. On Electron hit, deal 15% of current remaining HP, multiplied by 0.25 against Bosses and Fleets."
+              },
+              "effect_slots": [
+                {
+                  "slot_index": 1,
+                  "state": "populated",
+                  "unlock_level": 1,
+                  "rarity_key": "epic",
+                  "rarity_text": "Epic",
+                  "value_text": "+0.8%",
+                  "label_text": "Defense"
+                },
+                {
+                  "slot_index": 2,
+                  "state": "populated",
+                  "unlock_level": 1,
+                  "rarity_key": "epic",
+                  "rarity_text": "Epic",
+                  "value_text": "+40%",
+                  "label_text": "Health Regen"
+                },
+                {
+                  "slot_index": 3,
+                  "state": "populated",
+                  "unlock_level": 41,
+                  "rarity_key": "epic",
+                  "rarity_text": "Epic",
+                  "value_text": "+12%",
+                  "label_text": "Wall Health"
+                },
+                {
+                  "slot_index": 4,
+                  "state": "locked",
+                  "unlock_level": 101,
+                  "rarity_key": null,
+                  "rarity_text": null,
+                  "value_text": "Locked",
+                  "label_text": "Unlocks at Lv. 101"
+                },
+                {
+                  "slot_index": 5,
+                  "state": "locked",
+                  "unlock_level": 141,
+                  "rarity_key": null,
+                  "rarity_text": null,
+                  "value_text": "Locked",
+                  "label_text": "Unlocks at Lv. 141"
+                },
+                {
+                  "slot_index": 6,
+                  "state": "locked",
+                  "unlock_level": 161,
+                  "rarity_key": null,
+                  "rarity_text": null,
+                  "value_text": "Locked",
+                  "label_text": "Unlocks at Lv. 161"
+                },
+                {
+                  "slot_index": 7,
+                  "state": "locked",
+                  "unlock_level": 201,
+                  "rarity_key": null,
+                  "rarity_text": null,
+                  "value_text": "Locked",
+                  "label_text": "Unlocks at Lv. 201"
+                },
+                {
+                  "slot_index": 8,
+                  "state": "locked",
+                  "unlock_level": 241,
+                  "rarity_key": null,
+                  "rarity_text": null,
+                  "value_text": "Locked",
+                  "label_text": "Unlocks at Lv. 241"
+                }
+              ]
+            }
+          },
+          "generator": {
+            "primary": {
+              "module_name": "Singularity Harness",
+              "slot_type": "generator",
+              "role": "primary",
+              "rarity_text": "Ancestral 2*",
+              "rarity_key": "ancestral",
+              "stars": 2,
+              "displayed_level": 161,
+              "displayed_level_cap": 240,
+              "level_text": "Lv. 161 / 240",
+              "role_bar_label_text": "Primary",
+              "role_bar_detail_text": "",
+              "main_value_text": "x1.73",
+              "main_label_text": "Coins / Kill Bonus",
+              "unique_value_text": "15m",
+              "unique_measure": "m",
+              "unique_text": {
+                "prefix_text": "Increase each bot range by ",
+                "value_text": "15m",
+                "suffix_text": " meters and apply 2x damage-taken state to enemies hit by Flame Bot."
+              },
+              "effect_slots": [
+                {
+                  "slot_index": 1,
+                  "state": "populated",
+                  "unlock_level": 1,
+                  "rarity_key": "mythic",
+                  "rarity_text": "Mythic",
+                  "value_text": "+10%",
+                  "label_text": "Free Utility Upgrade"
+                },
+                {
+                  "slot_index": 2,
+                  "state": "populated",
+                  "unlock_level": 1,
+                  "rarity_key": "mythic",
+                  "rarity_text": "Mythic",
+                  "value_text": "+0.5x",
+                  "label_text": "Coins / Kill Bonus"
+                },
+                {
+                  "slot_index": 3,
+                  "state": "populated",
+                  "unlock_level": 41,
+                  "rarity_key": "mythic",
+                  "rarity_text": "Mythic",
+                  "value_text": "+6%",
+                  "label_text": "Enemy Health Level Skip"
+                },
+                {
+                  "slot_index": 4,
+                  "state": "populated",
+                  "unlock_level": 101,
+                  "rarity_key": "ancestral",
+                  "rarity_text": "Ancestral",
+                  "value_text": "+8%",
+                  "label_text": "Enemy Attack Level Skip"
+                },
+                {
+                  "slot_index": 5,
+                  "state": "populated",
+                  "unlock_level": 141,
+                  "rarity_key": "mythic",
+                  "rarity_text": "Mythic",
+                  "value_text": "+11%",
+                  "label_text": "Package Chance"
+                },
+                {
+                  "slot_index": 6,
+                  "state": "empty",
+                  "unlock_level": 161,
+                  "rarity_key": null,
+                  "rarity_text": null,
+                  "value_text": null,
+                  "label_text": "Empty substat slot"
+                },
+                {
+                  "slot_index": 7,
+                  "state": "locked",
+                  "unlock_level": 201,
+                  "rarity_key": null,
+                  "rarity_text": null,
+                  "value_text": "Locked",
+                  "label_text": "Unlocks at Lv. 201"
+                },
+                {
+                  "slot_index": 8,
+                  "state": "locked",
+                  "unlock_level": 241,
+                  "rarity_key": null,
+                  "rarity_text": null,
+                  "value_text": "Locked",
+                  "label_text": "Unlocks at Lv. 241"
+                }
+              ]
+            },
+            "assist": {
+              "module_name": "Black Hole Digestor",
+              "slot_type": "generator",
+              "role": "assist",
+              "rarity_text": "Mythic+",
+              "rarity_key": null,
+              "stars": 0,
+              "displayed_level": 101,
+              "displayed_level_cap": null,
+              "level_text": "Lv. 101",
+              "role_bar_label_text": "Assist",
+              "role_bar_detail_text": "Epic | Main 0.10x | Substats 0.10x",
+              "main_value_text": "x1.03",
+              "main_label_text": "Coins / Kill Bonus",
+              "unique_value_text": "0.3%",
+              "unique_measure": "pct",
+              "unique_text": {
+                "prefix_text": "For each free-upgrade trigger during current wave, add ",
+                "value_text": "0.3%",
+                "suffix_text": " to temporary coin/kill bonus for that wave, excluding Tower Range increases as valid triggers."
+              },
+              "effect_slots": [
+                {
+                  "slot_index": 1,
+                  "state": "populated",
+                  "unlock_level": 1,
+                  "rarity_key": "epic",
+                  "rarity_text": "Epic",
+                  "value_text": "+1.1%",
+                  "label_text": "Package Chance"
+                },
+                {
+                  "slot_index": 2,
+                  "state": "populated",
+                  "unlock_level": 1,
+                  "rarity_key": "epic",
+                  "rarity_text": "Epic",
+                  "value_text": "+0.6%",
+                  "label_text": "Enemy Attack Level Skip"
+                },
+                {
+                  "slot_index": 3,
+                  "state": "populated",
+                  "unlock_level": 41,
+                  "rarity_key": "rare",
+                  "rarity_text": "Rare",
+                  "value_text": "+0.4%",
+                  "label_text": "Free Utility Upgrade"
+                },
+                {
+                  "slot_index": 4,
+                  "state": "populated",
+                  "unlock_level": 101,
+                  "rarity_key": "epic",
+                  "rarity_text": "Epic",
+                  "value_text": "+0.6%",
+                  "label_text": "Enemy Health Level Skip"
+                },
+                {
+                  "slot_index": 5,
+                  "state": "locked",
+                  "unlock_level": 141,
+                  "rarity_key": null,
+                  "rarity_text": null,
+                  "value_text": "Locked",
+                  "label_text": "Unlocks at Lv. 141"
+                },
+                {
+                  "slot_index": 6,
+                  "state": "locked",
+                  "unlock_level": 161,
+                  "rarity_key": null,
+                  "rarity_text": null,
+                  "value_text": "Locked",
+                  "label_text": "Unlocks at Lv. 161"
+                },
+                {
+                  "slot_index": 7,
+                  "state": "locked",
+                  "unlock_level": 201,
+                  "rarity_key": null,
+                  "rarity_text": null,
+                  "value_text": "Locked",
+                  "label_text": "Unlocks at Lv. 201"
+                },
+                {
+                  "slot_index": 8,
+                  "state": "locked",
+                  "unlock_level": 241,
+                  "rarity_key": null,
+                  "rarity_text": null,
+                  "value_text": "Locked",
+                  "label_text": "Unlocks at Lv. 241"
+                }
+              ]
+            }
+          },
+          "core": {
+            "primary": {
+              "module_name": "Primordial Collapse",
+              "slot_type": "core",
+              "role": "primary",
+              "rarity_text": "Ancestral 3*",
+              "rarity_key": "ancestral",
+              "stars": 3,
+              "displayed_level": 164,
+              "displayed_level_cap": 260,
+              "level_text": "Lv. 164 / 260",
+              "role_bar_label_text": "Primary",
+              "role_bar_detail_text": "",
+              "main_value_text": "x13.38",
+              "main_label_text": "Ultimate Weapon Damage",
+              "unique_value_text": "80%",
+              "unique_measure": "pct",
+              "unique_text": {
+                "prefix_text": "Spawn one extra Black Hole and, while enemies are inside any Black Hole, reduce their outgoing damage by ",
+                "value_text": "80%",
+                "suffix_text": "."
+              },
+              "effect_slots": [
+                {
+                  "slot_index": 1,
+                  "state": "populated",
+                  "unlock_level": 1,
+                  "rarity_key": "ancestral",
+                  "rarity_text": "Ancestral",
+                  "value_text": "+4s",
+                  "label_text": "Black Hole - Duration"
+                },
+                {
+                  "slot_index": 2,
+                  "state": "populated",
+                  "unlock_level": 1,
+                  "rarity_key": "ancestral",
+                  "rarity_text": "Ancestral",
+                  "value_text": "-4s",
+                  "label_text": "Black Hole - Cooldown"
+                },
+                {
+                  "slot_index": 3,
+                  "state": "populated",
+                  "unlock_level": 41,
+                  "rarity_key": "ancestral",
+                  "rarity_text": "Ancestral",
+                  "value_text": "+4x",
+                  "label_text": "Golden Tower - Bonus"
+                },
+                {
+                  "slot_index": 4,
+                  "state": "populated",
+                  "unlock_level": 101,
+                  "rarity_key": "ancestral",
+                  "rarity_text": "Ancestral",
+                  "value_text": "+15\u00b0",
+                  "label_text": "Spotlight - Angle"
+                },
+                {
+                  "slot_index": 5,
+                  "state": "empty",
+                  "unlock_level": 141,
+                  "rarity_key": null,
+                  "rarity_text": null,
+                  "value_text": null,
+                  "label_text": "Empty substat slot"
+                },
+                {
+                  "slot_index": 6,
+                  "state": "empty",
+                  "unlock_level": 161,
+                  "rarity_key": null,
+                  "rarity_text": null,
+                  "value_text": null,
+                  "label_text": "Empty substat slot"
+                },
+                {
+                  "slot_index": 7,
+                  "state": "locked",
+                  "unlock_level": 201,
+                  "rarity_key": null,
+                  "rarity_text": null,
+                  "value_text": "Locked",
+                  "label_text": "Unlocks at Lv. 201"
+                },
+                {
+                  "slot_index": 8,
+                  "state": "locked",
+                  "unlock_level": 241,
+                  "rarity_key": null,
+                  "rarity_text": null,
+                  "value_text": "Locked",
+                  "label_text": "Unlocks at Lv. 241"
+                }
+              ]
+            },
+            "assist": {
+              "module_name": "Dimension Core",
+              "slot_type": "core",
+              "role": "assist",
+              "rarity_text": "Ancestral",
+              "rarity_key": "ancestral",
+              "stars": 0,
+              "displayed_level": 141,
+              "displayed_level_cap": null,
+              "level_text": "Lv. 141",
+              "role_bar_label_text": "Assist",
+              "role_bar_detail_text": "Epic | Main 0.15x | Substats 0.15x",
+              "main_value_text": "x2.08",
+              "main_label_text": "Ultimate Weapon Damage",
+              "unique_value_text": "5",
+              "unique_measure": "count",
+              "unique_text": {
+                "prefix_text": "Allow CL to hit initial target with 60% chance, double shock chance and base shock multiplier, and when shock reapplies to same enemy additively accumulate multiplier up to ",
+                "value_text": "5",
+                "suffix_text": " stack count."
+              },
+              "effect_slots": [
+                {
+                  "slot_index": 1,
+                  "state": "populated",
+                  "unlock_level": 1,
+                  "rarity_key": "epic",
+                  "rarity_text": "Epic",
+                  "value_text": "+2.25\u00b0",
+                  "label_text": "Spotlight - Angle"
+                },
+                {
+                  "slot_index": 2,
+                  "state": "populated",
+                  "unlock_level": 1,
+                  "rarity_key": "epic",
+                  "rarity_text": "Epic",
+                  "value_text": "+3x",
+                  "label_text": "Spotlight - Bonus"
+                },
+                {
+                  "slot_index": 3,
+                  "state": "populated",
+                  "unlock_level": 41,
+                  "rarity_key": "rare",
+                  "rarity_text": "Rare",
+                  "value_text": "+2.25x",
+                  "label_text": "Chain Lightning - Damage"
+                },
+                {
+                  "slot_index": 4,
+                  "state": "populated",
+                  "unlock_level": 101,
+                  "rarity_key": "epic",
+                  "rarity_text": "Epic",
+                  "value_text": "+2.25%",
+                  "label_text": "Chrono Field - Speed Reduction"
+                },
+                {
+                  "slot_index": 5,
+                  "state": "populated",
+                  "unlock_level": 141,
+                  "rarity_key": "epic",
+                  "rarity_text": "Epic",
+                  "value_text": "+1.8%",
+                  "label_text": "Chain Lightning - Chance"
+                },
+                {
+                  "slot_index": 6,
+                  "state": "locked",
+                  "unlock_level": 161,
+                  "rarity_key": null,
+                  "rarity_text": null,
+                  "value_text": "Locked",
+                  "label_text": "Unlocks at Lv. 161"
+                },
+                {
+                  "slot_index": 7,
+                  "state": "locked",
+                  "unlock_level": 201,
+                  "rarity_key": null,
+                  "rarity_text": null,
+                  "value_text": "Locked",
+                  "label_text": "Unlocks at Lv. 201"
+                },
+                {
+                  "slot_index": 8,
+                  "state": "locked",
+                  "unlock_level": 241,
+                  "rarity_key": null,
+                  "rarity_text": null,
+                  "value_text": "Locked",
+                  "label_text": "Unlocks at Lv. 241"
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "panel_id": "vault",
+      "panel_type": "simple_bonus_table",
+      "title": "Vault",
+      "payload": {
+        "column_headers": [
+          "Name",
+          "Bonus"
+        ],
+        "rows": [
+          {
+            "name": "Keys spent",
+            "bonus": "0"
+          },
+          {
+            "name": "Total Bonuses",
+            "bonus": "Active"
+          },
+          {
+            "name": "Misc.",
+            "bonus": ""
+          },
+          {
+            "name": "Bot Range",
+            "bonus": "0"
+          },
+          {
+            "name": "Discount Enhancements",
+            "bonus": "0"
+          },
+          {
+            "name": "Discount Rerolls",
+            "bonus": "0"
+          },
+          {
+            "name": "Additional Card Slot",
+            "bonus": "0"
+          },
+          {
+            "name": "Workshop Respec Discount",
+            "bonus": "0"
+          },
+          {
+            "name": "Bot Respec Discount",
+            "bonus": "0"
+          },
+          {
+            "name": "Ad Gems Stack",
+            "bonus": "1"
+          },
+          {
+            "name": "Attack",
+            "bonus": ""
+          },
+          {
+            "name": "Damage",
+            "bonus": "0"
+          },
+          {
+            "name": "Ultimate Weapon Damage",
+            "bonus": "0"
+          },
+          {
+            "name": "Attack Speed",
+            "bonus": "0"
+          },
+          {
+            "name": "Critical Chance",
+            "bonus": "0"
+          },
+          {
+            "name": "Critical Factor",
+            "bonus": "0"
+          },
+          {
+            "name": "Damage / Meter",
+            "bonus": "0"
+          },
+          {
+            "name": "Multishot Chance",
+            "bonus": "0"
+          },
+          {
+            "name": "Rapid Fire Chance",
+            "bonus": "0"
+          },
+          {
+            "name": "Bounce Shot Chance",
+            "bonus": "0"
+          },
+          {
+            "name": "Super Crit Chance",
+            "bonus": "0"
+          },
+          {
+            "name": "Super Crit Mult",
+            "bonus": "0"
+          },
+          {
+            "name": "Rend Armor Chance",
+            "bonus": "0"
+          },
+          {
+            "name": "Rend Armor Mult",
+            "bonus": "0"
+          },
+          {
+            "name": "Defense",
+            "bonus": ""
+          },
+          {
+            "name": "Health",
+            "bonus": "0"
+          },
+          {
+            "name": "Health Regen",
+            "bonus": "0"
+          },
+          {
+            "name": "Defense %",
+            "bonus": "0"
+          },
+          {
+            "name": "Defense Absolute",
+            "bonus": "0"
+          },
+          {
+            "name": "Thorn Damage",
+            "bonus": "0"
+          },
+          {
+            "name": "Knockback Chance",
+            "bonus": "0"
+          },
+          {
+            "name": "Knockback Force",
+            "bonus": "0"
+          },
+          {
+            "name": "Orb Speed",
+            "bonus": "0"
+          },
+          {
+            "name": "Orbs",
+            "bonus": "0"
+          },
+          {
+            "name": "Shockwave Frequency",
+            "bonus": "0"
+          },
+          {
+            "name": "Death Defy",
+            "bonus": "0"
+          },
+          {
+            "name": "Wall Rebuild",
+            "bonus": "0"
+          },
+          {
+            "name": "Utility",
+            "bonus": ""
+          },
+          {
+            "name": "Cash",
+            "bonus": "0"
+          },
+          {
+            "name": "Cash / Wave",
+            "bonus": "0"
+          },
+          {
+            "name": "Coins / Kill",
+            "bonus": "0"
+          },
+          {
+            "name": "Coins / Wave",
+            "bonus": "0"
+          },
+          {
+            "name": "Free Attack Upgrade",
+            "bonus": "0"
+          },
+          {
+            "name": "Free Defense Upgrade",
+            "bonus": "0"
+          },
+          {
+            "name": "Free Utility Upgrade",
+            "bonus": "0"
+          },
+          {
+            "name": "Interest / Wave",
+            "bonus": "0"
+          },
+          {
+            "name": "Recovery Amount",
+            "bonus": "0"
+          },
+          {
+            "name": "Max Recovery",
+            "bonus": "0"
+          },
+          {
+            "name": "Enemy Attack Skip",
+            "bonus": "0"
+          },
+          {
+            "name": "Enemy Health Skip",
+            "bonus": "0"
+          },
+          {
+            "name": "Unlocks",
+            "bonus": ""
+          },
+          {
+            "name": "Demon Mode Automation",
+            "bonus": "false"
+          },
+          {
+            "name": "Smart Demon Mode Automation",
+            "bonus": "false"
+          },
+          {
+            "name": "Free Mission Reroll",
+            "bonus": "false"
+          },
+          {
+            "name": "Nuke Automation",
+            "bonus": "false"
+          },
+          {
+            "name": "Smart Nuke Automation",
+            "bonus": "false"
+          },
+          {
+            "name": "Workshop Presets",
+            "bonus": "false"
+          },
+          {
+            "name": "Missile Barrage Automation",
+            "bonus": "false"
+          },
+          {
+            "name": "Smart Missile Barrage Automation",
+            "bonus": "false"
+          },
+          {
+            "name": "Daily Mission - Set Shard Type",
+            "bonus": "false"
+          },
+          {
+            "name": "Auto Shatter Rare Modules",
+            "bonus": "false"
+          },
+          {
+            "name": "Auto Restart Run",
+            "bonus": "false"
+          },
+          {
+            "name": "Auto Charge Berzerker",
+            "bonus": "false"
+          },
+          {
+            "name": "Damage Cap Slider",
+            "bonus": "false"
+          },
+          {
+            "name": "Bot Presets",
+            "bonus": "false"
+          },
+          {
+            "name": "Workshop Orb Adjuster",
+            "bonus": "false"
+          },
+          {
+            "name": "Bot Cooldown Sliders",
+            "bonus": "false"
+          }
+        ]
+      }
+    },
+    {
+      "panel_id": "guardians",
+      "panel_type": "track_table",
+      "title": "Guardians",
+      "payload": {
+        "entity_key": "guardian",
+        "column_headers": [
+          "Unlock",
+          "Guardian",
+          "Track",
+          "Level",
+          "Value"
+        ],
+        "rows": [
+          {
+            "unlock": "",
+            "guardian": "Attack",
+            "track": "Percentage",
+            "level": "0",
+            "value": "0.01"
+          },
+          {
+            "unlock": "",
+            "guardian": "Attack",
+            "track": "Cooldown",
+            "level": "0",
+            "value": "120.0"
+          },
+          {
+            "unlock": "",
+            "guardian": "Attack",
+            "track": "Targets",
+            "level": "0",
+            "value": "1.0"
+          },
+          {
+            "unlock": "",
+            "guardian": "Ally",
+            "track": "Recovery Amount",
+            "level": "0",
+            "value": "0.01"
+          },
+          {
+            "unlock": "",
+            "guardian": "Ally",
+            "track": "Max Recovery",
+            "level": "0",
+            "value": "1.1"
+          },
+          {
+            "unlock": "",
+            "guardian": "Ally",
+            "track": "Cooldown",
+            "level": "0",
+            "value": "120.0"
+          },
+          {
+            "unlock": "",
+            "guardian": "Bounty",
+            "track": "Multiplier",
+            "level": "0",
+            "value": "0.01"
+          },
+          {
+            "unlock": "",
+            "guardian": "Bounty",
+            "track": "Cooldown",
+            "level": "0",
+            "value": "120.0"
+          },
+          {
+            "unlock": "",
+            "guardian": "Bounty",
+            "track": "Targets",
+            "level": "0",
+            "value": "1.0"
+          },
+          {
+            "unlock": "",
+            "guardian": "Fetch",
+            "track": "Cooldown",
+            "level": "32",
+            "value": "88.0"
+          },
+          {
+            "unlock": "",
+            "guardian": "Fetch",
+            "track": "Find Chance",
+            "level": "27",
+            "value": "0.3700000000000002"
+          },
+          {
+            "unlock": "",
+            "guardian": "Fetch",
+            "track": "Double Find Chance",
+            "level": "9",
+            "value": "0.10999999999999999"
+          },
+          {
+            "unlock": "",
+            "guardian": "Summon",
+            "track": "Cooldown",
+            "level": "50",
+            "value": "90.0"
+          },
+          {
+            "unlock": "",
+            "guardian": "Summon",
+            "track": "Duration",
+            "level": "19",
+            "value": "24.0"
+          },
+          {
+            "unlock": "",
+            "guardian": "Summon",
+            "track": "Cash Bonus",
+            "level": "0",
+            "value": "1.0"
+          },
+          {
+            "unlock": "",
+            "guardian": "Scout",
+            "track": "Cooldown",
+            "level": "0",
+            "value": "105.0"
+          },
+          {
+            "unlock": "",
+            "guardian": "Scout",
+            "track": "Range Bonus",
+            "level": "0",
+            "value": "2.0"
+          },
+          {
+            "unlock": "",
+            "guardian": "Scout",
+            "track": "Duration",
+            "level": "0",
+            "value": "5.0"
+          }
+        ]
+      }
+    },
+    {
+      "panel_id": "themes_and_songs",
+      "panel_type": "simple_metric_panel",
+      "title": "Themes and Songs",
+      "payload": {
+        "metric_label": "Coin Multiplier",
+        "metric_value": "1.682"
+      }
+    }
+  ],
+  "debug_manifest": {
+    "source_artifacts": [
+      "account_state.json",
+      "module_card_payloads.json",
+      "diagnostics.json"
+    ],
+    "generated_from": [
+      "Labs",
+      "WS",
+      "WS+",
+      "UWs",
+      "Cards",
+      "Relics",
+      "Vault",
+      "Bots",
+      "Themes & Songs",
+      "Modules",
+      "Guardians",
+      "Player & Stuff"
+    ]
+  }
+}

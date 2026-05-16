@@ -19,6 +19,7 @@ class PipelineRunRequest:
     perk_mode: str = 'max_progression_policy'
     include_slow_audits: bool = False
     perk_state: str = 'auto'
+    tier: int | None = None
 
 
 def _run_stats_args_from_payload(payload: dict[str, object]):
@@ -28,6 +29,7 @@ def _run_stats_args_from_payload(payload: dict[str, object]):
         manual_inputs=Path(str(payload['manual_inputs'])) if payload.get('manual_inputs') else None,
         perk_mode=str(payload.get('perk_mode', 'max_progression_policy')),
         perk_state=str(payload.get('perk_state', 'auto')),
+        tier=int(payload['tier']) if payload.get('tier') is not None else None,
     )
 
 

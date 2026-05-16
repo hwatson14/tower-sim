@@ -1,0 +1,216 @@
+{
+  "request": {
+    "ids": "input/imports/ids.csv",
+    "out": ".pytest-tmp-analysis-pipeline",
+    "preset": "Farming",
+    "state_mode": "max_progression",
+    "manual_inputs": null,
+    "perk_mode": "max_progression_policy",
+    "include_slow_audits": false,
+    "perk_state": "auto",
+    "tier": 14
+  },
+  "execution_path": {
+    "recompute_mode": "report_snapshot_hybrid",
+    "execution_branch": "report_snapshot_planner",
+    "cache_status": "cold",
+    "fallback_required": false,
+    "fallback_reason": null,
+    "bundle_used": null,
+    "consumer_id": null,
+    "family_id": "progression_runtime_with_perks",
+    "runtime_consumers": [],
+    "cache_fingerprint": null,
+    "cache_validation": null,
+    "incremental_plan": null,
+    "parity": null,
+    "runtime_publication": null,
+    "total_elapsed_ms": 51173.516
+  },
+  "stages": [
+    {
+      "stage_id": "input_load",
+      "title": "Input load",
+      "owner_module": "input.loader",
+      "entry_function": "load_inputs",
+      "status": "ok",
+      "elapsed_ms": 0.0,
+      "outputs_summary": {
+        "ids_path": "input/imports/ids.csv",
+        "manual_inputs_path": "input/manual_inputs.yaml",
+        "section_names": [
+          "Labs",
+          "WS",
+          "WS+",
+          "UWs",
+          "Cards",
+          "Relics",
+          "Vault",
+          "Bots",
+          "Themes & Songs",
+          "Modules",
+          "Guardians",
+          "Player & Stuff"
+        ],
+        "section_row_counts": {
+          "Labs": 218,
+          "WS": 50,
+          "WS+": 20,
+          "UWs": 36,
+          "Cards": 31,
+          "Relics": 37,
+          "Vault": 67,
+          "Bots": 26,
+          "Themes & Songs": 1,
+          "Modules": 76,
+          "Guardians": 18,
+          "Player & Stuff": 22
+        }
+      },
+      "notes": []
+    },
+    {
+      "stage_id": "runtime_account_assembly",
+      "title": "Runtime/account assembly",
+      "owner_module": "input.runtime_state",
+      "entry_function": "build_runtime_state",
+      "status": "ok",
+      "elapsed_ms": 0.0,
+      "outputs_summary": {
+        "perk_config_resolution": {
+          "requested_perks_path": "manual_inputs.yaml:perk_policy",
+          "resolved_perks_path": "manual_inputs.yaml:perk_policy",
+          "fallback_applied": false,
+          "fallback_reason": null,
+          "perk_mode": "max_progression_policy",
+          "manual_banned_perk_count": 6,
+          "unlocked_ultimate_weapons": [
+            "Black Hole",
+            "Chain Lightning",
+            "Chrono Field",
+            "Death Wave",
+            "Golden Tower",
+            "Spotlight"
+          ],
+          "uw_locked_perks_excluded": {
+            "4 More Smart Missiles": "Smart Missiles",
+            "Extra Set of Inner Mines": "Inner Land Mines",
+            "Swamp Radius x1.5": "Poison Swamp"
+          }
+        },
+        "perk_support": {
+          "progression_state": "dynamic_current_or_projected_max_by_state_mode",
+          "workshop_state": "dynamic_current_or_projected_max_by_state_mode",
+          "perk_state": "auto",
+          "perk_mode": "max_progression_policy",
+          "perk_materialization": true,
+          "perk_ids_parser_support": false,
+          "perk_external_config_support": true,
+          "perk_account_state_support": true,
+          "perk_stat_input_support": true,
+          "perk_resolver_support": true,
+          "active_perk_preset": "Farming",
+          "state_mode": "max_progression"
+        }
+      },
+      "notes": []
+    },
+    {
+      "stage_id": "compare_materialization",
+      "title": "Compare materialization",
+      "owner_module": "evaluators.compare",
+      "entry_function": "_build_compare_rows_by_preset",
+      "status": "ok",
+      "elapsed_ms": 0.0,
+      "outputs_summary": {
+        "default_preset": "Farming",
+        "state_mode": "max_progression",
+        "perk_state": "auto"
+      },
+      "notes": []
+    },
+    {
+      "stage_id": "stat_resolution",
+      "title": "Stat-input compilation and resolution",
+      "owner_module": "qe.routing",
+      "entry_function": "QEResolutionPlanner.resolve_report_snapshot",
+      "status": "ok",
+      "elapsed_ms": 0.0,
+      "outputs_summary": {
+        "stat_input_count": 626,
+        "statbook_row_count": 338,
+        "engine_status": null,
+        "qe_resolution_backend": "report_snapshot_hybrid"
+      },
+      "notes": []
+    },
+    {
+      "stage_id": "checks_generation",
+      "title": "Compare/verification generation",
+      "owner_module": "evaluators.compare",
+      "entry_function": "build_line_by_line_verification",
+      "status": "ok",
+      "elapsed_ms": 0.0,
+      "outputs_summary": {
+        "ep_compare_summary": {
+          "ep_compare_count": 0,
+          "ep_compare_status_counts": {},
+          "ep_mismatch_count": 0,
+          "ep_true_formula_mismatch_count": 0,
+          "ep_stage_scope_mismatch_count": 0,
+          "ep_non_comparable_count": 0,
+          "ep_missing_from_package_count": 0
+        },
+        "line_verification_summary": {
+          "not_applicable": 28,
+          "publishable": 310
+        },
+        "state_matrix_modes": [
+          "account_baseline",
+          "gem_respec",
+          "start_of_run",
+          "max_progression"
+        ]
+      },
+      "notes": []
+    },
+    {
+      "stage_id": "artifact_write",
+      "title": "Artifact write",
+      "owner_module": "app.publication",
+      "entry_function": "write_core_outputs",
+      "status": "ok",
+      "elapsed_ms": 0.0,
+      "outputs_summary": {
+        "out_dir": ".pytest-tmp-analysis-pipeline"
+      },
+      "notes": []
+    }
+  ],
+  "artifacts_written": [
+    ".pytest-tmp-analysis-pipeline/account_state.json",
+    ".pytest-tmp-analysis-pipeline/artifact_contract_manifest.json",
+    ".pytest-tmp-analysis-pipeline/audit_surface_manifest.json",
+    ".pytest-tmp-analysis-pipeline/diagnostics.json",
+    ".pytest-tmp-analysis-pipeline/ep_oracle_compare.json",
+    ".pytest-tmp-analysis-pipeline/family_completeness_matrix.json",
+    ".pytest-tmp-analysis-pipeline/input_dashboard.json",
+    ".pytest-tmp-analysis-pipeline/line_by_line_verification.json",
+    ".pytest-tmp-analysis-pipeline/module_card_payloads.json",
+    ".pytest-tmp-analysis-pipeline/optimizer_scores.json",
+    ".pytest-tmp-analysis-pipeline/run_stats_query_rows_max_progression.json",
+    ".pytest-tmp-analysis-pipeline/run_stats_query_rows_start_of_run.json",
+    ".pytest-tmp-analysis-pipeline/stat_inputs.json",
+    ".pytest-tmp-analysis-pipeline/statbook.json",
+    ".pytest-tmp-analysis-pipeline/statbook_publishable.json",
+    ".pytest-tmp-analysis-pipeline/state_matrix.json",
+    ".pytest-tmp-analysis-pipeline/stats_dashboard.json",
+    ".pytest-tmp-analysis-pipeline/survivor_closure_report.json",
+    ".pytest-tmp-analysis-pipeline/tower_damage_runtime_gap_report.json",
+    ".pytest-tmp-analysis-pipeline/tower_defense_absolute_semantic_gap_report.json",
+    ".pytest-tmp-analysis-pipeline/tower_hp_semantic_gap_report.json",
+    ".pytest-tmp-analysis-pipeline/tower_regen_closure_report.json",
+    ".pytest-tmp-analysis-pipeline/tower_regen_ep_semantic_gap_report.json",
+    ".pytest-tmp-analysis-pipeline/line_by_line_verification.csv"
+  ]
+}

@@ -1777,7 +1777,7 @@ EP_LABEL_TO_DESTINATION = {
         'Health': _state('tower_hp'),
         'Defense Absolute': _state('tower_defense_absolute'),
         'Defense %': _state('tower_defense_pct'),
-        'Wall Fortification': _state('wall_fortification_multiplier'),
+        'Wall Fortification': 'derived::wall.hp_final',
         'Wall Regen': _state('wall_regen'),
         'Max Recovery': _state('max_recovery_multiplier'),
         'Coins / Kill Bonus': _state('coins_per_kill_bonus'),
@@ -1795,7 +1795,7 @@ EP_KEY_TO_DESTINATION = {
         'recovery_package_chance': _state('package_chance_pct'),
         'shockwave_frequency': _state('tower_shockwave_interval_seconds'),
         'wall_health': 'derived::wall.hp_pre_fort',
-        'wall_fortification': _state('wall_fortification_multiplier'),
+        'wall_fortification': 'derived::wall.hp_final',
 }
 
 def _parse_ep_value(raw):

@@ -195,6 +195,11 @@ surface_nodes:
   ownership_status: query_owned
   governed_by: canonical_query_engine
   downstream_policy: consume_only_no_rederivation
+- node_id: state::uw.chain_lightning.max_enemy_damage_reduction_pct
+  ownership_class: surface
+  ownership_status: query_owned
+  governed_by: canonical_query_engine
+  downstream_policy: consume_only_no_rederivation
 - node_id: state::uw.chrono_field.slow_pct
   ownership_class: surface
   ownership_status: query_owned

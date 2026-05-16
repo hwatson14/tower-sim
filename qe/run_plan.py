@@ -59,6 +59,8 @@ DEFAULT_WORKSHOP_CATEGORY_BY_TRACK: Mapping[str, str] = {
     "Max Recovery": "utility",
     "Package Chance": "utility",
     "Enemy Level Skip": "utility",
+    "Enemy Attack Level Skip": "utility",
+    "Enemy Health Level Skip": "utility",
 }
 PERK_CONTRIBUTION_EFFECT_IDS: frozenset[str] = frozenset(
     {

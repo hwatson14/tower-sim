@@ -542,7 +542,7 @@ sections:
     uw_other_surfaces:
       - section: Chain Lightning
         label: Chain Thunder Damage Reduction
-        surface_id: state::uw.chain_thunder.reduction_pct
+        surface_id: state::uw.chain_lightning.max_enemy_damage_reduction_pct
       - section: Chrono Field
         label: Damage Reduction
         surface_id: state::uw.chrono_field.damage_reduction_pct

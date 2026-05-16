@@ -344,6 +344,7 @@ def compile_stat_inputs_with_identity(
         perk_preset_name=perk_preset_name,
         perks_enabled=resolved_perks_enabled,
         scenario_projection_state=binding.scenario_projection_state,
+        scenario_context=scenario_context,
     )
     return BoundStatInputs(binding=binding, stat_inputs=tuple(stat_inputs))
 

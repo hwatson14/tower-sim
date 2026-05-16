@@ -638,6 +638,7 @@ def resolve_run_stats_progression_bundle(
             'state::uw.chrono_field.cooldown_seconds',
             'state::uw.chrono_field.damage_reduction_pct',
             'state::uw.chrono_field.slow_pct',
+            'state::uw.chain_lightning.max_enemy_damage_reduction_pct',
             'state::uw.golden_tower.base_duration_seconds',
             'state::uw.golden_tower.base_cooldown_seconds',
             'support_surface::ehp.health_relic_pct',

@@ -66,11 +66,12 @@ def test_publish_derived_composites_publishes_v28_dissonant_echo_multipliers() -
     assert rows['derived::dissonance.attack.echo_multiplier'].final_value == pytest.approx(0.105)
     assert rows['derived::dissonance.defense.echo_multiplier'].final_value == pytest.approx(0.010)
     assert rows['derived::dissonance.utility.echo_multiplier'].final_value == pytest.approx(0.005)
-    assert rows['derived::dissonance.attack.echo_bonus_multiplier'].final_value == pytest.approx(0.84)
-    assert rows['derived::dissonance.attack.total_multiplier'].final_value == pytest.approx(5.84)
+    assert rows['derived::dissonance.attack.echo_bonus_multiplier'].final_value == pytest.approx(0.42)
+    assert rows['derived::dissonance.attack.total_multiplier'].final_value == pytest.approx(5.42)
     assert rows['derived::dissonance.defense.total_multiplier'].final_value == pytest.approx(1.0)
     assert rows['derived::dissonance.attack.echo_multiplier'].value_type == 'ratio'
     assert '10.5%' in (rows['derived::dissonance.attack.echo_multiplier'].notes or '')
+    assert 'active-tier PB is excluded from Echo' in (rows['derived::dissonance.attack.echo_bonus_multiplier'].notes or '')
 
 
 def test_publish_derived_composites_applies_v28_utility_dissonance_to_eecon() -> None:
@@ -87,9 +88,9 @@ def test_publish_derived_composites_applies_v28_utility_dissonance_to_eecon() ->
     derived.publish_derived_composites(base_rows)
     derived.publish_derived_composites(dissonant_rows)
 
-    assert dissonant_rows['derived::dissonance.utility.total_multiplier'].final_value == pytest.approx(3.01)
-    assert dissonant_rows['derived::eecon.utility_dissonance_factor'].final_value == pytest.approx(3.01)
-    assert dissonant_rows['derived::eecon'].final_value == pytest.approx(base_rows['derived::eecon'].final_value * 3.01)
+    assert dissonant_rows['derived::dissonance.utility.total_multiplier'].final_value == pytest.approx(3.0)
+    assert dissonant_rows['derived::eecon.utility_dissonance_factor'].final_value == pytest.approx(3.0)
+    assert dissonant_rows['derived::eecon'].final_value == pytest.approx(base_rows['derived::eecon'].final_value * 3.0)
 
 
 def test_publish_derived_composites_applies_v28_attack_dissonance_restrictions() -> None:
@@ -163,6 +164,20 @@ def test_publish_derived_composites_publishes_primordial_black_hole_damage_reduc
 
     assert rows['derived::ehp.primordial_black_hole_uptime'].final_value == pytest.approx(20.0 / 70.0)
     assert rows['derived::ehp.primordial_black_hole_damage_reduction_factor'].final_value == pytest.approx(1.2962962962962963)
+
+
+def test_publish_derived_composites_consumes_canonical_chain_thunder_surface() -> None:
+    rows = {
+        'state::tower.hp': StatRow(stat_name='state::tower.hp', final_value=100.0, value_type='hp', source_count=1, status='resolved', contributors=[], schema=None),
+        'state::uw.chain_lightning.max_enemy_damage_reduction_pct': StatRow(stat_name='state::uw.chain_lightning.max_enemy_damage_reduction_pct', final_value=36.0, value_type='pct', source_count=1, status='resolved', contributors=[], schema=None),
+    }
+
+    derived.publish_derived_composites(rows)
+
+    assert rows['derived::ehp.chain_thunder_reduction_pct'].final_value == pytest.approx(36.0)
+    assert rows['derived::ehp.chain_thunder_factor'].final_value == pytest.approx(1.5625)
+    contributor = rows['derived::ehp.chain_thunder_factor'].contributors[0]
+    assert contributor['stat_name'] == 'state::uw.chain_lightning.max_enemy_damage_reduction_pct'
 
 
 def test_publish_derived_composites_publishes_berserker_projection_helper_factor() -> None:

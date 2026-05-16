@@ -1744,6 +1744,22 @@ nodes:
     verification_status: verified
     blocker_reason: ''
     notes: Effective current-account CF damage reduction consumed by Boss Waves timed DR.
+  - node_id: source_input::lab:Chain Thunder
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: verified
+    blocker_reason: ''
+    notes: Chain Thunder lab source for Chain Lightning maximum enemy damage reduction.
+  - node_id: state::uw.chain_lightning.max_enemy_damage_reduction_pct
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_default
+    verification_status: verified
+    blocker_reason: ''
+    notes: Query-owned Chain Thunder maximum enemy damage-reduction percent.
   - node_id: state::uw.chrono_field.slow_pct
     node_kind: surface
     family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
@@ -3414,6 +3430,13 @@ edges:
     publication_relevance: publishable_path
     verification_status: verified
     notes: Effective current-account Chrono Field timing publishes CF damage reduction.
+  - upstream_node_id: source_input::lab:Chain Thunder
+    downstream_node_id: state::uw.chain_lightning.max_enemy_damage_reduction_pct
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [lab_level_change]
+    publication_relevance: publishable_path
+    verification_status: verified
+    notes: Chain Thunder lab publishes Chain Lightning maximum enemy damage reduction.
   - upstream_node_id: source_input::scenario:Chrono Field Timing
     downstream_node_id: state::uw.chrono_field.slow_pct
     invalidation_semantics: recompute_downstream

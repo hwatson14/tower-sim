@@ -60,7 +60,7 @@ EP_LABEL_TO_DESTINATION = {
     'Defense Absolute': _state('tower_defense_absolute'),
     'Defense %': _state('tower_defense_pct'),
     'Wall Health': _state('wall_hp'),
-    'Wall Fortification': _state('wall_fortification_multiplier'),
+    'Wall Fortification': 'derived::wall.hp_final',
     'Wall Regen': _state('wall_regen'),
     'Max Recovery': _state('max_recovery_multiplier'),
     'Coins / Kill Bonus': _state('coins_per_kill_bonus'),

@@ -981,6 +981,23 @@ families:
       scenario_scoped: true
       semantics: effective Chrono Field damage-reduction percent consumed by
         progression and boss-wave survivability timing queries.
+    - surface_id: state::uw.chain_lightning.max_enemy_damage_reduction_pct
+      surface_kind: runtime_mechanic_surface
+      surface_class: surface
+      domain: ultimate_weapons
+      owning_families:
+      - progression_start_of_run
+      - progression_runtime_no_perks
+      - progression_runtime_with_perks
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: false
+      debug_only: false
+      scenario_scoped: true
+      semantics: Chain Thunder maximum enemy damage-reduction percent consumed
+        by eHP survivability factor publication.
     - surface_id: state::uw.chrono_field.slow_pct
       surface_kind: runtime_mechanic_surface
       surface_class: surface
@@ -2503,6 +2520,7 @@ families:
       - state::uw.chrono_field.cooldown_seconds
       - state::uw.chrono_field.damage_reduction_pct
       - state::uw.chrono_field.slow_pct
+      - state::uw.chain_lightning.max_enemy_damage_reduction_pct
       - state::uw.golden_tower.base_duration_seconds
       - state::uw.golden_tower.base_cooldown_seconds
       - state::tower.free_attack_upgrade_chance_pct

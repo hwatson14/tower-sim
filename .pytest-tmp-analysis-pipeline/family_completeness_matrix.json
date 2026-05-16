@@ -1,0 +1,148 @@
+{
+  "version": 1,
+  "canonical_output_preset": "Farming",
+  "canonical_presets": [
+    "Tourney",
+    "Farming",
+    "Milestone",
+    "Preset 4",
+    "Preset 5"
+  ],
+  "synthetic_preset_names_present": [
+    "ProjectedMaxPolicy_AllExceptManualBans"
+  ],
+  "preset_lane_completeness": {
+    "Tourney": {
+      "cards_explicit": true,
+      "cards_empty": false,
+      "modules_explicit": true,
+      "modules_empty": false,
+      "perks_explicit": false,
+      "perks_empty": false
+    },
+    "Farming": {
+      "cards_explicit": true,
+      "cards_empty": false,
+      "modules_explicit": true,
+      "modules_empty": false,
+      "perks_explicit": false,
+      "perks_empty": false
+    },
+    "Milestone": {
+      "cards_explicit": true,
+      "cards_empty": true,
+      "modules_explicit": true,
+      "modules_empty": false,
+      "perks_explicit": false,
+      "perks_empty": false
+    },
+    "Preset 4": {
+      "cards_explicit": true,
+      "cards_empty": true,
+      "modules_explicit": true,
+      "modules_empty": false,
+      "perks_explicit": false,
+      "perks_empty": false
+    },
+    "Preset 5": {
+      "cards_explicit": true,
+      "cards_empty": true,
+      "modules_explicit": true,
+      "modules_empty": false,
+      "perks_explicit": false,
+      "perks_empty": false
+    }
+  },
+  "families": {
+    "bot": {
+      "total_rows": 20,
+      "mapped_rows": 20,
+      "unmapped_rows": 0
+    },
+    "bot_plus": {
+      "total_rows": 5,
+      "mapped_rows": 5,
+      "unmapped_rows": 0
+    },
+    "bot_unlock": {
+      "total_rows": 7,
+      "mapped_rows": 7,
+      "unmapped_rows": 0
+    },
+    "card": {
+      "total_rows": 23,
+      "mapped_rows": 23,
+      "unmapped_rows": 0
+    },
+    "enhancement": {
+      "total_rows": 22,
+      "mapped_rows": 21,
+      "unmapped_rows": 1
+    },
+    "guardian": {
+      "total_rows": 18,
+      "mapped_rows": 18,
+      "unmapped_rows": 0
+    },
+    "lab": {
+      "total_rows": 220,
+      "mapped_rows": 220,
+      "unmapped_rows": 0
+    },
+    "module": {
+      "total_rows": 17,
+      "mapped_rows": 17,
+      "unmapped_rows": 0
+    },
+    "module_substat": {
+      "total_rows": 36,
+      "mapped_rows": 36,
+      "unmapped_rows": 0
+    },
+    "perk": {
+      "total_rows": 36,
+      "mapped_rows": 35,
+      "unmapped_rows": 1
+    },
+    "player_stuff": {
+      "total_rows": 17,
+      "mapped_rows": 17,
+      "unmapped_rows": 0
+    },
+    "relic": {
+      "total_rows": 43,
+      "mapped_rows": 43,
+      "unmapped_rows": 0
+    },
+    "theme_song": {
+      "total_rows": 1,
+      "mapped_rows": 1,
+      "unmapped_rows": 0
+    },
+    "uw": {
+      "total_rows": 29,
+      "mapped_rows": 29,
+      "unmapped_rows": 0
+    },
+    "uw_plus": {
+      "total_rows": 9,
+      "mapped_rows": 9,
+      "unmapped_rows": 0
+    },
+    "uw_unlock": {
+      "total_rows": 9,
+      "mapped_rows": 9,
+      "unmapped_rows": 0
+    },
+    "vault": {
+      "total_rows": 66,
+      "mapped_rows": 66,
+      "unmapped_rows": 0
+    },
+    "workshop": {
+      "total_rows": 48,
+      "mapped_rows": 48,
+      "unmapped_rows": 0
+    }
+  }
+}

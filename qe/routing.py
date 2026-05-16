@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from functools import lru_cache
 import importlib
 from pathlib import Path
-from typing import Protocol
+from typing import Any, Mapping, Protocol
 import yaml
 
 from input.state_types import AccountState, ScenarioProjectionState, ScenarioRuntimeInputs
@@ -129,6 +129,47 @@ def _resolve_free_upgrade_chance_pct(
     if cap is not None:
         final = max(0.0, min(cap, final))
     return final, 'resolved', 'Destination-specific free-upgrade formula: additive percent-point bucket x enhancement multiplier.', schema
+
+
+def _resolve_coins_per_kill_bonus(
+    destination_id: str,
+    contributors: list[StatInput],
+    schema: dict[str, object],
+) -> tuple[float | None, str, str, dict[str, object]]:
+    workshop = next((_as_float(row.value) for row in contributors if row.source_family == 'workshop'), None)
+    if workshop is None:
+        return None, 'mapped_not_resolved', f'Missing workshop base for {destination_id}.', schema
+    lab_multiplier = 1.0
+    substat_add = 0.0
+    enhancement_multiplier = 1.0
+    perk_multiplier = 1.0
+    vault_multiplier = 1.0
+    unsupported: list[str] = []
+    for row in contributors:
+        if row.source_family == 'workshop':
+            continue
+        value = _as_float(row.value)
+        if value is None:
+            unsupported.append(f'{row.source_family}:{row.source_name}:non_numeric')
+            continue
+        if row.source_family == 'lab':
+            lab_multiplier *= _canonical_source_multiplier(destination_id, row, value)
+        elif row.source_family == 'module_substat':
+            substat_add += value / 100.0 if row.value_type == 'percent_display' else value
+        elif row.source_family == 'enhancement':
+            enhancement_multiplier *= _canonical_source_multiplier(destination_id, row, value)
+        elif row.source_family == 'perk':
+            perk_multiplier *= _canonical_source_multiplier(destination_id, row, value)
+        elif row.source_family == 'vault':
+            vault_multiplier *= 1.0 + value
+        else:
+            unsupported.append(f'{row.source_family}:{row.source_name}:{row.value_type}')
+            continue
+    final = ((workshop * lab_multiplier) + substat_add) * enhancement_multiplier * vault_multiplier * perk_multiplier
+    notes = 'Destination-specific Coins/Kill formula from formula_surface_policy: ((workshop x lab) + generator substat sum) x enhancement x vault x all-coin perks.'
+    if unsupported:
+        notes += ' Unsupported contributors preserved: ' + ', '.join(unsupported[:8])
+    return final, 'resolved' if not unsupported else 'partially_resolved', notes, schema
 
 
 def _destination_type_schema(destination_id: str, meta: dict[str, str]) -> dict[str, object]:
@@ -678,6 +719,16 @@ def _resolve_bucket(
 
     if destination_id == 'tower_defense_absolute':
         return _resolve_base_times_post_multipliers(destination_id, contributors, schema, note_label='Promoted shared base-times-post-multipliers family')
+    if destination_id == 'tower_regen':
+        return _resolve_survivability_base_times_multipliers(
+            destination_id,
+            contributors,
+            schema,
+            module_substat_family='tower_regen_ep',
+            note_label='EPH_REGEN-aligned survivability base-times-multipliers family',
+        )
+    if destination_id == 'coins_per_kill_bonus':
+        return _resolve_coins_per_kill_bonus(destination_id, contributors, schema)
     if destination_id == 'tower_damage_per_meter_multiplier':
         return _resolve_decimal_base_times_post_multipliers(destination_id, contributors, schema)
     if destination_id == 'wall_fortification_multiplier':
@@ -1612,6 +1663,7 @@ def resolve_checkpoint_surfaces(
     runtime_branch_id: str = 'branch_checkpoint',
     scenario_runtime_inputs: ScenarioRuntimeInputs | None = None,
     scenario_projection_state: ScenarioProjectionState | None = None,
+    scenario_context: Mapping[str, Any] | None = None,
     trace_mode: str = 'contributors',
     kernel: StatQueryKernel | None = None,
 ) -> QueryResponse:
@@ -1637,7 +1689,7 @@ def resolve_checkpoint_surfaces(
         runtime_branch_id=runtime_branch_id,
         scenario_runtime_inputs=scenario_runtime_inputs,
         scenario_projection_state=scenario_projection_state,
-        scenario_context={'mode_id': 'checkpoint'},
+        scenario_context=scenario_context or {'mode_id': 'checkpoint'},
     )
     query_kernel = kernel or get_default_query_kernel()
     baseline = query_kernel.materializer.materialize_from_rows(

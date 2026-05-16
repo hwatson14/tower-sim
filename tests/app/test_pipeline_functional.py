@@ -118,8 +118,8 @@ def test_load_ep_oracle_applies_key_level_ambiguity_overrides(tmp_path: Path) ->
     # Ambiguous rows route by export key, not label-only matching.
     assert oracle['derived::wall.hp_pre_fort']['ep_value_raw'] == '132.07 T'
     assert oracle['derived::wall.hp_pre_fort']['label'] == 'Wall Health'
-    assert oracle['state::wall.fortification_multiplier']['ep_value_raw'] == '1.37 q'
-    assert oracle['state::wall.fortification_multiplier']['label'] == 'Wall Fortification'
+    assert oracle['derived::wall.hp_final']['ep_value_raw'] == '1.37 q'
+    assert oracle['derived::wall.hp_final']['label'] == 'Wall Fortification'
     # Existing ambiguity aliases remain key-driven.
     assert oracle['state::tower.crit_multiplier']['ep_value_raw'] == '170.5248'
     assert oracle['state::tower.package_chance_pct']['ep_value_raw'] == '0.788'
@@ -778,11 +778,12 @@ def test_build_boss_wave_payload_live_path_avoids_delta_fallback():
     primitives = primitive_inputs['values']
     expected_wall_regen = canonical['state::tower.regen'] * (canonical['state::wall.regen'] / 100.0)
     expected_wall_hp_pre_fort = (
-        canonical['state::tower.hp']
+        primitives['tower_hp']
         * primitives['wall_hp_ratio']
         * primitives['wall_hp_multiplier']
     )
-    assert primitives['tower_hp'] == pytest.approx(canonical['state::tower.hp'])
+    assert primitives['tower_hp_qe_surface'] == pytest.approx(canonical['state::tower.hp'])
+    assert primitives['tower_hp'] >= canonical['state::tower.hp']
     assert primitives['attack_skip_chance'] == pytest.approx(canonical['state::tower.enemy_attack_level_skip_pct'] / 100.0)
     assert primitives['health_skip_chance'] == pytest.approx(canonical['state::tower.enemy_health_level_skip_pct'] / 100.0)
     assert primitives['wall_hp_qe_surface'] == pytest.approx(canonical['state::wall.hp'])
@@ -813,12 +814,12 @@ def test_build_boss_wave_payload_live_path_avoids_delta_fallback():
     assert ledger['primitives']['state::tower.enemy_attack_level_skip_pct']['classification'] == 'transformed'
     assert ledger['primitives']['state::tower.enemy_health_level_skip_pct']['classification'] == 'transformed'
     assert ledger['primitives']['state::tower.hp']['state_phase'] == 'start_of_run'
-    assert ledger['primitives']['state::tower.hp']['exact_value'] == pytest.approx(canonical['state::tower.hp'])
+    assert ledger['primitives']['state::tower.hp']['exact_value'] == pytest.approx(primitives['tower_hp'])
     assert ledger['primitives']['state::wall.hp']['semantic_meaning'].startswith('QE wall HP surface currently carries wall-health ratio contributors')
     assert ledger['primitives']['state::wall.hp']['fortification_transform'] == 'not_used_as_final_wall_hp'
     assert ledger['primitives']['state::wall.hp']['classification'] == 'transformed'
     assert ledger['primitives']['state::wall.hp']['boss_waves_semantic_decision'] == 'transformed_primitive_not_final_display_value'
-    assert ledger['primitives']['state::wall.hp']['tower_hp'] == pytest.approx(canonical['state::tower.hp'])
+    assert ledger['primitives']['state::wall.hp']['tower_hp'] == pytest.approx(primitives['tower_hp'])
     assert ledger['primitives']['state::wall.regen']['classification'] == 'transformed'
     assert ledger['primitives']['state::wall.regen']['boss_waves_semantic_decision'] == 'transformed_percent_points_primitive_not_final_hp_per_second'
     assert ledger['primitives']['state::wall.regen']['exact_value'] == pytest.approx(canonical['state::wall.regen'])
@@ -858,7 +859,7 @@ def test_build_boss_wave_payload_live_path_avoids_delta_fallback():
     assert fort_check['qe_state_wall_hp_surface'] == pytest.approx(canonical['state::wall.hp'])
     assert fort_check['policy'].startswith('derive pre-fort wall HP from tower_hp')
     hp_check = ledger['wall_hp_formula_check']
-    assert hp_check['tower_hp'] == pytest.approx(canonical['state::tower.hp'])
+    assert hp_check['tower_hp'] == pytest.approx(primitives['tower_hp'])
     assert hp_check['reconstructed_displayed_wall_hp_pre_fort'] == pytest.approx(expected_wall_hp_pre_fort)
     regen_check = ledger['wall_regen_formula_check']
     assert regen_check['tower_regen'] == pytest.approx(canonical['state::tower.regen'])
@@ -1114,6 +1115,29 @@ def test_boss_wave_milestone_uses_default_workshop_levels_when_preset_lane_is_bl
 
     assert levels['Enemy Attack Level Skip'] == account_state.workshop['Enemy Attack Level Skip'].preset_levels['Farming']
     assert levels['Wall Health'] == account_state.workshop['Wall Health'].preset_levels['Farming']
+
+
+def test_default_workshop_order_routes_split_enemy_level_skip_tracks_to_utility():
+    from qe.run_plan import default_category_track_order
+
+    levels = {
+        'Enemy Attack Level Skip': 350,
+        'Enemy Health Level Skip': 340,
+        'Package Chance': 60,
+    }
+    max_levels = {
+        'Enemy Attack Level Skip': 699,
+        'Enemy Health Level Skip': 699,
+        'Package Chance': 60,
+    }
+
+    order = default_category_track_order(levels, max_levels)
+
+    assert order['utility'] == (
+        'Enemy Attack Level Skip',
+        'Enemy Health Level Skip',
+        'Package Chance',
+    )
 
 
 def test_build_common_trajectory_rederives_skip_from_row_workshop_levels():

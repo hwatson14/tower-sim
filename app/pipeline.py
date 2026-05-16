@@ -132,6 +132,9 @@ BOSS_WAVE_REPLACEMENT_PRIMITIVE_SURFACE_IDS: tuple[str, ...] = (
     'state::wall.fortification_multiplier',
     'state::tower.defense_pct',
     'state::tower.defense_absolute',
+    'state::labs.dissonant_echo.defense.level',
+    'state::dissonance.defense.active_boost_multiplier',
+    'state::dissonance.defense.echo_source_bonus',
     'state::tower.thorns_damage_pct',
     'state::wall.thorns_damage_pct',
     'state::cards.plasma_cannon.effect_pct',
@@ -951,8 +954,15 @@ def _resolve_boss_wave_replacement_primitives(
         state_mode='start_of_run',
         perks_enabled=False,
         scenario_runtime_inputs=ScenarioRuntimeInputs.from_mapping(scenario_runtime_inputs),
+        scenario_context={
+            'mode_id': str(config.get('mode_id') or 'farming'),
+            'tier': int(config.get('tier_number') or 1),
+            'league': config.get('league'),
+            'tournament_wave': config.get('tournament_wave'),
+        },
     )
     statbook = query_response_to_statbook(response, notes='Boss Waves replacement primitive resolution.')
+    publish_query_surfaces(statbook.rows, account_state_labs=getattr(account_state, 'labs', {}) or {})
     attack_skip_seed = _boss_wave_skip_seed_from_qe_row(
         surface_id='state::tower.enemy_attack_level_skip_pct',
         statbook_row=_required_statbook_row(statbook, 'state::tower.enemy_attack_level_skip_pct'),
@@ -963,7 +973,12 @@ def _resolve_boss_wave_replacement_primitives(
         statbook_row=_required_statbook_row(statbook, 'state::tower.enemy_health_level_skip_pct'),
         workshop_levels=workshop_levels,
     )
-    tower_hp = _required_statbook_float(statbook, 'state::tower.hp')
+    tower_hp_qe_surface = _required_statbook_float(statbook, 'state::tower.hp')
+    tower_hp = _optional_statbook_float(
+        statbook,
+        'derived::ehp.health_factor',
+        default=tower_hp_qe_surface,
+    )
     tower_regen = _required_statbook_float(statbook, 'state::tower.regen')
     wall_hp_row = _required_statbook_row(statbook, 'state::wall.hp')
     wall_hp_derivation = derive_wall_hp_from_qe_primitives(
@@ -1023,6 +1038,7 @@ def _resolve_boss_wave_replacement_primitives(
         'free_defense_upgrade_chance': _required_statbook_fraction(statbook, 'state::tower.free_defense_upgrade_chance_pct'),
         'free_utility_upgrade_chance': _required_statbook_fraction(statbook, 'state::tower.free_utility_upgrade_chance_pct'),
         'tower_hp': tower_hp,
+        'tower_hp_qe_surface': tower_hp_qe_surface,
         'tower_regen': tower_regen,
         'wall_hp_qe_surface': _required_statbook_float(statbook, 'state::wall.hp'),
         'wall_hp': float(wall_hp_derivation['wall_hp_pre_fort']),
@@ -2418,7 +2434,7 @@ def _run_stats_timing_family_id(*, preset_name: str, perks_enabled: bool) -> str
     return 'timing_scenario_probe'
 
 
-def _run_stats_scenario_config(account_state, *, preset_name: str):
+def _run_stats_scenario_config(account_state, *, preset_name: str, tier_number: int | None = None):
     from simulators.scenario import ScenarioConfig
 
     if preset_name == 'Tourney':
@@ -2429,12 +2445,23 @@ def _run_stats_scenario_config(account_state, *, preset_name: str):
         )
         return ScenarioConfig(mode_id='tournament', league=league)
     tier = (
+        int(tier_number) if tier_number else None
+    ) or (
         _extract_tier_number(account_state.player_meta.get('Farming Tier'))
         or _extract_tier_number(account_state.highest_tier_unlocked_label)
         or account_state.highest_tier_unlocked_number
         or 14
     )
     return ScenarioConfig(mode_id='farming', tier=int(tier))
+
+
+def _run_stats_scenario_context(scenario_config) -> dict[str, object]:
+    return {
+        'mode_id': scenario_config.mode_id,
+        'tier': scenario_config.tier,
+        'league': scenario_config.league,
+        'tournament_wave': scenario_config.tournament_wave,
+    }
 
 
 def _run_stats_perk_state(account_state, *, preset_name: str, perk_state: str, perk_mode: str, state_mode: str) -> tuple[str | None, bool]:
@@ -3089,13 +3116,18 @@ class RunStatsSession:
                 state_start = perf_counter()
                 progression_family_id = _run_stats_progression_family_id(state_mode=state_mode, perks_enabled=perks_enabled)
                 timing_family_id = _run_stats_timing_family_id(preset_name=preset_name, perks_enabled=perks_enabled)
-                scenario_config = _run_stats_scenario_config(account_state, preset_name=preset_name)
+                scenario_config = _run_stats_scenario_config(
+                    account_state,
+                    preset_name=preset_name,
+                    tier_number=getattr(args, 'tier', None),
+                )
                 base_stat_inputs = tuple(compile_stat_inputs(
                     account_state,
                     preset_name=preset_name,
                     state_mode=state_mode,
                     perk_preset_name=perk_preset_name,
                     perks_enabled=perks_enabled,
+                    scenario_context=_run_stats_scenario_context(scenario_config),
                 ))
                 if preset_name == 'Farming' and state_mode == 'start_of_run':
                     primary_stats_stat_inputs_payload = [row.to_dict() for row in base_stat_inputs]
@@ -3106,7 +3138,7 @@ class RunStatsSession:
                         state_mode=state_mode,
                         perk_preset_name=perk_preset_name,
                         perks_enabled=perks_enabled,
-                        scenario_context={'mode_id': 'progression'},
+                        scenario_context=_run_stats_scenario_context(scenario_config),
                     ),
                     stat_inputs=base_stat_inputs,
                 )
@@ -4151,6 +4183,7 @@ def _build_pipeline_trace_from_artifacts(
             'perk_mode': request.perk_mode,
             'include_slow_audits': request.include_slow_audits,
             'perk_state': request.perk_state,
+            'tier': request.tier,
         },
         execution_path=execution_path,
         stages=stages,
@@ -4169,6 +4202,7 @@ def execute_pipeline(request: PipelineRunRequest) -> PipelineRunResult:
     args.perk_mode = request.perk_mode
     args.include_slow_audits = request.include_slow_audits
     args.perk_state = request.perk_state
+    args.tier = request.tier
     exit_code = run_analysis_pipeline(args)
     diagnostics = _load_json_artifact(request.out / 'diagnostics.json')
     total_elapsed_ms = round((perf_counter() - started_at) * 1000.0, 3)
@@ -4210,6 +4244,7 @@ def build_verification_snapshot_set(
             perk_mode=base_request.perk_mode,
             include_slow_audits=base_request.include_slow_audits,
             perk_state=spec.perk_state,
+            tier=base_request.tier,
         )
         for spec in specs
     )
@@ -4236,6 +4271,7 @@ def _default_verification_matrix_requests(base_request: PipelineRunRequest) -> t
             perk_mode=base_request.perk_mode,
             include_slow_audits=base_request.include_slow_audits,
             perk_state=spec.perk_state,
+            tier=base_request.tier,
         )
         for spec in specs
     )

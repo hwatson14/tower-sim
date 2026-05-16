@@ -1,0 +1,102 @@
+{
+  "survivor_order": [
+    "state::tower.regen",
+    "state::tower.hp",
+    "state::tower.defense_absolute",
+    "state::tower.damage",
+    "state::wall.hp",
+    "state::wall.regen"
+  ],
+  "rows": [
+    {
+      "destination": "state::tower.regen",
+      "verification_status": "publishable",
+      "issues": [],
+      "final_value": 58805607506134.33,
+      "ep_compare_value": null,
+      "ep_reference_value": null,
+      "delta": null,
+      "relative_delta_pct": null,
+      "compare_preset": null,
+      "compare_perk_state": null,
+      "package_value_source_state_mode": null,
+      "ep_stage_context": null,
+      "note": "primary_upstream_survivor"
+    },
+    {
+      "destination": "state::tower.hp",
+      "verification_status": "publishable",
+      "issues": [],
+      "final_value": 6431026591384.203,
+      "ep_compare_value": null,
+      "ep_reference_value": null,
+      "delta": null,
+      "relative_delta_pct": null,
+      "compare_preset": null,
+      "compare_perk_state": null,
+      "package_value_source_state_mode": null,
+      "ep_stage_context": null,
+      "note": "primary_upstream_survivor"
+    },
+    {
+      "destination": "state::tower.defense_absolute",
+      "verification_status": null,
+      "issues": [],
+      "final_value": null,
+      "ep_compare_value": null,
+      "ep_reference_value": null,
+      "delta": null,
+      "relative_delta_pct": null,
+      "compare_preset": null,
+      "compare_perk_state": null,
+      "package_value_source_state_mode": null,
+      "ep_stage_context": null,
+      "note": "primary_upstream_survivor"
+    },
+    {
+      "destination": "state::tower.damage",
+      "verification_status": "publishable",
+      "issues": [],
+      "final_value": 9752127020.58593,
+      "ep_compare_value": null,
+      "ep_reference_value": null,
+      "delta": null,
+      "relative_delta_pct": null,
+      "compare_preset": null,
+      "compare_perk_state": null,
+      "package_value_source_state_mode": null,
+      "ep_stage_context": null,
+      "note": "primary_upstream_survivor"
+    },
+    {
+      "destination": "state::wall.hp",
+      "verification_status": "publishable",
+      "issues": [],
+      "final_value": 191600640.00000003,
+      "ep_compare_value": null,
+      "ep_reference_value": null,
+      "delta": null,
+      "relative_delta_pct": null,
+      "compare_preset": null,
+      "compare_perk_state": null,
+      "package_value_source_state_mode": null,
+      "ep_stage_context": null,
+      "note": "downstream_reflection_of_tower_residue"
+    },
+    {
+      "destination": "state::wall.regen",
+      "verification_status": "publishable",
+      "issues": [],
+      "final_value": 525.0,
+      "ep_compare_value": null,
+      "ep_reference_value": null,
+      "delta": null,
+      "relative_delta_pct": null,
+      "compare_preset": null,
+      "compare_perk_state": null,
+      "package_value_source_state_mode": null,
+      "ep_stage_context": null,
+      "note": "downstream_reflection_of_tower_residue"
+    }
+  ]
+}
