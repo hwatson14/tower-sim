@@ -1,37 +1,78 @@
 Oracle Outputs (Effective Paths),,,,
 EP id,1eAli1sN54nfC3dPdZjsjqvUw2UCmiR96k2NK3-bR8yg,,,
 EP Base URL,https://docs.google.com/spreadsheets/d/1eAli1sN54nfC3dPdZjsjqvUw2UCmiR96k2NK3-bR8yg,,,
+"Note: Rows ending _display, _score, _equiv, or _ratio are curated EP reference/helper fields, not raw stats.",,,,
+,,,,
+suite,key,label,value,source_tab
+edmg,edmg_total_raw,eDMG/sec total raw,1.016969274326566e+33,eDamage
+edmg,base_damage_raw,Base damage,21613962207280770,eDamage
+edmg,crit_chance,Critical chance,1.06,eDamage
+edmg,crit_factor,Critical factor,190.33020000000005,eDamage
+edmg,super_crit_chance,Super crit chance,0.34900000000000003,eDamage
+edmg,super_crit_multiplier,Super crit multiplier,39.949895999999995,eDamage
+edmg,crit_multiplier_effective,Crit multiplier effective,2777.5863819850615,eDamage
+edmg,uw_crit_multiplier_effective,UW crit multiplier effective,3199.205522043935,eDamage
+edmg,multishot_effective,Multishot effective,6.9399999999999995,eDamage
+edmg,bounce_shot_effective_ad,Bounce shot effective incl AD,4.328911360000001,eDamage
+edmg,bounce_shot_effective_no_ad,Bounce shot effective excl AD,4.328911360000001,eDamage
+edmg,rapid_fire_effective,Rapid fire effective,3.995576751644659,eDamage
+edmg,bullets_per_second,Bullets per second,358.8948501023639,eDamage
+edmg,range_m,Range metres,127.9223999157052,eDamage
+edmg,damage_per_meter,Damage per metre,0.1355112,eDamage
+edmg,range_dpm_effective,Range DPM effective,5.333729479864277,eDamage
+edmg,super_tower_bonus,Super Tower bonus,1,eDamage
+edmg,super_tower_uw,Super Tower UW,1,eDamage
+edmg,max_rend_multiplier,Max rend multiplier,1,eDamage
+edmg,bullet_damage_multiplier,Bullet damage multiplier,229781.91933588844,eDamage
+edmg,disco_uw_multiplier,Disco UW multiplier,1.8294287524514141,eDamage
+edmg,avg_time_boost,Average time boost,0.777044446736104,eDamage
+edmg,spotlight_multiplier,Spotlight multiplier,45.36111573057933,eDamage
+edmg,death_wave_dps,Death Wave DPS,10.810192435301925,eDamage
+edmg,chain_lightning_dps,Chain Lightning DPS,106214484.22732075,eDamage
+edmg,smart_missile_dps,Smart Missile DPS,0,eDamage
+edmg,spotlight_missile_dps,Spotlight Missile DPS,5536.88166216278,eDamage
+edmg,smart_missile_heatup,Smart Missile heatup,5.5,eDamage
+edmg,poison_swamp_dps,Poison Swamp DPS,0,eDamage
+edmg,poison_swamp_dc,Poison Swamp DC,22.75,eDamage
+edmg,inner_land_mines_dps,Inner Land Mines DPS,0,eDamage
+edmg,ilm_heat_multiplier,ILM heat multiplier,0.5,eDamage
+edmg,core_multiplier,Core multiplier,26.105120000000007,eDamage
+edmg,uws_total_raw,UWs total raw,1875164584934.2734,eDamage
+edmg,chrono_field_multiplier,Chrono Field multiplier,7.843137254901957,eDamage
+edmg,chrono_field_plus_multiplier,Chrono Field+ multiplier,1,eDamage
+edmg,slow_multiplier,Slow multiplier,7.843137254901957,eDamage
 ,,,,
 ,,,,
-suite,key,label,value,import
-edmg,edmg,eDMG,1.02 D,1.02 D
-edmg,damage,Damage,51.26 T,51.26 T
-edmg,attack_speed,Attack Speed,40.012688520000005,40.012688520000005
-edmg,crit_chance,Critical Chance,1.06,1.06
-edmg,crit_factor,Critical Factor,190.33020000000005,190.33020000000005
-edmg,range,Range,127.9223999157052,127.9223999157052
-edmg,damage_per_meter,Damage / Meter,0.1355112,0.1355112
-edmg,multishot_chance,Multishot Chance,0.495,0.495
-edmg,multishot_targets,Multishot Targets,13,13
-edmg,rapid_fire_chance,Rapid Fire Chance,0.34,0.34
-edmg,rapid_fire_duration,Rapid Fire Duration,5.55,5.55
-edmg,bounce_shot_chance,Bounce Shot Chance,0.8,0.8
-edmg,bounce_shot_targets,Bounce Shot Targets,8,8
-edmg,super_crit_chance,Super Crit Chance,0.34900000000000003,0.34900000000000003
-edmg,super_crit_multiplier,Super Crit Multiplier,x39.95,x39.95
-edmg,max_rend_mult,Max Rend Mult,9.6,9.6
-edmg,recovery_package_chance,Recovery Package Chance,0.831,0.831
-ehp,ehp,eHP,860.62 q,860.62 q
-ehp,health,Health,32.85 T,32.85 T
-ehp,health_regen,Health Regen,48.1 T,48.1 T
-ehp,defense_absolute,Defense Absolute,323.92 M,323.92 M
-ehp,defense_percent,Defense %,0.98,0.98
-ehp,wall_health,Wall Health,574.83 T,574.83 T
-ehp,wall_fortification,Wall Fortification,6.09 q,6.09 q
-ehp,wall_regen,Wall Regen,252.54 T,252.54 T
-ehp,max_recovery,Max Recovery,,
-eecon,cpk_average,Average CpK,471.17 M,471.17 M
-eecon,coins_per_kill_bonus,Coins / Kill Bonus,46.70147790000001,46.70147790000001
-eecon,free_attack_upgrade,Free Attack Upgrade,1.2246974999999998,1.2246974999999998
-eecon,free_defense_upgrade,Free Defense Upgrade,1.11486375,1.11486375
-eecon,free_utility_upgrade,Free Utility Upgrade,1.2544623,1.2544623
+ehp,ehp_total_raw,eHP total raw,860615355043605400,eHP
+ehp,health_raw,Health raw,3873988554064.2007,eHP
+ehp,armor_multiplier,Armor multiplier,8.480849599999999,eHP
+ehp,defense_absolute_raw,Defense absolute raw,323915725.75311893,eHP
+ehp,defense_percent_multiplier,Defense percent multiplier,49.99999999999996,eHP
+ehp,wall_fortification_multiplier,Wall fortification multiplier,185.45760000000004,eHP
+ehp,improved_tradeoff_perks_multiplier,Improved trade-off perks multiplier,2.2222222222222223,eHP
+ehp,chrono_field_reduction_multiplier,Chrono Field reduction multiplier,1.25,eHP
+ehp,chain_thunder_multiplier,Chain Thunder multiplier,1.0169491525423728,eHP
+ehp,health_regen_display,Health regen display,48.1 T,eHP
+ehp,wall_health_display,Wall health display,574.83 T,eHP
+ehp,wall_fortification_display,Wall fortification display,6.09 q,eHP
+ehp,wall_regen_raw_per_sec,Wall regen per sec raw,252538650320360.9,eRegen
+,,,,
+,,,,
+eecon,cpk_average_raw,Average CpK raw,471166645.7762736,eEcon
+eecon,coins_per_kill_bonus,Coins per kill bonus,46.70147790000001,eEcon
+eecon,free_attack_upgrade,Free attack upgrade,1.2246974999999998,eEcon
+eecon,free_defense_upgrade,Free defense upgrade,1.11486375,eEcon
+eecon,free_utility_upgrade,Free utility upgrade,1.2544623,eEcon
+eecon,recovery_package_chance,Recovery package chance,0.7909999999999999,eEcon
+eecon,package_after_boss_score,Package After Boss score,309.4,eEcon
+eecon,package_after_boss_equiv,Package After Boss equivalent,90,eEcon
+eecon,standard_perk_bonus_score,Standard Perk Bonus score,378.52,eEcon
+eecon,standard_perk_bonus_equiv,Standard Perk Bonus equivalent,110.1060116354234,eEcon
+eecon,improved_tradeoff_perks_score,Improved Trade-Off Perks score,378.12,eEcon
+eecon,improved_tradeoff_perks_equiv,Improved Trade-Off Perks equivalent,109.98965740142212,eEcon
+eecon,golden_tower_bonus_score,Golden Tower bonus score,286.48,eEcon
+eecon,golden_tower_bonus_equiv,Golden Tower bonus equivalent,83.33290239172592,eEcon
+eecon,death_wave_coin_bonus_score,Death Wave coin bonus score,327.27,eEcon
+eecon,death_wave_coin_bonus_ratio,Death Wave coin bonus ratio,1.0577569489334195,eEcon
+eecon,spotlight_coin_bonus_score,Spotlight coin bonus score,394.34,eEcon
+eecon,spotlight_coin_bonus_ratio,Spotlight coin bonus ratio,1.0417943569692487,eEcon
