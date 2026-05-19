@@ -10,6 +10,8 @@
 # and ELS scenario inputs. Do not add derived or generated content here.
 
 loadout:
+  # Range and Shockwave Size are in-game lab sliders; set the effective lab
+  # level you actually choose for each loadout preset.
   lab_adjusters:
     Farming:
       Range: 0
@@ -51,7 +53,6 @@ perk_policy:
     - "Enemies Have -50% Health, but Tower Health Regen and Lifesteal -90%"
     - "Enemies Speed -40%, But Enemies Damage x2.5"
     - "Interest x1.50"
-    - "x1.15 Defense Absolute"
     - "Land Mine Damage x3.50"
     - "x1.15 Cash Bonus"
 
@@ -123,6 +124,17 @@ manual_advisory_inputs:
       rationale: "Average daily farming hours used by the simulator-owned farming throughput model."
       replacement_target: "derived::module.runtime_profile.farming_hours_per_day"
       notes: "Default accepted-model cadence assumption for farming throughput and shard income."
+    - input_id: module.project_funding.current_cash
+      input_kind: accepted_model_override
+      value_type: scalar
+      value: 50000000000
+      is_set: true
+      unit: cash
+      consumer_scope: [simulator]
+      trust_label: accepted_model
+      rationale: "Current-cash runtime assumption used to evaluate Project Funding in projected eDamage."
+      replacement_target: "future_query_surface::state::run.current_cash"
+      notes: "Project Funding is continuous from current cash; update this value for a different projected run cash point."
 
 observed_run_els_scenarios:
   scenarios:

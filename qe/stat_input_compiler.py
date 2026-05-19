@@ -820,13 +820,6 @@ def _parse_mastery_value_token(raw: str) -> Tuple[float | None, str]:
         return None, 'raw_text'
 
 
-def _card_mastery_baseline(first_token: str) -> Tuple[float, str]:
-    token = str(first_token or '').strip()
-    if token.startswith('x'):
-        return 1.0, 'multiplier'
-    return 0.0, 'resolved_value'
-
-
 @lru_cache(maxsize=1)
 def _load_card_mastery_values() -> Dict[Tuple[str, int], Tuple[float, str]]:
     out: Dict[Tuple[str, int], Tuple[float, str]] = {}
@@ -841,14 +834,11 @@ def _load_card_mastery_values() -> Dict[Tuple[str, int], Tuple[float, str]]:
             alias = _CARD_MASTERY_NAME_ALIASES.get(f'{mastery_name} Mastery')
             if alias is not None:
                 mastery_keys.append(alias)
-            baseline = _card_mastery_baseline(row.get('level_0', ''))
-            for mastery_key in mastery_keys:
-                out[(mastery_key, 0)] = baseline
             for level in range(10):
                 value, value_type = _parse_mastery_value_token(row.get(f'level_{level}', ''))
                 if value is not None:
                     for mastery_key in mastery_keys:
-                        out[(mastery_key, level + 1)] = (value, value_type)
+                        out[(mastery_key, level)] = (value, value_type)
     return out
 
 
@@ -1572,6 +1562,11 @@ def compile_stat_inputs(
         value = raw_value
         if value_type == 'bool':
             value = str(raw_value).strip().lower() in {'true', '1', 'yes', 'unlocked'}
+        if meta_name == 'Coin Multiplier':
+            match = re.search(r'[-+]?\d+(?:\.\d+)?', str(raw_value))
+            if match:
+                value = float(match.group(0))
+                value_type = 'multiplier_display'
         row = StatInput(stat_name=meta_name, source_family='player_stuff', source_name=meta_name, value=value, value_type=value_type, stage='account_state', provenance='IDS::Player & Stuff')
         bind_kb_fields(row, contributor_id, mapping_index, canonical_stats)
         _append(out, row)

@@ -106,8 +106,12 @@ def test_load_ep_oracle_applies_key_level_ambiguity_overrides(tmp_path: Path) ->
                 'suite,key,label,value,import',
                 'ehp,wall_health,Wall Health,132.07 T,132.07 T',
                 'ehp,wall_fortification,Wall Fortification,1.37 q,1.37 q',
+                'ehp,wall_regen,Wall Regen,238.16 T,238.16 T',
+                'ehp,health,Health,32.85 T,32.85 T',
                 'edmg,crit_factor,Critical Factor,170.5248,170.5248',
+                'edmg,max_rend_mult,Max Rend Mult,9.6,9.6',
                 'edmg,recovery_package_chance,Recovery Package Chance,0.788,0.788',
+                'eecon,cpk_average,Average CpK,431.19 M,431.19 M',
             ]
         ),
         encoding='utf-8',
@@ -120,9 +124,56 @@ def test_load_ep_oracle_applies_key_level_ambiguity_overrides(tmp_path: Path) ->
     assert oracle['derived::wall.hp_pre_fort']['label'] == 'Wall Health'
     assert oracle['derived::wall.hp_final']['ep_value_raw'] == '1.37 q'
     assert oracle['derived::wall.hp_final']['label'] == 'Wall Fortification'
+    assert oracle['derived::wall.regen_hp_per_second']['ep_value_raw'] == '238.16 T'
+    assert oracle['derived::ehp.health_factor']['ep_value_raw'] == '32.85 T'
+    assert oracle['derived::eecon']['ep_value_raw'] == '431.19 M'
     # Existing ambiguity aliases remain key-driven.
     assert oracle['state::tower.crit_multiplier']['ep_value_raw'] == '170.5248'
+    assert oracle['state::tower.max_rend_multiplier']['ep_value_raw'] == '9.6'
     assert oracle['state::tower.package_chance_pct']['ep_value_raw'] == '0.788'
+
+
+def test_ep_oracle_compare_normalizes_damage_per_meter_bonus_export() -> None:
+    from evaluators.compare import _normalize_compare_values
+
+    package_value, ep_value, notes = _normalize_compare_values(
+        'state::tower.damage_per_meter_multiplier',
+        'normal',
+        1.1355112,
+        0.1355112,
+    )
+
+    assert package_value == pytest.approx(0.1355112)
+    assert ep_value == pytest.approx(0.1355112)
+    assert 'package_damage_per_meter_total_multiplier_normalized_to_ep_bonus' in notes
+
+
+def test_ep_oracle_compare_uses_ep_run_context_for_component_helpers() -> None:
+    from evaluators.compare import (
+        EP_ORACLE_SHORTCUT_CONTEXT_NOTE,
+        _compare_state_key_for_destination,
+        _ep_stage_context_for_destination,
+    )
+
+    assert _compare_state_key_for_destination('derived::edamage', 'Farming') == 'Tourney__perks_off'
+    assert _compare_state_key_for_destination('derived::ehp.health_factor', 'Farming') == 'Farming__perks_on'
+    assert _compare_state_key_for_destination('derived::wall.regen_hp_per_second', 'Farming') == 'Farming__perks_on'
+
+    edamage_context = _ep_stage_context_for_destination(
+        'derived::edamage',
+        {'default_compare_preset': 'Farming', 'state_mode': 'max_progression'},
+    )
+    assert edamage_context['compare_preset'] == 'Tourney'
+    assert edamage_context['compare_perk_state'] == 'off'
+    assert EP_ORACLE_SHORTCUT_CONTEXT_NOTE in edamage_context['notes']
+
+    econ_context = _ep_stage_context_for_destination(
+        'derived::eecon',
+        {'default_compare_preset': 'Farming', 'state_mode': 'max_progression'},
+    )
+    assert econ_context['compare_preset'] == 'Farming'
+    assert econ_context['compare_perk_state'] == 'on'
+    assert EP_ORACLE_SHORTCUT_CONTEXT_NOTE in econ_context['notes']
 
 
 @pytest.mark.live
@@ -1310,7 +1361,6 @@ def test_boss_wave_perk_timeline_uses_ids_labs_first_choice_and_exports_wall_con
         'Enemies Have -50% Health, but Tower Health Regen and Lifesteal -90%',
         'Enemies Speed -40%, But Enemies Damage x2.5',
         'Interest x1.50',
-        'x1.15 Defense Absolute',
         'Land Mine Damage x3.50',
         'x1.15 Cash Bonus',
     ]

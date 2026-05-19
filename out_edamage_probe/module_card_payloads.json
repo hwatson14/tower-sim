@@ -1,0 +1,2091 @@
+{
+  "artifact": "module_card_payloads.json",
+  "schema_version": 1,
+  "presets": {
+    "Tourney": {
+      "cannon": {
+        "primary": {
+          "module_name": "Amplifying Strike",
+          "slot_type": "cannon",
+          "role": "primary",
+          "rarity_text": "Ancestral 2*",
+          "rarity_key": "ancestral",
+          "stars": 2,
+          "displayed_level": 175,
+          "displayed_level_cap": 240,
+          "level_text": "Lv. 175 / 240",
+          "role_bar_label_text": "Primary",
+          "role_bar_detail_text": "",
+          "main_value_text": "x12.059",
+          "main_label_text": "Damage",
+          "unique_value_text": "26s",
+          "unique_measure": "seconds",
+          "unique_text": {
+            "prefix_text": "Killing a boss or elite grants 5x tower damage for ",
+            "value_text": "26s",
+            "suffix_text": " seconds; a new valid kill refreshes timer rather than stacking multiplier."
+          },
+          "effect_slots": [
+            {
+              "slot_index": 1,
+              "state": "populated",
+              "unlock_level": 1,
+              "rarity_key": "ancestral",
+              "rarity_text": "Ancestral",
+              "value_text": "+7x",
+              "label_text": "Super Crit Multi"
+            },
+            {
+              "slot_index": 2,
+              "state": "populated",
+              "unlock_level": 1,
+              "rarity_key": "ancestral",
+              "rarity_text": "Ancestral",
+              "value_text": "+12%",
+              "label_text": "Bounce Shot Chance"
+            },
+            {
+              "slot_index": 3,
+              "state": "populated",
+              "unlock_level": 41,
+              "rarity_key": "ancestral",
+              "rarity_text": "Ancestral",
+              "value_text": "+4",
+              "label_text": "Multishot Targets"
+            },
+            {
+              "slot_index": 4,
+              "state": "populated",
+              "unlock_level": 101,
+              "rarity_key": "ancestral",
+              "rarity_text": "Ancestral",
+              "value_text": "+15x",
+              "label_text": "Crit Factor"
+            },
+            {
+              "slot_index": 5,
+              "state": "populated",
+              "unlock_level": 141,
+              "rarity_key": "ancestral",
+              "rarity_text": "Ancestral",
+              "value_text": "+10%",
+              "label_text": "Super Crit Chance"
+            },
+            {
+              "slot_index": 6,
+              "state": "populated",
+              "unlock_level": 161,
+              "rarity_key": null,
+              "rarity_text": null,
+              "value_text": "+8%",
+              "label_text": "Critical Chance"
+            },
+            {
+              "slot_index": 7,
+              "state": "locked",
+              "unlock_level": 201,
+              "rarity_key": null,
+              "rarity_text": null,
+              "value_text": "Locked",
+              "label_text": "Unlocks at Lv. 201"
+            },
+            {
+              "slot_index": 8,
+              "state": "locked",
+              "unlock_level": 241,
+              "rarity_key": null,
+              "rarity_text": null,
+              "value_text": "Locked",
+              "label_text": "Unlocks at Lv. 241"
+            }
+          ]
+        },
+        "assist": null
+      },
+      "armor": {
+        "primary": {
+          "module_name": "Anti-Cube Portal",
+          "slot_type": "armor",
+          "role": "primary",
+          "rarity_text": "Ancestral 2*",
+          "rarity_key": "ancestral",
+          "stars": 2,
+          "displayed_level": 161,
+          "displayed_level_cap": 240,
+          "level_text": "Lv. 161 / 240",
+          "role_bar_label_text": "Primary",
+          "role_bar_detail_text": "",
+          "main_value_text": "x9.035",
+          "main_label_text": "Health",
+          "unique_value_text": "x25",
+          "unique_measure": "multiplier",
+          "unique_text": {
+            "prefix_text": "When shockwave registers a hit, apply ",
+            "value_text": "x25",
+            "suffix_text": " damage-taken multiplier to that enemy for 7s even if the enemy is immune to the shockwave movement/effect."
+          },
+          "effect_slots": [
+            {
+              "slot_index": 1,
+              "state": "populated",
+              "unlock_level": 1,
+              "rarity_key": "ancestral",
+              "rarity_text": "Ancestral",
+              "value_text": "+2",
+              "label_text": "Orbs"
+            },
+            {
+              "slot_index": 2,
+              "state": "populated",
+              "unlock_level": 1,
+              "rarity_key": "legendary",
+              "rarity_text": "Legendary",
+              "value_text": "-40s",
+              "label_text": "Wall Rebuild"
+            },
+            {
+              "slot_index": 3,
+              "state": "populated",
+              "unlock_level": 41,
+              "rarity_key": "rare",
+              "rarity_text": "Rare",
+              "value_text": "+2%",
+              "label_text": "Defense"
+            },
+            {
+              "slot_index": 4,
+              "state": "populated",
+              "unlock_level": 101,
+              "rarity_key": "mythic",
+              "rarity_text": "Mythic",
+              "value_text": "+2",
+              "label_text": "Orb Speed"
+            },
+            {
+              "slot_index": 5,
+              "state": "populated",
+              "unlock_level": 141,
+              "rarity_key": "ancestral",
+              "rarity_text": "Ancestral",
+              "value_text": "-4s",
+              "label_text": "Shockwave Frequency"
+            },
+            {
+              "slot_index": 6,
+              "state": "populated",
+              "unlock_level": 161,
+              "rarity_key": "ancestral",
+              "rarity_text": "Ancestral",
+              "value_text": "+5%",
+              "label_text": "Death Defy"
+            },
+            {
+              "slot_index": 7,
+              "state": "locked",
+              "unlock_level": 201,
+              "rarity_key": null,
+              "rarity_text": null,
+              "value_text": "Locked",
+              "label_text": "Unlocks at Lv. 201"
+            },
+            {
+              "slot_index": 8,
+              "state": "locked",
+              "unlock_level": 241,
+              "rarity_key": null,
+              "rarity_text": null,
+              "value_text": "Locked",
+              "label_text": "Unlocks at Lv. 241"
+            }
+          ]
+        },
+        "assist": {
+          "module_name": "Orbital Augment",
+          "slot_type": "armor",
+          "role": "assist",
+          "rarity_text": "Ancestral 2*",
+          "rarity_key": "ancestral",
+          "stars": 2,
+          "displayed_level": 41,
+          "displayed_level_cap": null,
+          "level_text": "Lv. 41",
+          "role_bar_label_text": "Assist",
+          "role_bar_detail_text": "Epic | Main 0.01x | Substats 0.10x",
+          "main_value_text": "x1.0048",
+          "main_label_text": "Health",
+          "unique_value_text": "2",
+          "unique_measure": "count",
+          "unique_text": {
+            "prefix_text": "Spawn ",
+            "value_text": "2",
+            "suffix_text": " number of Electrons. On Electron hit, deal 15% of current remaining HP, multiplied by 0.25 against Bosses and Fleets."
+          },
+          "effect_slots": [
+            {
+              "slot_index": 1,
+              "state": "populated",
+              "unlock_level": 1,
+              "rarity_key": "epic",
+              "rarity_text": "Epic",
+              "value_text": "+0.8%",
+              "label_text": "Defense"
+            },
+            {
+              "slot_index": 2,
+              "state": "populated",
+              "unlock_level": 1,
+              "rarity_key": "epic",
+              "rarity_text": "Epic",
+              "value_text": "+40%",
+              "label_text": "Health Regen"
+            },
+            {
+              "slot_index": 3,
+              "state": "populated",
+              "unlock_level": 41,
+              "rarity_key": "epic",
+              "rarity_text": "Epic",
+              "value_text": "+12%",
+              "label_text": "Wall Health"
+            },
+            {
+              "slot_index": 4,
+              "state": "locked",
+              "unlock_level": 101,
+              "rarity_key": null,
+              "rarity_text": null,
+              "value_text": "Locked",
+              "label_text": "Unlocks at Lv. 101"
+            },
+            {
+              "slot_index": 5,
+              "state": "locked",
+              "unlock_level": 141,
+              "rarity_key": null,
+              "rarity_text": null,
+              "value_text": "Locked",
+              "label_text": "Unlocks at Lv. 141"
+            },
+            {
+              "slot_index": 6,
+              "state": "locked",
+              "unlock_level": 161,
+              "rarity_key": null,
+              "rarity_text": null,
+              "value_text": "Locked",
+              "label_text": "Unlocks at Lv. 161"
+            },
+            {
+              "slot_index": 7,
+              "state": "locked",
+              "unlock_level": 201,
+              "rarity_key": null,
+              "rarity_text": null,
+              "value_text": "Locked",
+              "label_text": "Unlocks at Lv. 201"
+            },
+            {
+              "slot_index": 8,
+              "state": "locked",
+              "unlock_level": 241,
+              "rarity_key": null,
+              "rarity_text": null,
+              "value_text": "Locked",
+              "label_text": "Unlocks at Lv. 241"
+            }
+          ]
+        }
+      },
+      "generator": {
+        "primary": {
+          "module_name": "Project Funding",
+          "slot_type": "generator",
+          "role": "primary",
+          "rarity_text": "Ancestral",
+          "rarity_key": "ancestral",
+          "stars": 0,
+          "displayed_level": 170,
+          "displayed_level_cap": 200,
+          "level_text": "Lv. 170 / 200",
+          "role_bar_label_text": "Primary",
+          "role_bar_detail_text": "",
+          "main_value_text": "x1.77",
+          "main_label_text": "Coins / Kill Bonus",
+          "unique_value_text": "100%",
+          "unique_measure": "pct",
+          "unique_text": {
+            "prefix_text": "Compute tower damage multiplier from current cash digit count / logarithmic form; clamp final multiplier to at least x1.00. ",
+            "value_text": "100%",
+            "suffix_text": ""
+          },
+          "effect_slots": [
+            {
+              "slot_index": 1,
+              "state": "populated",
+              "unlock_level": 1,
+              "rarity_key": "ancestral",
+              "rarity_text": "Ancestral",
+              "value_text": "+8%",
+              "label_text": "Enemy Health Level Skip"
+            },
+            {
+              "slot_index": 2,
+              "state": "populated",
+              "unlock_level": 1,
+              "rarity_key": "ancestral",
+              "rarity_text": "Ancestral",
+              "value_text": "+15%",
+              "label_text": "Package Chance"
+            },
+            {
+              "slot_index": 3,
+              "state": "populated",
+              "unlock_level": 41,
+              "rarity_key": "mythic",
+              "rarity_text": "Mythic",
+              "value_text": "+0.5x",
+              "label_text": "Coins / Kill Bonus"
+            },
+            {
+              "slot_index": 4,
+              "state": "populated",
+              "unlock_level": 101,
+              "rarity_key": "common",
+              "rarity_text": "Common",
+              "value_text": "+2%",
+              "label_text": "Free Utility Upgrade"
+            },
+            {
+              "slot_index": 5,
+              "state": "populated",
+              "unlock_level": 141,
+              "rarity_key": "rare",
+              "rarity_text": "Rare",
+              "value_text": "+4%",
+              "label_text": "Free Defense Upgrade"
+            },
+            {
+              "slot_index": 6,
+              "state": "populated",
+              "unlock_level": 161,
+              "rarity_key": "epic",
+              "rarity_text": "Epic",
+              "value_text": "+3%",
+              "label_text": "Recovery Amount"
+            },
+            {
+              "slot_index": 7,
+              "state": "locked",
+              "unlock_level": 201,
+              "rarity_key": null,
+              "rarity_text": null,
+              "value_text": "Locked",
+              "label_text": "Unlocks at Lv. 201"
+            },
+            {
+              "slot_index": 8,
+              "state": "locked",
+              "unlock_level": 241,
+              "rarity_key": null,
+              "rarity_text": null,
+              "value_text": "Locked",
+              "label_text": "Unlocks at Lv. 241"
+            }
+          ]
+        },
+        "assist": {
+          "module_name": "Galaxy Compressor",
+          "slot_type": "generator",
+          "role": "assist",
+          "rarity_text": "Mythic+",
+          "rarity_key": null,
+          "stars": 0,
+          "displayed_level": 101,
+          "displayed_level_cap": null,
+          "level_text": "Lv. 101",
+          "role_bar_label_text": "Assist",
+          "role_bar_detail_text": "Epic | Main 0.10x | Substats 0.10x",
+          "main_value_text": "x1.029",
+          "main_label_text": "Coins / Kill Bonus",
+          "unique_value_text": "1s",
+          "unique_measure": "seconds",
+          "unique_text": {
+            "prefix_text": "When a recovery package is collected, reduce cooldown of all eligible Ultimate Weapons (UWs) except Poison Swamp by ",
+            "value_text": "1s",
+            "suffix_text": " seconds."
+          },
+          "effect_slots": [
+            {
+              "slot_index": 1,
+              "state": "populated",
+              "unlock_level": 1,
+              "rarity_key": "epic",
+              "rarity_text": "Epic",
+              "value_text": "+1.1%",
+              "label_text": "Package Chance"
+            },
+            {
+              "slot_index": 2,
+              "state": "populated",
+              "unlock_level": 1,
+              "rarity_key": "epic",
+              "rarity_text": "Epic",
+              "value_text": "+0.6%",
+              "label_text": "Enemy Attack Level Skip"
+            },
+            {
+              "slot_index": 3,
+              "state": "populated",
+              "unlock_level": 41,
+              "rarity_key": "epic",
+              "rarity_text": "Epic",
+              "value_text": "+1%",
+              "label_text": "Free Utility Upgrade"
+            },
+            {
+              "slot_index": 4,
+              "state": "populated",
+              "unlock_level": 101,
+              "rarity_key": "epic",
+              "rarity_text": "Epic",
+              "value_text": "+0.6%",
+              "label_text": "Enemy Health Level Skip"
+            },
+            {
+              "slot_index": 5,
+              "state": "locked",
+              "unlock_level": 141,
+              "rarity_key": null,
+              "rarity_text": null,
+              "value_text": "Locked",
+              "label_text": "Unlocks at Lv. 141"
+            },
+            {
+              "slot_index": 6,
+              "state": "locked",
+              "unlock_level": 161,
+              "rarity_key": null,
+              "rarity_text": null,
+              "value_text": "Locked",
+              "label_text": "Unlocks at Lv. 161"
+            },
+            {
+              "slot_index": 7,
+              "state": "locked",
+              "unlock_level": 201,
+              "rarity_key": null,
+              "rarity_text": null,
+              "value_text": "Locked",
+              "label_text": "Unlocks at Lv. 201"
+            },
+            {
+              "slot_index": 8,
+              "state": "locked",
+              "unlock_level": 241,
+              "rarity_key": null,
+              "rarity_text": null,
+              "value_text": "Locked",
+              "label_text": "Unlocks at Lv. 241"
+            }
+          ]
+        }
+      },
+      "core": {
+        "primary": {
+          "module_name": "Dimension Core",
+          "slot_type": "core",
+          "role": "primary",
+          "rarity_text": "Ancestral",
+          "rarity_key": "ancestral",
+          "stars": 0,
+          "displayed_level": 164,
+          "displayed_level_cap": 200,
+          "level_text": "Lv. 164 / 200",
+          "role_bar_label_text": "Primary",
+          "role_bar_detail_text": "",
+          "main_value_text": "x12.05",
+          "main_label_text": "Ultimate Weapon Damage",
+          "unique_value_text": "20",
+          "unique_measure": "count",
+          "unique_text": {
+            "prefix_text": "Allow CL to hit initial target with 60% chance, double shock chance and base shock multiplier, and when shock reapplies to same enemy additively accumulate multiplier up to ",
+            "value_text": "20",
+            "suffix_text": " stack count."
+          },
+          "effect_slots": [
+            {
+              "slot_index": 1,
+              "state": "populated",
+              "unlock_level": 1,
+              "rarity_key": "ancestral",
+              "rarity_text": "Ancestral",
+              "value_text": "+15\u00b0",
+              "label_text": "Spotlight - Angle"
+            },
+            {
+              "slot_index": 2,
+              "state": "populated",
+              "unlock_level": 1,
+              "rarity_key": "ancestral",
+              "rarity_text": "Ancestral",
+              "value_text": "+20x",
+              "label_text": "Spotlight - Bonus"
+            },
+            {
+              "slot_index": 3,
+              "state": "populated",
+              "unlock_level": 41,
+              "rarity_key": "rare",
+              "rarity_text": "Rare",
+              "value_text": "+15x",
+              "label_text": "Chain Lightning - Damage"
+            },
+            {
+              "slot_index": 4,
+              "state": "populated",
+              "unlock_level": 101,
+              "rarity_key": "ancestral",
+              "rarity_text": "Ancestral",
+              "value_text": "+15%",
+              "label_text": "Chrono Field - Speed Reduction"
+            },
+            {
+              "slot_index": 5,
+              "state": "populated",
+              "unlock_level": 141,
+              "rarity_key": "mythic",
+              "rarity_text": "Mythic",
+              "value_text": "+12%",
+              "label_text": "Chain Lightning - Chance"
+            },
+            {
+              "slot_index": 6,
+              "state": "populated",
+              "unlock_level": 161,
+              "rarity_key": "ancestral",
+              "rarity_text": "Ancestral",
+              "value_text": "+4",
+              "label_text": "Chain Lightning - Quantity"
+            },
+            {
+              "slot_index": 7,
+              "state": "locked",
+              "unlock_level": 201,
+              "rarity_key": null,
+              "rarity_text": null,
+              "value_text": "Locked",
+              "label_text": "Unlocks at Lv. 201"
+            },
+            {
+              "slot_index": 8,
+              "state": "locked",
+              "unlock_level": 241,
+              "rarity_key": null,
+              "rarity_text": null,
+              "value_text": "Locked",
+              "label_text": "Unlocks at Lv. 241"
+            }
+          ]
+        },
+        "assist": {
+          "module_name": "Om Chip",
+          "slot_type": "core",
+          "role": "assist",
+          "rarity_text": "Ancestral 2*",
+          "rarity_key": "ancestral",
+          "stars": 2,
+          "displayed_level": 141,
+          "displayed_level_cap": null,
+          "level_text": "Lv. 141",
+          "role_bar_label_text": "Assist",
+          "role_bar_detail_text": "Epic | Main 0.15x | Substats 0.15x",
+          "main_value_text": "x2.1664",
+          "main_label_text": "Ultimate Weapon Damage",
+          "unique_value_text": "x0.3",
+          "unique_measure": "multiplier",
+          "unique_text": {
+            "prefix_text": "Retarget Spotlight to the boss and cause reflected light around that boss to increase nearby enemies damage taken by ",
+            "value_text": "x0.3",
+            "suffix_text": " multiplier."
+          },
+          "effect_slots": [
+            {
+              "slot_index": 1,
+              "state": "populated",
+              "unlock_level": 1,
+              "rarity_key": "epic",
+              "rarity_text": "Epic",
+              "value_text": "+2.25\u00b0",
+              "label_text": "Spotlight - Angle"
+            },
+            {
+              "slot_index": 2,
+              "state": "populated",
+              "unlock_level": 1,
+              "rarity_key": "epic",
+              "rarity_text": "Epic",
+              "value_text": "+2.25%",
+              "label_text": "Chrono Field - Speed Reduction"
+            },
+            {
+              "slot_index": 3,
+              "state": "populated",
+              "unlock_level": 41,
+              "rarity_key": "epic",
+              "rarity_text": "Epic",
+              "value_text": "+0.9%",
+              "label_text": "Chain Lightning - Chance"
+            },
+            {
+              "slot_index": 4,
+              "state": "populated",
+              "unlock_level": 101,
+              "rarity_key": "epic",
+              "rarity_text": "Epic",
+              "value_text": "+2.25x",
+              "label_text": "Spotlight - Bonus"
+            },
+            {
+              "slot_index": 5,
+              "state": "empty",
+              "unlock_level": 141,
+              "rarity_key": null,
+              "rarity_text": null,
+              "value_text": null,
+              "label_text": "Empty substat slot"
+            },
+            {
+              "slot_index": 6,
+              "state": "locked",
+              "unlock_level": 161,
+              "rarity_key": null,
+              "rarity_text": null,
+              "value_text": "Locked",
+              "label_text": "Unlocks at Lv. 161"
+            },
+            {
+              "slot_index": 7,
+              "state": "locked",
+              "unlock_level": 201,
+              "rarity_key": null,
+              "rarity_text": null,
+              "value_text": "Locked",
+              "label_text": "Unlocks at Lv. 201"
+            },
+            {
+              "slot_index": 8,
+              "state": "locked",
+              "unlock_level": 241,
+              "rarity_key": null,
+              "rarity_text": null,
+              "value_text": "Locked",
+              "label_text": "Unlocks at Lv. 241"
+            }
+          ]
+        }
+      }
+    },
+    "Farming": {
+      "cannon": {
+        "primary": {
+          "module_name": "Amplifying Strike",
+          "slot_type": "cannon",
+          "role": "primary",
+          "rarity_text": "Ancestral 2*",
+          "rarity_key": "ancestral",
+          "stars": 2,
+          "displayed_level": 175,
+          "displayed_level_cap": 240,
+          "level_text": "Lv. 175 / 240",
+          "role_bar_label_text": "Primary",
+          "role_bar_detail_text": "",
+          "main_value_text": "x12.059",
+          "main_label_text": "Damage",
+          "unique_value_text": "26s",
+          "unique_measure": "seconds",
+          "unique_text": {
+            "prefix_text": "Killing a boss or elite grants 5x tower damage for ",
+            "value_text": "26s",
+            "suffix_text": " seconds; a new valid kill refreshes timer rather than stacking multiplier."
+          },
+          "effect_slots": [
+            {
+              "slot_index": 1,
+              "state": "populated",
+              "unlock_level": 1,
+              "rarity_key": "ancestral",
+              "rarity_text": "Ancestral",
+              "value_text": "+7x",
+              "label_text": "Super Crit Multi"
+            },
+            {
+              "slot_index": 2,
+              "state": "populated",
+              "unlock_level": 1,
+              "rarity_key": "ancestral",
+              "rarity_text": "Ancestral",
+              "value_text": "+12%",
+              "label_text": "Bounce Shot Chance"
+            },
+            {
+              "slot_index": 3,
+              "state": "populated",
+              "unlock_level": 41,
+              "rarity_key": "ancestral",
+              "rarity_text": "Ancestral",
+              "value_text": "+4",
+              "label_text": "Multishot Targets"
+            },
+            {
+              "slot_index": 4,
+              "state": "populated",
+              "unlock_level": 101,
+              "rarity_key": "ancestral",
+              "rarity_text": "Ancestral",
+              "value_text": "+15x",
+              "label_text": "Crit Factor"
+            },
+            {
+              "slot_index": 5,
+              "state": "populated",
+              "unlock_level": 141,
+              "rarity_key": "ancestral",
+              "rarity_text": "Ancestral",
+              "value_text": "+10%",
+              "label_text": "Super Crit Chance"
+            },
+            {
+              "slot_index": 6,
+              "state": "populated",
+              "unlock_level": 161,
+              "rarity_key": null,
+              "rarity_text": null,
+              "value_text": "+8%",
+              "label_text": "Critical Chance"
+            },
+            {
+              "slot_index": 7,
+              "state": "locked",
+              "unlock_level": 201,
+              "rarity_key": null,
+              "rarity_text": null,
+              "value_text": "Locked",
+              "label_text": "Unlocks at Lv. 201"
+            },
+            {
+              "slot_index": 8,
+              "state": "locked",
+              "unlock_level": 241,
+              "rarity_key": null,
+              "rarity_text": null,
+              "value_text": "Locked",
+              "label_text": "Unlocks at Lv. 241"
+            }
+          ]
+        },
+        "assist": null
+      },
+      "armor": {
+        "primary": {
+          "module_name": "Sharp Fortitude",
+          "slot_type": "armor",
+          "role": "primary",
+          "rarity_text": "Ancestral",
+          "rarity_key": "ancestral",
+          "stars": 0,
+          "displayed_level": 161,
+          "displayed_level_cap": 200,
+          "level_text": "Lv. 161 / 200",
+          "role_bar_label_text": "Primary",
+          "role_bar_detail_text": "",
+          "main_value_text": "x8.44",
+          "main_label_text": "Health",
+          "unique_value_text": "x2.5",
+          "unique_measure": "multiplier",
+          "unique_text": {
+            "prefix_text": "Multiply wall HP and wall regen by ",
+            "value_text": "x2.5",
+            "suffix_text": " factor, and for repeated wall-thorns hits on same enemy add +1% wall-thorns damage taken per subsequent hit."
+          },
+          "effect_slots": [
+            {
+              "slot_index": 1,
+              "state": "populated",
+              "unlock_level": 1,
+              "rarity_key": "ancestral",
+              "rarity_text": "Ancestral",
+              "value_text": "+400%",
+              "label_text": "Health Regen"
+            },
+            {
+              "slot_index": 2,
+              "state": "populated",
+              "unlock_level": 1,
+              "rarity_key": "mythic",
+              "rarity_text": "Mythic",
+              "value_text": "+0.9",
+              "label_text": "Knockback Force"
+            },
+            {
+              "slot_index": 3,
+              "state": "populated",
+              "unlock_level": 41,
+              "rarity_key": "ancestral",
+              "rarity_text": "Ancestral",
+              "value_text": "+8%",
+              "label_text": "Defense"
+            },
+            {
+              "slot_index": 4,
+              "state": "populated",
+              "unlock_level": 101,
+              "rarity_key": "ancestral",
+              "rarity_text": "Ancestral",
+              "value_text": "+120%",
+              "label_text": "Wall Health"
+            },
+            {
+              "slot_index": 5,
+              "state": "populated",
+              "unlock_level": 141,
+              "rarity_key": "ancestral",
+              "rarity_text": "Ancestral",
+              "value_text": "+10%",
+              "label_text": "Thorns Damage"
+            },
+            {
+              "slot_index": 6,
+              "state": "populated",
+              "unlock_level": 161,
+              "rarity_key": "epic",
+              "rarity_text": "Epic",
+              "value_text": "+1",
+              "label_text": "Orb Speed"
+            },
+            {
+              "slot_index": 7,
+              "state": "locked",
+              "unlock_level": 201,
+              "rarity_key": null,
+              "rarity_text": null,
+              "value_text": "Locked",
+              "label_text": "Unlocks at Lv. 201"
+            },
+            {
+              "slot_index": 8,
+              "state": "locked",
+              "unlock_level": 241,
+              "rarity_key": null,
+              "rarity_text": null,
+              "value_text": "Locked",
+              "label_text": "Unlocks at Lv. 241"
+            }
+          ]
+        },
+        "assist": {
+          "module_name": "Orbital Augment",
+          "slot_type": "armor",
+          "role": "assist",
+          "rarity_text": "Ancestral 2*",
+          "rarity_key": "ancestral",
+          "stars": 2,
+          "displayed_level": 41,
+          "displayed_level_cap": null,
+          "level_text": "Lv. 41",
+          "role_bar_label_text": "Assist",
+          "role_bar_detail_text": "Epic | Main 0.01x | Substats 0.10x",
+          "main_value_text": "x1.0048",
+          "main_label_text": "Health",
+          "unique_value_text": "2",
+          "unique_measure": "count",
+          "unique_text": {
+            "prefix_text": "Spawn ",
+            "value_text": "2",
+            "suffix_text": " number of Electrons. On Electron hit, deal 15% of current remaining HP, multiplied by 0.25 against Bosses and Fleets."
+          },
+          "effect_slots": [
+            {
+              "slot_index": 1,
+              "state": "populated",
+              "unlock_level": 1,
+              "rarity_key": "epic",
+              "rarity_text": "Epic",
+              "value_text": "+0.8%",
+              "label_text": "Defense"
+            },
+            {
+              "slot_index": 2,
+              "state": "populated",
+              "unlock_level": 1,
+              "rarity_key": "epic",
+              "rarity_text": "Epic",
+              "value_text": "+40%",
+              "label_text": "Health Regen"
+            },
+            {
+              "slot_index": 3,
+              "state": "populated",
+              "unlock_level": 41,
+              "rarity_key": "epic",
+              "rarity_text": "Epic",
+              "value_text": "+12%",
+              "label_text": "Wall Health"
+            },
+            {
+              "slot_index": 4,
+              "state": "locked",
+              "unlock_level": 101,
+              "rarity_key": null,
+              "rarity_text": null,
+              "value_text": "Locked",
+              "label_text": "Unlocks at Lv. 101"
+            },
+            {
+              "slot_index": 5,
+              "state": "locked",
+              "unlock_level": 141,
+              "rarity_key": null,
+              "rarity_text": null,
+              "value_text": "Locked",
+              "label_text": "Unlocks at Lv. 141"
+            },
+            {
+              "slot_index": 6,
+              "state": "locked",
+              "unlock_level": 161,
+              "rarity_key": null,
+              "rarity_text": null,
+              "value_text": "Locked",
+              "label_text": "Unlocks at Lv. 161"
+            },
+            {
+              "slot_index": 7,
+              "state": "locked",
+              "unlock_level": 201,
+              "rarity_key": null,
+              "rarity_text": null,
+              "value_text": "Locked",
+              "label_text": "Unlocks at Lv. 201"
+            },
+            {
+              "slot_index": 8,
+              "state": "locked",
+              "unlock_level": 241,
+              "rarity_key": null,
+              "rarity_text": null,
+              "value_text": "Locked",
+              "label_text": "Unlocks at Lv. 241"
+            }
+          ]
+        }
+      },
+      "generator": {
+        "primary": {
+          "module_name": "Singularity Harness",
+          "slot_type": "generator",
+          "role": "primary",
+          "rarity_text": "Ancestral 2*",
+          "rarity_key": "ancestral",
+          "stars": 2,
+          "displayed_level": 170,
+          "displayed_level_cap": 240,
+          "level_text": "Lv. 170 / 240",
+          "role_bar_label_text": "Primary",
+          "role_bar_detail_text": "",
+          "main_value_text": "x1.832",
+          "main_label_text": "Coins / Kill Bonus",
+          "unique_value_text": "15m",
+          "unique_measure": "m",
+          "unique_text": {
+            "prefix_text": "Increase each bot range by ",
+            "value_text": "15m",
+            "suffix_text": " meters and apply 2x damage-taken state to enemies hit by Flame Bot."
+          },
+          "effect_slots": [
+            {
+              "slot_index": 1,
+              "state": "populated",
+              "unlock_level": 1,
+              "rarity_key": "mythic",
+              "rarity_text": "Mythic",
+              "value_text": "+10%",
+              "label_text": "Free Utility Upgrade"
+            },
+            {
+              "slot_index": 2,
+              "state": "populated",
+              "unlock_level": 1,
+              "rarity_key": "mythic",
+              "rarity_text": "Mythic",
+              "value_text": "+0.5x",
+              "label_text": "Coins / Kill Bonus"
+            },
+            {
+              "slot_index": 3,
+              "state": "populated",
+              "unlock_level": 41,
+              "rarity_key": "mythic",
+              "rarity_text": "Mythic",
+              "value_text": "+6%",
+              "label_text": "Enemy Health Level Skip"
+            },
+            {
+              "slot_index": 4,
+              "state": "populated",
+              "unlock_level": 101,
+              "rarity_key": "ancestral",
+              "rarity_text": "Ancestral",
+              "value_text": "+8%",
+              "label_text": "Enemy Attack Level Skip"
+            },
+            {
+              "slot_index": 5,
+              "state": "populated",
+              "unlock_level": 141,
+              "rarity_key": "mythic",
+              "rarity_text": "Mythic",
+              "value_text": "+11%",
+              "label_text": "Package Chance"
+            },
+            {
+              "slot_index": 6,
+              "state": "populated",
+              "unlock_level": 161,
+              "rarity_key": "legendary",
+              "rarity_text": "Legendary",
+              "value_text": "+8%",
+              "label_text": "Free Attack Upgrade"
+            },
+            {
+              "slot_index": 7,
+              "state": "locked",
+              "unlock_level": 201,
+              "rarity_key": null,
+              "rarity_text": null,
+              "value_text": "Locked",
+              "label_text": "Unlocks at Lv. 201"
+            },
+            {
+              "slot_index": 8,
+              "state": "locked",
+              "unlock_level": 241,
+              "rarity_key": null,
+              "rarity_text": null,
+              "value_text": "Locked",
+              "label_text": "Unlocks at Lv. 241"
+            }
+          ]
+        },
+        "assist": {
+          "module_name": "Black Hole Digestor",
+          "slot_type": "generator",
+          "role": "assist",
+          "rarity_text": "Mythic+",
+          "rarity_key": null,
+          "stars": 0,
+          "displayed_level": 101,
+          "displayed_level_cap": null,
+          "level_text": "Lv. 101",
+          "role_bar_label_text": "Assist",
+          "role_bar_detail_text": "Epic | Main 0.10x | Substats 0.10x",
+          "main_value_text": "x1.029",
+          "main_label_text": "Coins / Kill Bonus",
+          "unique_value_text": "0.3%",
+          "unique_measure": "pct",
+          "unique_text": {
+            "prefix_text": "For each free-upgrade trigger during current wave, add ",
+            "value_text": "0.3%",
+            "suffix_text": " to temporary coin/kill bonus for that wave, excluding Tower Range increases as valid triggers."
+          },
+          "effect_slots": [
+            {
+              "slot_index": 1,
+              "state": "populated",
+              "unlock_level": 1,
+              "rarity_key": "epic",
+              "rarity_text": "Epic",
+              "value_text": "+1.1%",
+              "label_text": "Package Chance"
+            },
+            {
+              "slot_index": 2,
+              "state": "populated",
+              "unlock_level": 1,
+              "rarity_key": "epic",
+              "rarity_text": "Epic",
+              "value_text": "+0.6%",
+              "label_text": "Enemy Attack Level Skip"
+            },
+            {
+              "slot_index": 3,
+              "state": "populated",
+              "unlock_level": 41,
+              "rarity_key": "rare",
+              "rarity_text": "Rare",
+              "value_text": "+0.4%",
+              "label_text": "Free Utility Upgrade"
+            },
+            {
+              "slot_index": 4,
+              "state": "populated",
+              "unlock_level": 101,
+              "rarity_key": "epic",
+              "rarity_text": "Epic",
+              "value_text": "+0.6%",
+              "label_text": "Enemy Health Level Skip"
+            },
+            {
+              "slot_index": 5,
+              "state": "locked",
+              "unlock_level": 141,
+              "rarity_key": null,
+              "rarity_text": null,
+              "value_text": "Locked",
+              "label_text": "Unlocks at Lv. 141"
+            },
+            {
+              "slot_index": 6,
+              "state": "locked",
+              "unlock_level": 161,
+              "rarity_key": null,
+              "rarity_text": null,
+              "value_text": "Locked",
+              "label_text": "Unlocks at Lv. 161"
+            },
+            {
+              "slot_index": 7,
+              "state": "locked",
+              "unlock_level": 201,
+              "rarity_key": null,
+              "rarity_text": null,
+              "value_text": "Locked",
+              "label_text": "Unlocks at Lv. 201"
+            },
+            {
+              "slot_index": 8,
+              "state": "locked",
+              "unlock_level": 241,
+              "rarity_key": null,
+              "rarity_text": null,
+              "value_text": "Locked",
+              "label_text": "Unlocks at Lv. 241"
+            }
+          ]
+        }
+      },
+      "core": {
+        "primary": {
+          "module_name": "Primordial Collapse",
+          "slot_type": "core",
+          "role": "primary",
+          "rarity_text": "Ancestral 3*",
+          "rarity_key": "ancestral",
+          "stars": 3,
+          "displayed_level": 164,
+          "displayed_level_cap": 260,
+          "level_text": "Lv. 164 / 260",
+          "role_bar_label_text": "Primary",
+          "role_bar_detail_text": "",
+          "main_value_text": "x13.376",
+          "main_label_text": "Ultimate Weapon Damage",
+          "unique_value_text": "80%",
+          "unique_measure": "pct",
+          "unique_text": {
+            "prefix_text": "Spawn one extra Black Hole and, while enemies are inside any Black Hole, reduce their outgoing damage by ",
+            "value_text": "80%",
+            "suffix_text": "."
+          },
+          "effect_slots": [
+            {
+              "slot_index": 1,
+              "state": "populated",
+              "unlock_level": 1,
+              "rarity_key": "ancestral",
+              "rarity_text": "Ancestral",
+              "value_text": "+4s",
+              "label_text": "Black Hole - Duration"
+            },
+            {
+              "slot_index": 2,
+              "state": "populated",
+              "unlock_level": 1,
+              "rarity_key": "ancestral",
+              "rarity_text": "Ancestral",
+              "value_text": "-4s",
+              "label_text": "Black Hole - Cooldown"
+            },
+            {
+              "slot_index": 3,
+              "state": "populated",
+              "unlock_level": 41,
+              "rarity_key": "ancestral",
+              "rarity_text": "Ancestral",
+              "value_text": "+4x",
+              "label_text": "Golden Tower - Bonus"
+            },
+            {
+              "slot_index": 4,
+              "state": "populated",
+              "unlock_level": 101,
+              "rarity_key": "ancestral",
+              "rarity_text": "Ancestral",
+              "value_text": "+15\u00b0",
+              "label_text": "Spotlight - Angle"
+            },
+            {
+              "slot_index": 5,
+              "state": "empty",
+              "unlock_level": 141,
+              "rarity_key": null,
+              "rarity_text": null,
+              "value_text": null,
+              "label_text": "Empty substat slot"
+            },
+            {
+              "slot_index": 6,
+              "state": "empty",
+              "unlock_level": 161,
+              "rarity_key": null,
+              "rarity_text": null,
+              "value_text": null,
+              "label_text": "Empty substat slot"
+            },
+            {
+              "slot_index": 7,
+              "state": "locked",
+              "unlock_level": 201,
+              "rarity_key": null,
+              "rarity_text": null,
+              "value_text": "Locked",
+              "label_text": "Unlocks at Lv. 201"
+            },
+            {
+              "slot_index": 8,
+              "state": "locked",
+              "unlock_level": 241,
+              "rarity_key": null,
+              "rarity_text": null,
+              "value_text": "Locked",
+              "label_text": "Unlocks at Lv. 241"
+            }
+          ]
+        },
+        "assist": {
+          "module_name": "Om Chip",
+          "slot_type": "core",
+          "role": "assist",
+          "rarity_text": "Ancestral 2*",
+          "rarity_key": "ancestral",
+          "stars": 2,
+          "displayed_level": 141,
+          "displayed_level_cap": null,
+          "level_text": "Lv. 141",
+          "role_bar_label_text": "Assist",
+          "role_bar_detail_text": "Epic | Main 0.15x | Substats 0.15x",
+          "main_value_text": "x2.1664",
+          "main_label_text": "Ultimate Weapon Damage",
+          "unique_value_text": "x0.3",
+          "unique_measure": "multiplier",
+          "unique_text": {
+            "prefix_text": "Retarget Spotlight to the boss and cause reflected light around that boss to increase nearby enemies damage taken by ",
+            "value_text": "x0.3",
+            "suffix_text": " multiplier."
+          },
+          "effect_slots": [
+            {
+              "slot_index": 1,
+              "state": "populated",
+              "unlock_level": 1,
+              "rarity_key": "epic",
+              "rarity_text": "Epic",
+              "value_text": "+2.25\u00b0",
+              "label_text": "Spotlight - Angle"
+            },
+            {
+              "slot_index": 2,
+              "state": "populated",
+              "unlock_level": 1,
+              "rarity_key": "epic",
+              "rarity_text": "Epic",
+              "value_text": "+2.25%",
+              "label_text": "Chrono Field - Speed Reduction"
+            },
+            {
+              "slot_index": 3,
+              "state": "populated",
+              "unlock_level": 41,
+              "rarity_key": "epic",
+              "rarity_text": "Epic",
+              "value_text": "+0.9%",
+              "label_text": "Chain Lightning - Chance"
+            },
+            {
+              "slot_index": 4,
+              "state": "populated",
+              "unlock_level": 101,
+              "rarity_key": "epic",
+              "rarity_text": "Epic",
+              "value_text": "+2.25x",
+              "label_text": "Spotlight - Bonus"
+            },
+            {
+              "slot_index": 5,
+              "state": "empty",
+              "unlock_level": 141,
+              "rarity_key": null,
+              "rarity_text": null,
+              "value_text": null,
+              "label_text": "Empty substat slot"
+            },
+            {
+              "slot_index": 6,
+              "state": "locked",
+              "unlock_level": 161,
+              "rarity_key": null,
+              "rarity_text": null,
+              "value_text": "Locked",
+              "label_text": "Unlocks at Lv. 161"
+            },
+            {
+              "slot_index": 7,
+              "state": "locked",
+              "unlock_level": 201,
+              "rarity_key": null,
+              "rarity_text": null,
+              "value_text": "Locked",
+              "label_text": "Unlocks at Lv. 201"
+            },
+            {
+              "slot_index": 8,
+              "state": "locked",
+              "unlock_level": 241,
+              "rarity_key": null,
+              "rarity_text": null,
+              "value_text": "Locked",
+              "label_text": "Unlocks at Lv. 241"
+            }
+          ]
+        }
+      }
+    },
+    "Milestone": {
+      "cannon": {
+        "primary": {
+          "module_name": "Being Annihilator",
+          "slot_type": "cannon",
+          "role": "primary",
+          "rarity_text": "Ancestral",
+          "rarity_key": "ancestral",
+          "stars": 0,
+          "displayed_level": 175,
+          "displayed_level_cap": 200,
+          "level_text": "Lv. 175 / 200",
+          "role_bar_label_text": "Primary",
+          "role_bar_detail_text": "",
+          "main_value_text": "x11.24",
+          "main_label_text": "Damage",
+          "unique_value_text": "6",
+          "unique_measure": "count",
+          "unique_text": {
+            "prefix_text": "When a super crit event occurs, create a counter of guaranteed future super crit attacks equal to ",
+            "value_text": "6",
+            "suffix_text": "."
+          },
+          "effect_slots": [
+            {
+              "slot_index": 1,
+              "state": "populated",
+              "unlock_level": 1,
+              "rarity_key": "mythic",
+              "rarity_text": "Mythic",
+              "value_text": "+3",
+              "label_text": "Attack Speed"
+            },
+            {
+              "slot_index": 2,
+              "state": "populated",
+              "unlock_level": 1,
+              "rarity_key": "mythic",
+              "rarity_text": "Mythic",
+              "value_text": "+3",
+              "label_text": "Multishot Targets"
+            },
+            {
+              "slot_index": 3,
+              "state": "populated",
+              "unlock_level": 41,
+              "rarity_key": "mythic",
+              "rarity_text": "Mythic",
+              "value_text": "+12x",
+              "label_text": "Crit Factor"
+            },
+            {
+              "slot_index": 4,
+              "state": "populated",
+              "unlock_level": 101,
+              "rarity_key": "mythic",
+              "rarity_text": "Mythic",
+              "value_text": "+9%",
+              "label_text": "Bounce Shot Chance"
+            },
+            {
+              "slot_index": 5,
+              "state": "empty",
+              "unlock_level": 141,
+              "rarity_key": null,
+              "rarity_text": null,
+              "value_text": null,
+              "label_text": "Empty substat slot"
+            },
+            {
+              "slot_index": 6,
+              "state": "empty",
+              "unlock_level": 161,
+              "rarity_key": null,
+              "rarity_text": null,
+              "value_text": null,
+              "label_text": "Empty substat slot"
+            },
+            {
+              "slot_index": 7,
+              "state": "locked",
+              "unlock_level": 201,
+              "rarity_key": null,
+              "rarity_text": null,
+              "value_text": "Locked",
+              "label_text": "Unlocks at Lv. 201"
+            },
+            {
+              "slot_index": 8,
+              "state": "locked",
+              "unlock_level": 241,
+              "rarity_key": null,
+              "rarity_text": null,
+              "value_text": "Locked",
+              "label_text": "Unlocks at Lv. 241"
+            }
+          ]
+        },
+        "assist": null
+      },
+      "armor": {
+        "primary": {
+          "module_name": "Sharp Fortitude",
+          "slot_type": "armor",
+          "role": "primary",
+          "rarity_text": "Ancestral",
+          "rarity_key": "ancestral",
+          "stars": 0,
+          "displayed_level": 161,
+          "displayed_level_cap": 200,
+          "level_text": "Lv. 161 / 200",
+          "role_bar_label_text": "Primary",
+          "role_bar_detail_text": "",
+          "main_value_text": "x8.44",
+          "main_label_text": "Health",
+          "unique_value_text": "x2.5",
+          "unique_measure": "multiplier",
+          "unique_text": {
+            "prefix_text": "Multiply wall HP and wall regen by ",
+            "value_text": "x2.5",
+            "suffix_text": " factor, and for repeated wall-thorns hits on same enemy add +1% wall-thorns damage taken per subsequent hit."
+          },
+          "effect_slots": [
+            {
+              "slot_index": 1,
+              "state": "populated",
+              "unlock_level": 1,
+              "rarity_key": "ancestral",
+              "rarity_text": "Ancestral",
+              "value_text": "+400%",
+              "label_text": "Health Regen"
+            },
+            {
+              "slot_index": 2,
+              "state": "populated",
+              "unlock_level": 1,
+              "rarity_key": "mythic",
+              "rarity_text": "Mythic",
+              "value_text": "+0.9",
+              "label_text": "Knockback Force"
+            },
+            {
+              "slot_index": 3,
+              "state": "populated",
+              "unlock_level": 41,
+              "rarity_key": "ancestral",
+              "rarity_text": "Ancestral",
+              "value_text": "+8%",
+              "label_text": "Defense"
+            },
+            {
+              "slot_index": 4,
+              "state": "populated",
+              "unlock_level": 101,
+              "rarity_key": "ancestral",
+              "rarity_text": "Ancestral",
+              "value_text": "+120%",
+              "label_text": "Wall Health"
+            },
+            {
+              "slot_index": 5,
+              "state": "populated",
+              "unlock_level": 141,
+              "rarity_key": "ancestral",
+              "rarity_text": "Ancestral",
+              "value_text": "+10%",
+              "label_text": "Thorns Damage"
+            },
+            {
+              "slot_index": 6,
+              "state": "populated",
+              "unlock_level": 161,
+              "rarity_key": "epic",
+              "rarity_text": "Epic",
+              "value_text": "+1",
+              "label_text": "Orb Speed"
+            },
+            {
+              "slot_index": 7,
+              "state": "locked",
+              "unlock_level": 201,
+              "rarity_key": null,
+              "rarity_text": null,
+              "value_text": "Locked",
+              "label_text": "Unlocks at Lv. 201"
+            },
+            {
+              "slot_index": 8,
+              "state": "locked",
+              "unlock_level": 241,
+              "rarity_key": null,
+              "rarity_text": null,
+              "value_text": "Locked",
+              "label_text": "Unlocks at Lv. 241"
+            }
+          ]
+        },
+        "assist": {
+          "module_name": "Anti-Cube Portal",
+          "slot_type": "armor",
+          "role": "assist",
+          "rarity_text": "Ancestral 2*",
+          "rarity_key": "ancestral",
+          "stars": 2,
+          "displayed_level": 41,
+          "displayed_level_cap": null,
+          "level_text": "Lv. 41",
+          "role_bar_label_text": "Assist",
+          "role_bar_detail_text": "Epic | Main 0.01x | Substats 0.10x",
+          "main_value_text": "x1.0048",
+          "main_label_text": "Health",
+          "unique_value_text": "x0.1",
+          "unique_measure": "multiplier",
+          "unique_text": {
+            "prefix_text": "When shockwave registers a hit, apply ",
+            "value_text": "x0.1",
+            "suffix_text": " damage-taken multiplier to that enemy for 7s even if the enemy is immune to the shockwave movement/effect."
+          },
+          "effect_slots": [
+            {
+              "slot_index": 1,
+              "state": "populated",
+              "unlock_level": 1,
+              "rarity_key": "epic",
+              "rarity_text": "Epic",
+              "value_text": "+0.2",
+              "label_text": "Orbs"
+            },
+            {
+              "slot_index": 2,
+              "state": "populated",
+              "unlock_level": 1,
+              "rarity_key": "epic",
+              "rarity_text": "Epic",
+              "value_text": "-4s",
+              "label_text": "Wall Rebuild"
+            },
+            {
+              "slot_index": 3,
+              "state": "populated",
+              "unlock_level": 41,
+              "rarity_key": "rare",
+              "rarity_text": "Rare",
+              "value_text": "+0.2%",
+              "label_text": "Defense"
+            },
+            {
+              "slot_index": 4,
+              "state": "locked",
+              "unlock_level": 101,
+              "rarity_key": null,
+              "rarity_text": null,
+              "value_text": "Locked",
+              "label_text": "Unlocks at Lv. 101"
+            },
+            {
+              "slot_index": 5,
+              "state": "locked",
+              "unlock_level": 141,
+              "rarity_key": null,
+              "rarity_text": null,
+              "value_text": "Locked",
+              "label_text": "Unlocks at Lv. 141"
+            },
+            {
+              "slot_index": 6,
+              "state": "locked",
+              "unlock_level": 161,
+              "rarity_key": null,
+              "rarity_text": null,
+              "value_text": "Locked",
+              "label_text": "Unlocks at Lv. 161"
+            },
+            {
+              "slot_index": 7,
+              "state": "locked",
+              "unlock_level": 201,
+              "rarity_key": null,
+              "rarity_text": null,
+              "value_text": "Locked",
+              "label_text": "Unlocks at Lv. 201"
+            },
+            {
+              "slot_index": 8,
+              "state": "locked",
+              "unlock_level": 241,
+              "rarity_key": null,
+              "rarity_text": null,
+              "value_text": "Locked",
+              "label_text": "Unlocks at Lv. 241"
+            }
+          ]
+        }
+      },
+      "generator": {
+        "primary": {
+          "module_name": "Singularity Harness",
+          "slot_type": "generator",
+          "role": "primary",
+          "rarity_text": "Ancestral 2*",
+          "rarity_key": "ancestral",
+          "stars": 2,
+          "displayed_level": 170,
+          "displayed_level_cap": 240,
+          "level_text": "Lv. 170 / 240",
+          "role_bar_label_text": "Primary",
+          "role_bar_detail_text": "",
+          "main_value_text": "x1.832",
+          "main_label_text": "Coins / Kill Bonus",
+          "unique_value_text": "15m",
+          "unique_measure": "m",
+          "unique_text": {
+            "prefix_text": "Increase each bot range by ",
+            "value_text": "15m",
+            "suffix_text": " meters and apply 2x damage-taken state to enemies hit by Flame Bot."
+          },
+          "effect_slots": [
+            {
+              "slot_index": 1,
+              "state": "populated",
+              "unlock_level": 1,
+              "rarity_key": "mythic",
+              "rarity_text": "Mythic",
+              "value_text": "+10%",
+              "label_text": "Free Utility Upgrade"
+            },
+            {
+              "slot_index": 2,
+              "state": "populated",
+              "unlock_level": 1,
+              "rarity_key": "mythic",
+              "rarity_text": "Mythic",
+              "value_text": "+0.5x",
+              "label_text": "Coins / Kill Bonus"
+            },
+            {
+              "slot_index": 3,
+              "state": "populated",
+              "unlock_level": 41,
+              "rarity_key": "mythic",
+              "rarity_text": "Mythic",
+              "value_text": "+6%",
+              "label_text": "Enemy Health Level Skip"
+            },
+            {
+              "slot_index": 4,
+              "state": "populated",
+              "unlock_level": 101,
+              "rarity_key": "ancestral",
+              "rarity_text": "Ancestral",
+              "value_text": "+8%",
+              "label_text": "Enemy Attack Level Skip"
+            },
+            {
+              "slot_index": 5,
+              "state": "populated",
+              "unlock_level": 141,
+              "rarity_key": "mythic",
+              "rarity_text": "Mythic",
+              "value_text": "+11%",
+              "label_text": "Package Chance"
+            },
+            {
+              "slot_index": 6,
+              "state": "populated",
+              "unlock_level": 161,
+              "rarity_key": "legendary",
+              "rarity_text": "Legendary",
+              "value_text": "+8%",
+              "label_text": "Free Attack Upgrade"
+            },
+            {
+              "slot_index": 7,
+              "state": "locked",
+              "unlock_level": 201,
+              "rarity_key": null,
+              "rarity_text": null,
+              "value_text": "Locked",
+              "label_text": "Unlocks at Lv. 201"
+            },
+            {
+              "slot_index": 8,
+              "state": "locked",
+              "unlock_level": 241,
+              "rarity_key": null,
+              "rarity_text": null,
+              "value_text": "Locked",
+              "label_text": "Unlocks at Lv. 241"
+            }
+          ]
+        },
+        "assist": {
+          "module_name": "Black Hole Digestor",
+          "slot_type": "generator",
+          "role": "assist",
+          "rarity_text": "Mythic+",
+          "rarity_key": null,
+          "stars": 0,
+          "displayed_level": 101,
+          "displayed_level_cap": null,
+          "level_text": "Lv. 101",
+          "role_bar_label_text": "Assist",
+          "role_bar_detail_text": "Epic | Main 0.10x | Substats 0.10x",
+          "main_value_text": "x1.029",
+          "main_label_text": "Coins / Kill Bonus",
+          "unique_value_text": "0.3%",
+          "unique_measure": "pct",
+          "unique_text": {
+            "prefix_text": "For each free-upgrade trigger during current wave, add ",
+            "value_text": "0.3%",
+            "suffix_text": " to temporary coin/kill bonus for that wave, excluding Tower Range increases as valid triggers."
+          },
+          "effect_slots": [
+            {
+              "slot_index": 1,
+              "state": "populated",
+              "unlock_level": 1,
+              "rarity_key": "epic",
+              "rarity_text": "Epic",
+              "value_text": "+1.1%",
+              "label_text": "Package Chance"
+            },
+            {
+              "slot_index": 2,
+              "state": "populated",
+              "unlock_level": 1,
+              "rarity_key": "epic",
+              "rarity_text": "Epic",
+              "value_text": "+0.6%",
+              "label_text": "Enemy Attack Level Skip"
+            },
+            {
+              "slot_index": 3,
+              "state": "populated",
+              "unlock_level": 41,
+              "rarity_key": "rare",
+              "rarity_text": "Rare",
+              "value_text": "+0.4%",
+              "label_text": "Free Utility Upgrade"
+            },
+            {
+              "slot_index": 4,
+              "state": "populated",
+              "unlock_level": 101,
+              "rarity_key": "epic",
+              "rarity_text": "Epic",
+              "value_text": "+0.6%",
+              "label_text": "Enemy Health Level Skip"
+            },
+            {
+              "slot_index": 5,
+              "state": "locked",
+              "unlock_level": 141,
+              "rarity_key": null,
+              "rarity_text": null,
+              "value_text": "Locked",
+              "label_text": "Unlocks at Lv. 141"
+            },
+            {
+              "slot_index": 6,
+              "state": "locked",
+              "unlock_level": 161,
+              "rarity_key": null,
+              "rarity_text": null,
+              "value_text": "Locked",
+              "label_text": "Unlocks at Lv. 161"
+            },
+            {
+              "slot_index": 7,
+              "state": "locked",
+              "unlock_level": 201,
+              "rarity_key": null,
+              "rarity_text": null,
+              "value_text": "Locked",
+              "label_text": "Unlocks at Lv. 201"
+            },
+            {
+              "slot_index": 8,
+              "state": "locked",
+              "unlock_level": 241,
+              "rarity_key": null,
+              "rarity_text": null,
+              "value_text": "Locked",
+              "label_text": "Unlocks at Lv. 241"
+            }
+          ]
+        }
+      },
+      "core": {
+        "primary": {
+          "module_name": "Dimension Core",
+          "slot_type": "core",
+          "role": "primary",
+          "rarity_text": "Ancestral",
+          "rarity_key": "ancestral",
+          "stars": 0,
+          "displayed_level": 164,
+          "displayed_level_cap": 200,
+          "level_text": "Lv. 164 / 200",
+          "role_bar_label_text": "Primary",
+          "role_bar_detail_text": "",
+          "main_value_text": "x12.05",
+          "main_label_text": "Ultimate Weapon Damage",
+          "unique_value_text": "20",
+          "unique_measure": "count",
+          "unique_text": {
+            "prefix_text": "Allow CL to hit initial target with 60% chance, double shock chance and base shock multiplier, and when shock reapplies to same enemy additively accumulate multiplier up to ",
+            "value_text": "20",
+            "suffix_text": " stack count."
+          },
+          "effect_slots": [
+            {
+              "slot_index": 1,
+              "state": "populated",
+              "unlock_level": 1,
+              "rarity_key": "ancestral",
+              "rarity_text": "Ancestral",
+              "value_text": "+15\u00b0",
+              "label_text": "Spotlight - Angle"
+            },
+            {
+              "slot_index": 2,
+              "state": "populated",
+              "unlock_level": 1,
+              "rarity_key": "ancestral",
+              "rarity_text": "Ancestral",
+              "value_text": "+20x",
+              "label_text": "Spotlight - Bonus"
+            },
+            {
+              "slot_index": 3,
+              "state": "populated",
+              "unlock_level": 41,
+              "rarity_key": "rare",
+              "rarity_text": "Rare",
+              "value_text": "+15x",
+              "label_text": "Chain Lightning - Damage"
+            },
+            {
+              "slot_index": 4,
+              "state": "populated",
+              "unlock_level": 101,
+              "rarity_key": "ancestral",
+              "rarity_text": "Ancestral",
+              "value_text": "+15%",
+              "label_text": "Chrono Field - Speed Reduction"
+            },
+            {
+              "slot_index": 5,
+              "state": "populated",
+              "unlock_level": 141,
+              "rarity_key": "mythic",
+              "rarity_text": "Mythic",
+              "value_text": "+12%",
+              "label_text": "Chain Lightning - Chance"
+            },
+            {
+              "slot_index": 6,
+              "state": "populated",
+              "unlock_level": 161,
+              "rarity_key": "ancestral",
+              "rarity_text": "Ancestral",
+              "value_text": "+4",
+              "label_text": "Chain Lightning - Quantity"
+            },
+            {
+              "slot_index": 7,
+              "state": "locked",
+              "unlock_level": 201,
+              "rarity_key": null,
+              "rarity_text": null,
+              "value_text": "Locked",
+              "label_text": "Unlocks at Lv. 201"
+            },
+            {
+              "slot_index": 8,
+              "state": "locked",
+              "unlock_level": 241,
+              "rarity_key": null,
+              "rarity_text": null,
+              "value_text": "Locked",
+              "label_text": "Unlocks at Lv. 241"
+            }
+          ]
+        },
+        "assist": {
+          "module_name": "Primordial Collapse",
+          "slot_type": "core",
+          "role": "assist",
+          "rarity_text": "Ancestral 3*",
+          "rarity_key": "ancestral",
+          "stars": 3,
+          "displayed_level": 141,
+          "displayed_level_cap": null,
+          "level_text": "Lv. 141",
+          "role_bar_label_text": "Assist",
+          "role_bar_detail_text": "Epic | Main 0.15x | Substats 0.15x",
+          "main_value_text": "x2.2096",
+          "main_label_text": "Ultimate Weapon Damage",
+          "unique_value_text": "7.5%",
+          "unique_measure": "pct",
+          "unique_text": {
+            "prefix_text": "Spawn one extra Black Hole and, while enemies are inside any Black Hole, reduce their outgoing damage by ",
+            "value_text": "7.5%",
+            "suffix_text": "."
+          },
+          "effect_slots": [
+            {
+              "slot_index": 1,
+              "state": "populated",
+              "unlock_level": 1,
+              "rarity_key": "epic",
+              "rarity_text": "Epic",
+              "value_text": "+0.6s",
+              "label_text": "Black Hole - Duration"
+            },
+            {
+              "slot_index": 2,
+              "state": "populated",
+              "unlock_level": 1,
+              "rarity_key": "epic",
+              "rarity_text": "Epic",
+              "value_text": "-0.6s",
+              "label_text": "Black Hole - Cooldown"
+            },
+            {
+              "slot_index": 3,
+              "state": "populated",
+              "unlock_level": 41,
+              "rarity_key": "epic",
+              "rarity_text": "Epic",
+              "value_text": "+0.6x",
+              "label_text": "Golden Tower - Bonus"
+            },
+            {
+              "slot_index": 4,
+              "state": "populated",
+              "unlock_level": 101,
+              "rarity_key": "epic",
+              "rarity_text": "Epic",
+              "value_text": "+2.25\u00b0",
+              "label_text": "Spotlight - Angle"
+            },
+            {
+              "slot_index": 5,
+              "state": "empty",
+              "unlock_level": 141,
+              "rarity_key": null,
+              "rarity_text": null,
+              "value_text": null,
+              "label_text": "Empty substat slot"
+            },
+            {
+              "slot_index": 6,
+              "state": "locked",
+              "unlock_level": 161,
+              "rarity_key": null,
+              "rarity_text": null,
+              "value_text": "Locked",
+              "label_text": "Unlocks at Lv. 161"
+            },
+            {
+              "slot_index": 7,
+              "state": "locked",
+              "unlock_level": 201,
+              "rarity_key": null,
+              "rarity_text": null,
+              "value_text": "Locked",
+              "label_text": "Unlocks at Lv. 201"
+            },
+            {
+              "slot_index": 8,
+              "state": "locked",
+              "unlock_level": 241,
+              "rarity_key": null,
+              "rarity_text": null,
+              "value_text": "Locked",
+              "label_text": "Unlocks at Lv. 241"
+            }
+          ]
+        }
+      }
+    },
+    "Preset 4": {
+      "cannon": {
+        "primary": null,
+        "assist": null
+      },
+      "armor": {
+        "primary": null,
+        "assist": null
+      },
+      "generator": {
+        "primary": null,
+        "assist": null
+      },
+      "core": {
+        "primary": null,
+        "assist": null
+      }
+    },
+    "Preset 5": {
+      "cannon": {
+        "primary": null,
+        "assist": null
+      },
+      "armor": {
+        "primary": null,
+        "assist": null
+      },
+      "generator": {
+        "primary": null,
+        "assist": null
+      },
+      "core": {
+        "primary": null,
+        "assist": null
+      }
+    }
+  }
+}

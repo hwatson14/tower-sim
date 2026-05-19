@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import math
+import re
 from typing import Dict, Any, Iterable
 
 from qe.compat.legacy_surface_ids import (
@@ -47,6 +48,35 @@ def _get_first(rows: Dict[str, StatRow], keys: Iterable[str], default: float = 0
         except Exception:
             continue
     return default
+
+
+def _raw_surface_value(rows: Dict[str, StatRow], keys: Iterable[str]) -> Any:
+    for key in keys:
+        row = _row(rows, key)
+        if row is None:
+            continue
+        if row.final_value is not None:
+            return row.final_value
+        for contributor in row.contributors or []:
+            if contributor.get('value') is not None:
+                return contributor.get('value')
+            if contributor.get('input_value') is not None:
+                return contributor.get('input_value')
+    return None
+
+
+def _parse_multiplier_token(value: Any) -> float | None:
+    if isinstance(value, bool) or value is None:
+        return None
+    if isinstance(value, (int, float)):
+        return float(value)
+    match = re.search(r'[-+]?\d+(?:\.\d+)?', str(value))
+    if not match:
+        return None
+    try:
+        return float(match.group(0))
+    except ValueError:
+        return None
 
 
 def _bool(rows: Dict[str, StatRow], keys: Iterable[str], default: bool = False) -> bool:
@@ -117,6 +147,11 @@ def _clamp(v: float, lo: float, hi: float) -> float:
 
 def _pct(v: float) -> float:
     return v / 100.0
+
+
+def _pct_surface_ratio(rows: Dict[str, StatRow], keys: Iterable[str], default: float = 0.0) -> float:
+    value = _get_first(rows, keys, default)
+    return max(0.0, value) / 100.0
 
 
 def _ep_bullet_per_second(attack_speed: float) -> float:
@@ -648,10 +683,21 @@ def _contributor(rows: Dict[str, StatRow], key: str, destination: str) -> Dict[s
     }
 
 
+_QUERY_DERIVED_REPLACEABLE_SURFACES = frozenset({
+    'state::economy.all_coin_bonus_multiplier',
+})
+
+
+def _query_derived_can_replace(name: str, existing: StatRow) -> bool:
+    if isinstance(existing.schema, dict) and existing.schema.get('resolver') == 'query_derived_composites':
+        return True
+    return name in _QUERY_DERIVED_REPLACEABLE_SURFACES
+
+
 def _publish(rows: Dict[str, StatRow], name: str, value: float, value_type: str, contributors: list[Dict[str, Any]], notes: str) -> None:
     existing = rows.get(name)
     if existing is not None:
-        if isinstance(existing.schema, dict) and existing.schema.get('resolver') == 'query_derived_composites':
+        if _query_derived_can_replace(name, existing):
             rows.pop(name, None)
         else:
             raise ValueError(f'Query publication collision for {name}')
@@ -670,9 +716,12 @@ def _publish(rows: Dict[str, StatRow], name: str, value: float, value_type: str,
 def _publish_unresolved(rows: Dict[str, StatRow], name: str, value_type: str, contributors: list[Dict[str, Any]], notes: str) -> None:
     existing = rows.get(name)
     if existing is not None:
-        if isinstance(existing.schema, dict) and existing.schema.get('resolver') == 'query_derived_composites':
-            return
-        raise ValueError(f'Query publication collision for {name}')
+        if _query_derived_can_replace(name, existing):
+            rows.pop(name, None)
+        else:
+            if isinstance(existing.schema, dict) and existing.schema.get('resolver') == 'query_derived_composites':
+                return
+            raise ValueError(f'Query publication collision for {name}')
     rows[name] = StatRow(
         stat_name=name,
         final_value=None,
@@ -1142,7 +1191,17 @@ def publish_derived_composites(rows: Dict[str, StatRow]) -> None:
     perk_damage_factor = _get_first(rows, ['support_surface::perk.damage_multiplier', _compat_runtime('perk.damage_multiplier'), _compat_mech('perk.damage_multiplier')], 1.0)
     tradeoff_damage_factor = _get_first(rows, ['support_surface::perk.tradeoff_damage_multiplier', _compat_runtime('perk.tradeoff_damage_multiplier'), _compat_mech('perk.tradeoff_damage_multiplier')], 1.0)
     shock_factor = _ep_shock_factor(rows)
-    card_damage_mastery_factor = _get_first(rows, [_compat_runtime('cards.damage.mastery_multiplier'), _compat_mech('cards.damage.mastery_multiplier')], 1.0)
+    card_damage_mastery_factor = _get_first(
+        rows,
+        [
+            'state::cards.damage.mastery_effect',
+            _compat_runtime('cards.damage.mastery_effect'),
+            _compat_mech('cards.damage.mastery_effect'),
+            _compat_runtime('cards.damage.mastery_multiplier'),
+            _compat_mech('cards.damage.mastery_multiplier'),
+        ],
+        1.0,
+    )
     berserker_bonus_multiplier = _get_first(
         rows,
         [
@@ -1165,15 +1224,20 @@ def publish_derived_composites(rows: Dict[str, StatRow]) -> None:
         _get_first(rows, [_compat_mech('module.cannon.assist_lab_bonus_pct')], 0.0),
     )
 
-    acp_raw = _get_first(rows, [_compat_mech('module.anti_cube_portal.damage_multiplier'), _compat_mech('module.anti_cube_portal.multiplier'), _compat_mech('module.acp.damage_multiplier'), _compat_mech('module.acp.multiplier')], 0.0)
-    acp_factor = _ep_shockwave_damage(
-        acp_raw,
-        _get_first(rows, [_compat_canon('shockwave_size_level'), _compat_mech('shockwave.size_ws_level')], 0.0),
-        _get_first(rows, [_compat_runtime('shockwave.size_lab_level'), _compat_mech('shockwave.size_lab_level')], 0.0),
-        _get_first(rows, [_compat_canon('shockwave_frequency_level'), _compat_mech('shockwave.frequency_ws_level')], 0.0),
-        _get_first(rows, [_compat_runtime('shockwave.frequency_vault_bonus_seconds'), _compat_mech('shockwave.frequency_vault_bonus_seconds')], 0.0),
-        _get_first(rows, [_compat_mech('shockwave.frequency_substat_seconds'), _compat_runtime('shockwave.frequency_substat_seconds')], 0.0),
-    )
+    acp_raw = _get_first(rows, ['state::module.anti_cube_portal.shockwave_damage_taken_mult_x', _compat_mech('module.anti_cube_portal.shockwave_damage_taken_mult_x'), _compat_mech('module.anti_cube_portal.damage_multiplier'), _compat_mech('module.anti_cube_portal.multiplier'), _compat_mech('module.acp.damage_multiplier'), _compat_mech('module.acp.multiplier')], 0.0)
+    shockwave_size_m = _get_first(rows, ['state::tower.shockwave_size_m', _compat_canon('tower_shockwave_size_m')], 0.0)
+    shockwave_interval_seconds = _get_first(rows, ['state::tower.shockwave_interval_seconds', _compat_canon('tower_shockwave_interval_seconds')], 0.0)
+    if acp_raw > 0.0 and shockwave_size_m > 0.0 and shockwave_interval_seconds > 0.0:
+        acp_factor = 1.0 + (acp_raw - 1.0) * (7.0 / max(shockwave_interval_seconds + shockwave_size_m / 2.0, 1e-9))
+    else:
+        acp_factor = _ep_shockwave_damage(
+            acp_raw,
+            _get_first(rows, [_compat_canon('shockwave_size_level'), _compat_mech('shockwave.size_ws_level')], 0.0),
+            _get_first(rows, [_compat_runtime('shockwave.size_lab_level'), _compat_mech('shockwave.size_lab_level')], 0.0),
+            _get_first(rows, [_compat_canon('shockwave_frequency_level'), _compat_mech('shockwave.frequency_ws_level')], 0.0),
+            _get_first(rows, [_compat_runtime('shockwave.frequency_vault_bonus_seconds'), _compat_mech('shockwave.frequency_vault_bonus_seconds')], 0.0),
+            _get_first(rows, [_compat_mech('shockwave.frequency_substat_seconds'), _compat_runtime('shockwave.frequency_substat_seconds')], 0.0),
+        )
     amp_strike_factor = _get_first(rows, ['support_surface::amp_strike.damage_multiplier', _compat_mech('amp_strike.damage_multiplier')], 1.0)
 
     attack_dissonance_factor = _dissonance_total_multiplier(rows, 'attack')
@@ -1220,12 +1284,12 @@ def publish_derived_composites(rows: Dict[str, StatRow]) -> None:
         rapidfire_factor = 1.0
         range_dpm_factor = 1.0
 
-    sl_quantity = _get_first(rows, [_compat_mech('uw.spotlight.quantity'), _compat_runtime('uw.spotlight.quantity')], 0.0)
+    sl_quantity = _get_first(rows, ['state::uw.spotlight.count', _compat_mech('uw.spotlight.count'), _compat_runtime('uw.spotlight.count'), _compat_mech('uw.spotlight.quantity'), _compat_runtime('uw.spotlight.quantity')], 0.0)
     sl_angle = _get_first(rows, [_compat_mech('uw.spotlight.angle_degrees'), _compat_runtime('uw.spotlight.angle_degrees'), _compat_canon('uw.spotlight.angle_degrees')], 0.0)
     sl_light_range = _get_first(rows, [_compat_mech('uw.spotlight.light_range_bonus'), _compat_runtime('uw.spotlight.light_range_bonus')], 0.0)
     spotlight_light_range_factor = _stat_uw_sl_final_lr(sl_light_range, range_dpm_factor)
     sl_bonus = _stat_uw_sl_final_dmg(
-        _get_first(rows, [_compat_mech('uw.spotlight.damage_multiplier'), _compat_runtime('uw.spotlight.damage_multiplier')], 1.0),
+        _get_first(rows, ['state::uw.spotlight.bonus_multiplier', _compat_mech('uw.spotlight.bonus_multiplier'), _compat_runtime('uw.spotlight.bonus_multiplier'), _compat_mech('uw.spotlight.damage_multiplier'), _compat_runtime('uw.spotlight.damage_multiplier')], 1.0),
         spotlight_light_range_factor,
         _get_first(rows, [_compat_mech('uw.spotlight.damage_substat'), _compat_runtime('uw.spotlight.damage_substat')], 0.0),
         _get_first(rows, [_compat_mech('uw.spotlight.relic_bonus')], 0.0),
@@ -1262,7 +1326,7 @@ def publish_derived_composites(rows: Dict[str, StatRow]) -> None:
     dw = _ep_dw_dps(
         _bool(rows, [_compat_runtime('uw.death_wave.active'), _compat_mech('uw.death_wave.active')], default=_get_first(rows, [_compat_mech('uw.death_wave.damage_multiplier'), _compat_runtime('uw.death_wave.damage_multiplier')], 0.0) > 0.0),
         _get_first(rows, ['support_surface::uw.death_wave.final_damage', _compat_mech('uw.death_wave.damage_multiplier'), _compat_runtime('uw.death_wave.damage_multiplier')], 0.0),
-        _get_first(rows, ['support_surface::uw.death_wave.final_quantity', _compat_mech('uw.death_wave.quantity'), _compat_runtime('uw.death_wave.quantity')], 0.0),
+        _get_first(rows, ['support_surface::uw.death_wave.final_quantity', 'state::uw.death_wave.effect_wave_count', _compat_mech('uw.death_wave.effect_wave_count'), _compat_runtime('uw.death_wave.effect_wave_count'), _compat_mech('uw.death_wave.quantity'), _compat_runtime('uw.death_wave.quantity')], 0.0),
         _get_first(rows, ['support_surface::uw.death_wave.final_cooldown_seconds', _compat_mech('uw.death_wave.cooldown_seconds'), _compat_runtime('uw.death_wave.cooldown_seconds')], 1.0),
         _get_first(rows, ['support_surface::uw.death_wave.damage_amp', _compat_mech('uw.death_wave.damage_amp'), _compat_runtime('uw.death_wave.damage_amp')], 0.0),
     )
@@ -1331,7 +1395,7 @@ def publish_derived_composites(rows: Dict[str, StatRow]) -> None:
         aoe_card_level,
     )
     uw_dissonance_factor = _dissonance_total_multiplier(rows, 'ultimate_weapons')
-    uw_damage_boost = _get_first(rows, ['support_surface::uw.total_damage_boost_multiplier', _compat_mech('uw.damage_boost_multiplier')], 1.0) * uw_dissonance_factor
+    uw_damage_boost = _get_first(rows, ['state::tower.ultimate_damage_multiplier', 'support_surface::uw.total_damage_boost_multiplier', _compat_canon('ultimate_damage_multiplier'), _compat_mech('uw.damage_boost_multiplier')], 1.0) * uw_dissonance_factor
     st_uw_mastery = _get_first(
         rows,
         [
@@ -1343,6 +1407,19 @@ def publish_derived_composites(rows: Dict[str, StatRow]) -> None:
     )
     uw_total_damage = _ep_uw_total_damage(dw, cl, sm, slm, spotlight_factor, ps, ilm, uw_damage_boost, st_uw_mastery, uw_crit_card_factor)
 
+    project_funding_pct = _get_first(
+        rows,
+        [
+            'state::module.project_funding.cash_digit_multiplier_pct',
+            _compat_mech('module.project_funding.cash_digit_multiplier_pct'),
+        ],
+        0.0,
+    )
+    project_funding_cash = _get_first(rows, ['support_surface::module.project_funding.current_cash'], 0.0)
+    project_funding_factor = 1.0
+    if not attack_dissonance_active and project_funding_pct > 0.0 and project_funding_cash > 0.0:
+        project_funding_factor = max(1.0, 1.0 + math.log10(project_funding_cash) * _pct(project_funding_pct))
+
     slow_factor = _get_first(rows, ['support_surface::chrono_field.exposure_multiplier'], 0.0)
     if slow_factor <= 0.0:
         cf_slow_pct = _get_first(rows, [_compat_mech('uw.chrono_field.slow_pct'), _compat_runtime('uw.chrono_field.slow_pct')], 0.0)
@@ -1351,14 +1428,20 @@ def publish_derived_composites(rows: Dict[str, StatRow]) -> None:
             slow_factor *= 1.0 / max(1.0 - min(0.90, _pct(cf_slow_pct)), 0.1)
     slow_factor *= _get_first(rows, ['support_surface::chrono_field.plus_exposure_multiplier', _compat_mech('uw.chrono_field.plus_exposure_multiplier')], 1.0)
 
-    edamage = base_damage_stack * (bullet_crit_factor * bullet_pipeline_factor * spotlight_factor + uw_total_damage * uw_crit_factor) * slow_factor
+    shock_stack_factor = 1.0
+    shock_damage_multiplier = _get_first(rows, ['state::shock.damage_multiplier', _compat_mech('shock.damage_multiplier')], 0.0)
+    shock_max_stacks = _get_first(rows, ['state::module.dimension_core.max_shock_stacks', _compat_mech('module.dimension_core.max_shock_stacks')], 0.0)
+    if shock_damage_multiplier > 1.0 and shock_max_stacks > 0.0:
+        shock_stack_factor = 1.0 + max(0.0, shock_damage_multiplier - 1.0) * 2.0 * shock_max_stacks
+
+    edamage = base_damage_stack * (bullet_crit_factor * bullet_pipeline_factor * spotlight_factor + uw_total_damage * uw_crit_factor) * slow_factor * shock_stack_factor * project_funding_factor
 
     _publish(rows, 'derived::edamage.base_damage_stack', base_damage_stack, 'scalar', [_contributor(rows, _compat_canon('tower_damage'), 'edamage.base_damage_stack')], 'EP EM5 DC5-like base damage stack [EP helper support surface]')
     _publish(rows, 'derived::edamage.berserker_bonus_multiplier', berserker_bonus_multiplier, 'multiplier', [_contributor(rows, 'state::cards.berserker.assumed_bonus_multiplier', 'edamage.berserker_bonus_multiplier')], 'Explicit Berserker full-stack bonus multiplier assumption [EP helper support surface]')
     _publish(rows, 'derived::edamage.berserker_factor', berserker_factor, 'multiplier', [_contributor(rows, 'state::cards.berserker.assumed_bonus_multiplier', 'edamage.berserker_factor')], 'Explicit Berserker full-stack factor applied to projected eDamage [EP helper support surface]')
     _publish(rows, 'derived::edamage.attack_dissonance_factor', attack_dissonance_factor, 'multiplier', [_contributor(rows, 'derived::dissonance.attack.total_multiplier', 'edamage.attack_dissonance_factor')], 'v28 Attack Dissonance/Echo multiplier; not applied during an active Attack Dissonant Run because EP restricts that branch to ACP * Amp Strike.')
     _publish(rows, 'derived::edamage.attack_dissonance_restricted', 1.0 if attack_dissonance_active else 0.0, 'bool', [_contributor(rows, 'support_surface::dissonance.attack_run_active', 'edamage.attack_dissonance_restricted')], 'v28 Attack Dissonant Run branch: damage stack is ACP * Amp Strike, crits/projectile multipliers/range/DPM/rend are forced to EP restricted values.')
-    _publish(rows, 'derived::edamage.acp_factor', acp_factor, 'multiplier', [_contributor(rows, _compat_mech('module.anti_cube_portal.damage_multiplier'), 'edamage.acp_factor')], 'EP EPD_SHOCKWAVE_DAMAGE-aligned ACP factor [EP helper support surface]')
+    _publish(rows, 'derived::edamage.acp_factor', acp_factor, 'multiplier', [_contributor(rows, 'state::module.anti_cube_portal.shockwave_damage_taken_mult_x', 'edamage.acp_factor')], 'EP EPD_SHOCKWAVE_DAMAGE-aligned ACP factor [EP helper support surface]')
     _publish(rows, 'derived::edamage.bullet_crit_factor', bullet_crit_factor, 'multiplier', [_contributor(rows, _compat_canon('tower_crit_chance_pct'), 'edamage.bullet_crit_factor'), _contributor(rows, _compat_canon('tower_supercrit_chance_pct'), 'edamage.bullet_crit_factor')], 'EPD_CRITICAL-aligned bullet crit factor [EP helper support surface]')
     _publish(rows, 'derived::edamage.uw_crit_card_factor', uw_crit_card_factor, 'multiplier', [_contributor(rows, 'state::cards.ultimate_crit.chance_pct', 'edamage.uw_crit_card_factor'), _contributor(rows, _compat_canon('tower_crit_multiplier'), 'edamage.uw_crit_card_factor')], 'Ultimate Crit card factor applied to aggregate UW damage [EP helper support surface]')
     _publish(rows, 'derived::edamage.bullet_per_second', bps, 'rate', [_contributor(rows, _compat_canon('tower_attack_speed'), 'edamage.bullet_per_second')], 'EP BULLET_PER_SECOND from mechanics lineage [EP helper support surface]')
@@ -1383,6 +1466,8 @@ def publish_derived_composites(rows: Dict[str, StatRow]) -> None:
     _publish(rows, 'derived::edamage.uw_total_damage', uw_total_damage, 'scalar', [_contributor(rows, _compat_mech('uw.chain_lightning.damage_multiplier'), 'edamage.uw_total_damage')], 'EP_UW_TOTAL_DAMAGE-like aggregate UW damage [EP helper support surface]')
     _publish(rows, 'derived::edamage.uw_crit_factor', uw_crit_factor, 'multiplier', [_contributor(rows, _compat_canon('tower_crit_chance_pct'), 'edamage.uw_crit_factor')], 'EPD_UWCRITICAL-aligned UW crit factor [EP helper support surface]')
     _publish(rows, 'derived::edamage.slow_factor', slow_factor, 'multiplier', [_contributor(rows, _compat_mech('uw.chrono_field.slow_pct'), 'edamage.slow_factor')], 'EP Chrono Field slow exposure multiplier [EP helper support surface]')
+    _publish(rows, 'derived::edamage.shock_stack_factor', shock_stack_factor, 'multiplier', [_contributor(rows, 'state::shock.damage_multiplier', 'edamage.shock_stack_factor'), _contributor(rows, 'state::module.dimension_core.max_shock_stacks', 'edamage.shock_stack_factor')], 'Dimension Core additive shock-stack factor from module runtime contract.')
+    _publish(rows, 'derived::edamage.project_funding_factor', project_funding_factor, 'multiplier', [_contributor(rows, 'state::module.project_funding.cash_digit_multiplier_pct', 'edamage.project_funding_factor'), _contributor(rows, 'support_surface::module.project_funding.current_cash', 'edamage.project_funding_factor')], 'Project Funding runtime multiplier from current cash; applied at objective level so EP base-stack helper surfaces remain comparable.')
     _publish(rows, 'derived::edamage_ep_helper.dx_spotlight_light_range_factor', spotlight_light_range_factor, 'multiplier', [_contributor(rows, _compat_mech('uw.spotlight.light_range'), 'edamage.ep_dx_spotlight_light_range_factor')], 'EP eDamage DX5 spotlight light-range factor alias [EP helper support surface]')
     _publish(rows, 'derived::edamage_ep_helper.dx_spotlight_bonus_term', sl_bonus, 'multiplier', [_contributor(rows, _compat_mech('uw.spotlight.damage_multiplier'), 'edamage.ep_dx_spotlight_bonus_term')], 'EP eDamage DX5 spotlight bonus term alias [EP helper support surface]')
     _publish(rows, 'derived::edamage_ep_helper.dx_spotlight_coverage', spotlight_coverage, 'ratio', [_contributor(rows, _compat_mech('uw.spotlight.quantity'), 'edamage.ep_dx_spotlight_coverage'), _contributor(rows, _compat_mech('uw.spotlight.angle_degrees'), 'edamage.ep_dx_spotlight_coverage')], 'EP eDamage DX5 spotlight coverage alias [EP helper support surface]')
@@ -1436,54 +1521,66 @@ def publish_derived_composites(rows: Dict[str, StatRow]) -> None:
     if freeup_factor <= 0.0:
         has_freeup = _bool(rows, ['support_surface::eecon.freeup_enabled'], default=bool(_get_first(rows, ['support_surface::eecon.freeup_percent'], 0.0)))
         freeup_pct = _get_first(rows, ['support_surface::eecon.freeup_percent'], 0.0)
+        if freeup_pct <= 0.0:
+            freeup_pct = _pct_surface_ratio(
+                rows,
+                ['state::module.black_hole_digestor.extra_coin_kill_bonus_per_free_upgrade_pct'],
+            )
+            has_freeup = has_freeup or freeup_pct > 0.0
         if not has_freeup or freeup_pct == 0.0:
             freeup_factor = 1.0
         else:
-            freeup_att = _ep_fup(
-                _get_first(rows, ['support_surface::eecon.freeup_attack_ws'], 0.0),
-                _bool(rows, ['support_surface::eecon.freeup_card_active'], False),
-                _get_first(rows, ['support_surface::eecon.freeup_card_value'], 0.0),
-                _bool(rows, ['support_surface::eecon.freeup_perk_active'], False),
-                _get_first(rows, ['support_surface::eecon.standard_perks_bonus_level'], 0.0),
-                _get_first(rows, ['support_surface::eecon.stone_sac_pct'], 0.0),
-                _get_first(rows, ['support_surface::eecon.lab_sac_pct'], 0.0),
-                _get_first(rows, ['support_surface::eecon.freeup_attack_prim_sub'], 0.0),
-                _get_first(rows, ['support_surface::eecon.freeup_attack_ass_sub'], 0.0),
-                _get_first(rows, ['support_surface::eecon.freeup_wse_level'], _get_first(rows, ['support_surface::eecon.workshop_enhancement_level'], 0.0)),
-                _get_first(rows, ['support_surface::eecon.freeup_attack_relic_pct'], 0.0),
-                _get_first(rows, ['support_surface::eecon.freeup_attack_vault_pct'], 0.0),
-            )
-            freeup_def = _ep_fup(
-                _get_first(rows, ['support_surface::eecon.freeup_defense_ws'], 0.0),
-                _bool(rows, ['support_surface::eecon.freeup_card_active'], False),
-                _get_first(rows, ['support_surface::eecon.freeup_card_value'], 0.0),
-                _bool(rows, ['support_surface::eecon.freeup_perk_active'], False),
-                _get_first(rows, ['support_surface::eecon.standard_perks_bonus_level'], 0.0),
-                _get_first(rows, ['support_surface::eecon.stone_sac_pct'], 0.0),
-                _get_first(rows, ['support_surface::eecon.lab_sac_pct'], 0.0),
-                _get_first(rows, ['support_surface::eecon.freeup_defense_prim_sub'], 0.0),
-                _get_first(rows, ['support_surface::eecon.freeup_defense_ass_sub'], 0.0),
-                _get_first(rows, ['support_surface::eecon.freeup_wse_level'], _get_first(rows, ['support_surface::eecon.workshop_enhancement_level'], 0.0)),
-                _get_first(rows, ['support_surface::eecon.freeup_defense_relic_pct'], 0.0),
-                _get_first(rows, ['support_surface::eecon.freeup_defense_vault_pct'], 0.0),
-            )
-            freeup_uti = _ep_fup(
-                _get_first(rows, ['support_surface::eecon.freeup_utility_ws'], 0.0),
-                _bool(rows, ['support_surface::eecon.freeup_card_active'], False),
-                _get_first(rows, ['support_surface::eecon.freeup_card_value'], 0.0),
-                _bool(rows, ['support_surface::eecon.freeup_perk_active'], False),
-                _get_first(rows, ['support_surface::eecon.standard_perks_bonus_level'], 0.0),
-                _get_first(rows, ['support_surface::eecon.stone_sac_pct'], 0.0),
-                _get_first(rows, ['support_surface::eecon.lab_sac_pct'], 0.0),
-                _get_first(rows, ['support_surface::eecon.freeup_utility_prim_sub'], 0.0),
-                _get_first(rows, ['support_surface::eecon.freeup_utility_ass_sub'], 0.0),
-                _get_first(rows, ['support_surface::eecon.freeup_wse_level'], _get_first(rows, ['support_surface::eecon.workshop_enhancement_level'], 0.0)),
-                _get_first(rows, ['support_surface::eecon.freeup_utility_relic_pct'], 0.0),
-                _get_first(rows, ['support_surface::eecon.freeup_utility_vault_pct'], 0.0),
-            )
+            freeup_att = _pct_surface_ratio(rows, ['state::tower.free_attack_upgrade_chance_pct'])
+            freeup_def = _pct_surface_ratio(rows, ['state::tower.free_defense_upgrade_chance_pct'])
+            freeup_uti = _pct_surface_ratio(rows, ['state::tower.free_utility_upgrade_chance_pct'])
+            if freeup_att <= 0.0 and freeup_def <= 0.0 and freeup_uti <= 0.0:
+                freeup_att = _ep_fup(
+                    _get_first(rows, ['support_surface::eecon.freeup_attack_ws'], 0.0),
+                    _bool(rows, ['support_surface::eecon.freeup_card_active'], False),
+                    _get_first(rows, ['support_surface::eecon.freeup_card_value'], 0.0),
+                    _bool(rows, ['support_surface::eecon.freeup_perk_active'], False),
+                    _get_first(rows, ['support_surface::eecon.standard_perks_bonus_level'], 0.0),
+                    _get_first(rows, ['support_surface::eecon.stone_sac_pct'], 0.0),
+                    _get_first(rows, ['support_surface::eecon.lab_sac_pct'], 0.0),
+                    _get_first(rows, ['support_surface::eecon.freeup_attack_prim_sub'], 0.0),
+                    _get_first(rows, ['support_surface::eecon.freeup_attack_ass_sub'], 0.0),
+                    _get_first(rows, ['support_surface::eecon.freeup_wse_level'], _get_first(rows, ['support_surface::eecon.workshop_enhancement_level'], 0.0)),
+                    _get_first(rows, ['support_surface::eecon.freeup_attack_relic_pct'], 0.0),
+                    _get_first(rows, ['support_surface::eecon.freeup_attack_vault_pct'], 0.0),
+                )
+                freeup_def = _ep_fup(
+                    _get_first(rows, ['support_surface::eecon.freeup_defense_ws'], 0.0),
+                    _bool(rows, ['support_surface::eecon.freeup_card_active'], False),
+                    _get_first(rows, ['support_surface::eecon.freeup_card_value'], 0.0),
+                    _bool(rows, ['support_surface::eecon.freeup_perk_active'], False),
+                    _get_first(rows, ['support_surface::eecon.standard_perks_bonus_level'], 0.0),
+                    _get_first(rows, ['support_surface::eecon.stone_sac_pct'], 0.0),
+                    _get_first(rows, ['support_surface::eecon.lab_sac_pct'], 0.0),
+                    _get_first(rows, ['support_surface::eecon.freeup_defense_prim_sub'], 0.0),
+                    _get_first(rows, ['support_surface::eecon.freeup_defense_ass_sub'], 0.0),
+                    _get_first(rows, ['support_surface::eecon.freeup_wse_level'], _get_first(rows, ['support_surface::eecon.workshop_enhancement_level'], 0.0)),
+                    _get_first(rows, ['support_surface::eecon.freeup_defense_relic_pct'], 0.0),
+                    _get_first(rows, ['support_surface::eecon.freeup_defense_vault_pct'], 0.0),
+                )
+                freeup_uti = _ep_fup(
+                    _get_first(rows, ['support_surface::eecon.freeup_utility_ws'], 0.0),
+                    _bool(rows, ['support_surface::eecon.freeup_card_active'], False),
+                    _get_first(rows, ['support_surface::eecon.freeup_card_value'], 0.0),
+                    _bool(rows, ['support_surface::eecon.freeup_perk_active'], False),
+                    _get_first(rows, ['support_surface::eecon.standard_perks_bonus_level'], 0.0),
+                    _get_first(rows, ['support_surface::eecon.stone_sac_pct'], 0.0),
+                    _get_first(rows, ['support_surface::eecon.lab_sac_pct'], 0.0),
+                    _get_first(rows, ['support_surface::eecon.freeup_utility_prim_sub'], 0.0),
+                    _get_first(rows, ['support_surface::eecon.freeup_utility_ass_sub'], 0.0),
+                    _get_first(rows, ['support_surface::eecon.freeup_wse_level'], _get_first(rows, ['support_surface::eecon.workshop_enhancement_level'], 0.0)),
+                    _get_first(rows, ['support_surface::eecon.freeup_utility_relic_pct'], 0.0),
+                    _get_first(rows, ['support_surface::eecon.freeup_utility_vault_pct'], 0.0),
+                )
             freeup = (freeup_att + freeup_def + freeup_uti) * freeup_pct
-            has_ws = _bool(rows, ['support_surface::eecon.wave_skip_active'], _get_first(rows, [_compat_runtime('cards.wave_skip.chance_pct')], 0.0) > 0.0)
-            ws_card = _get_first(rows, [_compat_runtime('cards.wave_skip.chance_pct')], 0.0)
+            has_ws = _bool(rows, ['support_surface::eecon.wave_skip_active'], _get_first(rows, ['state::cards.wave_skip.chance_pct', _compat_runtime('cards.wave_skip.chance_pct')], 0.0) > 0.0)
+            ws_card = _get_first(rows, ['state::cards.wave_skip.chance_pct', _compat_runtime('cards.wave_skip.chance_pct')], 0.0)
+            if ws_card > 1.0:
+                ws_card /= 100.0
             ws_mastery = _bool(rows, ['support_surface::eecon.wave_skip_mastery_active'], False)
             ws_mastery_level = _get_first(rows, ['support_surface::eecon.wave_skip_mastery_level'], 0.0)
             freeup_factor = 1.0
@@ -1492,8 +1589,8 @@ def publish_derived_composites(rows: Dict[str, StatRow]) -> None:
     coin_card_factor = _get_first(rows, ['support_surface::eecon.coin_card_factor'], 0.0)
     if coin_card_factor <= 0.0:
         coin_card_factor = _ep_card_coins(
-            _bool(rows, ['support_surface::eecon.coin_card_active'], _get_first(rows, [_compat_runtime('cards.coins.multiplier')], 0.0) != 0.0),
-            _get_first(rows, [_compat_runtime('cards.coins.multiplier'), _compat_mech('cards.coins.multiplier')], 1.0),
+            _bool(rows, ['support_surface::eecon.coin_card_active'], _get_first(rows, ['state::economy.coins_multiplier', _compat_runtime('cards.coins.multiplier')], 0.0) != 0.0),
+            _get_first(rows, ['state::economy.coins_multiplier', _compat_runtime('cards.coins.multiplier'), _compat_mech('cards.coins.multiplier')], 1.0),
             _bool(rows, ['support_surface::eecon.coin_card_mastery_active'], False),
             _get_first(rows, ['support_surface::eecon.coin_card_mastery_level'], 0.0),
         )
@@ -1506,6 +1603,64 @@ def publish_derived_composites(rows: Dict[str, StatRow]) -> None:
             _get_first(rows, [_compat_mech('module.generator.assist_stone_bonus_pct')], 0.0),
             _get_first(rows, [_compat_mech('module.generator.assist_lab_bonus_pct')], 0.0),
         )
+    all_coin_bonus_contributors = [
+        _contributor(rows, cpk_contributor_key, 'economy.all_coin_bonus_multiplier'),
+        _contributor(rows, 'state::economy.coin_bonus_multiplier', 'economy.all_coin_bonus_multiplier'),
+        _contributor(rows, 'state::economy.coins_multiplier', 'economy.all_coin_bonus_multiplier'),
+        _contributor(rows, 'state::meta.cosmetic_bonus.theme_song_coin_multiplier', 'economy.all_coin_bonus_multiplier'),
+        _contributor(rows, 'state::meta.account_context.coin_multiplier_display', 'economy.all_coin_bonus_multiplier'),
+    ]
+    broad_coin_bonus_factor = _get_first(rows, ['state::economy.coin_bonus_multiplier'], 0.0)
+    all_coins_card_relic_factor = _get_first(rows, ['state::economy.coins_multiplier'], 0.0)
+    theme_song_factor = _get_first(rows, ['state::meta.cosmetic_bonus.theme_song_coin_multiplier'], 0.0)
+    account_coin_multiplier_factor = _parse_multiplier_token(_raw_surface_value(rows, ['state::meta.account_context.coin_multiplier_display']))
+    all_coin_bonus_factor = 0.0
+    if (
+        broad_coin_bonus_factor > 0.0
+        and cpk_factor > 0.0
+        and all_coins_card_relic_factor > 0.0
+        and theme_song_factor > 0.0
+        and account_coin_multiplier_factor is not None
+        and account_coin_multiplier_factor > 0.0
+    ):
+        all_coin_bonus_factor = (
+            cpk_factor
+            * broad_coin_bonus_factor
+            * all_coins_card_relic_factor
+            * theme_song_factor
+            * account_coin_multiplier_factor
+        )
+        all_coin_bonus_core_factor = (
+            broad_coin_bonus_factor
+            * all_coins_card_relic_factor
+            * theme_song_factor
+            * account_coin_multiplier_factor
+        )
+        _publish(
+            rows,
+            'state::economy.all_coin_bonus_multiplier',
+            all_coin_bonus_factor,
+            'multiplier',
+            all_coin_bonus_contributors,
+            'EP-aligned all-coin display surface: Coins/Kill x Coin Bonus x Coins multiplier x theme/song coin multiplier x parsed account coin multiplier display. Premium flags are trace-only.',
+        )
+        _publish(
+            rows,
+            'derived::eecon.all_coin_bonus_core_factor',
+            all_coin_bonus_core_factor,
+            'multiplier',
+            all_coin_bonus_contributors[1:],
+            'All-coin core factor before Coins/Kill, retained to make the EP display composition auditable.',
+        )
+    else:
+        _publish_unresolved(
+            rows,
+            'state::economy.all_coin_bonus_multiplier',
+            'multiplier',
+            all_coin_bonus_contributors,
+            'Blocked: all-coin display surface requires resolved Coins/Kill, Coin Bonus, Coins multiplier, theme/song multiplier, and parsed account coin multiplier display.',
+        )
+
     cl_factor = adstarter_theme_relic_factor * cpk_factor * freeup_factor * coin_card_factor * module_factor
 
     eom_factor = _get_first(rows, ['support_surface::eecon.eom_factor'], 0.0)
@@ -1519,24 +1674,24 @@ def publish_derived_composites(rows: Dict[str, StatRow]) -> None:
     sync_factor = _get_first(rows, ['support_surface::timing.combined_multiplier', 'support_surface::eecon.sync_factor'], 0.0)
     gt_gcomp_factor = _get_first(rows, ['support_surface::eecon.gcomp_factor'], 0.0)
     mvn_offset = _get_first(rows, ['support_surface::eecon.mvn_offset'], 0.0)
-    gt_bonus_term = _get_first(rows, ['support_surface::eecon.gt_bonus'], 0.0)
-    gt_duration_term = _get_first(rows, ['support_surface::eecon.gt_duration'], 0.0)
-    gt_cd_term = _get_first(rows, ['support_surface::eecon.gt_cooldown'], 0.0)
+    gt_bonus_term = _get_first(rows, ['support_surface::eecon.gt_bonus', 'state::uw.golden_tower.bonus_multiplier'], 0.0)
+    gt_duration_term = _get_first(rows, ['support_surface::eecon.gt_duration', 'state::uw.golden_tower.duration_seconds', 'state::uw.golden_tower.base_duration_seconds'], 0.0)
+    gt_cd_term = _get_first(rows, ['support_surface::eecon.gt_cooldown', 'state::uw.golden_tower.cooldown_seconds', 'state::uw.golden_tower.base_cooldown_seconds'], 0.0)
     gt_gc_factor = _get_first(rows, ['support_surface::eecon.gt_gc_factor'], 0.0)
-    bh_bonus_term = _get_first(rows, ['support_surface::eecon.bh_bonus'], 0.0)
-    bh_duration_term = _get_first(rows, ['support_surface::eecon.bh_duration'], 0.0)
-    bh_cd_term = _get_first(rows, ['support_surface::eecon.bh_cooldown'], 0.0)
-    dw_bonus_term = _get_first(rows, ['support_surface::eecon.dw_bonus'], 0.0)
-    dw_duration_term = _get_first(rows, ['support_surface::eecon.dw_duration'], 0.0)
-    dw_cd_term = _get_first(rows, ['support_surface::eecon.dw_cooldown'], 0.0)
-    gb_bonus_term = _get_first(rows, ['support_surface::eecon.gb_bonus'], 0.0)
-    gb_duration_term = _get_first(rows, ['support_surface::eecon.gb_duration'], 0.0)
-    gb_cd_term = _get_first(rows, ['support_surface::eecon.gb_cooldown'], 0.0)
+    bh_bonus_term = _get_first(rows, ['support_surface::eecon.bh_bonus', 'state::uw.black_hole.coin_bonus_multiplier'], 0.0)
+    bh_duration_term = _get_first(rows, ['support_surface::eecon.bh_duration', 'state::uw.black_hole.duration_seconds', 'state::uw.black_hole.base_duration_seconds'], 0.0)
+    bh_cd_term = _get_first(rows, ['support_surface::eecon.bh_cooldown', 'state::uw.black_hole.cooldown_seconds', 'state::uw.black_hole.base_cooldown_seconds'], 0.0)
+    dw_bonus_term = _get_first(rows, ['support_surface::eecon.dw_bonus', 'state::uw.death_wave.coin_bonus_multiplier'], 0.0)
+    dw_duration_term = _get_first(rows, ['support_surface::eecon.dw_duration', 'state::uw.death_wave.effect_wave_count'], 0.0)
+    dw_cd_term = _get_first(rows, ['support_surface::eecon.dw_cooldown', 'state::uw.death_wave.cooldown_seconds'], 0.0)
+    gb_bonus_term = _get_first(rows, ['support_surface::eecon.gb_bonus', 'state::bot.golden.bonus_multiplier'], 0.0)
+    gb_duration_term = _get_first(rows, ['support_surface::eecon.gb_duration', 'state::bot.golden.duration_seconds'], 0.0)
+    gb_cd_term = _get_first(rows, ['support_surface::eecon.gb_cooldown', 'state::bot.golden.cooldown_seconds'], 0.0)
 
-    has_gt = _bool(rows, ['support_surface::eecon.gt_active', _compat_runtime('uw.golden_tower.active'), _compat_mech('uw.golden_tower.active')], False)
-    has_bh = _bool(rows, ['support_surface::eecon.bh_active', _compat_runtime('uw.black_hole.active'), _compat_mech('uw.black_hole.active')], False)
-    has_dw = _bool(rows, ['support_surface::eecon.dw_active', _compat_runtime('uw.death_wave.active'), _compat_mech('uw.death_wave.active')], False)
-    has_gb = _bool(rows, ['support_surface::eecon.gb_active', _compat_runtime('uw.golden_bot.active'), _compat_mech('uw.golden_bot.active')], False)
+    has_gt = _bool(rows, ['support_surface::eecon.gt_active', _compat_runtime('uw.golden_tower.active'), _compat_mech('uw.golden_tower.active')], gt_bonus_term > 0.0 or gt_duration_term > 0.0 or gt_cd_term > 0.0)
+    has_bh = _bool(rows, ['support_surface::eecon.bh_active', _compat_runtime('uw.black_hole.active'), _compat_mech('uw.black_hole.active')], bh_bonus_term > 0.0 or bh_duration_term > 0.0 or bh_cd_term > 0.0)
+    has_dw = _bool(rows, ['support_surface::eecon.dw_active', _compat_runtime('uw.death_wave.active'), _compat_mech('uw.death_wave.active')], dw_bonus_term > 0.0 or dw_duration_term > 0.0 or dw_cd_term > 0.0)
+    has_gb = _bool(rows, ['support_surface::eecon.gb_active', _compat_runtime('uw.golden_bot.active'), _compat_mech('uw.golden_bot.active')], gb_bonus_term > 0.0 or gb_duration_term > 0.0 or gb_cd_term > 0.0)
 
     stone_sac = _get_first(rows, ['support_surface::eecon.stone_sac_pct'], 0.0)
     lab_sac = _get_first(rows, ['support_surface::eecon.lab_sac_pct'], 0.0)
@@ -1681,11 +1836,15 @@ def publish_derived_composites(rows: Dict[str, StatRow]) -> None:
             gb_cd_term,
         )
 
-    sl_coin_bonus = _get_first(rows, ['support_surface::eecon.spotlight_coin_bonus_multiplier', _compat_runtime('uw.spotlight.coin_bonus_multiplier'), _compat_mech('uw.spotlight.coin_bonus_multiplier')], 1.0)
+    sl_coin_bonus = _get_first(rows, ['support_surface::eecon.spotlight_coin_bonus_multiplier', 'state::uw.spotlight.coin_bonus_multiplier', _compat_runtime('uw.spotlight.coin_bonus_multiplier'), _compat_mech('uw.spotlight.coin_bonus_multiplier')], 1.0)
     sl_quantity = _get_first(rows, ['support_surface::eecon.sl_quantity'], 0.0)
+    if sl_quantity <= 0.0:
+        sl_quantity = _get_first(rows, ['state::uw.spotlight.count', _compat_mech('uw.spotlight.count')], 0.0)
     if sl_quantity <= 0.0:
         sl_quantity = _epc_slq(_get_first(rows, ['support_surface::eecon.sl_quantity_stone_level', _compat_mech('uw.spotlight.quantity_stone_level')], _get_first(rows, [_compat_mech('uw.spotlight.quantity')], 0.0) - 1.0))
     sl_angle = _get_first(rows, ['support_surface::eecon.sl_angle'], 0.0)
+    if sl_angle <= 0.0:
+        sl_angle = _get_first(rows, ['state::uw.spotlight.angle_degrees', _compat_mech('uw.spotlight.angle_degrees')], 0.0)
     if sl_angle <= 0.0:
         sl_angle = _epc_sla(
             _get_first(rows, ['support_surface::eecon.sl_angle_stone_level', _compat_mech('uw.spotlight.angle_stone_level')], 0.0),
@@ -1723,8 +1882,10 @@ def publish_derived_composites(rows: Dict[str, StatRow]) -> None:
                 isd += extra
 
         ws_total = 0.0
-        has_ws = _bool(rows, ['support_surface::eecon.wave_skip_active'], _get_first(rows, [_compat_runtime('cards.wave_skip.chance_pct')], 0.0) > 0.0)
-        ws_card = _get_first(rows, [_compat_runtime('cards.wave_skip.chance_pct')], 0.0)
+        has_ws = _bool(rows, ['support_surface::eecon.wave_skip_active'], _get_first(rows, ['state::cards.wave_skip.chance_pct', _compat_runtime('cards.wave_skip.chance_pct')], 0.0) > 0.0)
+        ws_card = _get_first(rows, ['state::cards.wave_skip.chance_pct', _compat_runtime('cards.wave_skip.chance_pct')], 0.0)
+        if ws_card > 1.0:
+            ws_card /= 100.0
         ws_mastery = _bool(rows, ['support_surface::eecon.wave_skip_mastery_active'], False)
         ws_mastery_level = _get_first(rows, ['support_surface::eecon.wave_skip_mastery_level'], 0.0)
         for skip in range(1, 11):
@@ -1735,12 +1896,15 @@ def publish_derived_composites(rows: Dict[str, StatRow]) -> None:
         wave_factor = 6500.0 / denom
 
     utility_dissonance_factor = _dissonance_total_multiplier(rows, 'utility')
-    eecon = cl_factor * eom_factor * sync_factor * spotlight_coin_factor * wave_factor * utility_dissonance_factor
+    eecon_raw_factor = cl_factor * eom_factor * sync_factor * spotlight_coin_factor * wave_factor * utility_dissonance_factor
+    eecon_unit_scale_factor = _get_first(rows, ['support_surface::eecon.unit_scale_factor'], 1000.0)
+    eecon = eecon_raw_factor * eecon_unit_scale_factor
     _publish(rows, 'derived::eecon.base_meta_factor', adstarter_theme_relic_factor, 'multiplier', [], 'ad starter / theme / relic factor [EP helper support surface]')
     _publish(rows, 'derived::eecon.cpk_factor', cpk_factor, 'multiplier', [_contributor(rows, cpk_contributor_key, 'eecon.cpk_factor')], 'EPC_CPK-like coin-per-kill factor [EP helper support surface]')
     _publish(rows, 'derived::eecon.freeup_factor', freeup_factor, 'multiplier', [], 'free-up factor [EP helper support surface]')
     _publish(rows, 'derived::eecon.coin_card_factor', coin_card_factor, 'multiplier', [_contributor(rows, _compat_runtime('cards.coins.multiplier'), 'eecon.coin_card_factor')], 'EPC_CARD_COINS factor [EP helper support surface]')
     _publish(rows, 'derived::eecon.module_factor', module_factor, 'multiplier', [], 'generator module factor [EP helper support surface]')
+    _publish(rows, 'derived::eecon.all_coin_bonus_factor', all_coin_bonus_factor if all_coin_bonus_factor > 0.0 else 1.0, 'multiplier', all_coin_bonus_contributors, 'Published all-coin display factor available to eEcon reconciliation; final EP eEcon chain remains separately governed.')
     _publish(rows, 'derived::eecon.cl_factor', cl_factor, 'multiplier', [], 'EP eEcon CL term [EP helper support surface]')
     _publish(rows, 'derived::eecon.eom_factor', eom_factor, 'multiplier', [], 'EP eEcon CM term [EP helper support surface]')
     _publish(rows, 'derived::eecon_ep_helper.cl_meta_stack', cl_factor, 'multiplier', [], 'EP eEcon CL workbook grouping alias [EP helper surface]')
@@ -1767,6 +1931,8 @@ def publish_derived_composites(rows: Dict[str, StatRow]) -> None:
     _publish(rows, 'derived::eecon_ep_helper.dg_spotlight_coin_factor', spotlight_coin_factor, 'multiplier', [_contributor(rows, _compat_runtime('uw.spotlight.coin_bonus_multiplier'), 'eecon_ep_helper.dg_spotlight_coin_factor')], 'EP eEcon DG workbook factor alias [EP helper surface]')
     _publish(rows, 'derived::eecon.wave_factor', wave_factor, 'multiplier', [], 'EP eEcon DH term [EP helper support surface]')
     _publish(rows, 'derived::eecon.utility_dissonance_factor', utility_dissonance_factor, 'multiplier', [_contributor(rows, 'derived::dissonance.utility.total_multiplier', 'eecon.utility_dissonance_factor')], 'v28 Utility Dissonance/Echo multiplier applied to the final eEcon chain.')
+    _publish(rows, 'derived::eecon.raw_factor', eecon_raw_factor, 'scalar', [_contributor(rows, cpk_contributor_key, 'eecon.raw_factor')], 'Raw multiplicative eEcon factor before EP CPK unit scaling.')
+    _publish(rows, 'derived::eecon.unit_scale_factor', eecon_unit_scale_factor, 'multiplier', [], 'EP Average CpK unit scale from workbook factor units to displayed coin units.')
     _publish(rows, 'derived::eecon.base_coin_income', eecon, 'scalar', [_contributor(rows, cpk_contributor_key, 'eecon.base_coin_income')], 'Deterministic coin-income proxy surface derived from the governed eEcon line [query support surface]')
     _publish(rows, 'derived::eecon', eecon, 'scalar', [_contributor(rows, cpk_contributor_key, 'eecon')], 'Native eEcon objective line; currently equal to EP line')
     _publish(rows, 'derived::eecon_ep', eecon, 'scalar', [_contributor(rows, cpk_contributor_key, 'eecon_ep')], 'Exact Effective Paths eEcon objective line')

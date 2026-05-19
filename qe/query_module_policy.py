@@ -22,6 +22,11 @@ SUPPORTED_MODULE_RUNTIME_POLICY_INPUTS = {
         'unit': 'hours_per_day',
         'value_type': 'scalar',
     },
+    'module.project_funding.current_cash': {
+        'surface_id': 'support_surface::module.project_funding.current_cash',
+        'unit': 'cash',
+        'value_type': 'scalar',
+    },
     'module.resource.gems_allocated_to_modules.per_week': {
         'surface_id': 'derived::module.resource_policy.gems_allocated_to_modules_per_week',
         'unit': 'gems_per_week',
@@ -127,7 +132,10 @@ def _publish_surface(rows: Dict[str, StatRow], *, surface_id: str, value: float,
     if existing is not None:
         if isinstance(existing.schema, dict) and existing.schema.get('publisher') == 'query_module_policy':
             return
-        raise ValueError(f'Module runtime/policy publication collision for {surface_id}')
+        if existing.final_value is None:
+            rows.pop(surface_id, None)
+        else:
+            raise ValueError(f'Module runtime/policy publication collision for {surface_id}')
     rows[surface_id] = StatRow(
         stat_name=surface_id,
         final_value=value,

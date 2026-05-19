@@ -138,15 +138,38 @@ consumers:
     - state::bot.plus.bonus_cell.unlocked
     - state::bot.plus.echoing_shot.unlocked
     - state::bot.plus.maximum_power.unlocked
+    - state::module.anti_cube_portal.shockwave_damage_taken_mult_x
+    - state::module.dimension_core.max_shock_stacks
+    - state::module.project_funding.cash_digit_multiplier_pct
+    - support_surface::module.project_funding.current_cash
+    - state::shock.damage_multiplier
+    - state::cards.damage.mastery_effect
     - state::cards.berserker.assumed_bonus_multiplier
     - state::cards.ultimate_crit.chance_pct
+    - state::economy.coins_multiplier
+    - state::economy.coin_bonus_multiplier
+    - state::meta.cosmetic_bonus.theme_song_coin_multiplier
+    - state::meta.account_context.coin_multiplier_display
+    - state::uw.golden_tower.bonus_multiplier
     - state::uw.black_hole.base_duration_seconds
     - state::uw.black_hole.base_cooldown_seconds
+    - state::uw.black_hole.coin_bonus_multiplier
+    - state::uw.death_wave.coin_bonus_multiplier
+    - state::uw.death_wave.effect_wave_count
+    - state::uw.death_wave.cooldown_seconds
+    - state::uw.spotlight.coin_bonus_multiplier
+    - state::uw.spotlight.angle_degrees
+    - state::uw.spotlight.count
     - state::uw.chrono_field.duration_seconds
     - state::uw.chrono_field.cooldown_seconds
     - state::uw.chrono_field.damage_reduction_pct
     - state::uw.chrono_field.slow_pct
     - state::uw.chain_lightning.max_enemy_damage_reduction_pct
+    - state::uw.chain_lightning.damage_multiplier
+    - state::uw.chain_lightning.quantity
+    - state::uw.chain_lightning.chance_pct
+    - state::uw.death_wave.damage_multiplier
+    - state::uw.spotlight.bonus_multiplier
     - state::uw.golden_tower.base_duration_seconds
     - state::uw.golden_tower.base_cooldown_seconds
     - support_surface::ehp.health_relic_pct
@@ -205,6 +228,7 @@ consumers:
     - support_surface::timing.wave_duration_seconds_effective
     optional_surface_ids:
     - state::cards.wave_accelerator.spawn_rate_acceleration
+    - state::cards.wave_skip.chance_pct
     - state::tower.package_chance_pct
     minimum_trace_mode: contributors
     overlays_allowed: true
@@ -387,6 +411,7 @@ consumers:
     - state::tower.supercrit_chance_pct
     - state::tower.supercrit_multiplier
     - state::tower.max_rend_multiplier
+    - state::cards.damage.mastery_effect
     - state::cards.berserker.assumed_bonus_multiplier
     - state::cards.ultimate_crit.chance_pct
     - state::uw.black_hole.base_duration_seconds
@@ -394,8 +419,18 @@ consumers:
     - state::uw.chrono_field.duration_seconds
     - state::uw.chrono_field.cooldown_seconds
     - state::uw.chrono_field.damage_reduction_pct
+    - state::uw.chain_lightning.damage_multiplier
+    - state::uw.chain_lightning.quantity
+    - state::uw.chain_lightning.chance_pct
+    - state::uw.death_wave.damage_multiplier
+    - state::uw.spotlight.bonus_multiplier
     - state::uw.golden_tower.base_duration_seconds
     - state::uw.golden_tower.base_cooldown_seconds
+    - state::module.anti_cube_portal.shockwave_damage_taken_mult_x
+    - state::module.dimension_core.max_shock_stacks
+    - state::module.project_funding.cash_digit_multiplier_pct
+    - support_surface::module.project_funding.current_cash
+    - state::shock.damage_multiplier
     - state::module.primordial_collapse.bh_damage_reduction_pct
     minimum_trace_mode: contributors
     overlays_allowed: false

@@ -11,6 +11,8 @@ import yaml
 
 from qe.compat.legacy_surface_ids import (
     legacy_canonical_surface_id,
+    legacy_context_surface_id,
+    legacy_cosmetic_surface_id,
     legacy_mechanic_surface_id,
     legacy_surface_id,
 )
@@ -25,6 +27,11 @@ _OWNERSHIP_LEDGER_PATH = ROOT / 'kb' / 'global-rules' / 'contracts' / 'stat-quer
 _CANONICAL_STATS_PATH = ROOT / 'kb' / 'global-rules' / 'contracts' / 'canonical-stats.yaml'
 _MECHANIC_PARAMS_PATH = ROOT / 'kb' / 'global-rules' / 'contracts' / 'mechanic-params.yaml'
 _YAML_LOADER = getattr(yaml, 'CSafeLoader', yaml.SafeLoader)
+
+
+def _raw_surface_id_for_alias(object_type: str, destination_id: str) -> str:
+    return f'{object_type}::{destination_id}'
+
 
 _COMPATIBILITY_SURFACE_ID_ALIASES = {
     legacy_canonical_surface_id('free_upgrade_multiplier'): 'support_surface::free_upgrade_multiplier',
@@ -45,8 +52,15 @@ _COMPATIBILITY_SURFACE_ID_ALIASES = {
     legacy_mechanic_surface_id('dissonance.defense.echo_source_bonus'): 'state::dissonance.defense.echo_source_bonus',
     legacy_mechanic_surface_id('dissonance.utility.echo_source_bonus'): 'state::dissonance.utility.echo_source_bonus',
     legacy_mechanic_surface_id('dissonance.ultimate_weapons.echo_source_bonus'): 'state::dissonance.ultimate_weapons.echo_source_bonus',
+    legacy_mechanic_surface_id('cards.damage.mastery_effect'): 'state::cards.damage.mastery_effect',
     legacy_mechanic_surface_id('cards.ultimate_crit.chance_pct'): 'state::cards.ultimate_crit.chance_pct',
     legacy_mechanic_surface_id('cards.plasma_cannon.effect_pct'): 'state::cards.plasma_cannon.effect_pct',
+    legacy_mechanic_surface_id('module.anti_cube_portal.shockwave_damage_taken_mult_x'): 'state::module.anti_cube_portal.shockwave_damage_taken_mult_x',
+    legacy_mechanic_surface_id('module.dimension_core.max_shock_stacks'): 'state::module.dimension_core.max_shock_stacks',
+    legacy_mechanic_surface_id('module.project_funding.cash_digit_multiplier_pct'): 'state::module.project_funding.cash_digit_multiplier_pct',
+    legacy_mechanic_surface_id('shock.damage_multiplier'): 'state::shock.damage_multiplier',
+    _raw_surface_id_for_alias('cosmetic_bonus', 'cosmetic_bonus.theme_song_coin_multiplier'): legacy_cosmetic_surface_id('cosmetic_bonus.theme_song_coin_multiplier'),
+    _raw_surface_id_for_alias('account_context', 'account_context.coin_multiplier_display'): legacy_context_surface_id('account_context.coin_multiplier_display'),
     legacy_mechanic_surface_id('module.galaxy_compressor.uw_cooldown_reduction_seconds'): 'support_surface::timing.gcomp_cooldown_reduction_seconds',
     # PH4-C tranche 5: the compiler routes this module's contribution under the legacy
     # destination_id 'module.primordial_collapse.in_bh_enemy_damage_reduction_pct'; the QE
@@ -83,13 +97,14 @@ _ENEMY_SKIP_THORNS_SURFACES: frozenset[str] = frozenset({
     'state::tower.thorns_damage_pct',
 })
 
-# PH4-C tranche 4: tower_hp workshop-times-multipliers routing.
-# Legacy _resolve_survivability_base_times_multipliers: final = workshop × (1+relic) × (1+vault)
-# × lab_mult × card_mult × module_mult × enhancement_mult.  Only state::tower.hp is independent
-# (no cross-surface dependency); state::wall.hp and state::wall.regen depend on tower_hp /
-# tower_regen post-resolution and remain in the explicit residual list.
+# PH4-C tranche 4: workshop-times-multipliers routing.
+# Legacy _resolve_survivability_base_times_multipliers and the combat damage formula both use
+# final = workshop × (1+relic) × (1+vault) × lab/card/module/enhancement/perk multipliers.
+# state::tower.hp and state::tower.damage are independent; state::wall.hp and state::wall.regen
+# depend on tower_hp / tower_regen post-resolution and remain in the explicit residual list.
 _SURVIVABILITY_WORKSHOP_MULTIPLIER_SURFACE_IDS: frozenset[str] = frozenset({
     'state::tower.hp',
+    'state::tower.damage',
     # PH4-C tranche 6: orb_speed_rpm uses the same unit=rpm path in legacy stat_resolution_core
     # (lines 1128-1134): workshop base is additive, relic/vault/module_substat are multiplicative
     # via _canonical_source_multiplier.  Same routing + _scale_survivability_relic_vault_values

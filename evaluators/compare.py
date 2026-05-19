@@ -713,6 +713,19 @@ def _normalize_compare_values(destination: str, compare_policy: str, package_val
     pkg = package_value
     ep = ep_value
     notes = []
+    if destination in {
+        _state('tower_range_m'),
+        'derived::edamage',
+        'derived::edamage.base_damage_stack',
+    }:
+        notes.append('loadout_slider_sensitive_compare: Range and Shockwave Size lab sliders are manual per-loadout inputs; compare mismatches can reflect EP export slider settings rather than a runtime constant.')
+    if destination == _state('tower_damage_per_meter_multiplier') and pkg is not None and ep is not None:
+        try:
+            if float(pkg) >= 1.0 and 0.0 <= float(ep) <= 1.0:
+                pkg = float(pkg) - 1.0
+                notes.append('package_damage_per_meter_total_multiplier_normalized_to_ep_bonus')
+        except (TypeError, ValueError):
+            pass
     if compare_policy == 'normalize_percent_scale' and ep is not None:
         if 0 <= ep <= 2.0:
             ep = ep * 100.0
@@ -748,7 +761,20 @@ def _safe_pct(n: int, d: int) -> float:
 
 
 # --- compare routing constants and helpers ---
+# EP export rows are spreadsheet-oracle shortcuts, not simulator defaults:
+# eDamage exports are from the Tournament loadout, while eHP/eEcon exports use
+# the Farming loadout and the account Farming Tier Dissonance state. These maps
+# adapt oracle rows to their owning QE surfaces without changing runtime
+# calculation semantics for arbitrary loadouts, tiers, or scenario requests.
+EP_ORACLE_SHORTCUT_CONTEXT_NOTE = (
+    'EP export shortcut context only: eDamage rows use Tournament loadout; '
+    'eHP/eEcon rows use Farming loadout and account Farming Tier Dissonance. '
+    'TowerSim runtime surfaces remain preset/tier/scenario parameterized.'
+)
+
 COMPARE_PRESET_OVERRIDES = {
+    'derived::edamage': 'Tourney',
+    'derived::edamage.base_damage_stack': 'Tourney',
     _state('tower_attack_speed'): 'Tourney',
     _state('tower_crit_chance_pct'): 'Tourney',
     _state('tower_crit_multiplier'): 'Tourney',
@@ -767,6 +793,13 @@ COMPARE_PRESET_OVERRIDES = {
 }
 
 COMPARE_SITUATION_OVERRIDES = {
+    'derived::edamage': {'preset': 'Tourney', 'perk_state': 'off', 'ep_run_state': 'tournament_perks_off'},
+    'derived::edamage.base_damage_stack': {'preset': 'Tourney', 'perk_state': 'off', 'ep_run_state': 'tournament_perks_off'},
+    'derived::ehp.health_factor': {'preset': 'Farming', 'perk_state': 'on', 'ep_run_state': 'farming_perks_on'},
+    'derived::wall.hp_pre_fort': {'preset': 'Farming', 'perk_state': 'on', 'ep_run_state': 'farming_perks_on'},
+    'derived::wall.hp_final': {'preset': 'Farming', 'perk_state': 'on', 'ep_run_state': 'farming_perks_on'},
+    'derived::wall.regen_hp_per_second': {'preset': 'Farming', 'perk_state': 'on', 'ep_run_state': 'farming_perks_on'},
+    'derived::eecon': {'preset': 'Farming', 'perk_state': 'on', 'ep_run_state': 'farming_perks_on'},
     _state('tower_damage'): {'preset': 'Tourney', 'perk_state': 'off', 'ep_run_state': 'tournament_perks_off'},
     _state('package_chance_pct'): {'preset': 'Tourney', 'perk_state': 'off', 'ep_run_state': 'tournament_perks_off'},
     _state('tower_hp'): {'preset': 'Farming', 'perk_state': 'on', 'ep_run_state': 'farming_perks_on'},
@@ -946,6 +979,7 @@ def _ep_stage_context_for_destination(destination: str, package_stage_context: d
     situation = COMPARE_SITUATION_OVERRIDES.get(destination)
     if situation and situation.get('ep_run_state'):
         ep_run_state = situation['ep_run_state']
+        notes.append(EP_ORACLE_SHORTCUT_CONTEXT_NOTE)
     elif preset == 'Tourney':
         ep_run_state = 'tournament_perks_off'
     else:
@@ -1790,12 +1824,22 @@ EP_LABEL_TO_DESTINATION = {
 # EP export key-level overrides for known label ambiguities.
 # These are compare-policy mappings only (not calculator truth).
 EP_KEY_TO_DESTINATION = {
+        'edmg': 'derived::edamage',
+        'damage': 'derived::edamage.base_damage_stack',
         'crit_factor': _state('tower_crit_multiplier'),
+        'health': 'derived::ehp.health_factor',
         'health_regen': _state('tower_regen'),
+        'max_rend_mult': 'state::tower.max_rend_multiplier',
         'recovery_package_chance': _state('package_chance_pct'),
         'shockwave_frequency': _state('tower_shockwave_interval_seconds'),
         'wall_health': 'derived::wall.hp_pre_fort',
         'wall_fortification': 'derived::wall.hp_final',
+        'wall_regen': 'derived::wall.regen_hp_per_second',
+        'cpk_average': 'derived::eecon',
+        'coins_per_kill_bonus': _state('coins_per_kill_bonus'),
+        'free_attack_upgrade': _state('free_attack_upgrade_chance_pct'),
+        'free_defense_upgrade': _state('free_defense_upgrade_chance_pct'),
+        'free_utility_upgrade': _state('free_utility_upgrade_chance_pct'),
 }
 
 def _parse_ep_value(raw):
@@ -1809,8 +1853,8 @@ def _parse_ep_value(raw):
             return float(s[1:]), 'multiplier_display'
         except ValueError:
             return None, None
-    suffixes = {'K':1e3,'M':1e6,'B':1e9,'T':1e12,'q':1e15,'Q':1e18,'O':1e27}
-    m = re.fullmatch(r'([0-9]+(?:\.[0-9]+)?)\s*([KMBTqQO])', s)
+    suffixes = {'K':1e3,'M':1e6,'B':1e9,'T':1e12,'q':1e15,'Q':1e18,'s':1e21,'S':1e24,'O':1e27,'N':1e30,'D':1e33}
+    m = re.fullmatch(r'([0-9]+(?:\.[0-9]+)?)\s*([KMBTqQsSOND])', s)
     if m:
         return float(m.group(1))*suffixes[m.group(2)], 'scaled_number'
     try:

@@ -283,3 +283,37 @@ def test_supercrit_multiplier_uses_flat_additive_base_then_post_multipliers() ->
 
     assert status == 'resolved'
     assert final == pytest.approx((13.2 + 5.0 + 0.05) * 1.26 * 1.56)
+
+
+def test_shockwave_size_uses_workshop_plus_selected_lab_slider_bonus() -> None:
+    contributors = [
+        StatInput(stat_name='Shockwave Size', source_family='workshop', source_name='Shockwave Size', value=2.35, value_type='resolved_value', stage='account_state'),
+        StatInput(stat_name='Shockwave Size', source_family='lab', source_name='Shockwave Size', value=1.0, value_type='resolved_value', stage='loadout_resolved'),
+    ]
+
+    final, status, *_ = resolve_bounded_bucket(
+        'canonical_stat',
+        'tower_shockwave_size_m',
+        contributors,
+        {'unit': 'm', 'resolver': 'generic'},
+    )
+
+    assert status == 'resolved'
+    assert final == pytest.approx(3.35)
+
+
+def test_shockwave_interval_uses_module_substat_seconds_delta_with_floor() -> None:
+    contributors = [
+        StatInput(stat_name='Shockwave Frequency', source_family='workshop', source_name='Shockwave Frequency', value=14.0, value_type='resolved_value', stage='account_state'),
+        StatInput(stat_name='Shockwave Frequency', source_family='module_substat', source_name='Anti-Cube Portal', value=-4.0, value_type='resolved_value', stage='loadout_resolved'),
+    ]
+
+    final, status, *_ = resolve_bounded_bucket(
+        'canonical_stat',
+        'tower_shockwave_interval_seconds',
+        contributors,
+        {'unit': 'seconds', 'resolver': 'standard_scalar_stat'},
+    )
+
+    assert status == 'resolved'
+    assert final == pytest.approx(10.0)

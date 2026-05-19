@@ -85,7 +85,7 @@ def test_runtime_state_parses_v28_dissonant_pbs_from_player_stuff() -> None:
         "ultimate_weapons": 4310,
     }
     assert state.tier_progression_waves["Tier 1"] == 10210
-    assert state.tier_progression_waves["Tier 19"] == 201
+    assert state.tier_progression_waves["Tier 19"] == 245
     assert state.highest_tier_unlocked_number == 19
     assert state.highest_tier_unlocked_label == "Tier 19"
     assert "Utility" not in state.player_meta

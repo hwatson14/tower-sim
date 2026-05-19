@@ -393,7 +393,7 @@ def test_stats_dashboard_primary_modules_panel_publishes_grouped_summary_rows():
     by_key = {(row.get('group'), row.get('label')): (row.get('values') or {}) for row in summary_rows}
 
     assert modules_panel.get('panel_type') == 'context_modules'
-    assert by_key[('', 'Max Level')]['cannon'] == '220'
+    assert by_key[('', 'Max Level')]['cannon'] == '240'
     assert by_key[('', 'Assist %')]['armor'] == '1%'
     assert by_key[('Primary', 'Module')]['generator'] == 'Singularity Harness'
     assert by_key[('Assist', 'Module')]['cannon'] == '—'
@@ -3334,7 +3334,7 @@ def test_stats_dashboard_primary_modules_panel_publishes_grouped_summary_rows():
     summary_rows = modules_panel.get('payload', {}).get('summary_rows') or []
     by_key = {(row.get('group'), row.get('label')): (row.get('values') or {}) for row in summary_rows}
     assert modules_panel.get('panel_type') == 'context_modules'
-    assert by_key[('', 'Max Level')]['cannon'] == '220'
+    assert by_key[('', 'Max Level')]['cannon'] == '240'
     assert by_key[('', 'Assist %')]['armor'] == '1%'
     assert by_key[('Primary', 'Module')]['generator'] == 'Singularity Harness'
     assert by_key[('Assist', 'Module')]['cannon'] == '—'

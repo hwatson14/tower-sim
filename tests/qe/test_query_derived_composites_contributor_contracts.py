@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import math
+
 import pytest
 
 from qe.contracts import normalize_surface_id_to_contract
@@ -91,6 +93,38 @@ def test_publish_derived_composites_applies_v28_utility_dissonance_to_eecon() ->
     assert dissonant_rows['derived::dissonance.utility.total_multiplier'].final_value == pytest.approx(3.0)
     assert dissonant_rows['derived::eecon.utility_dissonance_factor'].final_value == pytest.approx(3.0)
     assert dissonant_rows['derived::eecon'].final_value == pytest.approx(base_rows['derived::eecon'].final_value * 3.0)
+
+
+def test_publish_derived_composites_uses_resolved_bhd_freeup_surfaces_for_eecon() -> None:
+    rows = {
+        'state::economy.coins_per_kill_bonus': StatRow(stat_name='state::economy.coins_per_kill_bonus', final_value=1.0, value_type='multiplier', source_count=1, status='resolved', contributors=[], schema=None),
+        'state::module.black_hole_digestor.extra_coin_kill_bonus_per_free_upgrade_pct': StatRow(stat_name='state::module.black_hole_digestor.extra_coin_kill_bonus_per_free_upgrade_pct', final_value=1.0, value_type='pct', source_count=1, status='resolved', contributors=[], schema=None),
+        'state::tower.free_attack_upgrade_chance_pct': StatRow(stat_name='state::tower.free_attack_upgrade_chance_pct', final_value=100.0, value_type='pct', source_count=1, status='resolved', contributors=[], schema=None),
+        'state::tower.free_defense_upgrade_chance_pct': StatRow(stat_name='state::tower.free_defense_upgrade_chance_pct', final_value=100.0, value_type='pct', source_count=1, status='resolved', contributors=[], schema=None),
+        'state::tower.free_utility_upgrade_chance_pct': StatRow(stat_name='state::tower.free_utility_upgrade_chance_pct', final_value=100.0, value_type='pct', source_count=1, status='resolved', contributors=[], schema=None),
+        'state::cards.wave_skip.chance_pct': StatRow(stat_name='state::cards.wave_skip.chance_pct', final_value=19.0, value_type='pct', source_count=1, status='resolved', contributors=[], schema=None),
+    }
+
+    derived.publish_derived_composites(rows)
+
+    wave_skip_freeup_coeff = sum(derived._epc_card_ws(skip, True, 0.19, False, 0.0) * (skip + 1) for skip in range(0, 11))
+    assert rows['derived::eecon.freeup_factor'].final_value == pytest.approx(1.0 + wave_skip_freeup_coeff * 3.0 * 0.01)
+    assert rows['derived::eecon'].final_value > 1000.0
+
+
+def test_publish_derived_composites_publishes_ep_all_coin_display_surface() -> None:
+    rows = {
+        'state::economy.coins_per_kill_bonus': StatRow(stat_name='state::economy.coins_per_kill_bonus', final_value=47.0, value_type='multiplier', source_count=1, status='resolved', contributors=[], schema=None),
+        'state::economy.coin_bonus_multiplier': StatRow(stat_name='state::economy.coin_bonus_multiplier', final_value=2.5, value_type='multiplier', source_count=1, status='resolved', contributors=[], schema=None),
+        'state::economy.coins_multiplier': StatRow(stat_name='state::economy.coins_multiplier', final_value=2.0, value_type='multiplier', source_count=1, status='resolved', contributors=[], schema=None),
+        'state::meta.cosmetic_bonus.theme_song_coin_multiplier': StatRow(stat_name='state::meta.cosmetic_bonus.theme_song_coin_multiplier', final_value=1.5, value_type='multiplier', source_count=1, status='resolved', contributors=[], schema=None),
+        'state::meta.account_context.coin_multiplier_display': StatRow(stat_name='state::meta.account_context.coin_multiplier_display', final_value=9.0, value_type='multiplier', source_count=1, status='resolved', contributors=[], schema=None),
+    }
+
+    derived.publish_derived_composites(rows)
+
+    assert rows['derived::eecon.all_coin_bonus_core_factor'].final_value == pytest.approx(67.5)
+    assert rows['state::economy.all_coin_bonus_multiplier'].final_value == pytest.approx(3172.5)
 
 
 def test_publish_derived_composites_applies_v28_attack_dissonance_restrictions() -> None:
@@ -193,6 +227,44 @@ def test_publish_derived_composites_publishes_berserker_projection_helper_factor
 
     assert rows['derived::edamage.berserker_bonus_multiplier'].final_value == pytest.approx(8.0)
     assert rows['derived::edamage.berserker_factor'].final_value == pytest.approx(9.0)
+
+
+def test_publish_derived_composites_applies_damage_mastery_effect_to_edamage_base_stack() -> None:
+    rows = {
+        'state::tower.damage': StatRow(stat_name='state::tower.damage', final_value=100.0, value_type='damage', source_count=1, status='resolved', contributors=[], schema=None),
+        'state::cards.damage.mastery_effect': StatRow(stat_name='state::cards.damage.mastery_effect', final_value=2.6, value_type='multiplier', source_count=1, status='resolved', contributors=[], schema=None),
+        'state::tower.damage_per_meter_multiplier': StatRow(stat_name='state::tower.damage_per_meter_multiplier', final_value=1.0, value_type='multiplier', source_count=1, status='resolved', contributors=[], schema=None),
+    }
+
+    derived.publish_derived_composites(rows)
+
+    assert rows['derived::edamage.base_damage_stack'].final_value == pytest.approx(260.0)
+
+
+def test_publish_derived_composites_applies_project_funding_to_edamage_objective() -> None:
+    rows = {
+        'state::tower.damage': StatRow(stat_name='state::tower.damage', final_value=100.0, value_type='damage', source_count=1, status='resolved', contributors=[], schema=None),
+        'state::tower.attack_speed': StatRow(stat_name='state::tower.attack_speed', final_value=1.0, value_type='rate', source_count=1, status='resolved', contributors=[], schema=None),
+        'state::tower.damage_per_meter_multiplier': StatRow(stat_name='state::tower.damage_per_meter_multiplier', final_value=1.0, value_type='multiplier', source_count=1, status='resolved', contributors=[], schema=None),
+        'state::tower.range_m': StatRow(stat_name='state::tower.range_m', final_value=1.0, value_type='distance', source_count=1, status='resolved', contributors=[], schema=None),
+        'state::module.project_funding.cash_digit_multiplier_pct': StatRow(stat_name='state::module.project_funding.cash_digit_multiplier_pct', final_value=100.0, value_type='pct', source_count=1, status='resolved', contributors=[], schema=None),
+        'support_surface::module.project_funding.current_cash': StatRow(stat_name='support_surface::module.project_funding.current_cash', final_value=50_000_000_000.0, value_type='scalar', source_count=1, status='resolved', contributors=[], schema=None),
+    }
+
+    derived.publish_derived_composites(rows)
+
+    expected = 1.0 + math.log10(50_000_000_000.0)
+    assert rows['derived::edamage.project_funding_factor'].final_value == pytest.approx(expected)
+    assert rows['derived::edamage.base_damage_stack'].final_value == pytest.approx(100.0)
+
+    rows_without_project_funding = {
+        'state::tower.damage': StatRow(stat_name='state::tower.damage', final_value=100.0, value_type='damage', source_count=1, status='resolved', contributors=[], schema=None),
+        'state::tower.attack_speed': StatRow(stat_name='state::tower.attack_speed', final_value=1.0, value_type='rate', source_count=1, status='resolved', contributors=[], schema=None),
+        'state::tower.damage_per_meter_multiplier': StatRow(stat_name='state::tower.damage_per_meter_multiplier', final_value=1.0, value_type='multiplier', source_count=1, status='resolved', contributors=[], schema=None),
+        'state::tower.range_m': StatRow(stat_name='state::tower.range_m', final_value=1.0, value_type='distance', source_count=1, status='resolved', contributors=[], schema=None),
+    }
+    derived.publish_derived_composites(rows_without_project_funding)
+    assert rows['derived::edamage'].final_value == pytest.approx(rows_without_project_funding['derived::edamage'].final_value * expected)
 
 
 def test_publish_derived_composites_consumes_relic_support_surfaces_for_ehp_and_eecon() -> None:

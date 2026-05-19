@@ -14,6 +14,7 @@ import copy
 import json
 import shutil
 import sys
+from dataclasses import asdict
 from collections import Counter
 from functools import lru_cache
 from pathlib import Path
@@ -82,7 +83,7 @@ from simulators.progression import resolve_run_stats_progression_bundle
 from simulators.contracts import SimulatorCheckpointState
 from simulators.timing import compile_timing_family_rows, merge_scenario_publication_rows as merge_timing_scenario_publication_rows, resolve_timing_consumer_bundle
 from input.state_types import ScenarioRuntimeInputs
-from qe.models import BoundStatInputs, bind_state_identity
+from qe.models import BoundStatInputs, StatRow, bind_state_identity
 
 BOSS_WAVE_SOURCE_REPLACEMENT = 'replacement'
 BOSS_WAVE_FIELD_MAP_PATH = ROOT / 'app' / 'boss_waves_phase2a_field_map.yaml'
@@ -2407,6 +2408,52 @@ def _merge_query_statbooks(*statbook_dicts: dict) -> dict:
     return merged
 
 
+def _publish_query_surfaces_on_statbook_dict(
+    statbook_dict: dict,
+    *,
+    manual_advisory_inputs: dict | None = None,
+    account_state_labs: dict | None = None,
+) -> dict:
+    row_payloads = statbook_dict.get('rows') or {}
+    rows: dict[str, StatRow] = {}
+    for surface_id, payload in row_payloads.items():
+        if not isinstance(payload, dict):
+            continue
+        contributors = payload.get('contributors') or []
+        rows[surface_id] = StatRow(
+            stat_name=str(payload.get('stat_name') or surface_id),
+            final_value=payload.get('final_value'),
+            value_type=str(payload.get('value_type') or 'scalar'),
+            source_count=int(payload.get('source_count') or len(contributors)),
+            status=str(payload.get('status') or 'unresolved'),
+            notes=payload.get('notes'),
+            contributors=list(contributors),
+            schema=payload.get('schema'),
+        )
+    publish_query_surfaces(
+        rows,
+        manual_advisory_inputs=manual_advisory_inputs,
+        account_state_labs=account_state_labs,
+    )
+    republished_rows = {}
+    for surface_id, row in rows.items():
+        payload = dict(row_payloads.get(surface_id) or {})
+        payload.update(asdict(row))
+        republished_rows[surface_id] = payload
+    for surface_id, row in republished_rows.items():
+        row.setdefault('stat_name', surface_id)
+        row.setdefault('bundle_id', 'merged_query_surfaces')
+        row.setdefault('family_id', 'merged_query_surfaces')
+        row.setdefault('trace_mode', 'full_trace')
+    statbook_dict['rows'] = dict(sorted(republished_rows.items()))
+    diagnostics = dict(statbook_dict.get('diagnostics') or {})
+    diagnostics['post_merge_qe_publication'] = True
+    diagnostics['resolved_surface_count'] = len(republished_rows)
+    statbook_dict['diagnostics'] = diagnostics
+    _annotate_display_fields(statbook_dict)
+    return statbook_dict
+
+
 def _extract_tier_number(value) -> int | None:
     if value is None:
         return None
@@ -3216,6 +3263,7 @@ class RunStatsSession:
                     perk_preset_name=perk_preset_name,
                     include_optional_surface_ids=(
                         'state::cards.wave_accelerator.spawn_rate_acceleration',
+                        'state::cards.wave_skip.chance_pct',
                         'state::tower.package_chance_pct',
                     ),
                     trace_mode='full_trace',
@@ -3249,6 +3297,11 @@ class RunStatsSession:
                         manual_advisory_inputs=input_bundle.manual_advisory_inputs,
                         account_state_labs=account_state.labs,
                     ),
+                )
+                merged_statbook_dict = _publish_query_surfaces_on_statbook_dict(
+                    merged_statbook_dict,
+                    manual_advisory_inputs=input_bundle.manual_advisory_inputs,
+                    account_state_labs=account_state.labs,
                 )
                 formatting_ms = _elapsed_ms(t)
 
@@ -3550,14 +3603,50 @@ def run_analysis_pipeline(args) -> int:
             state_key = f'{preset_name}__perks_{preset_perk_state}' if forced_perk_state is not None else preset_name
             perk_state_by_preset[state_key] = preset_perk_state
             perk_materialized_by_preset[state_key] = perks_enabled_local
+            scenario_config = _run_stats_scenario_config(
+                state,
+                preset_name=preset_name,
+                tier_number=getattr(args, 'tier', None),
+            )
             snapshot = qe_planner.resolve_report_snapshot(
                 state,
                 preset_name=preset_name,
                 state_mode=state_mode,
                 perks_enabled=perks_enabled_local,
+                scenario_context=_run_stats_scenario_context(scenario_config),
             )
             statbook = snapshot.statbook
-            publish_query_surfaces(statbook.rows, account_state_labs=state.labs)
+            supplemental_timing_surface_ids = (
+                'state::tower.package_chance_pct',
+                'state::cards.wave_skip.chance_pct',
+            )
+            missing_timing_surface_ids = tuple(
+                surface_id for surface_id in supplemental_timing_surface_ids if surface_id not in statbook.rows
+            )
+            if missing_timing_surface_ids:
+                timing_response = resolve_checkpoint_surfaces(
+                    state,
+                    requested_surface_ids=missing_timing_surface_ids,
+                    preset_name=preset_name,
+                    family_id=_run_stats_timing_family_id(
+                        preset_name=preset_name,
+                        perks_enabled=perks_enabled_local,
+                    ),
+                    state_mode=state_mode,
+                    perks_enabled=perks_enabled_local,
+                    scenario_context=_run_stats_scenario_context(scenario_config),
+                    trace_mode='contributors',
+                )
+                timing_statbook = query_response_to_statbook(
+                    timing_response,
+                    notes='Compare supplemental timing-owned surfaces.',
+                )
+                statbook.rows.update(timing_statbook.rows)
+            publish_query_surfaces(
+                statbook.rows,
+                manual_advisory_inputs=_input_bundle.manual_advisory_inputs,
+                account_state_labs=state.labs,
+            )
             statbook_dict_local = statbook.to_dict()
             for destination, row in statbook_dict_local.get('rows', {}).items():
                 row['formula_contract'] = _formula_contract(formula_ledger, destination)
@@ -3599,6 +3688,13 @@ def run_analysis_pipeline(args) -> int:
         preset_name=args.preset,
         state_mode=args.state_mode,
         perks_enabled=perks_enabled,
+        scenario_context=_run_stats_scenario_context(
+            _run_stats_scenario_config(
+                account_state,
+                preset_name=args.preset,
+                tier_number=getattr(args, 'tier', None),
+            )
+        ),
     )
     stat_inputs = list(main_snapshot.stat_inputs)
     statbook = main_snapshot.statbook
@@ -3630,6 +3726,13 @@ def run_analysis_pipeline(args) -> int:
             preset_name=args.preset,
             state_mode=state_mode,
             perks_enabled=perks_enabled,
+            scenario_context=_run_stats_scenario_context(
+                _run_stats_scenario_config(
+                    account_state,
+                    preset_name=args.preset,
+                    tier_number=getattr(args, 'tier', None),
+                )
+            ),
         )
         matrix_inputs = list(matrix_snapshot.stat_inputs)
         matrix_statbook_obj = matrix_snapshot.statbook
@@ -3986,6 +4089,12 @@ def run_analysis_pipeline(args) -> int:
     diagnostics['tower_defense_absolute_semantic_gap_report'] = _build_tower_defense_absolute_semantic_gap_report(ep_compare_publishable)
     diagnostics['tower_damage_runtime_gap_report'] = _build_tower_damage_runtime_gap_report(ep_compare_publishable)
     diagnostics['compare_situation_policy'] = {
+        'ep_oracle_shortcut_context': {
+            'scope': 'compare_only',
+            'edamage': 'EP export uses Tournament loadout with perks off.',
+            'ehp_eecon': 'EP export uses Farming loadout with perks on and account Farming Tier Dissonance unless an explicit scenario override is requested.',
+            'runtime_policy': 'QE and simulator calculations remain preset, tier, perk, and scenario parameterized; EP shortcut context must not become runtime truth.',
+        },
         'tournament': {
             'preset': 'Tourney',
             'perk_state': package_stage_context.get('perk_state_by_preset', {}).get('Tourney', 'off'),
@@ -4003,7 +4112,7 @@ def run_analysis_pipeline(args) -> int:
             'perk_state': 'on',
             'note': 'Milestone is a real preset with perks on, but EP compare excludes milestone loadout.',
         },
-        'policy_note': 'Perks are controlled by run situation. Tournament compare uses Tourney loadout with perks off; farming follows the selected perk state/mode; milestone is a real preset with perks on, but EP compare excludes milestone loadout.',
+        'policy_note': 'Perks are controlled by run situation. Tournament compare uses Tourney loadout with perks off; farming follows the selected perk state/mode; milestone is a real preset with perks on, but EP compare excludes milestone loadout. EP export shortcut context is compare-only and does not hardcode runtime calculations.',
     }
     diagnostics['perk_support'] = diagnostics['ep_compare_stage_rules']['package_compare_capability']
 

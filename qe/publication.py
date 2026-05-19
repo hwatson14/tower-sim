@@ -217,8 +217,8 @@ def publish_query_surfaces(
     account_state_labs: if provided (dict of lab_name â†’ level), wires the module
     lab policy publisher which feeds into drop economy.
     """
-    publish_derived_composites(rows)
     publish_module_runtime_policy_surfaces(rows, manual_advisory_inputs=manual_advisory_inputs)
+    publish_derived_composites(rows)
     publish_module_draw_policy_surfaces(rows)
     _publish_module_account_tier_surfaces(rows)
     if account_state_labs is not None:

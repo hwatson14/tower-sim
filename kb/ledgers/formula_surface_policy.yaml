@@ -66,7 +66,7 @@ surfaces:
     formula_class: kb_contract_repaired_derived_display
     publish_policy: allow_if_resolved
     compare_policy: noncomparable_until_oracle
-    rationale: "Derived all-coin display surface: coin_bonus_multiplier x coins_multiplier x theme song coin multiplier x parsed account coin multiplier display. Premium flags are traced for audit but not numerically interpreted."
+    rationale: "EP-aligned all-coin display surface: coins_per_kill_bonus x coin_bonus_multiplier x coins_multiplier x theme song coin multiplier x parsed account coin multiplier display. Premium flags are traced for audit but not numerically interpreted."
   state::economy.coin_kill_multiplier:
     formula_class: deprecated_transition_mirror
     publish_policy: allow
@@ -78,6 +78,36 @@ surfaces:
     compare_policy: normal
     rationale: KB now closes damage contributor semantics sufficiently for publish;
       workshop base scaled by lab/card/module/enhancement/relic/vault multipliers.
+  derived::edamage:
+    formula_class: ep_helper_composite
+    publish_policy: allow_if_resolved
+    compare_policy: normal
+    rationale: Effective Paths eDMG objective surface, published by QE derived composites
+      and compared in the tournament/no-perk run context.
+  derived::edamage.base_damage_stack:
+    formula_class: ep_helper_composite
+    publish_policy: allow_if_resolved
+    compare_policy: normal
+    rationale: Effective Paths Damage helper surface before downstream eDamage objective
+      factors; compared in the tournament/no-perk run context.
+  derived::ehp.health_factor:
+    formula_class: ep_helper_composite
+    publish_policy: allow_if_resolved
+    compare_policy: normal
+    rationale: Effective Paths Health helper surface after eHP health multipliers,
+      including v28 Defense Dissonance/Echo where applicable.
+  derived::wall.regen_hp_per_second:
+    formula_class: ep_helper_composite
+    publish_policy: allow_if_resolved
+    compare_policy: normal
+    rationale: Displayed Wall Regen HP/sec derived from tower regen and wall regen
+      percent-points; EP exports this value rather than the wall-regen percent setting.
+  derived::eecon:
+    formula_class: ep_helper_composite
+    publish_policy: allow_if_resolved
+    compare_policy: normal
+    rationale: Effective Paths Average CpK/eEcon objective surface, including Utility
+      Dissonance/Echo and coin-path contributors.
   state::tower.range_m:
     formula_class: generic_validated
     publish_policy: allow

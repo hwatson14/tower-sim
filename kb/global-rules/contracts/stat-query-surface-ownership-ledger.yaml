@@ -200,6 +200,31 @@ surface_nodes:
   ownership_status: query_owned
   governed_by: canonical_query_engine
   downstream_policy: consume_only_no_rederivation
+- node_id: state::uw.chain_lightning.damage_multiplier
+  ownership_class: surface
+  ownership_status: query_owned
+  governed_by: canonical_query_engine
+  downstream_policy: consume_only_no_rederivation
+- node_id: state::uw.chain_lightning.quantity
+  ownership_class: surface
+  ownership_status: query_owned
+  governed_by: canonical_query_engine
+  downstream_policy: consume_only_no_rederivation
+- node_id: state::uw.chain_lightning.chance_pct
+  ownership_class: surface
+  ownership_status: query_owned
+  governed_by: canonical_query_engine
+  downstream_policy: consume_only_no_rederivation
+- node_id: state::uw.death_wave.damage_multiplier
+  ownership_class: surface
+  ownership_status: query_owned
+  governed_by: canonical_query_engine
+  downstream_policy: consume_only_no_rederivation
+- node_id: state::uw.spotlight.bonus_multiplier
+  ownership_class: surface
+  ownership_status: query_owned
+  governed_by: canonical_query_engine
+  downstream_policy: consume_only_no_rederivation
 - node_id: state::uw.chrono_field.slow_pct
   ownership_class: surface
   ownership_status: query_owned
@@ -240,6 +265,11 @@ surface_nodes:
   ownership_status: query_owned
   governed_by: canonical_query_engine
   downstream_policy: consume_only_no_rederivation
+- node_id: support_surface::module.project_funding.current_cash
+  ownership_class: surface
+  ownership_status: query_owned
+  governed_by: canonical_query_engine
+  downstream_policy: consume_only_no_rederivation
 - node_id: state::cards.wave_accelerator.spawn_rate_acceleration
   ownership_class: environment
   ownership_status: query_owned
@@ -247,6 +277,71 @@ surface_nodes:
   downstream_policy: consume_only_no_rederivation
 - node_id: state::cards.wave_skip.chance_pct
   ownership_class: environment
+  ownership_status: query_owned
+  governed_by: canonical_query_engine
+  downstream_policy: consume_only_no_rederivation
+- node_id: state::economy.coins_multiplier
+  ownership_class: surface
+  ownership_status: query_owned
+  governed_by: canonical_query_engine
+  downstream_policy: consume_only_no_rederivation
+- node_id: state::economy.coin_bonus_multiplier
+  ownership_class: surface
+  ownership_status: query_owned
+  governed_by: canonical_query_engine
+  downstream_policy: consume_only_no_rederivation
+- node_id: state::meta.cosmetic_bonus.theme_song_coin_multiplier
+  ownership_class: surface
+  ownership_status: query_owned
+  governed_by: canonical_query_engine
+  downstream_policy: consume_only_no_rederivation
+- node_id: state::meta.account_context.coin_multiplier_display
+  ownership_class: surface
+  ownership_status: query_owned
+  governed_by: canonical_query_engine
+  downstream_policy: consume_only_no_rederivation
+- node_id: state::economy.all_coin_bonus_multiplier
+  ownership_class: surface
+  ownership_status: query_owned
+  governed_by: canonical_query_engine
+  downstream_policy: consume_only_no_rederivation
+- node_id: state::uw.golden_tower.bonus_multiplier
+  ownership_class: surface
+  ownership_status: query_owned
+  governed_by: canonical_query_engine
+  downstream_policy: consume_only_no_rederivation
+- node_id: state::uw.black_hole.coin_bonus_multiplier
+  ownership_class: surface
+  ownership_status: query_owned
+  governed_by: canonical_query_engine
+  downstream_policy: consume_only_no_rederivation
+- node_id: state::uw.death_wave.coin_bonus_multiplier
+  ownership_class: surface
+  ownership_status: query_owned
+  governed_by: canonical_query_engine
+  downstream_policy: consume_only_no_rederivation
+- node_id: state::uw.death_wave.effect_wave_count
+  ownership_class: surface
+  ownership_status: query_owned
+  governed_by: canonical_query_engine
+  downstream_policy: consume_only_no_rederivation
+- node_id: state::uw.death_wave.cooldown_seconds
+  ownership_class: surface
+  ownership_status: query_owned
+  governed_by: canonical_query_engine
+  downstream_policy: consume_only_no_rederivation
+- node_id: state::uw.spotlight.coin_bonus_multiplier
+  ownership_class: surface
+  ownership_status: query_owned
+  governed_by: canonical_query_engine
+  downstream_policy: consume_only_no_rederivation
+- node_id: state::uw.spotlight.angle_degrees
+  ownership_class: surface
+  ownership_status: query_owned
+  governed_by: canonical_query_engine
+  downstream_policy: consume_only_no_rederivation
+- node_id: state::uw.spotlight.count
+  ownership_class: surface
   ownership_status: query_owned
   governed_by: canonical_query_engine
   downstream_policy: consume_only_no_rederivation
@@ -520,7 +615,32 @@ surface_nodes:
   ownership_status: query_owned
   governed_by: canonical_query_engine
   downstream_policy: consume_only_no_rederivation
+- node_id: state::module.anti_cube_portal.shockwave_damage_taken_mult_x
+  ownership_class: surface
+  ownership_status: query_owned
+  governed_by: canonical_query_engine
+  downstream_policy: consume_only_no_rederivation
+- node_id: state::module.dimension_core.max_shock_stacks
+  ownership_class: surface
+  ownership_status: query_owned
+  governed_by: canonical_query_engine
+  downstream_policy: consume_only_no_rederivation
+- node_id: state::module.project_funding.cash_digit_multiplier_pct
+  ownership_class: surface
+  ownership_status: query_owned
+  governed_by: canonical_query_engine
+  downstream_policy: consume_only_no_rederivation
+- node_id: state::shock.damage_multiplier
+  ownership_class: surface
+  ownership_status: query_owned
+  governed_by: canonical_query_engine
+  downstream_policy: consume_only_no_rederivation
 - node_id: state::cards.berserker.assumed_bonus_multiplier
+  ownership_class: surface
+  ownership_status: query_owned
+  governed_by: canonical_query_engine
+  downstream_policy: consume_only_no_rederivation
+- node_id: state::cards.damage.mastery_effect
   ownership_class: surface
   ownership_status: query_owned
   governed_by: canonical_query_engine
@@ -1036,6 +1156,11 @@ surface_nodes:
   governed_by: canonical_query_engine
   downstream_policy: consume_only_no_rederivation
 - node_id: derived::edamage.spotlight_light_range_factor
+  ownership_class: surface
+  ownership_status: query_owned
+  governed_by: canonical_query_engine
+  downstream_policy: consume_only_no_rederivation
+- node_id: derived::edamage.project_funding_factor
   ownership_class: surface
   ownership_status: query_owned
   governed_by: canonical_query_engine

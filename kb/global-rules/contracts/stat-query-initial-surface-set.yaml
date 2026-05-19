@@ -26,9 +26,6 @@ families:
       - timing_tournament_no_perks
       - timing_farm_with_perks
       - timing_scenario_probe
-      - progression_start_of_run
-      - progression_runtime_no_perks
-      - progression_runtime_with_perks
       query_resolvable_phase_1: true
       queryable_directly: true
       consumer_only: false
@@ -46,9 +43,6 @@ families:
       - timing_tournament_no_perks
       - timing_farm_with_perks
       - timing_scenario_probe
-      - progression_start_of_run
-      - progression_runtime_no_perks
-      - progression_runtime_with_perks
       query_resolvable_phase_1: true
       queryable_directly: true
       consumer_only: false
@@ -229,6 +223,214 @@ families:
       debug_only: false
       scenario_scoped: false
       semantics: resolved wall regen stat available to progression queries.
+    - surface_id: state::economy.coins_multiplier
+      surface_kind: canonical_surface
+      surface_class: surface
+      domain: economy
+      owning_families:
+      - progression_start_of_run
+      - progression_runtime_no_perks
+      - progression_runtime_with_perks
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: false
+      debug_only: false
+      scenario_scoped: false
+      semantics: resolved current-run Coins card/economy multiplier consumed by eEcon.
+    - surface_id: state::economy.coin_bonus_multiplier
+      surface_kind: canonical_surface
+      surface_class: surface
+      domain: economy
+      owning_families:
+      - progression_start_of_run
+      - progression_runtime_no_perks
+      - progression_runtime_with_perks
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: false
+      debug_only: false
+      scenario_scoped: false
+      semantics: resolved broad Coin Bonus multiplier consumed by all-coin display reconciliation.
+    - surface_id: state::meta.cosmetic_bonus.theme_song_coin_multiplier
+      surface_kind: account_meta_surface
+      surface_class: surface
+      domain: economy
+      owning_families:
+      - progression_start_of_run
+      - progression_runtime_no_perks
+      - progression_runtime_with_perks
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: false
+      debug_only: false
+      scenario_scoped: false
+      semantics: resolved theme/song cosmetic coin multiplier consumed by all-coin display reconciliation.
+    - surface_id: state::meta.account_context.coin_multiplier_display
+      surface_kind: account_meta_surface
+      surface_class: surface
+      domain: economy
+      owning_families:
+      - progression_start_of_run
+      - progression_runtime_no_perks
+      - progression_runtime_with_perks
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: false
+      debug_only: false
+      scenario_scoped: false
+      semantics: raw account coin multiplier display token consumed by all-coin display reconciliation.
+    - surface_id: state::economy.all_coin_bonus_multiplier
+      surface_kind: canonical_surface
+      surface_class: surface
+      domain: economy
+      owning_families:
+      - progression_start_of_run
+      - progression_runtime_no_perks
+      - progression_runtime_with_perks
+      query_resolvable_phase_1: false
+      queryable_directly: false
+      consumer_only: false
+      support_only: false
+      publish_default: true
+      debug_only: false
+      scenario_scoped: false
+      semantics: QE-published all-coin display composition from owned economy and account meta surfaces.
+    - surface_id: state::uw.golden_tower.bonus_multiplier
+      surface_kind: mechanic_surface
+      surface_class: surface
+      domain: ultimate_weapons
+      owning_families:
+      - progression_start_of_run
+      - progression_runtime_no_perks
+      - progression_runtime_with_perks
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: false
+      debug_only: false
+      scenario_scoped: false
+      semantics: resolved Golden Tower bonus multiplier consumed by eEcon.
+    - surface_id: state::uw.black_hole.coin_bonus_multiplier
+      surface_kind: runtime_mechanic_surface
+      surface_class: surface
+      domain: ultimate_weapons
+      owning_families:
+      - progression_start_of_run
+      - progression_runtime_no_perks
+      - progression_runtime_with_perks
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: false
+      debug_only: false
+      scenario_scoped: false
+      semantics: resolved Black Hole coin bonus multiplier consumed by eEcon.
+    - surface_id: state::uw.death_wave.coin_bonus_multiplier
+      surface_kind: runtime_mechanic_surface
+      surface_class: surface
+      domain: ultimate_weapons
+      owning_families:
+      - progression_start_of_run
+      - progression_runtime_no_perks
+      - progression_runtime_with_perks
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: false
+      debug_only: false
+      scenario_scoped: false
+      semantics: resolved Death Wave coin bonus multiplier consumed by eEcon.
+    - surface_id: state::uw.death_wave.effect_wave_count
+      surface_kind: mechanic_surface
+      surface_class: surface
+      domain: ultimate_weapons
+      owning_families:
+      - progression_start_of_run
+      - progression_runtime_no_perks
+      - progression_runtime_with_perks
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: false
+      debug_only: false
+      scenario_scoped: false
+      semantics: resolved Death Wave effect-wave count consumed by eEcon.
+    - surface_id: state::uw.death_wave.cooldown_seconds
+      surface_kind: mechanic_surface
+      surface_class: surface
+      domain: ultimate_weapons
+      owning_families:
+      - progression_start_of_run
+      - progression_runtime_no_perks
+      - progression_runtime_with_perks
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: false
+      debug_only: false
+      scenario_scoped: false
+      semantics: resolved Death Wave cooldown seconds consumed by eEcon.
+    - surface_id: state::uw.spotlight.coin_bonus_multiplier
+      surface_kind: runtime_mechanic_surface
+      surface_class: surface
+      domain: ultimate_weapons
+      owning_families:
+      - progression_start_of_run
+      - progression_runtime_no_perks
+      - progression_runtime_with_perks
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: false
+      debug_only: false
+      scenario_scoped: false
+      semantics: resolved Spotlight coin bonus multiplier consumed by eEcon.
+    - surface_id: state::uw.spotlight.angle_degrees
+      surface_kind: mechanic_surface
+      surface_class: surface
+      domain: ultimate_weapons
+      owning_families:
+      - progression_start_of_run
+      - progression_runtime_no_perks
+      - progression_runtime_with_perks
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: false
+      debug_only: false
+      scenario_scoped: false
+      semantics: resolved Spotlight angle degrees consumed by eEcon coverage.
+    - surface_id: state::uw.spotlight.count
+      surface_kind: mechanic_surface
+      surface_class: surface
+      domain: ultimate_weapons
+      owning_families:
+      - progression_start_of_run
+      - progression_runtime_no_perks
+      - progression_runtime_with_perks
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: false
+      debug_only: false
+      scenario_scoped: false
+      semantics: resolved Spotlight count consumed by eEcon coverage.
     - surface_id: state::wall.fortification_multiplier
       surface_kind: canonical_surface
       surface_class: surface
@@ -896,6 +1098,89 @@ families:
       scenario_scoped: true
       semantics: resolved Primordial Collapse enemy damage reduction percent inside
         Black Hole reserved for bounded optimizer analysis.
+    - surface_id: state::module.anti_cube_portal.shockwave_damage_taken_mult_x
+      surface_kind: runtime_mechanic_surface
+      surface_class: surface
+      domain: modules
+      owning_families:
+      - progression_start_of_run
+      - progression_runtime_no_perks
+      - progression_runtime_with_perks
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: false
+      debug_only: true
+      scenario_scoped: true
+      semantics: Anti-Cube Portal shockwave damage-taken multiplier consumed by eDamage.
+    - surface_id: state::module.dimension_core.max_shock_stacks
+      surface_kind: runtime_mechanic_surface
+      surface_class: surface
+      domain: modules
+      owning_families:
+      - progression_start_of_run
+      - progression_runtime_no_perks
+      - progression_runtime_with_perks
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: false
+      debug_only: true
+      scenario_scoped: true
+      semantics: Dimension Core maximum shock stacks consumed by eDamage.
+    - surface_id: state::module.project_funding.cash_digit_multiplier_pct
+      surface_kind: runtime_mechanic_surface
+      surface_class: surface
+      domain: modules
+      owning_families:
+      - progression_start_of_run
+      - progression_runtime_no_perks
+      - progression_runtime_with_perks
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: false
+      debug_only: true
+      scenario_scoped: true
+      semantics: Project Funding cash-digit damage multiplier percent; current-cash
+        runtime factor must remain explicit before downstream formula application.
+    - surface_id: support_surface::module.project_funding.current_cash
+      surface_kind: support_surface
+      surface_class: surface
+      domain: modules
+      query_value_type: scalar
+      owning_families:
+      - progression_start_of_run
+      - progression_runtime_no_perks
+      - progression_runtime_with_perks
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: true
+      publish_default: false
+      debug_only: true
+      scenario_scoped: true
+      semantics: Explicit current-cash assumption consumed by Project Funding
+        eDamage evaluation until run current-cash state is modeled.
+    - surface_id: state::shock.damage_multiplier
+      surface_kind: runtime_mechanic_surface
+      surface_class: surface
+      domain: ultimate_weapons
+      owning_families:
+      - progression_start_of_run
+      - progression_runtime_no_perks
+      - progression_runtime_with_perks
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: false
+      debug_only: true
+      scenario_scoped: true
+      semantics: Chain Lightning shock damage multiplier consumed by eDamage.
     - surface_id: state::cards.berserker.assumed_bonus_multiplier
       surface_kind: runtime_mechanic_surface
       surface_class: surface
@@ -913,6 +1198,23 @@ families:
       scenario_scoped: true
       semantics: explicit full-stack x8 Berserker bonus assumption for projected
         damage consumers.
+    - surface_id: state::cards.damage.mastery_effect
+      surface_kind: runtime_mechanic_surface
+      surface_class: surface
+      domain: cards
+      owning_families:
+      - progression_start_of_run
+      - progression_runtime_no_perks
+      - progression_runtime_with_perks
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: false
+      debug_only: true
+      scenario_scoped: true
+      semantics: Damage Card Mastery multiplier routed from IDS labs and consumed
+        by the eDamage base damage stack.
     - surface_id: state::cards.ultimate_crit.chance_pct
       surface_kind: runtime_mechanic_surface
       surface_class: surface
@@ -998,6 +1300,86 @@ families:
       scenario_scoped: true
       semantics: Chain Thunder maximum enemy damage-reduction percent consumed
         by eHP survivability factor publication.
+    - surface_id: state::uw.chain_lightning.damage_multiplier
+      surface_kind: runtime_mechanic_surface
+      surface_class: surface
+      domain: ultimate_weapons
+      owning_families:
+      - progression_start_of_run
+      - progression_runtime_no_perks
+      - progression_runtime_with_perks
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: false
+      debug_only: false
+      scenario_scoped: true
+      semantics: Chain Lightning damage multiplier consumed by eDamage UW publication.
+    - surface_id: state::uw.chain_lightning.quantity
+      surface_kind: runtime_mechanic_surface
+      surface_class: surface
+      domain: ultimate_weapons
+      owning_families:
+      - progression_start_of_run
+      - progression_runtime_no_perks
+      - progression_runtime_with_perks
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: false
+      debug_only: false
+      scenario_scoped: true
+      semantics: Chain Lightning quantity consumed by eDamage UW publication.
+    - surface_id: state::uw.chain_lightning.chance_pct
+      surface_kind: runtime_mechanic_surface
+      surface_class: surface
+      domain: ultimate_weapons
+      owning_families:
+      - progression_start_of_run
+      - progression_runtime_no_perks
+      - progression_runtime_with_perks
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: false
+      debug_only: false
+      scenario_scoped: true
+      semantics: Chain Lightning chance percent consumed by eDamage UW publication.
+    - surface_id: state::uw.death_wave.damage_multiplier
+      surface_kind: runtime_mechanic_surface
+      surface_class: surface
+      domain: ultimate_weapons
+      owning_families:
+      - progression_start_of_run
+      - progression_runtime_no_perks
+      - progression_runtime_with_perks
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: false
+      debug_only: false
+      scenario_scoped: true
+      semantics: Death Wave damage multiplier consumed by eDamage UW publication.
+    - surface_id: state::uw.spotlight.bonus_multiplier
+      surface_kind: runtime_mechanic_surface
+      surface_class: surface
+      domain: ultimate_weapons
+      owning_families:
+      - progression_start_of_run
+      - progression_runtime_no_perks
+      - progression_runtime_with_perks
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: false
+      debug_only: false
+      scenario_scoped: true
+      semantics: Spotlight damage bonus multiplier consumed by eDamage publication.
     - surface_id: state::uw.chrono_field.slow_pct
       surface_kind: runtime_mechanic_surface
       surface_class: surface
@@ -2453,6 +2835,10 @@ families:
       - state::economy.cash_per_wave
       - state::economy.interest_per_wave_pct
       - state::economy.coins_per_kill_bonus
+      - state::economy.coins_multiplier
+      - state::economy.coin_bonus_multiplier
+      - state::meta.cosmetic_bonus.theme_song_coin_multiplier
+      - state::meta.account_context.coin_multiplier_display
       - state::economy.coins_per_wave
       - state::economy.starting_cash_bonus
       - state::wall.rebuild_seconds
@@ -2512,15 +2898,34 @@ families:
       - state::module.orbital_augment.electron_count
       - state::module.black_hole_digestor.extra_coin_kill_bonus_per_free_upgrade_pct
       - state::module.primordial_collapse.bh_damage_reduction_pct
+      - state::module.anti_cube_portal.shockwave_damage_taken_mult_x
+      - state::module.dimension_core.max_shock_stacks
+      - state::module.project_funding.cash_digit_multiplier_pct
+      - support_surface::module.project_funding.current_cash
+      - state::shock.damage_multiplier
+      - state::cards.damage.mastery_effect
       - state::cards.berserker.assumed_bonus_multiplier
       - state::cards.ultimate_crit.chance_pct
+      - state::uw.golden_tower.bonus_multiplier
       - state::uw.black_hole.base_duration_seconds
       - state::uw.black_hole.base_cooldown_seconds
+      - state::uw.black_hole.coin_bonus_multiplier
+      - state::uw.death_wave.coin_bonus_multiplier
+      - state::uw.death_wave.effect_wave_count
+      - state::uw.death_wave.cooldown_seconds
+      - state::uw.spotlight.coin_bonus_multiplier
+      - state::uw.spotlight.angle_degrees
+      - state::uw.spotlight.count
       - state::uw.chrono_field.duration_seconds
       - state::uw.chrono_field.cooldown_seconds
       - state::uw.chrono_field.damage_reduction_pct
       - state::uw.chrono_field.slow_pct
       - state::uw.chain_lightning.max_enemy_damage_reduction_pct
+      - state::uw.chain_lightning.damage_multiplier
+      - state::uw.chain_lightning.quantity
+      - state::uw.chain_lightning.chance_pct
+      - state::uw.death_wave.damage_multiplier
+      - state::uw.spotlight.bonus_multiplier
       - state::uw.golden_tower.base_duration_seconds
       - state::uw.golden_tower.base_cooldown_seconds
       - state::tower.free_attack_upgrade_chance_pct
@@ -2553,6 +2958,9 @@ families:
       - state::module.primordial_collapse.bh_damage_reduction_pct
       - state::module.black_hole_digestor.extra_coin_kill_bonus_per_free_upgrade_pct
       - state::module.orbital_augment.electron_count
+      - state::module.project_funding.cash_digit_multiplier_pct
+      - support_surface::module.project_funding.current_cash
+      - state::cards.damage.mastery_effect
       - state::cards.berserker.assumed_bonus_multiplier
   derived_v1:
     surfaces:
@@ -2878,6 +3286,21 @@ families:
       debug_only: false
       scenario_scoped: false
       semantics: Published EP-helper support surface for edamage.spotlight_light_range_factor.
+    - surface_id: derived::edamage.project_funding_factor
+      surface_kind: published_derived_surface
+      surface_class: surface
+      domain: derived
+      owning_families:
+      - derived_v1
+      query_resolvable_phase_1: false
+      queryable_directly: true
+      consumer_only: false
+      support_only: true
+      publish_default: false
+      debug_only: true
+      scenario_scoped: true
+      semantics: Project Funding runtime factor from explicit current-cash
+        assumption and cash-digit multiplier percent.
     - surface_id: derived::edamage.super_tower_factor
       surface_kind: published_derived_surface
       surface_class: surface

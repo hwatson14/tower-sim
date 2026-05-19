@@ -301,6 +301,12 @@ sections:
         surface_id: state::economy.cash_per_wave
       - label: Coins / Kill Bonus
         surface_id: state::economy.coins_per_kill_bonus
+      - label: Coin Bonus
+        surface_id: state::economy.coin_bonus_multiplier
+      - label: Coins Multiplier
+        surface_id: state::economy.coins_multiplier
+      - label: All Coin Bonuses
+        surface_id: state::economy.all_coin_bonus_multiplier
       - label: Coins / Wave
         surface_id: state::economy.coins_per_wave
       - label: Free Attack Upgrade

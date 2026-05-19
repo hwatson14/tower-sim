@@ -270,6 +270,23 @@ def test_active_farming_module_uniques_compile_to_unique_effect_values() -> None
     assert unique_rows['Primordial Collapse::unique'].destination_id == 'module.primordial_collapse.bh_damage_reduction_pct'
 
 
+def test_tourney_project_funding_unique_compiles_to_cash_digit_surface() -> None:
+    rows = compile_stat_inputs(
+        _base_account_state(),
+        preset_name='Tourney',
+        state_mode='start_of_run',
+    )
+    matched = [
+        row for row in rows
+        if row.source_family == 'module'
+        and row.stat_name == 'Project Funding::unique'
+    ]
+
+    assert len(matched) == 1
+    assert matched[0].value == pytest.approx(100.0)
+    assert matched[0].destination_id == 'module.project_funding.cash_digit_multiplier_pct'
+
+
 def test_progression_family_publishes_active_module_unique_state_surfaces() -> None:
     planner = QEResolutionPlanner()
     statbook = planner.resolve_declared_family_statbook(
@@ -297,6 +314,24 @@ def test_progression_family_publishes_active_module_unique_state_surfaces() -> N
 
     assert primordial.status == 'resolved'
     assert primordial.final_value == pytest.approx(80.0)
+
+
+def test_progression_family_publishes_project_funding_state_surface() -> None:
+    planner = QEResolutionPlanner()
+    statbook = planner.resolve_declared_family_statbook(
+        _base_account_state(),
+        family_id='progression_start_of_run',
+        requested_surface_ids=(
+            'state::module.project_funding.cash_digit_multiplier_pct',
+        ),
+        preset_name='Tourney',
+        state_mode='start_of_run',
+        notes='test_project_funding_state_surface_publication',
+    )
+
+    row = statbook.rows['state::module.project_funding.cash_digit_multiplier_pct']
+    assert row.status == 'resolved'
+    assert row.final_value == pytest.approx(100.0)
 
 
 def test_optimizer_module_effects_bundle_resolves_optional_module_surfaces_when_explicitly_requested() -> None:
@@ -532,9 +567,9 @@ def test_berserker_card_routes_in_normal_audited_compile_path_without_falling_th
 def test_discount_labs_route_to_qe_owned_meta_surfaces_and_workshop_enhancements_routes_to_capability() -> None:
     rows = _compiled_rows(_base_account_state())
     expected_resolved = {
-        'Workshop Attack Discount': ('meta_progression_param', 'workshop_attack_cost_reduction_pct', 13.5),
-        'Workshop Defense Discount': ('meta_progression_param', 'workshop_defense_cost_reduction_pct', 14.0),
-        'Workshop Utility Discount': ('meta_progression_param', 'workshop_utility_cost_reduction_pct', 20.5),
+        'Workshop Attack Discount': ('meta_progression_param', 'workshop_attack_cost_reduction_pct', 18.0),
+        'Workshop Defense Discount': ('meta_progression_param', 'workshop_defense_cost_reduction_pct', 18.5),
+        'Workshop Utility Discount': ('meta_progression_param', 'workshop_utility_cost_reduction_pct', 23.0),
         'Labs Coin Discount': ('meta_progression_param', 'lab_coin_cost_reduction_pct', 20.4),
     }
 
@@ -710,6 +745,34 @@ def test_range_selected_level_uses_manual_input_default_adjuster() -> None:
 
     row = _single_row(rows, 'Range::Selected Level')
     assert row.value == 0.0
+
+
+def test_shockwave_frequency_module_substat_routes_to_tower_interval() -> None:
+    bundle = load_inputs()
+    state = build_runtime_state(
+        bundle.ids_raw,
+        default_preset='Tourney',
+        loadout_config=bundle.loadout_config,
+        perk_config=bundle.perk_config,
+    )
+
+    rows = compile_stat_inputs(
+        state,
+        preset_name='Tourney',
+        state_mode='max_progression',
+    )
+
+    row = next(
+        row
+        for row in rows
+        if row.stat_name == 'Shockwave Frequency'
+        and row.source_family == 'module_substat'
+        and row.source_name == 'Anti-Cube Portal'
+    )
+    assert row.value == pytest.approx(-4.0)
+    assert row.destination_object_type == 'canonical_stat'
+    assert row.destination_id == 'tower_shockwave_interval_seconds'
+    assert row.notes == 'kb_exact_routed_module_substat_primary'
 
 
 def test_wave_skip_card_publishes_timing_family_state_surface() -> None:

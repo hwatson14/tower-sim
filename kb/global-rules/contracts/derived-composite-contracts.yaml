@@ -173,6 +173,7 @@ derived_composites:
   - derived::edamage.spotlight_coverage
   - derived::edamage.spotlight_factor
   - derived::edamage.spotlight_light_range_factor
+  - derived::edamage.project_funding_factor
   - derived::edamage.super_tower_factor
   - derived::edamage.uw.chain_lightning_dps
   - derived::edamage.uw.death_wave_dps
@@ -213,6 +214,7 @@ derived_composites:
   - derived::edamage.spotlight_coverage
   - derived::edamage.spotlight_factor
   - derived::edamage.spotlight_light_range_factor
+  - derived::edamage.project_funding_factor
   - derived::edamage.super_tower_factor
   - derived::edamage.uw.chain_lightning_dps
   - derived::edamage.uw.death_wave_dps
@@ -232,6 +234,8 @@ derived_composites:
   known_gaps:
   - coin-first aggregate; non-coin persistent incomes externalized/manual
   support_surface_ids:
+  - derived::eecon.all_coin_bonus_factor
+  - derived::eecon.all_coin_bonus_core_factor
   - derived::eecon.base_coin_income
   - derived::eecon.base_meta_factor
   - derived::eecon.bh_bonus_term
@@ -252,10 +256,12 @@ derived_composites:
   - derived::eecon.gt_gc_factor
   - derived::eecon.module_factor
   - derived::eecon.mvn_offset
+  - derived::eecon.raw_factor
   - derived::eecon.spotlight_coin_bonus_term
   - derived::eecon.spotlight_coin_coverage
   - derived::eecon.spotlight_coin_factor
   - derived::eecon.sync_factor
+  - derived::eecon.unit_scale_factor
   - derived::eecon.wave_factor
   - derived::eecon_ep_helper.cl_meta_stack
   - derived::eecon_ep_helper.cm_eom_factor
@@ -274,6 +280,8 @@ derived_composites:
   known_gaps:
   - coin-first aggregate; non-coin persistent incomes externalized/manual
   support_surface_ids:
+  - derived::eecon.all_coin_bonus_factor
+  - derived::eecon.all_coin_bonus_core_factor
   - derived::eecon.base_coin_income
   - derived::eecon.base_meta_factor
   - derived::eecon.bh_bonus_term
@@ -294,9 +302,11 @@ derived_composites:
   - derived::eecon.gt_gc_factor
   - derived::eecon.module_factor
   - derived::eecon.mvn_offset
+  - derived::eecon.raw_factor
   - derived::eecon.spotlight_coin_bonus_term
   - derived::eecon.spotlight_coin_coverage
   - derived::eecon.spotlight_coin_factor
   - derived::eecon.sync_factor
+  - derived::eecon.unit_scale_factor
   - derived::eecon.wave_factor
   support_surface_role: ep_helper_support_surfaces

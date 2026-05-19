@@ -382,6 +382,20 @@ def _resolve_decimal_base_times_post_multipliers(destination_id: str, contributo
     return 1.0 + final, 'resolved', f'{note_label}: one plus decimal workshop bonus x lab x post multipliers.', schema
 
 
+def _resolve_shockwave_size_m(contributors: list[StatInput], schema: dict[str, object]) -> tuple[float | None, str, str, dict[str, object]]:
+    workshop = next((_as_float(row.value) for row in contributors if row.source_family == 'workshop'), None)
+    if workshop is None:
+        return None, 'mapped_not_resolved', 'Missing workshop base for tower_shockwave_size_m.', schema
+    lab_bonus = sum(
+        value
+        for row in contributors
+        if row.source_family in {'lab', 'labs'}
+        for value in [_as_float(row.value)]
+        if value is not None
+    )
+    return workshop + lab_bonus, 'resolved', 'Destination-specific shockwave-size formula: workshop meters plus selected lab-slider bonus meters.', schema
+
+
 def _resolve_additive_base_times_post_multipliers(
     destination_id: str,
     contributors: list[StatInput],
@@ -431,6 +445,24 @@ def _resolve_wall_rebuild_seconds(
             continue
         final += value
     return max(150.0, final), 'resolved', 'Destination-specific wall rebuild formula: additive seconds deltas with a 150s floor.', schema
+
+
+def _resolve_shockwave_interval_seconds(
+    contributors: list[StatInput],
+    schema: dict[str, object],
+) -> tuple[float | None, str, str, dict[str, object]]:
+    workshop = next((_as_float(row.value) for row in contributors if row.source_family == 'workshop'), None)
+    if workshop is None:
+        return None, 'mapped_not_resolved', 'Missing workshop base for tower_shockwave_interval_seconds.', schema
+    final = workshop
+    for row in contributors:
+        if row.source_family == 'workshop':
+            continue
+        value = _as_float(row.value)
+        if value is None:
+            continue
+        final += value
+    return max(7.0, final), 'resolved', 'Destination-specific shockwave interval formula: additive seconds deltas with a 7s floor.', schema
 
 
 def _tower_regen_compare_module_multiplier(contributors: list[StatInput]) -> float:
@@ -731,6 +763,8 @@ def _resolve_bucket(
         return _resolve_coins_per_kill_bonus(destination_id, contributors, schema)
     if destination_id == 'tower_damage_per_meter_multiplier':
         return _resolve_decimal_base_times_post_multipliers(destination_id, contributors, schema)
+    if destination_id == 'tower_shockwave_size_m':
+        return _resolve_shockwave_size_m(contributors, schema)
     if destination_id == 'wall_fortification_multiplier':
         lab_pct = next((_as_float(row.value) for row in contributors if row.source_family == 'lab'), None)
         if lab_pct is None:
@@ -743,6 +777,8 @@ def _resolve_bucket(
         return lab_seconds, 'resolved', 'Destination-specific wall invincibility formula: direct lab seconds.', schema
     if destination_id in {'wall_rebuild_seconds', 'wall.rebuild_seconds'}:
         return _resolve_wall_rebuild_seconds(destination_id, contributors, schema)
+    if destination_id == 'tower_shockwave_interval_seconds':
+        return _resolve_shockwave_interval_seconds(contributors, schema)
     if destination_id == 'module.orbital_augment.electron_count':
         values = [_as_float(row.value) for row in contributors]
         values = [value for value in values if value is not None]
@@ -1051,6 +1087,7 @@ class QEResolutionPlanner:
         module_preset_name: str | None = None,
         perk_preset_name: str | None = None,
         perks_enabled: bool | None = None,
+        scenario_context: Mapping[str, Any] | None = None,
     ) -> QEResolvedSnapshot:
         bound_inputs = compile_stat_inputs_with_identity(
             account_state,
@@ -1060,6 +1097,7 @@ class QEResolutionPlanner:
             module_preset_name=module_preset_name,
             perk_preset_name=perk_preset_name,
             perks_enabled=perks_enabled,
+            scenario_context=scenario_context,
         )
         return self.resolve_bound_report_snapshot(bound_inputs)
 

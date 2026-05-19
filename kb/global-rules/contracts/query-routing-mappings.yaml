@@ -726,6 +726,9 @@ module_substat_name_to_destination:
   package chance:
   - canonical_stat
   - package_chance_pct
+  shockwave frequency:
+  - canonical_stat
+  - tower_shockwave_interval_seconds
   max rend armor multi:
   - canonical_stat
   - max_rend_mult

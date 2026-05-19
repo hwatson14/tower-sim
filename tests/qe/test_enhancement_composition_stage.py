@@ -33,3 +33,29 @@ def test_enhancement_contributor_overrides_removed() -> None:
     import qe.query_routing as query_routing
 
     assert not hasattr(query_routing, 'ENHANCEMENT_CONTRIBUTOR_OVERRIDES')
+
+
+def test_tower_damage_uses_workshop_times_multiplier_composition() -> None:
+    workshop_row = StatInput(
+        stat_name='Damage',
+        source_family='workshop',
+        source_name='Damage',
+        value=100.0,
+        value_type='resolved_value',
+        stage='account_state',
+        destination_object_type='canonical_stat',
+        destination_id='tower_damage',
+    )
+    lab_row = StatInput(
+        stat_name='Damage',
+        source_family='lab',
+        source_name='Damage',
+        value=2.0,
+        value_type='resolved_value',
+        stage='account_state',
+        destination_object_type='canonical_stat',
+        destination_id='tower_damage',
+    )
+
+    assert _normalize_composition_stage('state::tower.damage', workshop_row) == 'additive_pre_cap'
+    assert _normalize_composition_stage('state::tower.damage', lab_row) == 'multiplicative'

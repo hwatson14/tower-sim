@@ -304,6 +304,11 @@ def test_workshop_defense_pct_formula_matches_expected_track() -> None:
     assert defense_pct_formula(99) == pytest.approx(49.5)
 
 
+def test_workshop_attack_chance_formulas_match_verified_max_rows() -> None:
+    assert WORKSHOP_FORMULA_VALUES['Multishot Chance'](99) == pytest.approx(49.5)
+    assert WORKSHOP_FORMULA_VALUES['Rapid Fire Chance'](85) == pytest.approx(34.0)
+
+
 def test_workshop_interest_per_wave_formula_matches_corrected_track() -> None:
     interest_formula = WORKSHOP_FORMULA_VALUES['Interest / Wave']
     assert interest_formula(99) == pytest.approx(5.94)

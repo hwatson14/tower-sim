@@ -28,7 +28,7 @@ def test_module_card_payloads_publish_selected_assist_state():
 
     assert farming['armor']['assist']['module_name'] == 'Orbital Augment'
     assert farming['generator']['assist']['module_name'] == 'Black Hole Digestor'
-    assert farming['core']['assist']['module_name'] == 'Dimension Core'
+    assert farming['core']['assist']['module_name'] == 'Om Chip'
 
 
 def test_module_card_payloads_use_qe_unlock_schedule_for_eight_slots():

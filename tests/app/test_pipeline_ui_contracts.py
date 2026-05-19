@@ -349,18 +349,26 @@ def test_pipeline_tier_scoped_dissonance_reconciles_t14_ep_panels(tmp_path):
     assert result.exit_code == 0
     rows = json.loads((out_dir / 'run_stats_query_rows_max_progression.json').read_text(encoding='utf-8'))['Farming']['rows']
 
-    assert rows['derived::dissonance.defense.total_multiplier']['final_value'] == pytest.approx(5.084125491313515)
-    assert rows['derived::ehp.health_factor']['final_value'] == pytest.approx(32.696146228571496e12)
+    assert rows['derived::dissonance.defense.total_multiplier']['final_value'] == pytest.approx(5.108782215759483)
+    assert rows['derived::ehp.health_factor']['final_value'] == pytest.approx(32.854714279139945e12)
     assert rows['state::uw.chain_lightning.max_enemy_damage_reduction_pct']['final_value'] == pytest.approx(36.0)
     assert rows['derived::ehp.chain_thunder_factor']['final_value'] == pytest.approx(1.5625)
-    assert rows['derived::ehp']['final_value'] == pytest.approx(861.5267299565655e15)
+    assert rows['derived::ehp']['final_value'] == pytest.approx(865.7049169500054e15)
     assert rows['state::tower.regen']['final_value'] == pytest.approx(45.364325790446484e12)
     assert rows['state::wall.fortification_multiplier']['final_value'] == pytest.approx(10.6)
-    assert rows['derived::wall.hp_pre_fort']['final_value'] == pytest.approx(572.051774415087e12)
-    assert rows['derived::wall.hp_final']['final_value'] == pytest.approx(6.063748808799922e15)
+    assert rows['derived::wall.hp_pre_fort']['final_value'] == pytest.approx(574.8260810278326e12)
+    assert rows['derived::wall.hp_final']['final_value'] == pytest.approx(6.093156458895026e15)
     assert rows['derived::wall.regen_hp_per_second']['final_value'] == pytest.approx(238.16271039984403e12)
     assert rows['state::tower.defense_absolute']['status'] == 'resolved'
-    assert rows['state::economy.coins_per_kill_bonus']['final_value'] == pytest.approx(46.42479765)
+    assert rows['state::tower.defense_absolute']['final_value'] == pytest.approx(323.9157257531188e6)
+    assert rows['state::economy.coins_per_kill_bonus']['final_value'] == pytest.approx(47.32425101250001)
+    assert rows['state::economy.all_coin_bonus_multiplier']['final_value'] == pytest.approx(4028.446609148341)
+    assert rows['state::cards.wave_skip.chance_pct']['final_value'] == pytest.approx(19.0)
+    assert rows['derived::eecon.freeup_factor']['final_value'] == pytest.approx(1.0131613688509975)
+    assert rows['derived::eecon.wave_factor']['final_value'] == pytest.approx(1.3064513895292529)
+    assert rows['derived::eecon.utility_dissonance_factor']['final_value'] > 1.0
+    assert rows['derived::eecon.unit_scale_factor']['final_value'] == pytest.approx(1000.0)
+    assert rows['derived::eecon']['final_value'] == pytest.approx(348102894.43580586)
 
 
 def test_pipeline_cards_payload_publishes_selected_rows_by_preset(canonical_pipeline_artifacts):
