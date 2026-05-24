@@ -1,5 +1,5 @@
 {
-  "generated_utc": "2026-05-23T14:21:15.437Z",
+  "generated_utc": "2026-05-24T14:21:15.792Z",
   "spreadsheet_id": "1n4vaWZB5XEgyRRrpuEXE-LnxyKXzmO_SP8hk386LgzI",
   "dest_prefix": "input/imports/",
   "files": {
@@ -22,7 +22,7 @@
       "sheet": "EP Export",
       "rangeA1": "AUTO(lastRow/lastCol)",
       "approx_lines": 256,
-      "bytes": 25519
+      "bytes": 25296
     }
   }
 }
