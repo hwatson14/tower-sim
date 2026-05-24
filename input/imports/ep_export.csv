@@ -191,66 +191,66 @@ uw,uw_inner_land_mines_quantity,Inner Land Mines final quantity,uw_stat,count,,e
 uw,uw_inner_land_mines_cooldown,Inner Land Mines final cooldown,uw_stat,seconds,,eDamage,optional,Blank when ILM is unavailable/not relevant.
 ,,,,,,,,
 ,,,,,,,,
-edmg,edmg_perk_damage_quantity,eDamage perk Damage quantity,guess,count,5,eDamage,active,eDamage perk assumption from EP.
-edmg,edmg_perk_damage_value,eDamage perk Damage value,guess,x,2.1875,eDamage,active,eDamage perk assumption from EP.
-edmg,edmg_perk_damage_active,eDamage perk Damage active,guess,boolean,true,eDamage,active,eDamage perk active flag from EP.
-edmg,edmg_perk_bounce_shot_quantity,eDamage perk Bounce Shot quantity,guess,count,3,eDamage,active,eDamage perk assumption from EP.
-edmg,edmg_perk_bounce_shot_value,eDamage perk Bounce Shot value,guess,x,6,eDamage,active,eDamage perk assumption from EP.
-edmg,edmg_perk_bounce_shot_active,eDamage perk Bounce Shot active,guess,boolean,true,eDamage,active,eDamage perk active flag from EP.
-edmg,edmg_perk_damage_boss_tradeoff_value,eDamage perk damage/boss-health tradeoff value,guess,x,1.6500000000000001,eDamage,active,eDamage perk assumption from EP.
-edmg,edmg_perk_damage_boss_tradeoff_active,eDamage perk damage/boss-health tradeoff active,guess,boolean,true,eDamage,active,eDamage perk active flag from EP.
-edmg,edmg_perk_enemy_damage_tradeoff_value,eDamage perk enemy-damage tradeoff value,guess,ratio,-0.55,eDamage,active,eDamage perk assumption from EP.
-edmg,edmg_perk_enemy_damage_tradeoff_active,eDamage perk enemy-damage tradeoff active,guess,boolean,true,eDamage,active,eDamage perk active flag from EP.
-edmg,edmg_perk_death_wave_quantity_value,eDamage perk Death Wave quantity value,guess,count,1,eDamage,active,Parsed numeric perk value from EP text.
-edmg,edmg_perk_death_wave_quantity_active,eDamage perk Death Wave quantity active,guess,boolean,true,eDamage,active,eDamage perk active flag from EP.
-edmg,edmg_perk_spotlight_damage_bonus_value,eDamage perk Spotlight damage bonus value,guess,x,1.5,eDamage,active,Parsed numeric perk value from EP text.
-edmg,edmg_perk_spotlight_damage_bonus_active,eDamage perk Spotlight damage bonus active,guess,boolean,true,eDamage,active,eDamage perk active flag from EP.
-edmg,edmg_perk_smart_missile_quantity_value,eDamage perk Smart Missile quantity value,guess,count,4,eDamage,optional,Conditional SM perk value from EP.
-edmg,edmg_perk_smart_missile_quantity_active,eDamage perk Smart Missile quantity active,guess,boolean,true,eDamage,optional,Conditional SM perk active flag from EP.
-edmg,edmg_perk_chain_lightning_damage_value,eDamage perk Chain Lightning damage value,guess,x,2,eDamage,active,Parsed numeric perk value from EP text.
-edmg,edmg_perk_chain_lightning_damage_active,eDamage perk Chain Lightning damage active,guess,boolean,true,eDamage,active,eDamage perk active flag from EP.
-edmg,edmg_perk_extra_inner_mines_value,eDamage perk Extra Inner Mines value,guess,count,6,eDamage,optional,Conditional ILM perk value from EP.
-edmg,edmg_perk_extra_inner_mines_active,eDamage perk Extra Inner Mines active,guess,boolean,true,eDamage,optional,Conditional ILM perk active flag from EP.
+edmg,edmg_perk_damage_quantity,eDamage perk Damage quantity,guess,count,,eDamage,active,eDamage perk assumption from EP.
+edmg,edmg_perk_damage_value,eDamage perk Damage value,guess,x,,eDamage,active,eDamage perk assumption from EP.
+edmg,edmg_perk_damage_active,eDamage perk Damage active,guess,boolean,,eDamage,active,eDamage perk active flag from EP.
+edmg,edmg_perk_bounce_shot_quantity,eDamage perk Bounce Shot quantity,guess,count,,eDamage,active,eDamage perk assumption from EP.
+edmg,edmg_perk_bounce_shot_value,eDamage perk Bounce Shot value,guess,x,,eDamage,active,eDamage perk assumption from EP.
+edmg,edmg_perk_bounce_shot_active,eDamage perk Bounce Shot active,guess,boolean,,eDamage,active,eDamage perk active flag from EP.
+edmg,edmg_perk_damage_boss_tradeoff_value,eDamage perk damage/boss-health tradeoff value,guess,x,,eDamage,active,eDamage perk assumption from EP.
+edmg,edmg_perk_damage_boss_tradeoff_active,eDamage perk damage/boss-health tradeoff active,guess,boolean,,eDamage,active,eDamage perk active flag from EP.
+edmg,edmg_perk_enemy_damage_tradeoff_value,eDamage perk enemy-damage tradeoff value,guess,ratio,,eDamage,active,eDamage perk assumption from EP.
+edmg,edmg_perk_enemy_damage_tradeoff_active,eDamage perk enemy-damage tradeoff active,guess,boolean,,eDamage,active,eDamage perk active flag from EP.
+edmg,edmg_perk_death_wave_quantity_value,eDamage perk Death Wave quantity value,guess,count,,eDamage,active,Parsed numeric perk value from EP text.
+edmg,edmg_perk_death_wave_quantity_active,eDamage perk Death Wave quantity active,guess,boolean,Uptime,eDamage,active,eDamage perk active flag from EP.
+edmg,edmg_perk_spotlight_damage_bonus_value,eDamage perk Spotlight damage bonus value,guess,x,180,eDamage,active,Parsed numeric perk value from EP text.
+edmg,edmg_perk_spotlight_damage_bonus_active,eDamage perk Spotlight damage bonus active,guess,boolean,0.23333333333333334,eDamage,active,eDamage perk active flag from EP.
+edmg,edmg_perk_smart_missile_quantity_value,eDamage perk Smart Missile quantity value,guess,count,46,eDamage,optional,Conditional SM perk value from EP.
+edmg,edmg_perk_smart_missile_quantity_active,eDamage perk Smart Missile quantity active,guess,boolean,1,eDamage,optional,Conditional SM perk active flag from EP.
+edmg,edmg_perk_chain_lightning_damage_value,eDamage perk Chain Lightning damage value,guess,x,180,eDamage,active,Parsed numeric perk value from EP text.
+edmg,edmg_perk_chain_lightning_damage_active,eDamage perk Chain Lightning damage active,guess,boolean,0.08888888888888889,eDamage,active,eDamage perk active flag from EP.
+edmg,edmg_perk_extra_inner_mines_value,eDamage perk Extra Inner Mines value,guess,count,3,eDamage,optional,Conditional ILM perk value from EP.
+edmg,edmg_perk_extra_inner_mines_active,eDamage perk Extra Inner Mines active,guess,boolean,0.46875,eDamage,optional,Conditional ILM perk active flag from EP.
 ,,,,,,,,
-eecon,eecon_perk_coins_quantity,eEcon perk Coins quantity,guess,count,5,eEcon,active,eEcon perk assumption from EP.
-eecon,eecon_perk_coins_value,eEcon perk Coins value,guess,x,2.1875,eEcon,active,eEcon perk assumption from EP.
-eecon,eecon_perk_coins_active,eEcon perk Coins active,guess,boolean,true,eEcon,active,eEcon perk active flag from EP.
-eecon,eecon_perk_free_upgrades_quantity,eEcon perk Free Upgrades quantity,guess,count,5,eEcon,active,eEcon perk assumption from EP.
-eecon,eecon_perk_free_upgrades_value,eEcon perk Free Upgrades value,guess,ratio,0.3125,eEcon,active,eEcon perk assumption from EP.
-eecon,eecon_perk_free_upgrades_active,eEcon perk Free Upgrades active,guess,boolean,true,eEcon,active,eEcon perk active flag from EP.
-eecon,eecon_perk_coin_health_tradeoff_value,eEcon perk coin/health tradeoff value,guess,x,1.9800000000000002,eEcon,active,eEcon perk assumption from EP.
-eecon,eecon_perk_coin_health_tradeoff_active,eEcon perk coin/health tradeoff active,guess,boolean,true,eEcon,active,eEcon perk active flag from EP.
-eecon,eecon_perk_golden_tower_bonus_value,eEcon perk Golden Tower bonus value,guess,x,1.5,eEcon,active,Parsed numeric perk value from EP text.
-eecon,eecon_perk_golden_tower_bonus_active,eEcon perk Golden Tower bonus active,guess,boolean,true,eEcon,active,eEcon perk active flag from EP.
-eecon,eecon_perk_black_hole_duration_value,eEcon perk Black Hole duration value,guess,seconds,12,eEcon,active,Parsed numeric duration from EP text.
-eecon,eecon_perk_black_hole_duration_active,eEcon perk Black Hole duration active,guess,boolean,true,eEcon,active,eEcon perk active flag from EP.
-eecon,eecon_perk_death_wave_quantity_value,eEcon perk Death Wave quantity value,guess,count,1,eEcon,active,Parsed numeric perk value from EP text.
-eecon,eecon_perk_death_wave_quantity_active,eEcon perk Death Wave quantity active,guess,boolean,true,eEcon,active,eEcon perk active flag from EP.
+eecon,eecon_perk_coins_quantity,eEcon perk Coins quantity,guess,count,,eEcon,active,eEcon perk assumption from EP.
+eecon,eecon_perk_coins_value,eEcon perk Coins value,guess,x,,eEcon,active,eEcon perk assumption from EP.
+eecon,eecon_perk_coins_active,eEcon perk Coins active,guess,boolean,,eEcon,active,eEcon perk active flag from EP.
+eecon,eecon_perk_free_upgrades_quantity,eEcon perk Free Upgrades quantity,guess,count,,eEcon,active,eEcon perk assumption from EP.
+eecon,eecon_perk_free_upgrades_value,eEcon perk Free Upgrades value,guess,ratio,,eEcon,active,eEcon perk assumption from EP.
+eecon,eecon_perk_free_upgrades_active,eEcon perk Free Upgrades active,guess,boolean,,eEcon,active,eEcon perk active flag from EP.
+eecon,eecon_perk_coin_health_tradeoff_value,eEcon perk coin/health tradeoff value,guess,x,,eEcon,active,eEcon perk assumption from EP.
+eecon,eecon_perk_coin_health_tradeoff_active,eEcon perk coin/health tradeoff active,guess,boolean,,eEcon,active,eEcon perk active flag from EP.
+eecon,eecon_perk_golden_tower_bonus_value,eEcon perk Golden Tower bonus value,guess,x,,eEcon,active,Parsed numeric perk value from EP text.
+eecon,eecon_perk_golden_tower_bonus_active,eEcon perk Golden Tower bonus active,guess,boolean,,eEcon,active,eEcon perk active flag from EP.
+eecon,eecon_perk_black_hole_duration_value,eEcon perk Black Hole duration value,guess,seconds,,eEcon,active,Parsed numeric duration from EP text.
+eecon,eecon_perk_black_hole_duration_active,eEcon perk Black Hole duration active,guess,boolean,,eEcon,active,eEcon perk active flag from EP.
+eecon,eecon_perk_death_wave_quantity_value,eEcon perk Death Wave quantity value,guess,count,,eEcon,active,Parsed numeric perk value from EP text.
+eecon,eecon_perk_death_wave_quantity_active,eEcon perk Death Wave quantity active,guess,boolean,,eEcon,active,eEcon perk active flag from EP.
 ,,,,,,,,
-uw,uw_gt_coin_bonus,Golden Tower coin bonus,uw_stat,x,31.525000000000002,eEcon,active,eEcon final UW/econ summary.
-uw,uw_gt_duration,Golden Tower duration,uw_stat,seconds,42,eEcon,active,eEcon final Golden Tower duration.
-uw,uw_gt_cooldown,Golden Tower cooldown,uw_stat,seconds,180,eEcon,active,eEcon final Golden Tower cooldown.
-uw,uw_gt_uptime,Golden Tower uptime,uw_stat,ratio,0.23333333333333334,eEcon,active,eEcon final uptime summary.
-uw,uw_bh_coin_bonus,Black Hole coin bonus,uw_stat,x,11,eEcon,active,eEcon final UW/econ summary.
-uw,uw_bh_duration,Black Hole duration,uw_stat,seconds,48,eEcon,active,eEcon final Black Hole duration.
-uw,uw_bh_cooldown,Black Hole cooldown,uw_stat,seconds,46,eEcon,active,eEcon final Black Hole cooldown.
-uw,uw_bh_uptime,Black Hole uptime,uw_stat,ratio,1,eEcon,active,eEcon final uptime summary.
-uw,uw_dw_coin_bonus,Death Wave coin bonus,uw_stat,x,2.5,eEcon,active,eEcon final UW/econ summary.
-uw,uw_dw_quantity,Death Wave quantity,uw_stat,count,4,eEcon,active,eEcon final Death Wave quantity.
-uw,uw_dw_cooldown,Death Wave cooldown,uw_stat,seconds,180,eEcon,active,eEcon final Death Wave cooldown.
-uw,uw_dw_uptime,Death Wave uptime,uw_stat,ratio,0.08888888888888889,eEcon,active,eEcon final uptime summary.
-uw,uw_sl_coin_bonus,Spotlight coin bonus,uw_stat,x,3,eEcon,active,eEcon final UW/econ summary.
-uw,uw_sl_angle,Spotlight angle,uw_stat,degrees,56.25,eEcon,active,eEcon final Spotlight angle.
-uw,uw_sl_quantity,Spotlight quantity,uw_stat,count,3,eEcon,active,eEcon final Spotlight quantity.
-uw,uw_sl_uptime,Spotlight uptime,uw_stat,ratio,0.46875,eEcon,active,eEcon final uptime summary.
-uw,bot_golden_bot_coin_bonus,Golden Bot coin bonus,uw_stat,x,5.5000000000000036,eEcon,active,eEcon final bot/econ summary.
-uw,bot_golden_bot_duration,Golden Bot duration,uw_stat,seconds,34,eEcon,active,eEcon final Golden Bot duration.
-uw,bot_golden_bot_cooldown,Golden Bot cooldown,uw_stat,seconds,90,eEcon,active,eEcon final Golden Bot cooldown.
-uw,bot_golden_bot_uptime,Golden Bot uptime,uw_stat,ratio,0.37777777777777777,eEcon,active,eEcon final uptime summary.
-,,,,,,,,
-,,,,,,,,
+uw,uw_gt_coin_bonus,Golden Tower coin bonus,uw_stat,x,,eEcon,active,eEcon final UW/econ summary.
+uw,uw_gt_duration,Golden Tower duration,uw_stat,seconds,,eEcon,active,eEcon final Golden Tower duration.
+uw,uw_gt_cooldown,Golden Tower cooldown,uw_stat,seconds,,eEcon,active,eEcon final Golden Tower cooldown.
+uw,uw_gt_uptime,Golden Tower uptime,uw_stat,ratio,,eEcon,active,eEcon final uptime summary.
+uw,uw_bh_coin_bonus,Black Hole coin bonus,uw_stat,x,,eEcon,active,eEcon final UW/econ summary.
+uw,uw_bh_duration,Black Hole duration,uw_stat,seconds,,eEcon,active,eEcon final Black Hole duration.
+uw,uw_bh_cooldown,Black Hole cooldown,uw_stat,seconds,,eEcon,active,eEcon final Black Hole cooldown.
+uw,uw_bh_uptime,Black Hole uptime,uw_stat,ratio,,eEcon,active,eEcon final uptime summary.
+uw,uw_dw_coin_bonus,Death Wave coin bonus,uw_stat,x,,eEcon,active,eEcon final UW/econ summary.
+uw,uw_dw_quantity,Death Wave quantity,uw_stat,count,,eEcon,active,eEcon final Death Wave quantity.
+uw,uw_dw_cooldown,Death Wave cooldown,uw_stat,seconds,,eEcon,active,eEcon final Death Wave cooldown.
+uw,uw_dw_uptime,Death Wave uptime,uw_stat,ratio,,eEcon,active,eEcon final uptime summary.
+uw,uw_sl_coin_bonus,Spotlight coin bonus,uw_stat,x,,eEcon,active,eEcon final UW/econ summary.
+uw,uw_sl_angle,Spotlight angle,uw_stat,degrees,,eEcon,active,eEcon final Spotlight angle.
+uw,uw_sl_quantity,Spotlight quantity,uw_stat,count,,eEcon,active,eEcon final Spotlight quantity.
+uw,uw_sl_uptime,Spotlight uptime,uw_stat,ratio,,eEcon,active,eEcon final uptime summary.
+uw,bot_golden_bot_coin_bonus,Golden Bot coin bonus,uw_stat,x,,eEcon,active,eEcon final bot/econ summary.
+uw,bot_golden_bot_duration,Golden Bot duration,uw_stat,seconds,,eEcon,active,eEcon final Golden Bot duration.
+uw,bot_golden_bot_cooldown,Golden Bot cooldown,uw_stat,seconds,,eEcon,active,eEcon final Golden Bot cooldown.
+uw,bot_golden_bot_uptime,Golden Bot uptime,uw_stat,ratio,,eEcon,active,eEcon final uptime summary.
 ,,,,,,,,
 ,,,,,,,,
 ,,,,,,,,
 ,,,,,,,,
-ehp,ehp_disco_defense_multiplier,eHP Disco Defense multiplier,multiplier,x,5.108782215759483,eHP,active,EP-calculated Disco Defense multiplier; used as final EPH_HEALTH argument in max-wave calcs.
+,,,,,,,,
+,,,,,,,,
+ehp,ehp_disco_defense_multiplier,eHP Disco Defense multiplier,multiplier,x,,eHP,active,EP-calculated Disco Defense multiplier; used as final EPH_HEALTH argument in max-wave calcs.
