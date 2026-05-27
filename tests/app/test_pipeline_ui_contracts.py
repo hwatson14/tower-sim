@@ -109,7 +109,7 @@ def test_streamlit_boss_waves_exposes_only_wired_manual_runtime_inputs():
         'Orb damage to boss (total %)',
         'Electron damage override (total %)',
         'Flame Bot boss hit chance (%)',
-        'Boss time to contact (s)',
+        'Boss time to contact override (s)',
         'Death Wave maxed wave',
     ):
         assert label in source
@@ -303,8 +303,8 @@ def test_pipeline_run_stats_query_rows_publish_qe_derived_wall_semantics(canonic
     start_farming = (start_rows.get('Farming') or {}).get('rows') or {}
     max_farming = (max_rows.get('Farming') or {}).get('rows') or {}
 
-    assert start_farming['state::tower.free_attack_upgrade_chance_pct']['final_value'] == pytest.approx(77.88)
-    assert max_farming['state::tower.free_attack_upgrade_chance_pct']['final_value'] == pytest.approx(114.755)
+    assert start_farming['state::tower.free_attack_upgrade_chance_pct']['final_value'] == pytest.approx(86.58)
+    assert max_farming['state::tower.free_attack_upgrade_chance_pct']['final_value'] == pytest.approx(123.1425)
     assert 'derived::wall.hp_pre_fort' in start_farming
     assert start_farming['derived::wall.hp_pre_fort']['final_value'] > 0
     assert max_farming['derived::wall.hp_pre_fort']['final_value'] > start_farming['derived::wall.hp_pre_fort']['final_value']
@@ -354,21 +354,22 @@ def test_pipeline_tier_scoped_dissonance_reconciles_t14_ep_panels(tmp_path):
     assert rows['state::uw.chain_lightning.max_enemy_damage_reduction_pct']['final_value'] == pytest.approx(36.0)
     assert rows['derived::ehp.chain_thunder_factor']['final_value'] == pytest.approx(1.5625)
     assert rows['derived::ehp']['final_value'] == pytest.approx(865.7049169500054e15)
-    assert rows['state::tower.regen']['final_value'] == pytest.approx(45.364325790446484e12)
+    assert rows['state::tower.regen']['final_value'] == pytest.approx(48.10260006102113e12)
     assert rows['state::wall.fortification_multiplier']['final_value'] == pytest.approx(10.6)
     assert rows['derived::wall.hp_pre_fort']['final_value'] == pytest.approx(574.8260810278326e12)
     assert rows['derived::wall.hp_final']['final_value'] == pytest.approx(6.093156458895026e15)
-    assert rows['derived::wall.regen_hp_per_second']['final_value'] == pytest.approx(238.16271039984403e12)
+    assert rows['derived::wall.regen_hp_per_second']['final_value'] == pytest.approx(252.53865032036094e12)
     assert rows['state::tower.defense_absolute']['status'] == 'resolved'
-    assert rows['state::tower.defense_absolute']['final_value'] == pytest.approx(323.9157257531188e6)
-    assert rows['state::economy.coins_per_kill_bonus']['final_value'] == pytest.approx(47.32425101250001)
-    assert rows['state::economy.all_coin_bonus_multiplier']['final_value'] == pytest.approx(4028.446609148341)
+    assert rows['derived::ehp.dabs_perk_factor']['final_value'] == pytest.approx(1.0)
+    assert rows['state::tower.defense_absolute']['final_value'] == pytest.approx(148.07576034428293e6)
+    assert rows['state::economy.coins_per_kill_bonus']['final_value'] == pytest.approx(46.93883040000001)
+    assert rows['state::economy.all_coin_bonus_multiplier']['final_value'] == pytest.approx(3938.1467327614155)
     assert rows['state::cards.wave_skip.chance_pct']['final_value'] == pytest.approx(19.0)
-    assert rows['derived::eecon.freeup_factor']['final_value'] == pytest.approx(1.0131613688509975)
+    assert rows['derived::eecon.freeup_factor']['final_value'] == pytest.approx(1.0133964984534831)
     assert rows['derived::eecon.wave_factor']['final_value'] == pytest.approx(1.3064513895292529)
     assert rows['derived::eecon.utility_dissonance_factor']['final_value'] > 1.0
     assert rows['derived::eecon.unit_scale_factor']['final_value'] == pytest.approx(1000.0)
-    assert rows['derived::eecon']['final_value'] == pytest.approx(348102894.43580586)
+    assert rows['derived::eecon']['final_value'] == pytest.approx(345347984.939048)
 
 
 def test_pipeline_cards_payload_publishes_selected_rows_by_preset(canonical_pipeline_artifacts):
@@ -422,6 +423,23 @@ def test_boss_waves_render_uses_published_summary_and_execution_contract() -> No
     boss_block = text[start:end]
     assert "Checkpoint every N bosses" in boss_block
     assert "st.toggle('Stop on first failed boss', value=True)" in boss_block
+    assert "Flame Bot DR override (%)" in boss_block
+    assert "'flame_bot_damage_reduction_pct': flame_bot_damage_reduction_pct" in boss_block
+    assert "Boss eDamage applicability factor" in boss_block
+    assert "'boss_applicable_damage_factor': boss_applicable_damage_factor" in boss_block
+    assert "Boss target share" in boss_block
+    assert "Boss cadence uptime" in boss_block
+    assert "Boss reliability" in boss_block
+    assert "Boss semantic normalizer" in boss_block
+    assert "'boss_edamage_target_share': boss_edamage_target_share" in boss_block
+    assert "'boss_edamage_cadence_uptime_factor': boss_edamage_cadence_uptime_factor" in boss_block
+    assert "'boss_edamage_reliability_factor': boss_edamage_reliability_factor" in boss_block
+    assert "'boss_edamage_semantic_normalizer': boss_edamage_semantic_normalizer" in boss_block
+    assert "decomposed_bridge_inputs" in boss_block
+    assert "bridge_comparison_inputs" in boss_block
+    assert "comparison_scenario_runtime_inputs=bridge_comparison_inputs or None" in boss_block
+    assert "regular_comparison_display" in boss_block
+    assert "ultimate_weapons_delta_wave" in boss_block
     assert "display_frame = _build_boss_wave_operator_frame(frame)" in boss_block
     assert "_require_boss_wave_payload_rows(boss_payload, 'operator_rows')" in boss_block
     assert "_require_boss_wave_payload_rows(boss_payload, 'download_rows')" in boss_block
@@ -438,6 +456,7 @@ def test_boss_waves_render_uses_published_summary_and_execution_contract() -> No
     assert "'TTK (s)'" in helper_block
     assert "payload_diagnostics = dict(boss_payload.get('diagnostics') or {})" in boss_block
     assert "payload_download = dict(boss_payload.get('download') or {})" in boss_block
+    assert "diagnostics['context_status'] not in {'resolved', 'complete'}" in boss_block
     assert "boss_payload.get('contract') or {}" in boss_block
     assert "actual_boss_interval_waves" in boss_block
     assert "checkpoint_every_bosses" in boss_block

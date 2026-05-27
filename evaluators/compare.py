@@ -49,6 +49,13 @@ def _state(destination_id: str) -> str:
     return compat_surface_from_legacy_canonical(destination_id)
 
 
+EP_KNOWN_EXPORT_DEFECT_NOTES = {
+    'state::tower.max_rend_multiplier': 'ep_export_bug:max_rend_multiplier_exports_identity_or_display_1_0_instead_of_kb_qe_9_6',
+    _state('tower_defense_absolute'): 'ep_export_bug:defense_absolute_includes_banned_defense_absolute_perk_x2_1875',
+    _state('free_defense_upgrade_chance_pct'): 'ep_export_drift:free_defense_upgrade_chance_low_by_about_1pct_after_percent_normalization',
+}
+
+
 def _normalize_row_keyed_payload(rows: dict) -> dict:
     normalized: dict = {}
     for surface_id, row in (rows or {}).items():
@@ -121,14 +128,33 @@ def verdict_from_verification(verification_status: str, compare_status: str | No
     return 'pass'
 
 
+def _compare_has_known_export_defect(payload: dict) -> bool:
+    return any(
+        str(note).startswith(('ep_export_bug:', 'ep_export_drift:'))
+        for note in (payload.get('compare_notes') or [])
+    )
+
+
 def build_compare_status_summary(ep_compare: dict) -> dict:
     status_counts = Counter(v.get('status') for v in ep_compare.values())
+    true_mismatch_count = sum(1 for v in ep_compare.values() if v.get('status') == 'mismatch')
+    known_export_defect_count = sum(1 for v in ep_compare.values() if _compare_has_known_export_defect(v))
+    unsupported_facet_counts = Counter(
+        note
+        for v in ep_compare.values()
+        if v.get('status') == 'stage_scope_mismatch'
+        for note in (v.get('compare_notes') or [])
+        if str(note).startswith('ep_user_guess:')
+    )
     return {
         'ep_compare_count': len(ep_compare),
         'ep_compare_status_counts': dict(sorted(status_counts.items())),
         'ep_mismatch_count': sum(1 for v in ep_compare.values() if v.get('status') not in {'matched_exact', 'matched_close'}),
-        'ep_true_formula_mismatch_count': sum(1 for v in ep_compare.values() if v.get('status') == 'mismatch'),
+        'ep_true_formula_mismatch_count': true_mismatch_count,
+        'ep_known_export_defect_count': known_export_defect_count,
+        'ep_unknown_formula_mismatch_count': max(0, true_mismatch_count - known_export_defect_count),
         'ep_stage_scope_mismatch_count': sum(1 for v in ep_compare.values() if v.get('status') == 'stage_scope_mismatch'),
+        'ep_stage_scope_unsupported_facet_counts': dict(sorted(unsupported_facet_counts.items())),
         'ep_non_comparable_count': sum(1 for v in ep_compare.values() if v.get('status') == 'non_comparable'),
         'ep_missing_from_package_count': sum(1 for v in ep_compare.values() if v.get('status') == 'missing_from_package'),
     }
@@ -168,6 +194,13 @@ def classify_compare_status(destination: str, contract: dict, package_row, ep_en
             *stage_context.get('unsupported_facets', []),
         ]
     return 'mismatch', delta, rel_pct, notes
+
+
+def _known_export_defect_notes(destination: str, status: str) -> list[str]:
+    note = EP_KNOWN_EXPORT_DEFECT_NOTES.get(destination)
+    if note is None or status != 'mismatch':
+        return []
+    return [note]
 
 
 def annotate_compare_display_fields(
@@ -224,7 +257,7 @@ def build_ep_compare(ep_oracle, statbook_rows_by_preset, formula_ledger, package
         pkg_snapshot = contributor_snapshot(pkg)
         contract = formula_contract(formula_ledger, dest)
         status, delta, rel_pct, notes = classify_compare_status(dest, contract, pkg, ep, stage_context, normalize_compare_values)
-        compare_notes = assumption_notes + notes
+        compare_notes = assumption_notes + notes + _known_export_defect_notes(dest, status)
         kb_alignment_status = kb_alignment_status_from_compare_status(status)
         compare[dest] = {
             **ep,
@@ -789,7 +822,6 @@ COMPARE_PRESET_OVERRIDES = {
     _state('tower_supercrit_chance_pct'): 'Tourney',
     _state('tower_supercrit_multiplier'): 'Tourney',
     _state('tower_damage'): 'Tourney',
-    _state('package_chance_pct'): 'Tourney',
 }
 
 COMPARE_SITUATION_OVERRIDES = {
@@ -801,7 +833,7 @@ COMPARE_SITUATION_OVERRIDES = {
     'derived::wall.regen_hp_per_second': {'preset': 'Farming', 'perk_state': 'on', 'ep_run_state': 'farming_perks_on'},
     'derived::eecon': {'preset': 'Farming', 'perk_state': 'on', 'ep_run_state': 'farming_perks_on'},
     _state('tower_damage'): {'preset': 'Tourney', 'perk_state': 'off', 'ep_run_state': 'tournament_perks_off'},
-    _state('package_chance_pct'): {'preset': 'Tourney', 'perk_state': 'off', 'ep_run_state': 'tournament_perks_off'},
+    _state('package_chance_pct'): {'preset': 'Farming', 'perk_state': 'on', 'ep_run_state': 'farming_perks_on'},
     _state('tower_hp'): {'preset': 'Farming', 'perk_state': 'on', 'ep_run_state': 'farming_perks_on'},
     _state('tower_regen'): {'preset': 'Farming', 'perk_state': 'on', 'ep_run_state': 'farming_perks_on'},
     _state('tower_defense_absolute'): {'preset': 'Farming', 'perk_state': 'on', 'ep_run_state': 'farming_perks_on'},
@@ -816,6 +848,94 @@ COMPARE_DESTINATION_RUNTIME_CARD_FACETS = {
         'Berserker': 'conditional_runtime_card__berserker_damage',
     },
 }
+
+EP_USER_SPECIFIC_GUESS_FACETS = {
+    _state('tower_range_m'): [
+        'ep_user_guess:range_lab_slider_level',
+    ],
+    _state('tower_crit_multiplier'): [
+        'ep_user_guess:damage_stat_progression_or_module_policy',
+    ],
+    _state('tower_supercrit_multiplier'): [
+        'ep_user_guess:damage_stat_progression_or_module_policy',
+    ],
+    'derived::edamage.bullet_crit_factor': [
+        'ep_user_guess:damage_stat_progression_or_module_policy',
+    ],
+    'derived::edamage.uw_crit_factor': [
+        'ep_user_guess:damage_stat_progression_or_module_policy',
+    ],
+    'derived::edamage': [
+        'ep_user_guess:dpm_damage_at_range_pct',
+        'ep_user_guess:project_funding_cash',
+        'ep_user_guess:uw_target_level_policy',
+    ],
+    'derived::edamage.base_damage_stack': [
+        'ep_user_guess:dpm_damage_at_range_pct',
+        'ep_user_guess:project_funding_cash',
+    ],
+    'derived::edamage.range_dpm_factor': [
+        'ep_user_guess:dpm_damage_at_range_pct',
+    ],
+    'derived::edamage.bullet_pipeline_factor': [
+        'ep_user_guess:dpm_damage_at_range_pct',
+        'ep_user_guess:range_lab_slider_level',
+    ],
+    'derived::edamage.spotlight_factor': [
+        'ep_user_guess:uw_target_level_policy',
+    ],
+    'derived::edamage.shock_stack_factor': [
+        'ep_user_guess:dimension_core_shock_stack_policy',
+    ],
+    'derived::edamage.uw.death_wave_dps': [
+        'ep_user_guess:uw_target_level_policy',
+    ],
+    'derived::edamage.uw.chain_lightning_dps': [
+        'ep_user_guess:uw_target_level_policy',
+    ],
+    'derived::edamage.uw.spotlight_missiles_dps': [
+        'ep_user_guess:spotlight_missile_hits',
+        'ep_user_guess:spotlight_missile_enablement',
+    ],
+    'derived::edamage.uw.smart_missiles_heatup_factor': [
+        'ep_user_guess:locked_or_unowned_uw_helper_levels',
+    ],
+    'derived::edamage.uw.poison_swamp_death_creep_factor': [
+        'ep_user_guess:locked_or_unowned_uw_helper_levels',
+    ],
+    'derived::edamage.uw.ilm_charged_mines_factor': [
+        'ep_user_guess:locked_or_unowned_uw_helper_levels',
+    ],
+    'derived::edamage.uw_total_damage': [
+        'ep_user_guess:uw_target_level_policy',
+        'ep_user_guess:spotlight_missile_hits',
+    ],
+    'derived::ehp.armor_factor': [
+        'ep_user_guess:effective_module_substat_policy',
+    ],
+    'derived::ehp.tradeoff_defense_factor': [
+        'ep_user_guess:ehp_tradeoff_perk_selection',
+    ],
+    'derived::ehp.chrono_field_damage_reduction_factor': [
+        'ep_user_guess:chrono_field_damage_reduction_scope',
+    ],
+    'derived::ehp.chain_thunder_factor': [
+        'ep_user_guess:cl_damage_pct_of_total_damage',
+    ],
+    'derived::eecon': [
+        'ep_user_guess:bh_kill_share',
+        'ep_user_guess:gb_kill_share',
+        'ep_user_guess:gt_bh_sync_policy',
+        'ep_user_guess:boss_wave_interval',
+        'ep_user_guess:extra_orb_tagged_share',
+    ],
+}
+
+EP_USER_SPECIFIC_GUESS_NOTE = (
+    'EP comparison depends on user-specific workbook guesses that are not yet '
+    'exported as oracle inputs; TowerSim keeps the runtime calculation explicit '
+    'instead of reproducing those spreadsheet shortcuts.'
+)
 
 
 def _load_perk_compiler_metadata(perk_entities: dict, perk_effects: dict, perk_target_destination_overrides: dict):
@@ -887,10 +1007,16 @@ PROJECT_FUNDING_RARITY_COEFFICIENTS = {
 }
 
 
+def _is_ep_damage_export_surface(destination: str) -> bool:
+    return destination == 'derived::edamage' or destination.startswith('derived::edamage.')
+
+
 def _compare_preset_for_destination(destination: str, default_preset: str = 'Farming') -> str:
     situation = COMPARE_SITUATION_OVERRIDES.get(destination)
     if situation and situation.get('preset'):
         return situation['preset']
+    if _is_ep_damage_export_surface(destination):
+        return 'Tourney'
     return COMPARE_PRESET_OVERRIDES.get(destination, default_preset)
 
 
@@ -913,6 +1039,8 @@ def _compare_state_key_for_destination(destination: str, default_preset: str = '
         preset = situation.get('preset', _compare_preset_for_destination(destination, default_preset))
         perk_state = _normalize_perk_state(situation.get('perk_state', 'auto'))
         return f'{preset}__perks_{perk_state}'
+    if _is_ep_damage_export_surface(destination):
+        return 'Tourney__perks_off'
     preset = _compare_preset_for_destination(destination, default_preset)
     return preset
 
@@ -962,6 +1090,11 @@ def _ep_stage_context_for_destination(destination: str, package_stage_context: d
         unsupported_facets.append(facet)
         notes.append(f'EP surface may include conditional runtime card state from {card_name}, which is not materialized in the package compare path.')
 
+    user_guess_facets = EP_USER_SPECIFIC_GUESS_FACETS.get(destination, [])
+    if user_guess_facets:
+        unsupported_facets.extend(user_guess_facets)
+        notes.append(EP_USER_SPECIFIC_GUESS_NOTE)
+
     if package_state_mode == 'max_progression':
         package_progression_state = 'projected_max_progression'
         package_workshop_state = 'projected_max_workshop'
@@ -979,6 +1112,9 @@ def _ep_stage_context_for_destination(destination: str, package_stage_context: d
     situation = COMPARE_SITUATION_OVERRIDES.get(destination)
     if situation and situation.get('ep_run_state'):
         ep_run_state = situation['ep_run_state']
+        notes.append(EP_ORACLE_SHORTCUT_CONTEXT_NOTE)
+    elif _is_ep_damage_export_surface(destination):
+        ep_run_state = 'tournament_perks_off'
         notes.append(EP_ORACLE_SHORTCUT_CONTEXT_NOTE)
     elif preset == 'Tourney':
         ep_run_state = 'tournament_perks_off'
@@ -1825,9 +1961,57 @@ EP_LABEL_TO_DESTINATION = {
 # These are compare-policy mappings only (not calculator truth).
 EP_KEY_TO_DESTINATION = {
         'edmg': 'derived::edamage',
+        'edmg_total_raw': 'derived::edamage',
         'damage': 'derived::edamage.base_damage_stack',
+        'base_damage_raw': 'derived::edamage.base_damage_stack',
+        'crit_chance': _state('tower_crit_chance_pct'),
         'crit_factor': _state('tower_crit_multiplier'),
+        'super_crit_chance': _state('tower_supercrit_chance_pct'),
+        'super_crit_multiplier': _state('tower_supercrit_multiplier'),
+        'crit_multiplier_effective': 'derived::edamage.bullet_crit_factor',
+        'uw_crit_multiplier_effective': 'derived::edamage.uw_crit_factor',
+        'multishot_effective': 'derived::edamage.multishot_factor',
+        'bounce_shot_effective_ad': 'derived::edamage.bounce_factor',
+        'bounce_shot_effective_no_ad': 'derived::edamage.bounce_factor',
+        'rapid_fire_effective': 'derived::edamage.rapidfire_factor',
+        'bullets_per_second': 'derived::edamage.bullet_per_second',
+        'range_m': _state('tower_range_m'),
+        'damage_per_meter': _state('tower_damage_per_meter_multiplier'),
+        'range_dpm_effective': 'derived::edamage.range_dpm_factor',
+        'super_tower_bonus': 'derived::edamage.super_tower_factor',
+        'super_tower_uw': 'derived::edamage.super_tower_factor',
+        'max_rend_multiplier': 'state::tower.max_rend_multiplier',
+        'bullet_damage_multiplier': 'derived::edamage.bullet_pipeline_factor',
+        'spotlight_multiplier': 'derived::edamage.spotlight_factor',
+        'death_wave_dps': 'derived::edamage.uw.death_wave_dps',
+        'chain_lightning_dps': 'derived::edamage.uw.chain_lightning_dps',
+        'smart_missile_heatup': 'derived::edamage.uw.smart_missiles_heatup_factor',
+        'smart_missile_dps': 'derived::edamage.uw.smart_missiles_dps',
+        'spotlight_missile_dps': 'derived::edamage.uw.spotlight_missiles_dps',
+        'poison_swamp_dc': 'derived::edamage.uw.poison_swamp_death_creep_factor',
+        'poison_swamp_dps': 'derived::edamage.uw.poison_swamp_dps',
+        'ilm_heat_multiplier': 'derived::edamage.uw.ilm_charged_mines_factor',
+        'inner_land_mines_dps': 'derived::edamage.uw.ilm_dps',
+        'core_multiplier': 'derived::edamage.shock_stack_factor',
+        'uws_total_raw': 'derived::edamage.uw_total_damage',
+        'chrono_field_multiplier': 'derived::edamage.slow_factor',
+        'chrono_field_plus_multiplier': 'derived::edamage.chrono_field_plus_factor',
+        'slow_multiplier': 'derived::edamage.slow_factor',
+        'disco_uw_multiplier': 'derived::edamage.uw_dissonance_factor',
         'health': 'derived::ehp.health_factor',
+        'health_raw': 'derived::ehp.health_raw_factor',
+        'ehp_total_raw': 'derived::ehp',
+        'armor_multiplier': 'derived::ehp.armor_factor',
+        'defense_absolute_raw': _state('tower_defense_absolute'),
+        'defense_percent_multiplier': 'derived::ehp.defense_taken_factor',
+        'wall_fortification_multiplier': 'derived::ehp.wall_factor',
+        'improved_tradeoff_perks_multiplier': 'derived::ehp.tradeoff_defense_factor',
+        'chrono_field_reduction_multiplier': 'derived::ehp.chrono_field_damage_reduction_factor',
+        'chain_thunder_multiplier': 'derived::ehp.chain_thunder_factor',
+        'health_regen_display': _state('tower_regen'),
+        'wall_health_display': 'derived::wall.hp_pre_fort',
+        'wall_fortification_display': 'derived::wall.hp_final',
+        'wall_regen_raw_per_sec': 'derived::wall.regen_hp_per_second',
         'health_regen': _state('tower_regen'),
         'max_rend_mult': 'state::tower.max_rend_multiplier',
         'recovery_package_chance': _state('package_chance_pct'),
@@ -1836,6 +2020,7 @@ EP_KEY_TO_DESTINATION = {
         'wall_fortification': 'derived::wall.hp_final',
         'wall_regen': 'derived::wall.regen_hp_per_second',
         'cpk_average': 'derived::eecon',
+        'cpk_average_raw': 'derived::eecon',
         'coins_per_kill_bonus': _state('coins_per_kill_bonus'),
         'free_attack_upgrade': _state('free_attack_upgrade_chance_pct'),
         'free_defense_upgrade': _state('free_defense_upgrade_chance_pct'),
@@ -1880,6 +2065,9 @@ def _load_ep_oracle(ep_path: Path):
         if parsed is not None:
             out[destination] = {
                 'label': label,
+                'ep_export_key': key,
+                'ep_export_suite': str(row.iloc[0]).strip() if len(row) > 0 else '',
+                'ep_export_source_tab': str(row.iloc[4]).strip() if len(row) > 4 else '',
                 'ep_value_raw': value_raw,
                 'ep_value_parsed': parsed,
                 'ep_value_type': kind,

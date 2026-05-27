@@ -9,7 +9,7 @@ status:
   confidence:
     high_signal_suites_green: true
     full_suite_recertified_here: true
-    full_suite_latest_result: passed_401
+    full_suite_latest_result: passed_516_after_locked_bot_gate_review
     shipped_baseline_differed_before_repair: true
 verified_baseline:
   high_signal_test_command: pytest -q tests/shared/test_import_boundaries.py tests/qe/test_compiler_routing_policy_split.py tests/simulators/test_evaluator_kernel.py tests/simulators/test_boss_waves_parity_shadow.py tests/app/test_main_path_smoke.py tests/app/test_pipeline_functional.py
@@ -22,6 +22,516 @@ verified_baseline:
   - runtime formula authority bridge exported explicitly
   - streamlit import/provenance facades advanced in PR #341
   - streamlit helper-local private assertions removed from app smoke coverage
+latest_local_verification:
+  date_local: '2026-05-23'
+  boss_waves_phase_a_targeted:
+    result: passed
+    commands:
+    - .venv\Scripts\python.exe -m pytest -q tests\app\test_pipeline_functional.py
+    - .venv\Scripts\python.exe -m pytest -q tests\simulators\test_evaluator_kernel.py tests\simulators\test_core_smoke.py
+    - .venv\Scripts\python.exe -m pytest -q tests\simulators\test_boss_waves_parity_shadow.py
+  boss_waves_excel_comparison_patch:
+    result: passed_targeted_with_pre_existing_ui_contract_drift
+    commands:
+    - .venv\Scripts\python.exe -m pytest -q tests\simulators\test_evaluator_kernel.py tests\app\test_pipeline_functional.py
+    - .venv\Scripts\python.exe -m pytest -q tests\simulators\test_evaluator_kernel.py tests\app\test_pipeline_functional.py tests\app\test_pipeline_ui_contracts.py
+    note: second command passed the touched Boss Waves/app tests but still failed existing v28 stat-dashboard expectations for free_attack_upgrade_chance and T14 tower regen; no new Boss Waves failure was introduced.
+  named_perk_policy_presets:
+    result: passed_targeted
+    commands:
+    - .venv\Scripts\python.exe -m pytest -q tests\app\test_pipeline_functional.py
+    - .venv\Scripts\python.exe -m pytest -q tests\simulators\test_evaluator_kernel.py
+    - .venv\Scripts\python.exe -m app.run_stats --out "<temp>" --perk-mode runtime_timeline --perk-policy-preset "GC Farming"
+    - .venv\Scripts\python.exe -m pytest -q tests\app\test_pipeline_ui_contracts.py
+    note: four input-owned policy presets are wired through app models, pipeline, CLI, Streamlit, diagnostics, and perk-support ledgers.
+  stat_dashboard_expectation_reconciliation:
+    result: passed
+    commands:
+    - .venv\Scripts\python.exe -m pytest -q tests\app\test_pipeline_ui_contracts.py
+    - .venv\Scripts\python.exe -m pytest -q tests\app\test_stats_dashboard_contract.py
+    - .venv\Scripts\python.exe -m pytest -q tests\app\test_pipeline_functional.py tests\app\test_pipeline_ui_contracts.py tests\app\test_stats_dashboard_contract.py tests\simulators\test_evaluator_kernel.py
+    note: stale v28 expectations were realigned to current IDS/EP-export-backed product rows for free-upgrade chance, T14 eHP/eEcon values, effective UW timing, Bot/Guardian cumulative spend, and Ultimate Crit helper factor.
+  full_pytest:
+    command: .venv\Scripts\python.exe -m pytest -q
+    result: passed
+    passed: 501
+    failed: 0
+    note: green after Dissonant Run flow-through self-review, consumer-bundle contract repair, CLI bridge-overlay output wiring, and matrix performance-equivalence regression tests; PytestCacheWarning observed only.
+  ep_stat_alignment:
+    result: zero_true_formula_mismatches
+    commands:
+    - .venv\Scripts\python.exe -c "from app.pipeline import PipelineRunRequest, execute_pipeline; ..."
+    - .venv\Scripts\python.exe -m pytest -q tests\app\test_pipeline_functional.py tests\app\test_pipeline_ui_contracts.py tests\app\test_stats_dashboard_contract.py tests\qe\test_contracts_models_smoke.py
+    status_counts:
+      matched_exact: 17
+      matched_close: 9
+      non_comparable: 4
+      stage_scope_mismatch: 22
+      true_formula_mismatch: 0
+    note: Expanded EP export now compares 52 owned destinations. Bounce Shot Chance workshop projection follows the row-verified 68.0% KB max, EP health_raw maps to the QE raw-health helper before the Armor-slot module health multiplier, EP compare context carries real Tourney/Farming card and module metadata, eDamage helper locals for Smart Missiles heatup, Poison Swamp Death Creep, ILM Charged Mines, and Chrono Field+ now map to QE-published helper surfaces, and remaining EP differences are documented as unexported workbook slider/module/user-guess assumptions. The remaining unmapped EP export rows are planner-only score/equivalent/ratio rows plus avg_time_boost, which still has no owned QE surface.
+  max_wave_excel_alignment:
+    result: targeted_repair_plus_assumption_split_plus_gc_loadout_mechanics
+    commands:
+    - .venv\Scripts\python.exe -m pytest -q tests\simulators\test_evaluator_kernel.py tests\app\test_pipeline_functional.py
+    - .venv\Scripts\python.exe -m pytest -q tests\app\test_pipeline_functional.py::test_boss_wave_flame_bot_hit_chance_applies_average_expected_dr tests\app\test_pipeline_ui_contracts.py::test_boss_waves_render_uses_published_summary_and_execution_contract tests\simulators\test_evaluator_kernel.py::test_orb_total_damage_override_is_already_damage_to_boss_after_resistance tests\simulators\test_evaluator_kernel.py::test_orb_hit_damage_path_still_applies_orb_resistance
+    sample_regular_ehp:
+      tier_14:
+        workbook_p50: 7250
+        simulator_max_wave: 7209
+        note: within one 90-wave sampled checkpoint after orb total damage semantics fix
+      tier_15:
+        workbook_p50: 5250
+        simulator_max_wave: 4808
+      tier_16:
+        workbook_p50: 3567
+        simulator_max_wave: 2737
+      tier_17:
+        workbook_p50: 2350
+        simulator_max_wave: 1626
+    note: >
+      The remaining T15-T17 spread is assumption-driven in the current comparison:
+      _IDS marks Flame Bot locked, so input/QE publish state::bot.flame.owned=false
+      and gate Flame Bot runtime tracks to 0 under account truth. The Excel calculator's
+      FLAME_DR 95% remains a user scenario assumption, comparable only through the runtime
+      Flame Bot DR override rather than by mutating KB/account truth. A 2026-05-20
+      rerun showed that setting only flame_bot_damage_reduction_pct=95% is intentionally
+      incomplete without a Flame Bot uptime primitive; the Streamlit default comparison
+      supplies flame_bot_boss_hit_chance_pct=50%. That runtime override improves the
+      repeated-hit headline for T14/T15 but not uniformly for T16/T17. The closer
+      spreadsheet-shaped comparison is the published contact-envelope diagnostic with
+      the workbook's 10s contact/window assumption, because the workbook Regular eHP
+      path is a calibrated envelope table rather than the product headline's repeated-hit
+      boss-contact survivability model.
+  max_wave_gc_loadout_mechanics:
+    result: passed_targeted_with_unified_hit_by_hit_selected_lane
+    commands:
+    - .venv\Scripts\python.exe -m pytest -q tests\simulators\test_evaluator_kernel.py::test_continuous_boss_damage_uses_time_limited_multiplier_before_contact tests\app\test_pipeline_functional.py::test_boss_wave_gc_policy_routes_tourney_loadout_and_energy_net_cl_primitives
+    - .venv\Scripts\python.exe -m pytest -q tests\simulators\test_evaluator_kernel.py tests\app\test_pipeline_functional.py
+    - .venv\Scripts\python.exe -m pytest -q tests\qe\test_contracts_models_smoke.py tests\qe\test_query_routing_kb_mapping_surfaces.py
+    - .venv\Scripts\python.exe -m pytest -q tests\app\test_pipeline_ui_contracts.py tests\app\test_stats_dashboard_contract.py
+    - .venv\Scripts\python.exe -m pytest -q tests\app\test_pipeline_functional.py::test_boss_wave_summary_uses_sequential_not_independent_survival tests\app\test_pipeline_functional.py::test_boss_wave_summary_gc_policy_selects_fast_contact_envelope_lane tests\app\test_pipeline_functional.py::test_boss_wave_gc_policy_routes_tourney_loadout_and_energy_net_cl_primitives
+    t14_sample_with_95pct_flame_bot_dr_and_50pct_hit_chance:
+      ehp_max_waves_selected: 7479
+      ehp_farming_selected: 6759
+      gc_max_waves_selected: 5589
+      gc_farming_selected: 4779
+      workbook_regular_gc_p50: 5403
+    note: >
+      Boss Waves now routes `GC Max Waves` through the Tourney loadout, while
+      farming-named presets (`eHP Farming`, `GC Farming`) and eHP max-wave presets
+      route through the Farming loadout. QE-published Chain Lightning DPS
+      feeds the evaluator as continuous boss damage. Energy Net duration and Energy
+      Net Mastery are KB/QE-backed primitives; the evaluator applies the resulting
+      multiplier through a generic time-bounded continuous-damage lane. GC/eHP/farming
+      selected max-wave output now uses the same unified hit-by-hit lane; the fast
+      contact-envelope and strict pre-contact boss-kill values remain diagnostics.
+  perk_policy_goal_matrix_generation:
+    result: passed_targeted
+    commands:
+    - .venv\Scripts\python.exe -m pytest -q tests\app\test_pipeline_functional.py::test_named_perk_policy_presets_validate_and_keep_fixed_openers tests\app\test_pipeline_functional.py::test_goal_perk_policy_matrix_ranks_goal_specific_perks
+    - .venv\Scripts\python.exe -m pytest -q tests\app\test_pipeline_functional.py tests\simulators\test_evaluator_kernel.py
+    - .venv\Scripts\python.exe -m pytest -q tests\app\test_pipeline_ui_contracts.py tests\app\test_stats_dashboard_contract.py
+    note: >
+      The four named Boss Waves perk policies are now generated from a per-perk
+      goal benefit matrix rather than static hand-authored priority lists. IDS
+      Ban Perks capacity controls generated ban-list length; locked-UW perks are
+      excluded before ban ranking so ban slots are not wasted; PWR and game speed
+      remain fixed first priorities before goal-specific scoring.
+  dissonant_run_masks:
+    result: passed_targeted_plus_full_attack_defense_flow_through_repair
+    commands:
+    - .venv\Scripts\python.exe -m pytest -q tests\app\test_main_path_smoke.py::test_run_stats_main_threads_tier_override_to_pipeline tests\app\test_pipeline_functional.py::test_boss_wave_explicit_gc_damage_bridge_enables_pre_contact_selection_without_defaulting_to_calibration tests\app\test_pipeline_functional.py::test_boss_wave_dissonance_run_masks_are_visible_and_feed_max_wave_matrix tests\app\test_pipeline_ui_contracts.py::test_boss_waves_render_uses_published_summary_and_execution_contract
+    - .venv\Scripts\python.exe -m pytest -q tests\input\test_scenario_runtime_inputs.py tests\app\test_pipeline_functional.py::test_boss_wave_gc_policy_routes_tourney_loadout_and_energy_net_cl_primitives tests\app\test_pipeline_functional.py::test_boss_wave_dissonance_run_masks_are_visible_and_feed_max_wave_matrix tests\app\test_pipeline_functional.py::test_boss_wave_explicit_gc_damage_bridge_enables_pre_contact_selection_without_defaulting_to_calibration tests\app\test_pipeline_ui_contracts.py::test_boss_waves_render_uses_published_summary_and_execution_contract
+    - .venv\Scripts\python.exe -m pytest -q tests\app\test_pipeline_functional.py tests\app\test_pipeline_ui_contracts.py tests\app\test_stats_dashboard_contract.py tests\input\test_scenario_runtime_inputs.py tests\simulators\test_evaluator_kernel.py tests\qe\test_contracts_models_smoke.py tests\qe\test_query_routing_kb_mapping_surfaces.py
+    - .venv\Scripts\python.exe -m app.run_stats --perk-mode max_progression_policy --out out
+    - .venv\Scripts\python.exe -m app.run_stats --perk-mode max_progression_policy --tier 14 --out .pytest-tmp-tier14-audit
+    legacy_pre_bridge_commands:
+    - .venv\Scripts\python.exe -m pytest -q tests\app\test_pipeline_functional.py::test_boss_wave_dissonance_run_masks_are_visible_and_feed_max_wave_matrix tests\app\test_pipeline_functional.py::test_build_boss_wave_payload_live_path_avoids_delta_fallback tests\app\test_pipeline_functional.py::test_boss_wave_payload_uses_effective_bh_cf_state_and_perk_switches tests\app\test_pipeline_ui_contracts.py::test_boss_waves_render_uses_published_summary_and_execution_contract tests\app\test_pipeline_ui_contracts.py::test_streamlit_boss_waves_exposes_only_wired_manual_runtime_inputs
+    - .venv\Scripts\python.exe -m pytest -q tests\app\test_pipeline_functional.py tests\app\test_pipeline_ui_contracts.py tests\app\test_stats_dashboard_contract.py tests\simulators\test_evaluator_kernel.py tests\qe\test_contracts_models_smoke.py tests\qe\test_query_routing_kb_mapping_surfaces.py
+    - .venv\Scripts\python.exe -m app.run_stats --perk-mode max_progression_policy --out out
+    t14_sample_with_95pct_flame_bot_dr_and_50pct_hit_chance:
+      ehp_max_waves:
+        regular: 7479
+        attack_disco: 7479
+        defense_disco: 0
+        utility_disco: 3609
+        uw_disco: 4599
+      ehp_farming:
+        regular: 6759
+        attack_disco: 6759
+        defense_disco: 0
+        utility_disco: 3249
+        uw_disco: 4239
+      workbook_reference:
+        regular_p50: 7250
+        attack_disco_p50: 5000
+        defense_disco_p50: 5000
+        utility_disco_p50: 3915
+        uw_disco_p50: 4310
+    t14_sample_with_workbook_gc_bridge_factor_0_005051405075429985:
+      gc_max_waves:
+        regular: 5409
+        attack_disco: 0
+        defense_disco: 5319
+        utility_disco: 2709
+        uw_disco: 2889
+      gc_farming:
+        regular: 5229
+        attack_disco: 0
+        defense_disco: 5229
+        utility_disco: 2709
+        uw_disco: 3519
+      workbook_reference:
+        regular_gc_p50: 5403
+        defense_disco_p50: 5000
+    note: >
+      Boss Waves now publishes Regular plus Attack, Defense, Utility, and Ultimate
+      Weapon Dissonant Run rows for the selected loadout. Attack injects the QE
+      attack-run support flag before eDamage publication and locks attack workshop
+      primitives; Defense collapses defensive survivability; Utility disables ELS
+      and free-upgrade/package progression; UW disables CL/BH/CF/DW-health effects.
+      The follow-up audit fixed Defense thorns leakage, including the separate
+      Sharp Fortitude wall-thorns per-hit increment, expanded the Boss Waves
+      damage primitive request to the already-declared eDamage dependency surfaces,
+      and added explicit scenario runtime inputs for caller-owned boss-applicable
+      eDamage bridge comparisons. Regular non-Defense GC keeps the bridge off by
+      default; with the workbook factor supplied explicitly, Regular GC lands in
+      the workbook order of magnitude without hiding calibration in KB/QE truth.
+      The latest audit fixed the Attack/Defense GC inversion: Attack now locks
+      offensive primitives and routes the QE restricted eDamage branch, while
+      selected max-wave calculation remains the same unified hit-by-hit lane used
+      by every eHP/GC/farming loadout. Defense now keeps offense available, but no
+      longer receives a hidden derived::edamage boss-DPS shortcut. Default boss
+      damage remains the same CL-only fail-closed primitive lane unless an
+      explicit runtime eDamage bridge factor is supplied.
+      The latest audit also neutralized Shockwave/Anti-Cube Portal eDamage leakage under Defense
+      Dissonance through a QE support surface, separated post-failure table truncation
+      from result completeness, and exposed the existing tier-scoped stat request
+      through app.run_stats --tier for Dissonance PB audits. The optional all-tier
+      milestone matrix can now be generated with
+      app.run_stats --include-boss-wave-milestone-matrix; it sweeps T1-T21 across
+      Regular plus all four Dissonant Run categories, selects the best of the four
+      named loadout presets per cell, publishes model/status metadata, and
+      uses derived boss contact time from a 2s base plus QE-owned CF/EN/Slow Aura
+      effects unless explicitly overridden, and defaults total orb boss damage to 6%.
+  dissonant_run_kb_ownership:
+    result: passed_targeted
+    commands:
+    - .venv\Scripts\python.exe -m pytest -q tests\qe\test_contracts_models_smoke.py::test_dissonant_run_restriction_contract__owns_boss_wave_masks tests\app\test_pipeline_functional.py::test_boss_wave_dissonance_run_masks_are_visible_and_feed_max_wave_matrix tests\app\test_pipeline_functional.py::test_boss_wave_milestone_matrix_selects_best_loadout_by_tier_and_dissonance_category tests\app\test_pipeline_functional.py::test_boss_wave_explicit_gc_damage_bridge_enables_pre_contact_selection_without_defaulting_to_calibration
+    note: >
+      Dissonant Run primitive restrictions, zeroed workshop tracks, disabled-system
+      labels, and the UW conditional GC bridge mask are now loaded from
+      kb/global-rules/contracts/dissonant-run-restrictions.yaml through
+      qe.kb_surfaces. app.pipeline applies the KB-owned contract instead of
+      retaining mechanic truth in local constants. Boss Waves now also publishes
+      category-active support rows and diagnostic primitives for Attack, Defense,
+      Utility, and Ultimate Weapons rather than only the two eDamage-branch
+      categories. The active support rows are now contract-declared as
+      derived-scope runtime-injected gates, and the missing
+      derived::edamage.defense_dissonance_shockwave_restricted ownership row is
+      recorded. The GC/pre-contact workbook bridge is now represented as
+      explicit scenario runtime inputs for target share, cadence/uptime,
+      reliability, and semantic normalization; Boss Waves uses the decomposed
+      eDamage bridge only when all four are supplied, except for Defense
+      Dissonance GC where the default path intentionally uses QE-published
+      derived::edamage because that run disables survival rather than offense.
+      Other non-Defense defaults keep the fail-closed QE Chain Lightning DPS
+      path. Streamlit now exposes the four decomposed bridge controls and passes
+      them through the Boss Waves payload path. The all-tier milestone matrix now
+      keeps its default truth output and, when bridge inputs are supplied, adds a
+      comparison overlay with per-tier/category default-vs-bridge wave deltas
+      instead of replacing the default truth matrix. The same comparison overlay is now available from
+      app.run_stats with the four --boss-wave-bridge-* flags; diagnostics records
+      whether comparison output was enabled, and the default out matrix remains
+      comparison-free unless those flags are supplied. The milestone matrix path
+      now also uses progressive stop-on-failure horizons for high-tier and Defense
+      Dissonance candidates, bounded cached replacement primitive snapshots across
+      those repeated horizons, and a closed-form free-upgrade generation recurrence
+      in qe.run_plan; direct full default matrix timing improved from roughly 155s
+      to roughly 75s locally without changing the rebuilt T14 matrix values. Direct
+      tests now cover progressive-vs-full horizon equivalence, closed-form-vs-stepwise
+      free-upgrade generation, and primitive cache copy/bounds behavior.
+  dissonant_run_gc_inversion_repair:
+    result: passed_full_suite
+    commands:
+    - .venv\Scripts\python.exe -m pytest -q tests\app\test_pipeline_functional.py::test_boss_wave_dissonance_run_masks_are_visible_and_feed_max_wave_matrix tests\app\test_pipeline_functional.py::test_boss_wave_milestone_matrix_selects_best_loadout_by_tier_and_dissonance_category tests\app\test_pipeline_functional.py::test_boss_wave_explicit_gc_damage_bridge_enables_pre_contact_selection_without_defaulting_to_calibration
+    - .venv\Scripts\python.exe -m pytest -q tests\app\test_pipeline_functional.py tests\app\test_pipeline_ui_contracts.py tests\app\test_stats_dashboard_contract.py tests\input\test_scenario_runtime_inputs.py tests\simulators\test_evaluator_kernel.py tests\qe\test_contracts_models_smoke.py tests\qe\test_query_routing_kb_mapping_surfaces.py
+    - .venv\Scripts\python.exe -m app.run_stats --include-boss-wave-milestone-matrix --boss-wave-contact-time-seconds 10 --boss-wave-orb-boss-total-damage-pct 6
+    - .venv\Scripts\python.exe -m pytest -q
+    note: >
+      Fixed the Attack/Defense GC Dissonance inversion and then superseded the
+      policy-specific lane split. Attack Dissonance now applies offensive workshop
+      restrictions before the unified hit-by-hit lane is selected. Defense
+      Dissonance preserves offensive primitives, but uses the same default boss
+      DPS lane as regular/utility runs: QE-published CL-only damage unless an
+      explicit runtime eDamage bridge factor is supplied for comparison work. The
+      older Defense-only derived::edamage default was removed because it created a
+      policy difference instead of a Dissonance restriction difference; targeted
+      app tests passed after the correction.
+remaining_max_wave_completion:
+  date_local: '2026-05-23'
+  status: tracked_not_complete
+  authority_note: >
+    The current milestone matrix is useful and KB/QE-backed for Boss Waves
+    boss-contact survivability, but it remains explicitly labeled
+    not_full_max_wave_model. Full completion means retiring that caveat rather
+    than hiding it.
+  current_owned_capabilities:
+    - all-tier matrix sweeps T1-T21 for Regular plus Attack, Defense, Utility, and Ultimate Weapon Dissonant Run categories
+    - matrix evaluates the four named loadout presets and selects best visible candidate per tier/category
+    - Dissonant Run restriction truth is KB-owned in kb/global-rules/contracts/dissonant-run-restrictions.yaml
+    - QE publishes Dissonant Run active support flags and affected eHP/eDamage/eEcon branch semantics for current tested surfaces
+    - default matrix derives boss contact time from 2s base plus QE-owned CF/EN/Slow Aura effects and uses 6% total orb boss damage
+    - bridge comparison inputs remain explicit scenario inputs and are not hidden defaults
+    - v28 Enemy Skip Decay now defaults to the KB-imported battle-condition magnitude curve in Table 1 ELS recurrence; explicit skip-decay runtime inputs can still override it
+    - explicit v28 tournament Damage/Health Decay runtime inputs flow through Table 2 per-row damage/health decay; magnitudes remain explicit until source-owned values are available
+    - explicit terminal-pressure max-wave inputs remain optional scenario overrides, but separate non-boss pressure formula discovery is out of current scope; boss-contact waves are the sanctioned proxy/test surface for now
+    - Boss Waves payloads and milestone-matrix rows now publish a normalized model_certification block and per-row certification status/blockers so partial max-wave outputs cannot look fully certified
+    - Boss Waves model_certification now separately reports which otherwise-missing max-wave inputs are closed by explicit runtime overrides for that run, and marks tournament-only Damage/Health Decay magnitudes as not applicable to normal milestone matrix runs; source-owned blockers remain for default runs where the mechanic is applicable
+    - Streamlit Boss Waves now accepts both resolved and complete context statuses from the sanctioned payload path; the Streamlit AppTest harness verifies the T14 Farming summary, five-row Dissonant Run matrix, and 21-row all-tier milestone matrix render without false context errors
+  completion_items:
+    - id: MW-1
+      title: Keep max-wave model scoped to boss-contact proxy
+      status: deferred_out_of_scope_by_user_direction
+      owner_path: simulators/evaluator_kernel.py + app/pipeline.py diagnostics
+      work: >
+        Current user direction says not to push scope beyond bosses. Even when
+        stacked non-boss enemies are the real intuition, Boss Waves remains the
+        sanctioned proxy/test surface for now because stacked enemy pressure is
+        similar enough for current comparison work. Explicit terminal-pressure
+        max-wave inputs may still be used as optional scenario overrides, but
+        deriving separate fleet, elite, protector, or armored-hit formulas is
+        not part of current completion.
+      acceptance:
+        - model certification does not list non-boss terminal pressure formulas as a current-scope blocker
+        - diagnostics do not advertise unsupported non-boss terminal pressures as if they must be solved before current completion
+      closure_note: >
+        app.pipeline now accepts explicit fleet_terminal_max_wave,
+        elite_terminal_max_wave, protector_terminal_max_wave, and
+        armored_terminal_max_wave runtime inputs through the scenario runtime
+        contract. The Boss Waves summary and diagnostics publish
+        terminal_pressure_limits, terminal_pressure_limiter, and
+        terminal_pressure_limited when a caller supplies those optional inputs.
+        Those inputs are no longer treated as required completion blockers or
+        advertised unsupported terminal pressures; the sanctioned current model
+        remains boss-contact survivability as the proxy/test surface. After
+        this scope correction, regenerated matrix certification marks
+        non_boss_terminal_pressure as not applicable and no longer carries
+        source_owned_non_boss_terminal_pressure_formulas as a blocker.
+      remaining: []
+      validation:
+        - .venv\Scripts\python.exe -m pytest -q tests\input\test_scenario_runtime_inputs.py::test_contract_field_set__matches_expected_dataclass_fields tests\app\test_pipeline_functional.py::test_boss_wave_summary_can_be_limited_by_explicit_non_boss_terminal_pressure tests\app\test_pipeline_functional.py::test_boss_wave_payload_can_report_explicit_non_boss_terminal_limiter tests\app\test_pipeline_functional.py::test_boss_wave_summary_uses_sequential_not_independent_survival tests\app\test_pipeline_functional.py::test_boss_wave_summary_gc_policy_selects_fast_contact_envelope_lane
+    - id: MW-2
+      title: Apply v28 Overheat effects to max-wave evolution
+      status: partial_targeted
+      owner_path: simulators/scenario.py + simulators/evaluator_kernel.py + qe/run_plan.py
+      work: >
+        Scenario projects Overheat flags and counters. The max-wave row
+        evolution now applies source-owned Enemy Skip Decay through Table 1
+        using the imported battle-condition magnitude curve, with explicit
+        runtime override support. It also applies explicit tower damage/health
+        decay through Table 2. Damage/Health magnitudes are intentionally
+        caller/source supplied because the public v28 notes and wiki define
+        structure/cadence but not source-owned Damage/Health Decay values.
+        Extra fleets and extra elites remain out of current scope unless they
+        are represented by explicit caller-supplied scenario overrides.
+      acceptance:
+        - normal-tier Overheat changes ELS/run progression after the tier start wave
+        - tournament Overheat damage/health decay can alter max-wave outcomes when explicit magnitudes are supplied
+        - tests cover explicit ELS decay, explicit damage/health decay, and app payload flow-through
+      closure_note: >
+        qe.run_plan owns stepwise and source-curve ELS decay in the fast recurrence table.
+        simulators.evaluator_kernel owns per-row tower damage and health decay
+        application. app.pipeline exposes explicit runtime inputs and publishes
+        decay diagnostics in primitive inputs and operator-row overheat effects.
+        Boss Waves model_certification also records Damage/Health Decay
+        applicability, so normal milestone matrices no longer advertise a
+        tournament-only missing magnitude as an active blocker.
+        The default Enemy Skip Decay curve is source-owned by the imported
+        battle-condition magnitude table; no hidden Damage/Health Decay
+        magnitude default was introduced.
+      remaining:
+        - source-owned v28 Overheat magnitudes for Damage Decay and Health Decay
+        - more-fleet and more-elite source-owned pressure formulas are deferred out of current scope by user direction
+      validation:
+        - .venv\Scripts\python.exe -m pytest -q tests\input\test_scenario_runtime_inputs.py::test_contract_field_set__matches_expected_dataclass_fields tests\simulators\test_evaluator_kernel.py::test_table1_enemy_skip_decay_reduces_skip_chance_after_start_wave tests\simulators\test_evaluator_kernel.py::test_table2_applies_explicit_overheat_damage_and_health_decay_per_row tests\app\test_pipeline_functional.py::test_boss_wave_payload_flows_explicit_overheat_decay_inputs_into_table_rows
+    - id: MW-3
+      title: Resolve boss contact-time ownership
+      status: complete_targeted
+      owner_path: simulators/timing.py + simulators/scenario.py + app/streamlit_inspector.py
+      work: >
+        boss_time_to_contact_seconds is intentionally explicit today. The
+        current completion path uses a hard contract rather than invented
+        boss-pathing physics: certified max-wave runs require an external
+        scenario input unless a future simulator-owned derivation replaces it.
+        The matrix may still use a 10s product default, but it labels that
+        value as an uncertified display assumption.
+      acceptance:
+        - no silent default is used in a certified matrix
+        - diagnostics distinguish derived contact time from user-supplied contact time
+      closure_note: >
+        app.pipeline now publishes scenario_runtime_input_sources and a
+        contact_time_contract in Boss Waves diagnostics and milestone-matrix
+        payloads. Direct Boss Waves payloads report caller-supplied or
+        not-supplied contact time; missing contact time remains a structured
+        KernelAmbiguityError/incomplete result. Matrix defaults are labeled as
+        matrix_default_assumption with matrix_default_is_uncertified_assumption
+        true, while caller-supplied matrix values are labeled separately.
+      validation:
+        - .venv\Scripts\python.exe -m pytest -q tests\app\test_pipeline_functional.py::test_boss_wave_payload_without_contact_time_returns_structured_incomplete_when_allowed tests\app\test_pipeline_functional.py::test_boss_wave_milestone_matrix_selects_best_loadout_by_tier_and_dissonance_category tests\app\test_pipeline_functional.py::test_boss_wave_milestone_matrix_labels_default_contact_time_as_uncertified_assumption
+    - id: MW-4
+      title: Own GC boss-applicable damage instead of workbook bridge calibration
+      status: complete_targeted
+      owner_path: qe/query_derived_composites.py + simulators/evaluator_kernel.py
+      work: >
+        Current GC comparison can use explicit eDamage bridge factors. The
+        Regular/Utility/non-Defense fail-closed default is a QE-owned
+        derived::edamage.boss_applicable_dps_cl_only support surface rather than
+        an app-local reinterpretation of the Chain Lightning EP helper. Selected
+        eHP hit-by-hit rows do not carry the GC blocker because their chosen
+        boss-contact result does not consume an explicit workbook bridge. Defense
+        Dissonance is not a separate GC policy lane: because selected max wave is
+        unified hit-by-hit for every eHP/GC/farming loadout, Defense rows use the
+        same CL-only fail-closed default boss damage unless an explicit runtime
+        bridge factor is supplied for comparison.
+      acceptance:
+        - default GC milestone/disco rows do not require workbook bridge factors to be meaningful
+        - Attack and Ultimate Weapon Dissonant Runs prove disabled offense/UW damage cannot leak through GC selection
+      closure_note: >
+        Targeted closure: QE now publishes the CL-only boss-applicable DPS
+        lane consumed by Boss Waves, diagnostics expose that lane separately
+        from raw derived::edamage.uw.chain_lightning_dps, and Ultimate Weapon
+        Dissonance masks the CL-only primitive. The non-Defense default remains
+        intentionally below full eDamage-to-boss semantics. When a caller
+        supplies explicit boss_applicable_damage_per_second,
+        boss_applicable_damage_factor, or the full decomposed bridge factor set,
+        model_certification marks that GC bridge blocker as closed by runtime
+        override for that run without making the default a hidden workbook
+        calibration. The latest certification repair also marks GC boss-damage
+        semantics as not applicable for selected eHP hit-by-hit results and for
+        the Defense-specific QE-derived eDamage pre-contact lane. The all-tier
+        matrix generated with explicit contact/orb runtime inputs now has no
+        selected-row model-completion blockers.
+      validation:
+        - .venv\Scripts\python.exe -m pytest -q tests\qe\test_query_derived_composites_contributor_contracts.py::test_publish_derived_composites_publishes_cl_only_boss_applicable_damage_lane tests\app\test_pipeline_functional.py::test_boss_wave_explicit_gc_damage_bridge_enables_pre_contact_selection_without_defaulting_to_calibration tests\app\test_pipeline_functional.py::test_boss_wave_gc_policy_routes_tourney_loadout_and_energy_net_cl_primitives
+    - id: MW-5
+      title: Certify Dissonant Run masks across stats and simulator paths
+      status: complete_targeted
+      owner_path: kb/global-rules/contracts/dissonant-run-restrictions.yaml + qe/stat_input_compiler.py + qe/query_derived_composites.py + app/pipeline.py
+      work: >
+        KB restriction rows and Boss Waves primitive masks are now certified by
+        table-driven tests. Every listed disabled stat surface for Attack,
+        Defense, Utility, and Ultimate Weapons is requested through QE under the
+        active Dissonant Run category and must publish the restricted value; the
+        Boss Waves matrix mask summary must expose every KB-listed primitive,
+        disabled runtime system, zeroed workshop track, and conditional UW
+        primitive mask.
+      acceptance:
+        - tests enumerate every KB-listed stat_surface_restriction and prove the active run category publishes the restricted value
+        - tests prove each category's max-wave matrix row consumes the restricted primitive, not only the stat row
+      closure_note: >
+        Utility restrictions were realigned to query-owned canonical surfaces
+        (coins_per_kill_bonus plus tower recovery/package surfaces) instead of
+        deprecated or non-owned aliases. Dissonant Run stat overrides now emit
+        to declared KB surface IDs directly so runtime UW surfaces such as Black
+        Hole duration/cooldown do not route through base-level aliases. The
+        app-level mask summary now reports the full KB zero-workshop-track and
+        conditional primitive contract, including tracks absent from the parsed
+        workshop level table.
+      validation:
+        - .venv\Scripts\python.exe -m pytest -q tests\qe\test_contracts_models_smoke.py::test_dissonant_run_restriction_contract__owns_boss_wave_masks tests\qe\test_contracts_models_smoke.py::test_dissonant_run_scenario_context_restricts_qe_stat_surfaces tests\app\test_pipeline_functional.py::test_boss_wave_dissonance_run_masks_are_visible_and_feed_max_wave_matrix
+    - id: MW-6
+      title: Close milestone and Dissonance PB reference reporting
+      status: complete_targeted
+      owner_path: input/ + app/pipeline.py + out/boss_wave_milestone_matrix.json
+      work: >
+        _IDS milestone waves and Dissonant PBs are available as references, but
+        the all-tier matrix needs explicit, stable reporting of reference wave,
+        simulated wave, delta, selected loadout, model, and status for Regular
+        and every Dissonant Run category.
+      acceptance:
+        - generated matrix includes per-tier Regular milestone references and per-tier/category Dissonant PB references where _IDS provides them
+        - output distinguishes old/historical milestone references from expected-above-current simulation results
+      closure_note: >
+        app.pipeline now carries category-specific active reference metadata in
+        boss-wave diagnostics and matrix rows. Regular rows use IDS milestone
+        waves; Attack, Defense, Utility, and Ultimate Weapon rows use the
+        corresponding _IDS Dissonant PB wave. Matrix rows and wide rows expose
+        reference kind, reference wave, and delta-vs-reference fields while
+        preserving the legacy milestone_reference_wave field.
+      validation:
+        - .venv\Scripts\python.exe -m pytest -q tests\app\test_pipeline_functional.py::test_boss_wave_milestone_matrix_selects_best_loadout_by_tier_and_dissonance_category
+        - .venv\Scripts\python.exe -m pytest -q tests\app\test_pipeline_functional.py::test_build_boss_wave_payload_live_path_avoids_delta_fallback
+    - id: MW-7
+      title: Finalize four perk/loadout policies for milestone and farming use
+      status: complete_targeted
+      owner_path: input/manual_inputs.yaml + simulators/perk_timeline_generator.py
+      work: >
+        Four policy names are wired and regression-tested. eHP Farming and GC
+        Farming are explicit user-guided lists with source notes; eHP Max Waves
+        and GC Max Waves are generated from the goal-benefit matrix with an
+        exposed generator rationale. All four resolved priority and ban lists
+        are snapshot-tested through the public perk preview path.
+      acceptance:
+        - each of the four policies has an intentional source note or generator rationale
+        - generated perk timelines for each policy are snapshot-tested enough to catch priority/ban drift
+      closure_note: >
+        app.pipeline now exposes policy_strategy and policy_source_note in the
+        perk policy context. The test suite snapshots all four resolved policy
+        priority orders and ban lists, while separately proving the fixed PWR
+        then Game Speed opener and the generated/manual policy source split.
+      validation:
+        - .venv\Scripts\python.exe -m pytest -q tests\app\test_pipeline_functional.py::test_named_perk_policy_presets_validate_and_keep_fixed_openers tests\app\test_pipeline_functional.py::test_named_perk_policy_presets_have_source_and_snapshot_priority_bans tests\app\test_pipeline_functional.py::test_goal_perk_policy_matrix_ranks_goal_specific_perks tests\app\test_pipeline_functional.py::test_manual_gc_farming_perk_policy_mirrors_farming_spine_with_damage_picks
+    - id: MW-8
+      title: Recertify outputs, UI, and performance for the completed model
+      status: complete_targeted
+      owner_path: tests/ + out/ + app/streamlit_inspector.py
+      work: >
+        After the model gaps above are closed, rebuild outputs and recertify the
+        product path with targeted tests, full pytest, run_stats matrix output,
+        Streamlit rendering, and honest wall-clock evidence.
+      acceptance:
+        - .venv\Scripts\python.exe -m pytest -q passes
+        - .venv\Scripts\python.exe -m app.run_stats --include-boss-wave-milestone-matrix completes and writes current artifacts
+        - Streamlit Boss Waves shows the all-tier matrix, assumptions, status, and diagnostics without app-local truth
+      closure_note: >
+        Recertification is current as of 2026-05-25: full pytest passed
+        524 tests after the matrix performance and certification repair,
+        `app.run_stats --include-boss-wave-milestone-matrix
+        --boss-wave-contact-time-seconds 10
+        --boss-wave-orb-boss-total-damage-pct 6` completed,
+        `out/boss_wave_milestone_matrix.json` is now an explicitly
+        tracked generated artifact in the output contract, and run_stats timing
+        now separates `boss_wave_milestone_matrix_build_ms` from
+        `write_outputs_ms`. The latest local matrix run with explicit
+        contact/orb runtime inputs reported roughly 55.9s matrix build time,
+        20.9ms matrix write time, and 286.3ms output artifact write time.
+        Selected matrix rows and the matrix-level selected-row certification
+        have no model-completion blockers while the payload remains honestly
+        labeled as a partial boss-contact model. A Streamlit AppTest harness pass now exercises the Boss
+        Waves product surface with the all-tier matrix button pressed: no
+        context errors, T14 Farming summary visible, five Dissonant Run rows
+        visible, and the 21-row all-tier milestone matrix visible. A false
+        context error was fixed by accepting the payload's complete status as a
+        successful context state. The model-certification payload now also
+        advertises only real ScenarioRuntimeInputs field names for skip decay
+        and tower Damage/Health Decay overrides, with a regression test proving
+        stale `*_pct_per_step` names are not published. The in-app Browser
+        plugin runtime was blocked by a local asset-path setup failure, so
+        screenshot evidence was not captured; this is an external plugin setup
+        blocker, not a repo product blocker.
+      remaining:
+        - optional in-app Browser screenshot recertification once the Browser plugin asset-path setup issue is resolved
+      validation:
+        - .venv\Scripts\python.exe -m pytest -q tests\app\test_pipeline_ui_contracts.py::test_boss_waves_render_uses_published_summary_and_execution_contract
+        - .venv\Scripts\python.exe -c "from streamlit.testing.v1 import AppTest; ...; at.button[2].click().run(timeout=240)"
+        - .venv\Scripts\python.exe -m pytest -q tests\app\test_pipeline_functional.py::test_boss_wave_model_certification_only_requires_damage_health_decay_for_tournament_modes tests\app\test_pipeline_functional.py::test_boss_wave_model_certification_marks_explicit_runtime_override_closure tests\input\test_scenario_runtime_inputs.py::test_contract_field_set__matches_expected_dataclass_fields
+        - .venv\Scripts\python.exe -m pytest -q tests\app\test_pipeline_functional.py tests\input\test_scenario_runtime_inputs.py
+        - .venv\Scripts\python.exe -m app.run_stats --include-boss-wave-milestone-matrix
+        - .venv\Scripts\python.exe -m pytest -q tests\shared\test_import_boundaries.py::test_active_generated_outputs_do_not_publish_legacy_surface_prefixes tests\app\test_pipeline_functional.py::test_run_stats_matrix_generation_timing_is_separate_from_write_timing tests\app\test_pipeline_functional.py::test_run_stats_without_matrix_flag_preserves_existing_committed_matrix_artifact
+        - .venv\Scripts\python.exe -m pytest -q tests\app\test_pipeline_functional.py::test_build_boss_wave_payload_live_path_avoids_delta_fallback tests\app\test_pipeline_functional.py::test_boss_wave_model_certification_marks_explicit_runtime_override_closure tests\app\test_pipeline_functional.py::test_boss_wave_model_certification_only_requires_damage_health_decay_for_tournament_modes tests\app\test_pipeline_functional.py::test_boss_wave_milestone_matrix_selects_best_loadout_by_tier_and_dissonance_category tests\app\test_pipeline_functional.py::test_boss_wave_summary_can_be_limited_by_explicit_non_boss_terminal_pressure tests\app\test_pipeline_functional.py::test_boss_wave_payload_can_report_explicit_non_boss_terminal_limiter
+        - .venv\Scripts\python.exe -m pytest -q
+        - .venv\Scripts\python.exe -m app.run_stats --include-boss-wave-milestone-matrix --boss-wave-contact-time-seconds 10 --boss-wave-orb-boss-total-damage-pct 6
 hardening_sequence:
 - id: T0
   name: Governance truth
@@ -138,7 +648,7 @@ v49_program:
   - remove duplicate authority, stale residue, and bloat where they undermine truth, speed, or blind maintainability
   known_blockers:
   - the v49 interactive performance target remains open
-  - Boss Waves Phase 2A table/summary and Phase 2B export/diagnostics cutover are replacement-owned by default; stat evolution correctness and Boss Waves-local wall-surface semantics are closed with an explicit primitive/display split; legacy executor retirement is complete; displayed Boss Waves TTK is total v21 event-only kill time from Plasma Cannon, orbs, electrons, and contact thorns, with Sharp Fortitude contact-thorns timing and CF/BH duration-perk timed DR modeled in the replacement path; the product-honesty tranche now threads effective BH 36/46 timing, effective CF timing/DR, tier battle-condition combat resistances, honest final-DR override semantics, and explicit zero overrides; the UW publication/Stats parity tranche now publishes effective CF surfaces and makes Stats reconcile BH/CF against the same effective truth Boss Waves consumes; Boss Waves product perk enablement is now scenario-owned with tournament perks off and non-tournament runtime perk timelines on, Defense Percent perks flow through staged DR, Streamlit exposes only wired manual combat assumptions, the Streamlit Perks tab now previews session-local perk policy controls through app.pipeline and the simulator-owned perk timeline generator, Boss Waves consumes that same session policy override, and boss_time_to_contact_seconds remains an explicit manual runtime input by governance decision
+  - Boss Waves Phase 2A table/summary and Phase 2B export/diagnostics cutover are replacement-owned by default; stat evolution correctness and Boss Waves-local wall-surface semantics are closed with an explicit primitive/display split; legacy executor retirement is complete; displayed Boss Waves TTK is total v21 event-only kill time from Plasma Cannon, orbs, electrons, and contact thorns, with Sharp Fortitude contact-thorns timing and CF/BH duration-perk timed DR modeled in the replacement path; the product-honesty tranche now threads effective BH 36/46 timing, effective CF timing/DR, tier battle-condition combat resistances, honest final-DR override semantics, and explicit zero overrides; the UW publication/Stats parity tranche now publishes effective CF surfaces and makes Stats reconcile BH/CF against the same effective truth Boss Waves consumes; Boss Waves perk behavior is now scenario-guarded rather than scenario-forced, with tournament perks off and non-tournament requests honoring runtime timeline, static max progression, none, and off controls; Boss Waves also publishes fast contact-envelope and pre-contact diagnostics while selected max wave uses one unified hit-by-hit boss-survival lane for every eHP/GC/farming loadout; Defense Percent perks flow through staged DR, Streamlit exposes only wired manual combat assumptions, the Streamlit Perks tab now previews session-local perk policy controls through app.pipeline and the simulator-owned perk timeline generator, Boss Waves consumes that same session policy override, named input-owned perk policy presets now cover eHP Max Waves, eHP Farming, GC Max Waves, and GC Farming, and boss_time_to_contact_seconds is an optional override over derived 2s-base CF/EN/Slow Aura contact timing
   shipped_vs_rebuilt_truth:
     latest_shipped_extract_audit_2026_04_15:
       source: tower-sim-src(9).zip
@@ -277,6 +787,7 @@ v49_program:
       stat_evolution_correctness: complete
       semantic_closure_recertification: complete
       perk_mode_semantics: complete
+      named_perk_policy_presets: complete
       self_closing_contact_time_ownership: manual_runtime_input_by_governance_decision
       uw_publication_stats_parity_after_effective_timing: complete
       payload_contract_tightened: operator_rows_and_download_rows_required_no_rows_fallback

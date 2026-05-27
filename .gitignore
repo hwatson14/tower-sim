@@ -23,13 +23,16 @@ Thumbs.db
 build/
 dist/
 *.egg-info/
+.pytest-tmp-*/
+tsim_*/
 
 # Coverage
 .coverage
 htmlcov/
 
-# Generated pipeline outputs -- not versioned
-/out/
+# Generated pipeline outputs -- not versioned unless explicitly allowlisted
+/out/*
+!/out/boss_wave_milestone_matrix.json
 /out_analysis_check/
 /out_direct/
 /out_module_test/

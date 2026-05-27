@@ -123,6 +123,12 @@ class CheckpointPolicyConfig:
 class RecurrencePolicyConfig:
     attack_skip_chance: float = 0.0
     health_skip_chance: float = 0.0
+    attack_skip_chance_delta: float = 0.0
+    health_skip_chance_delta: float = 0.0
+    enemy_skip_decay_start_wave: int = 0
+    enemy_skip_decay_fraction_per_step: float = 0.0
+    enemy_skip_decay_interval_waves: int = 0
+    enemy_skip_decay_schedule: Mapping[int, float] = field(default_factory=dict)
     attack_skip_static_percent_points: float = 0.0
     attack_skip_multiplier: float = 1.0
     attack_skip_workshop_track: str = ""
@@ -315,6 +321,7 @@ class SurvivabilityContributorBundle:
     black_hole_damage_reduction_pct: float = 0.0
     black_hole_duration_seconds: float = 0.0
     black_hole_cooldown_seconds: float = 0.0
+    black_hole_explicit_uptime_fraction: float | None = None
     chrono_field_damage_reduction_pct: float = 0.0
     chrono_field_duration_seconds: float = 0.0
     chrono_field_cooldown_seconds: float = 0.0
@@ -457,6 +464,12 @@ class CommonTrajectoryInputs:
     tier_column: str = "Tier 14"
     attack_skip_chance: float = 0.0
     health_skip_chance: float = 0.0
+    attack_skip_chance_delta: float = 0.0
+    health_skip_chance_delta: float = 0.0
+    enemy_skip_decay_start_wave: int = 0
+    enemy_skip_decay_fraction_per_step: float = 0.0
+    enemy_skip_decay_interval_waves: int = 0
+    enemy_skip_decay_schedule: Mapping[int, float] = field(default_factory=dict)
     attack_skip_static_percent_points: float = 0.0
     attack_skip_multiplier: float = 1.0
     attack_skip_workshop_track: str = ""
@@ -531,6 +544,15 @@ def compile_run_plan(inputs: CommonTrajectoryInputs) -> RunPlan:
     recurrence_policy = RecurrencePolicyConfig(
         attack_skip_chance=_bounded_fraction(inputs.attack_skip_chance),
         health_skip_chance=_bounded_fraction(inputs.health_skip_chance),
+        attack_skip_chance_delta=float(inputs.attack_skip_chance_delta),
+        health_skip_chance_delta=float(inputs.health_skip_chance_delta),
+        enemy_skip_decay_start_wave=max(0, int(inputs.enemy_skip_decay_start_wave)),
+        enemy_skip_decay_fraction_per_step=_bounded_fraction(inputs.enemy_skip_decay_fraction_per_step),
+        enemy_skip_decay_interval_waves=max(0, int(inputs.enemy_skip_decay_interval_waves)),
+        enemy_skip_decay_schedule={
+            max(0, int(wave)): _bounded_fraction(value)
+            for wave, value in dict(inputs.enemy_skip_decay_schedule or {}).items()
+        },
         attack_skip_static_percent_points=float(inputs.attack_skip_static_percent_points),
         attack_skip_multiplier=float(inputs.attack_skip_multiplier),
         attack_skip_workshop_track=str(inputs.attack_skip_workshop_track or ""),
@@ -602,17 +624,47 @@ def _row_skip_chance(
     workshop_track: str,
     workshop_baseline_level: int,
     workshop_levels: Mapping[str, int],
+    absolute_delta_fraction: float = 0.0,
 ) -> float:
     bounded_fallback = _bounded_fraction(fallback_fraction)
     track = str(workshop_track or "").strip()
     if not track:
-        return bounded_fallback
+        return _bounded_fraction(bounded_fallback + float(absolute_delta_fraction))
     baseline_level = int(workshop_baseline_level)
     if baseline_level < 0:
         raise ValueError("skip workshop baseline level cannot be negative")
     level = int(workshop_levels.get(track, baseline_level))
     resolved = (float(static_percent_points) + workshop_value_for_level(track, level)) * float(multiplier)
-    return _bounded_fraction(resolved / 100.0)
+    return _bounded_fraction(resolved / 100.0 + float(absolute_delta_fraction))
+
+
+def _enemy_skip_decay_delta_for_wave(
+    *,
+    display_wave: int,
+    start_wave: int,
+    fraction_per_step: float,
+    interval_waves: int,
+    schedule: Mapping[int, float] | None = None,
+) -> tuple[int, float]:
+    start = int(start_wave)
+    if start > 0 and int(display_wave) >= start and schedule:
+        elapsed = max(0, int(display_wave) - start)
+        normalized = {
+            max(0, int(threshold)): _bounded_fraction(value)
+            for threshold, value in dict(schedule).items()
+        }
+        active_thresholds = [threshold for threshold in normalized if threshold <= elapsed]
+        if active_thresholds:
+            threshold = max(active_thresholds)
+            amount = normalized[threshold]
+            if amount > 0.0:
+                return int(threshold), -amount
+    interval = int(interval_waves)
+    amount = _bounded_fraction(float(fraction_per_step))
+    if start <= 0 or interval <= 0 or amount <= 0.0 or int(display_wave) < start:
+        return 0, 0.0
+    steps = max(0, (int(display_wave) - start) // interval)
+    return steps, -amount * steps
 
 
 def advance_wave_progression(state: WaveProgressionRecurrence, *, target_display_wave: int, attack_skip_chance: float, health_skip_chance: float) -> WaveProgressionRecurrence:
@@ -639,13 +691,12 @@ def advance_wave_progression(state: WaveProgressionRecurrence, *, target_display
 def advance_free_upgrade_generation(state: FreeUpgradeRecurrence, *, wave_count: int, free_upgrade_chance_by_category: Mapping[str, float]) -> tuple[FreeUpgradeRecurrence, dict[str, int]]:
     carry = _category_float_map(state.carry_by_category)
     generated_last = {category: 0 for category in CATEGORY_IDS}
-    for _ in range(max(0, int(wave_count))):
-        for category in CATEGORY_IDS:
-            carry[category] += _bounded_fraction(free_upgrade_chance_by_category.get(category, 0.0))
-            guaranteed = int(floor(carry[category] + 1e-12))
-            if guaranteed > 0:
-                generated_last[category] += guaranteed
-                carry[category] -= guaranteed
+    waves = max(0, int(wave_count))
+    for category in CATEGORY_IDS:
+        total = carry[category] + (_bounded_fraction(free_upgrade_chance_by_category.get(category, 0.0)) * waves)
+        guaranteed = int(floor(total + 1e-12))
+        generated_last[category] = guaranteed
+        carry[category] = total - guaranteed
     generated_total = _category_int_map(state.generated_total_by_category)
     for category in CATEGORY_IDS:
         generated_total[category] += int(generated_last[category])
@@ -663,15 +714,23 @@ def allocate_free_upgrades(state: FreeUpgradeRecurrence, *, workshop_levels: Map
     for category in CATEGORY_IDS:
         order = tuple(category_track_order.get(category, ()))
         generated = int(generated_last_step.get(category, 0) or 0)
+        candidates = [
+            str(track)
+            for track in order
+            if int(levels.get(str(track), 0)) < int(track_max_levels.get(str(track), 0))
+        ]
         for _ in range(generated):
-            candidates = [track for track in order if int(levels.get(track, 0)) < int(track_max_levels.get(track, 0))]
             if not candidates:
                 unallocated_last[category] += 1
                 continue
-            track = candidates[next_index[category] % len(candidates)]
-            levels[track] = int(levels.get(track, 0)) + 1
+            candidate_index = next_index[category] % len(candidates)
+            track = candidates[candidate_index]
+            next_level = int(levels.get(track, 0)) + 1
+            levels[track] = next_level
             allocated_last[category] += 1
             next_index[category] += 1
+            if next_level >= int(track_max_levels.get(track, 0)):
+                candidates.pop(candidate_index)
         if len(order) > 1:
             next_index[category] %= len(order)
     allocated_total = _category_int_map(state.allocated_total_by_category)
@@ -708,8 +767,16 @@ def build_common_trajectory(inputs: CommonTrajectoryInputs | RunPlan) -> CommonT
     rows: list[CommonTrajectoryRow] = []
     previous_wave = progression.display_wave
     for index, wave in enumerate(checkpoint_waves):
+        enemy_skip_decay_steps, enemy_skip_decay_delta = _enemy_skip_decay_delta_for_wave(
+            display_wave=int(wave),
+            start_wave=plan.recurrence_policy.enemy_skip_decay_start_wave,
+            fraction_per_step=plan.recurrence_policy.enemy_skip_decay_fraction_per_step,
+            interval_waves=plan.recurrence_policy.enemy_skip_decay_interval_waves,
+            schedule=plan.recurrence_policy.enemy_skip_decay_schedule,
+        )
         row_attack_skip_chance = _row_skip_chance(
             fallback_fraction=plan.recurrence_policy.attack_skip_chance,
+            absolute_delta_fraction=plan.recurrence_policy.attack_skip_chance_delta + enemy_skip_decay_delta,
             static_percent_points=plan.recurrence_policy.attack_skip_static_percent_points,
             multiplier=plan.recurrence_policy.attack_skip_multiplier,
             workshop_track=plan.recurrence_policy.attack_skip_workshop_track,
@@ -718,6 +785,7 @@ def build_common_trajectory(inputs: CommonTrajectoryInputs | RunPlan) -> CommonT
         )
         row_health_skip_chance = _row_skip_chance(
             fallback_fraction=plan.recurrence_policy.health_skip_chance,
+            absolute_delta_fraction=plan.recurrence_policy.health_skip_chance_delta + enemy_skip_decay_delta,
             static_percent_points=plan.recurrence_policy.health_skip_static_percent_points,
             multiplier=plan.recurrence_policy.health_skip_multiplier,
             workshop_track=plan.recurrence_policy.health_skip_workshop_track,
@@ -770,6 +838,14 @@ def build_common_trajectory(inputs: CommonTrajectoryInputs | RunPlan) -> CommonT
                 "start_progression_wave": max(0, plan.scope.start_wave - 1),
                 "attack_skip_chance": float(row_attack_skip_chance),
                 "health_skip_chance": float(row_health_skip_chance),
+                "attack_skip_chance_delta": float(plan.recurrence_policy.attack_skip_chance_delta),
+                "health_skip_chance_delta": float(plan.recurrence_policy.health_skip_chance_delta),
+                "enemy_skip_decay_start_wave": int(plan.recurrence_policy.enemy_skip_decay_start_wave),
+                "enemy_skip_decay_fraction_per_step": float(plan.recurrence_policy.enemy_skip_decay_fraction_per_step),
+                "enemy_skip_decay_interval_waves": int(plan.recurrence_policy.enemy_skip_decay_interval_waves),
+                "enemy_skip_decay_schedule": dict(plan.recurrence_policy.enemy_skip_decay_schedule),
+                "enemy_skip_decay_steps": int(enemy_skip_decay_steps),
+                "enemy_skip_decay_delta": float(enemy_skip_decay_delta),
                 "boss_interval_waves": int(plan.checkpoint_policy.boss_interval_waves),
                 "checkpoint_every_bosses": int(plan.checkpoint_policy.checkpoint_every_bosses),
                 "tier_column": plan.scope.tier_column,

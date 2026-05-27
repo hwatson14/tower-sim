@@ -58,6 +58,10 @@ _RESOLVED_ROW_ALIAS_KEYS = {
     _state('free_upgrade_multiplier'): 'support_surface::free_upgrade_multiplier',
 }
 
+_RESOLUTION_PRIORITY_BUCKETS: dict[str, int] = {
+    'canonical_stat::free_upgrade_multiplier': 0,
+}
+
 
 def _resolved_row_lookup(resolved_rows: Dict[str, StatRow], row_key: str) -> StatRow | None:
     row = resolved_rows.get(row_key)
@@ -590,7 +594,7 @@ def _resolve_mapped_rows(
 
     while pending:
         progress = False
-        for bucket_key in list(pending):
+        for bucket_key in sorted(pending, key=lambda key: (_RESOLUTION_PRIORITY_BUCKETS.get(key, 100), key)):
             contributors = pending[bucket_key]
             destination_object_type, destination_id = bucket_key.split('::', 1)
             meta = canonical_stats.get(destination_id, {'unit': 'unknown', 'resolver': contributors[0].resolver_id or 'unknown'})

@@ -52,6 +52,7 @@ derived_composites:
   - derived::ehp.health_cto_factor
   - derived::ehp.health_dwhp_factor
   - derived::ehp.health_factor
+  - derived::ehp.health_raw_factor
   - derived::ehp.health_lab_factor
   - derived::ehp.health_perk_factor
   - derived::ehp.health_relic_factor
@@ -120,6 +121,7 @@ derived_composites:
   - derived::ehp.health_cto_factor
   - derived::ehp.health_dwhp_factor
   - derived::ehp.health_factor
+  - derived::ehp.health_raw_factor
   - derived::ehp.health_lab_factor
   - derived::ehp.health_perk_factor
   - derived::ehp.health_relic_factor
@@ -168,6 +170,7 @@ derived_composites:
   - derived::edamage.range_dpm_factor
   - derived::edamage.rapidfire_factor
   - derived::edamage.rend_factor
+  - derived::edamage.chrono_field_plus_factor
   - derived::edamage.slow_factor
   - derived::edamage.spotlight_bonus_term
   - derived::edamage.spotlight_coverage
@@ -175,10 +178,14 @@ derived_composites:
   - derived::edamage.spotlight_light_range_factor
   - derived::edamage.project_funding_factor
   - derived::edamage.super_tower_factor
+  - derived::edamage.boss_applicable_dps_cl_only
   - derived::edamage.uw.chain_lightning_dps
   - derived::edamage.uw.death_wave_dps
+  - derived::edamage.uw.ilm_charged_mines_factor
   - derived::edamage.uw.ilm_dps
+  - derived::edamage.uw.poison_swamp_death_creep_factor
   - derived::edamage.uw.poison_swamp_dps
+  - derived::edamage.uw.smart_missiles_heatup_factor
   - derived::edamage.uw.smart_missiles_dps
   - derived::edamage.uw.spotlight_missiles_dps
   - derived::edamage.uw_crit_factor
@@ -209,6 +216,7 @@ derived_composites:
   - derived::edamage.range_dpm_factor
   - derived::edamage.rapidfire_factor
   - derived::edamage.rend_factor
+  - derived::edamage.chrono_field_plus_factor
   - derived::edamage.slow_factor
   - derived::edamage.spotlight_bonus_term
   - derived::edamage.spotlight_coverage
@@ -216,10 +224,14 @@ derived_composites:
   - derived::edamage.spotlight_light_range_factor
   - derived::edamage.project_funding_factor
   - derived::edamage.super_tower_factor
+  - derived::edamage.boss_applicable_dps_cl_only
   - derived::edamage.uw.chain_lightning_dps
   - derived::edamage.uw.death_wave_dps
+  - derived::edamage.uw.ilm_charged_mines_factor
   - derived::edamage.uw.ilm_dps
+  - derived::edamage.uw.poison_swamp_death_creep_factor
   - derived::edamage.uw.poison_swamp_dps
+  - derived::edamage.uw.smart_missiles_heatup_factor
   - derived::edamage.uw.smart_missiles_dps
   - derived::edamage.uw.spotlight_missiles_dps
   - derived::edamage.uw_crit_factor

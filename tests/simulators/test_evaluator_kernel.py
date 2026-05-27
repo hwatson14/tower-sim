@@ -45,6 +45,62 @@ def _combat(**overrides):
     return CombatInputs(**defaults)
 
 
+def test_orb_total_damage_override_is_already_damage_to_boss_after_resistance():
+    from simulators.evaluator_kernel import _simulate_boss_pre_contact_kill_state
+
+    state = _simulate_boss_pre_contact_kill_state(
+        enemy_health=1e12,
+        combat=_combat(
+            orb_boss_hit_pct=None,
+            orb_boss_hit_count=None,
+            orb_boss_total_damage_pct=6.0,
+            orb_resistance_multiplier=0.5,
+        ),
+    )
+
+    assert state.damage_breakdown.orb_damage_pct == pytest.approx(6.0)
+    assert state.damage_breakdown.orb_damage == pytest.approx(6.0e10)
+
+
+def test_orb_hit_damage_path_still_applies_orb_resistance():
+    from simulators.evaluator_kernel import _simulate_boss_pre_contact_kill_state
+
+    state = _simulate_boss_pre_contact_kill_state(
+        enemy_health=1e12,
+        combat=_combat(
+            orb_boss_hit_pct=10.0,
+            orb_boss_hit_count=1,
+            orb_boss_total_damage_pct=None,
+            orb_resistance_multiplier=0.5,
+        ),
+    )
+
+    assert state.damage_breakdown.orb_damage_pct == pytest.approx(5.0)
+    assert state.damage_breakdown.orb_damage == pytest.approx(5.0e10)
+
+
+def test_continuous_boss_damage_uses_time_limited_multiplier_before_contact():
+    from simulators.evaluator_kernel import _simulate_boss_pre_contact_kill_state
+
+    state = _simulate_boss_pre_contact_kill_state(
+        enemy_health=1_000.0,
+        combat=_combat(
+            plasma_cannon_effect_pct=0.0,
+            orb_boss_total_damage_pct=0.0,
+            electron_total_damage_pct=0.0,
+            tower_thorns_damage_pct=0.0,
+            continuous_boss_damage_per_second=100.0,
+            continuous_boss_damage_multiplier=2.0,
+            continuous_boss_damage_multiplier_duration_seconds=3.0,
+            boss_time_to_contact_seconds=10.0,
+        ),
+    )
+
+    assert state.ttk_seconds == pytest.approx(7.0)
+    assert state.damage_breakdown.continuous_damage == pytest.approx(1_000.0)
+    assert state.damage_breakdown.continuous_damage_pct == pytest.approx(100.0)
+
+
 def test_run_plan_compiles_identity_dependency_order_and_table1_registry():
     from qe.run_plan import CommonTrajectoryInputs, TABLE1_COLUMN_REGISTRY, build_common_trajectory, compile_run_plan
 
@@ -101,6 +157,59 @@ def test_run_plan_compiles_identity_dependency_order_and_table1_registry():
     assert first.death_wave_health_multiplier == pytest.approx(1.015)
 
 
+def test_table1_enemy_skip_decay_reduces_skip_chance_after_start_wave():
+    from qe.run_plan import CommonTrajectoryInputs, build_common_trajectory
+
+    table = build_common_trajectory(
+        CommonTrajectoryInputs(
+            start_wave=1,
+            end_wave=40,
+            boss_interval_waves=10,
+            attack_skip_chance=0.5,
+            health_skip_chance=0.5,
+            enemy_skip_decay_start_wave=20,
+            enemy_skip_decay_fraction_per_step=0.1,
+            enemy_skip_decay_interval_waves=10,
+            survivability_contributors=_contributors(),
+        )
+    )
+
+    rows = {row.display_wave: row for row in table.rows}
+    assert rows[10].common_inputs["enemy_skip_decay_steps"] == 0
+    assert rows[20].common_inputs["enemy_skip_decay_steps"] == 0
+    assert rows[30].common_inputs["enemy_skip_decay_steps"] == 1
+    assert rows[40].common_inputs["enemy_skip_decay_steps"] == 2
+    assert rows[30].common_inputs["attack_skip_chance"] == pytest.approx(0.4)
+    assert rows[30].common_inputs["health_skip_chance"] == pytest.approx(0.4)
+    assert rows[40].common_inputs["attack_skip_chance"] == pytest.approx(0.3)
+    assert rows[40].common_inputs["health_skip_chance"] == pytest.approx(0.3)
+    assert rows[40].wave_progression.attack_wave > rows[30].wave_progression.attack_wave
+
+
+def test_table1_enemy_skip_decay_can_use_source_curve_schedule():
+    from qe.run_plan import CommonTrajectoryInputs, build_common_trajectory
+
+    table = build_common_trajectory(
+        CommonTrajectoryInputs(
+            start_wave=1,
+            end_wave=40,
+            boss_interval_waves=10,
+            attack_skip_chance=0.5,
+            health_skip_chance=0.5,
+            enemy_skip_decay_start_wave=20,
+            enemy_skip_decay_schedule={0: 0.01, 20: 0.02},
+            survivability_contributors=_contributors(),
+        )
+    )
+
+    rows = {row.display_wave: row for row in table.rows}
+    assert rows[10].common_inputs["enemy_skip_decay_delta"] == pytest.approx(0.0)
+    assert rows[20].common_inputs["enemy_skip_decay_delta"] == pytest.approx(-0.01)
+    assert rows[30].common_inputs["enemy_skip_decay_delta"] == pytest.approx(-0.01)
+    assert rows[40].common_inputs["enemy_skip_decay_delta"] == pytest.approx(-0.02)
+    assert rows[40].common_inputs["attack_skip_chance"] == pytest.approx(0.48)
+
+
 def test_table2_registry_derived_survivability_lanes_and_operator_handles():
     from qe.run_plan import CommonTrajectoryInputs, build_common_trajectory
     from simulators.evaluator_kernel import (
@@ -119,6 +228,7 @@ def test_table2_registry_derived_survivability_lanes_and_operator_handles():
             boss_interval_waves=10,
             attack_skip_chance=0.0,
             health_skip_chance=0.0,
+            attack_skip_chance_delta=0.5,
             tier_column="Tier 1",
             perk_counts={"standard_damage": 1, "tradeoff_enemy_damage": 1},
             perk_contributions={
@@ -161,7 +271,6 @@ def test_table2_registry_derived_survivability_lanes_and_operator_handles():
             heat={"enemy_attack": 1.0},
             tournament_perks_enabled=False,
             removed_perk_ids=("tradeoff_enemy_damage",),
-            attack_skip_chance_delta=0.5,
             survivability_transforms=ScenarioSurvivabilityTransforms(
                 wall_hp_multiplier=1.5,
                 wall_regen_multiplier=2.0,
@@ -203,6 +312,61 @@ def test_table2_registry_derived_survivability_lanes_and_operator_handles():
     assert row.operator_handle.handle_id == "boss:t1:10:avg"
     assert row.operator_handle.lane_handle_ids["min"] == "boss:t1:10:min"
     assert row.to_operator_row()["summary_lane_id"] == "avg"
+
+
+def test_table2_applies_explicit_overheat_damage_and_health_decay_per_row():
+    from qe.run_plan import CommonTrajectoryInputs, build_common_trajectory
+    from simulators.evaluator_kernel import ScenarioOverlayInputs, build_scenario_overlay_table
+
+    table1 = build_common_trajectory(
+        CommonTrajectoryInputs(
+            start_wave=1,
+            end_wave=30,
+            boss_interval_waves=10,
+            tier_column="Tier 1",
+            survivability_contributors=_contributors(),
+        )
+    )
+    baseline = build_scenario_overlay_table(
+        table1,
+        scenario=ScenarioOverlayInputs("baseline", "Tier 1"),
+        combat=_combat(
+            plasma_cannon_effect_pct=0.0,
+            orb_boss_total_damage_pct=0.0,
+            electron_total_damage_pct=0.0,
+            continuous_boss_damage_per_second=100.0,
+            boss_time_to_contact_seconds=1.0,
+        ),
+    ).rows[-1]
+    decayed = build_scenario_overlay_table(
+        table1,
+        scenario=ScenarioOverlayInputs(
+            "decayed",
+            "Tier 1",
+            tower_damage_decay_start_wave=10,
+            tower_damage_decay_fraction_per_step=0.1,
+            tower_damage_decay_interval_waves=10,
+            tower_health_decay_start_wave=10,
+            tower_health_decay_fraction_per_step=0.1,
+            tower_health_decay_interval_waves=10,
+        ),
+        combat=_combat(
+            plasma_cannon_effect_pct=0.0,
+            orb_boss_total_damage_pct=0.0,
+            electron_total_damage_pct=0.0,
+            continuous_boss_damage_per_second=100.0,
+            boss_time_to_contact_seconds=1.0,
+        ),
+    ).rows[-1]
+
+    assert decayed.heat["tower_damage_decay_steps"] == pytest.approx(2.0)
+    assert decayed.heat["tower_damage_decay_multiplier"] == pytest.approx(0.8)
+    assert decayed.heat["tower_health_decay_steps"] == pytest.approx(2.0)
+    assert decayed.heat["tower_health_decay_multiplier"] == pytest.approx(0.8)
+    assert decayed.final_wall_hp == pytest.approx(baseline.final_wall_hp * 0.8)
+    assert decayed.boss_damage_breakdown.continuous_damage == pytest.approx(
+        baseline.boss_damage_breakdown.continuous_damage * 0.8
+    )
 
 
 def test_table1_rederives_survivability_from_evolving_workshop_and_perk_state():
@@ -360,6 +524,35 @@ def test_cf_and_bh_duration_perk_contributions_recompute_timed_dr_per_row():
     assert table2.rows[1].damage_reduction_pct > table2.rows[0].damage_reduction_pct
 
 
+def test_black_hole_explicit_uptime_overrides_duration_cooldown_average():
+    from qe.run_plan import CommonTrajectoryInputs, build_common_trajectory
+    from simulators.evaluator_kernel import ScenarioOverlayInputs, build_scenario_overlay_table
+
+    table1 = build_common_trajectory(
+        CommonTrajectoryInputs(
+            start_wave=1,
+            end_wave=10,
+            tier_column="Tier 1",
+            survivability_contributors=_contributors(
+                tower_defense_pct=0.0,
+                timed_dr_by_lane={"min": 0.0, "avg": 0.0, "max": 0.0},
+                black_hole_damage_reduction_pct=80.0,
+                black_hole_duration_seconds=0.0,
+                black_hole_cooldown_seconds=0.0,
+                black_hole_explicit_uptime_fraction=0.5,
+            ),
+        )
+    )
+
+    row = build_scenario_overlay_table(
+        table1,
+        scenario=ScenarioOverlayInputs("pbh-explicit", "Tier 1"),
+        combat=_combat(plasma_cannon_effect_pct=100.0),
+    ).rows[0]
+
+    assert row.damage_reduction_pct == pytest.approx(40.0)
+
+
 def test_lane_dr_bounds_use_min_zero_avg_uptime_max_full_for_non_permanent_fb_bh_cf():
     from qe.run_plan import CommonTrajectoryInputs, build_common_trajectory
     from simulators.evaluator_kernel import ScenarioOverlayInputs, build_scenario_overlay_table
@@ -462,6 +655,22 @@ def test_v21_ttk_is_event_only_and_fails_closed_without_event_horizon():
                 max_ttk_seconds=1.0,
             ),
         )
+
+    unkillable_with_contact = build_scenario_overlay_table(
+        table1,
+        scenario=ScenarioOverlayInputs(scenario_key="unkillable-with-contact", tier_column="Tier 1"),
+        combat=_combat(
+            plasma_cannon_effect_pct=0.0,
+            orb_boss_hit_pct=0.0,
+            tower_thorns_damage_pct=0.0,
+            boss_time_to_contact_seconds=1.0,
+            boss_hit_interval_seconds=2.0,
+            max_ttk_seconds=3.0,
+        ),
+    )
+    assert unkillable_with_contact.rows[0].summary_combat.ttk_seconds is None
+    assert unkillable_with_contact.rows[0].summary_combat.survives is False
+    assert unkillable_with_contact.rows[0].summary_combat.fail_reason == "boss_not_killed_by_modeled_sources"
 
     contact_kill = build_scenario_overlay_table(
         table1,
@@ -787,6 +996,10 @@ def test_ttd_wall_regen_does_not_precharge_before_first_contact_hit():
     assert lane.total_damage_taken == pytest.approx(150.0)
     assert lane.wall_regen_gained_hp == pytest.approx(0.0)
     assert lane.survival_margin_hp == pytest.approx(-50.0)
+    assert lane.contact_envelope_survives is True
+    assert lane.contact_envelope_total_damage_taken == pytest.approx(150.0)
+    assert lane.contact_envelope_wall_regen_gained_hp == pytest.approx(100.0)
+    assert lane.contact_envelope_survival_margin_hp == pytest.approx(50.0)
 
 
 def test_lane_damage_reduction_caps_tower_defense_at_98_percent():
@@ -933,21 +1146,189 @@ def test_scenario_overlay_fails_closed_on_ambiguous_survivability_perks_and_lane
         )
 
 
-def test_scenario_overlay_recomputes_effective_waves_from_table1_start_baseline():
+def test_zero_delta_overlay_preserves_table1_progression_and_delta_belongs_to_table1():
     from qe.run_plan import CommonTrajectoryInputs, build_common_trajectory
-    from simulators.evaluator_kernel import ScenarioOverlayInputs, build_scenario_overlay_table
+    from simulators.evaluator_kernel import KernelAmbiguityError, ScenarioOverlayInputs, build_scenario_overlay_table
 
     table1 = build_common_trajectory(
-        CommonTrajectoryInputs(start_wave=10, end_wave=10, tier_column="Tier 1", survivability_contributors=_contributors())
+        CommonTrajectoryInputs(
+            start_wave=10,
+            end_wave=10,
+            tier_column="Tier 1",
+            survivability_contributors=_contributors(),
+            attack_skip_chance_delta=1.0,
+        )
     )
     table2 = build_scenario_overlay_table(
         table1,
-        scenario=ScenarioOverlayInputs("start-10", "Tier 1", attack_skip_chance_delta=1.0),
+        scenario=ScenarioOverlayInputs("start-10", "Tier 1"),
         combat=_combat(plasma_cannon_effect_pct=100.0),
     )
 
     assert table2.rows[0].effective_attack_wave == 9
     assert table2.rows[0].effective_health_wave == 10
+    assert table2.rows[0].effective_attack_wave == table1.rows[0].wave_progression.attack_wave
+    assert table2.rows[0].effective_health_wave == table1.rows[0].wave_progression.health_wave
+
+    with pytest.raises(KernelAmbiguityError, match="Table 1 trajectory builder"):
+        build_scenario_overlay_table(
+            table1,
+            scenario=ScenarioOverlayInputs("bad-delta", "Tier 1", attack_skip_chance_delta=1.0),
+            combat=_combat(plasma_cannon_effect_pct=100.0),
+        )
+
+
+def test_free_upgrade_generation_closed_form_matches_stepwise_recurrence():
+    from math import floor
+
+    from qe.run_plan import CATEGORY_IDS, FreeUpgradeRecurrence, advance_free_upgrade_generation
+
+    def stepwise(state, *, wave_count, free_upgrade_chance_by_category):
+        carry = {category: float(state.carry_by_category.get(category, 0.0)) for category in CATEGORY_IDS}
+        generated_last = {category: 0 for category in CATEGORY_IDS}
+        for _ in range(max(0, int(wave_count))):
+            for category in CATEGORY_IDS:
+                chance = max(0.0, min(1.0, float(free_upgrade_chance_by_category.get(category, 0.0))))
+                carry[category] += chance
+                generated = int(floor(carry[category] + 1e-12))
+                if generated > 0:
+                    generated_last[category] += generated
+                    carry[category] -= generated
+        generated_total = {category: int(state.generated_total_by_category.get(category, 0)) for category in CATEGORY_IDS}
+        for category in CATEGORY_IDS:
+            generated_total[category] += int(generated_last[category])
+        return (
+            FreeUpgradeRecurrence(
+                carry,
+                {category: int(state.next_index_by_category.get(category, 0)) for category in CATEGORY_IDS},
+                generated_total,
+                {category: int(state.allocated_total_by_category.get(category, 0)) for category in CATEGORY_IDS},
+            ),
+            generated_last,
+        )
+
+    state = FreeUpgradeRecurrence(
+        carry_by_category={"attack": 0.25, "defense": 0.5, "utility": 0.75},
+        next_index_by_category={"attack": 1, "defense": 2, "utility": 3},
+        generated_total_by_category={"attack": 4, "defense": 5, "utility": 6},
+        allocated_total_by_category={"attack": 7, "defense": 8, "utility": 9},
+    )
+    cases = (
+        (0, {"attack": 0.0, "defense": 0.5, "utility": 1.0}),
+        (1, {"attack": 0.13, "defense": 0.37, "utility": 0.91}),
+        (9, {"attack": 0.13, "defense": 0.37, "utility": 0.91}),
+        (333, {"attack": 1.1351, "defense": 1.1224, "utility": 1.2652}),
+    )
+
+    for wave_count, chances in cases:
+        closed_form, closed_generated = advance_free_upgrade_generation(
+            state,
+            wave_count=wave_count,
+            free_upgrade_chance_by_category=chances,
+        )
+        old_form, old_generated = stepwise(
+            state,
+            wave_count=wave_count,
+            free_upgrade_chance_by_category=chances,
+        )
+
+        assert closed_generated == old_generated
+        assert closed_form.next_index_by_category == old_form.next_index_by_category
+        assert closed_form.generated_total_by_category == old_form.generated_total_by_category
+        assert closed_form.allocated_total_by_category == old_form.allocated_total_by_category
+        for category in CATEGORY_IDS:
+            assert closed_form.carry_by_category[category] == pytest.approx(old_form.carry_by_category[category])
+
+
+def test_free_upgrade_allocation_fast_path_matches_stepwise_recompute_semantics():
+    from qe.run_plan import CATEGORY_IDS, FreeUpgradeRecurrence, allocate_free_upgrades
+
+    def stepwise(state, *, workshop_levels, generated_last_step, category_track_order, track_max_levels):
+        levels = {str(track): int(level) for track, level in workshop_levels.items()}
+        next_index = {category: int(state.next_index_by_category.get(category, 0)) for category in CATEGORY_IDS}
+        allocated_last = {category: 0 for category in CATEGORY_IDS}
+        unallocated_last = {category: 0 for category in CATEGORY_IDS}
+        for category in CATEGORY_IDS:
+            order = tuple(category_track_order.get(category, ()))
+            generated = int(generated_last_step.get(category, 0) or 0)
+            for _ in range(generated):
+                candidates = [
+                    track
+                    for track in order
+                    if int(levels.get(track, 0)) < int(track_max_levels.get(track, 0))
+                ]
+                if not candidates:
+                    unallocated_last[category] += 1
+                    continue
+                track = candidates[next_index[category] % len(candidates)]
+                levels[track] = int(levels.get(track, 0)) + 1
+                allocated_last[category] += 1
+                next_index[category] += 1
+            if len(order) > 1:
+                next_index[category] %= len(order)
+        allocated_total = {category: int(state.allocated_total_by_category.get(category, 0)) for category in CATEGORY_IDS}
+        for category in CATEGORY_IDS:
+            allocated_total[category] += int(allocated_last[category])
+        return (
+            FreeUpgradeRecurrence(
+                {category: float(state.carry_by_category.get(category, 0.0)) for category in CATEGORY_IDS},
+                next_index,
+                {category: int(state.generated_total_by_category.get(category, 0)) for category in CATEGORY_IDS},
+                allocated_total,
+            ),
+            levels,
+            allocated_last,
+            unallocated_last,
+        )
+
+    state = FreeUpgradeRecurrence(
+        next_index_by_category={"attack": 2, "defense": 1, "utility": 3},
+        generated_total_by_category={"attack": 20, "defense": 20, "utility": 20},
+        allocated_total_by_category={"attack": 5, "defense": 6, "utility": 7},
+    )
+    workshop_levels = {
+        "Damage": 3,
+        "Attack Speed": 4,
+        "Critical Chance": 1,
+        "Health": 2,
+        "Health Regen": 5,
+        "Defense Absolute": 0,
+        "Cash Bonus": 1,
+        "Coins / Kill Bonus": 3,
+    }
+    track_max_levels = {
+        "Damage": 5,
+        "Attack Speed": 5,
+        "Critical Chance": 2,
+        "Health": 4,
+        "Health Regen": 5,
+        "Defense Absolute": 1,
+        "Cash Bonus": 2,
+        "Coins / Kill Bonus": 3,
+    }
+    category_track_order = {
+        "attack": ("Damage", "Attack Speed", "Critical Chance"),
+        "defense": ("Health", "Health Regen", "Defense Absolute"),
+        "utility": ("Cash Bonus", "Coins / Kill Bonus"),
+    }
+    generated_last_step = {"attack": 12, "defense": 8, "utility": 5}
+
+    fast = allocate_free_upgrades(
+        state,
+        workshop_levels=workshop_levels,
+        generated_last_step=generated_last_step,
+        category_track_order=category_track_order,
+        track_max_levels=track_max_levels,
+    )
+    old = stepwise(
+        state,
+        workshop_levels=workshop_levels,
+        generated_last_step=generated_last_step,
+        category_track_order=category_track_order,
+        track_max_levels=track_max_levels,
+    )
+
+    assert fast == old
 
 
 def test_registry_validation_rejects_missing_fields_and_bad_key_contracts():

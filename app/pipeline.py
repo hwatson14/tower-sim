@@ -14,11 +14,12 @@ import copy
 import json
 import shutil
 import sys
-from dataclasses import asdict
-from collections import Counter
+from dataclasses import asdict, replace
+from collections import Counter, OrderedDict
 from functools import lru_cache
 from pathlib import Path
 from time import perf_counter
+from typing import Mapping
 
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
@@ -98,6 +99,7 @@ BOSS_WAVE_REPLACEMENT_EXPORT_FIELDS: tuple[str, ...] = (
     'tower_damage_per_second',
     'effective_damage_reduction_pct',
     'boss_ttk_seconds',
+    'boss_killed_before_contact',
     'boss_plasma_cannon_damage_to_boss_pct',
     'boss_orb_damage_to_boss_pct',
     'boss_electron_damage_to_boss_pct',
@@ -126,8 +128,29 @@ BOSS_WAVE_REPLACEMENT_PRIMITIVE_SURFACE_IDS: tuple[str, ...] = (
     'state::tower.free_attack_upgrade_chance_pct',
     'state::tower.free_defense_upgrade_chance_pct',
     'state::tower.free_utility_upgrade_chance_pct',
+    'state::tower.damage',
     'state::tower.hp',
     'state::tower.regen',
+    'state::tower.attack_speed',
+    'state::tower.crit_chance_pct',
+    'state::tower.crit_multiplier',
+    'state::tower.range_m',
+    'state::tower.damage_per_meter_multiplier',
+    'state::tower.shockwave_interval_seconds',
+    'state::tower.shockwave_size_m',
+    'state::tower.ultimate_damage_multiplier',
+    'state::tower.multishot_chance_pct',
+    'state::tower.multishot_targets',
+    'state::tower.rapid_fire_chance_pct',
+    'state::tower.rapid_fire_duration_seconds',
+    'state::tower.bounce_shot_chance_pct',
+    'state::tower.bounce_shot_targets',
+    'state::tower.bounce_shot_range_m',
+    'state::tower.supercrit_chance_pct',
+    'state::tower.supercrit_multiplier',
+    'state::tower.rend_armor_chance_pct',
+    'state::tower.rend_armor_multiplier',
+    'state::tower.max_rend_multiplier',
     'state::wall.hp',
     'state::wall.regen',
     'state::wall.fortification_multiplier',
@@ -138,15 +161,235 @@ BOSS_WAVE_REPLACEMENT_PRIMITIVE_SURFACE_IDS: tuple[str, ...] = (
     'state::dissonance.defense.echo_source_bonus',
     'state::tower.thorns_damage_pct',
     'state::wall.thorns_damage_pct',
+    'state::cards.damage.mastery_effect',
+    'state::cards.berserker.assumed_bonus_multiplier',
+    'state::cards.ultimate_crit.chance_pct',
     'state::cards.plasma_cannon.effect_pct',
+    'state::cards.energy_net.duration_seconds',
+    'state::cards.energy_net.mastery_effect',
+    'state::module.anti_cube_portal.shockwave_damage_taken_mult_x',
+    'state::module.dimension_core.max_shock_stacks',
+    'state::module.project_funding.cash_digit_multiplier_pct',
     'state::module.orbital_augment.electron_count',
     'state::module.primordial_collapse.bh_damage_reduction_pct',
     'state::uw.chrono_field.duration_seconds',
     'state::uw.chrono_field.cooldown_seconds',
     'state::uw.chrono_field.damage_reduction_pct',
+    'state::uw.chrono_field.slow_pct',
+    'state::uw.chain_lightning.max_enemy_damage_reduction_pct',
+    'state::uw.chain_lightning.damage_multiplier',
+    'state::uw.chain_lightning.quantity',
+    'state::uw.chain_lightning.chance_pct',
+    'state::uw.death_wave.damage_multiplier',
+    'state::uw.death_wave.effect_wave_count',
+    'state::uw.death_wave.cooldown_seconds',
+    'state::uw.spotlight.bonus_multiplier',
+    'state::uw.spotlight.angle_degrees',
+    'state::uw.spotlight.count',
+    'state::shock.damage_multiplier',
+    'state::bot.flame.owned',
     'state::bot.flame.damage_reduction_pct',
     'state::bot.flame.cooldown_seconds',
     'state::bot.flame.range_m',
+    'support_surface::dissonance.attack_run_active',
+    'support_surface::dissonance.defense_run_active',
+    'support_surface::dissonance.utility_run_active',
+    'support_surface::dissonance.ultimate_weapons_run_active',
+)
+BOSS_WAVE_OPTIONAL_PRIMITIVE_SURFACE_IDS: tuple[str, ...] = (
+    'state::cards.slow_aura.enemy_speed_pct',
+)
+BOSS_WAVE_PERK_POLICY_PRESETS: tuple[str, ...] = (
+    'eHP Max Waves',
+    'eHP Farming',
+    'GC Max Waves',
+    'GC Farming',
+)
+BOSS_WAVE_DISSONANCE_RUN_CATEGORIES: tuple[str, ...] = (
+    'attack',
+    'defense',
+    'utility',
+    'ultimate_weapons',
+)
+BOSS_WAVE_MILESTONE_MATRIX_TIERS: tuple[int, ...] = tuple(range(1, 22))
+BOSS_WAVE_MILESTONE_MATRIX_DEFAULT_RUNTIME_INPUTS: dict[str, float] = {
+    'orb_boss_total_damage_pct': 6.0,
+}
+BOSS_WAVE_MILESTONE_MATRIX_ARTIFACT = 'boss_wave_milestone_matrix.json'
+_BOSS_WAVE_DISSONANCE_RUN_MATRIX_CATEGORIES: tuple[str, ...] = (
+    'none',
+    *BOSS_WAVE_DISSONANCE_RUN_CATEGORIES,
+)
+_BOSS_WAVE_DISSONANCE_RUN_LABELS: dict[str, str] = {
+    'none': 'Regular',
+    'attack': 'Attack Dissonant Run',
+    'defense': 'Defense Dissonant Run',
+    'utility': 'Utility Dissonant Run',
+    'ultimate_weapons': 'Ultimate Weapon Dissonant Run',
+}
+_BOSS_WAVE_DISSONANCE_RUN_ALIASES: dict[str, str] = {
+    '': 'none',
+    'none': 'none',
+    'regular': 'none',
+    'normal': 'none',
+    'baseline': 'none',
+    'off': 'none',
+    'attack': 'attack',
+    'atk': 'attack',
+    'damage': 'attack',
+    'defense': 'defense',
+    'defence': 'defense',
+    'health': 'defense',
+    'ehp': 'defense',
+    'utility': 'utility',
+    'econ': 'utility',
+    'economy': 'utility',
+    'uw': 'ultimate_weapons',
+    'ultimate': 'ultimate_weapons',
+    'ultimate_weapon': 'ultimate_weapons',
+    'ultimate_weapons': 'ultimate_weapons',
+    'ultimate weapons': 'ultimate_weapons',
+}
+_BOSS_WAVE_MODEL_COMPLETION_BLOCKERS: tuple[str, ...] = (
+    'source_owned_v28_damage_health_decay_magnitudes',
+    'source_owned_full_gc_boss_applicable_damage_semantics',
+)
+
+
+def _runtime_input_positive(runtime_inputs: ScenarioRuntimeInputs | None, field_name: str) -> bool:
+    if runtime_inputs is None:
+        return False
+    raw_value = getattr(runtime_inputs, field_name, None)
+    if raw_value in (None, ''):
+        return False
+    try:
+        return float(raw_value) > 0.0
+    except (TypeError, ValueError):
+        return False
+
+
+def _boss_wave_explicit_terminal_pressure_closed(runtime_inputs: ScenarioRuntimeInputs | None) -> bool:
+    return all(
+        _runtime_input_positive(runtime_inputs, field_name)
+        for field_name in (
+            'fleet_terminal_max_wave',
+            'elite_terminal_max_wave',
+            'protector_terminal_max_wave',
+            'armored_terminal_max_wave',
+        )
+    )
+
+
+def _boss_wave_explicit_damage_health_decay_closed(runtime_inputs: ScenarioRuntimeInputs | None) -> bool:
+    return (
+        _runtime_input_positive(runtime_inputs, 'tower_damage_decay_pct')
+        and _runtime_input_positive(runtime_inputs, 'tower_health_decay_pct')
+    )
+
+
+def _boss_wave_explicit_gc_bridge_closed(
+    runtime_inputs: ScenarioRuntimeInputs | None,
+    *,
+    gc_boss_damage_source: str | None = None,
+) -> bool:
+    if str(gc_boss_damage_source or '').startswith('runtime_input_'):
+        return True
+    if runtime_inputs is None:
+        return False
+    if _runtime_input_positive(runtime_inputs, 'boss_applicable_damage_per_second'):
+        return True
+    if _runtime_input_positive(runtime_inputs, 'boss_applicable_damage_factor'):
+        return True
+    return all(
+        _runtime_input_positive(runtime_inputs, field_name)
+        for field_name in (
+            'boss_edamage_target_share',
+            'boss_edamage_cadence_uptime_factor',
+            'boss_edamage_reliability_factor',
+            'boss_edamage_semantic_normalizer',
+        )
+    )
+
+
+def _boss_wave_selected_model_requires_full_gc_bridge(
+    *,
+    selected_model: object,
+    gc_boss_damage_source: object | None,
+) -> bool:
+    model = str(selected_model or '')
+    if model.startswith('ehp_hit_by_hit') or model.startswith('unified_hit_by_hit'):
+        return False
+    if (
+        model.startswith('cl_only_pre_contact_boss_kill')
+        and str(gc_boss_damage_source or '') == 'qe_derived_boss_applicable_dps_cl_only_fail_closed_default'
+    ):
+        return False
+    return True
+
+
+def _boss_wave_model_certification_payload(
+    *,
+    contact_time_source: str | None = None,
+    runtime_inputs: ScenarioRuntimeInputs | None = None,
+    gc_boss_damage_source: str | None = None,
+    damage_health_decay_required: bool = True,
+    gc_boss_applicable_damage_required: bool = True,
+) -> dict[str, object]:
+    blockers = list(_BOSS_WAVE_MODEL_COMPLETION_BLOCKERS)
+    if not damage_health_decay_required or _boss_wave_explicit_damage_health_decay_closed(runtime_inputs):
+        blockers.remove('source_owned_v28_damage_health_decay_magnitudes')
+    if (
+        not bool(gc_boss_applicable_damage_required)
+        or _boss_wave_explicit_gc_bridge_closed(runtime_inputs, gc_boss_damage_source=gc_boss_damage_source)
+    ):
+        blockers.remove('source_owned_full_gc_boss_applicable_damage_semantics')
+    if str(contact_time_source or '') == 'matrix_default_assumption':
+        blockers.append('matrix_default_boss_contact_time_is_uncertified_assumption')
+    return {
+        'certified_full_max_wave_model': False,
+        'model_certification_status': 'partial_boss_contact_model',
+        'certified_scope': 'boss_contact_survivability_with_explicit_runtime_overrides',
+        'model_completion_blockers': blockers,
+        'runtime_override_closure': {
+            'non_boss_terminal_pressure': _boss_wave_explicit_terminal_pressure_closed(runtime_inputs),
+            'v28_damage_health_decay_magnitudes': _boss_wave_explicit_damage_health_decay_closed(runtime_inputs),
+            'gc_boss_applicable_damage_semantics': _boss_wave_explicit_gc_bridge_closed(
+                runtime_inputs,
+                gc_boss_damage_source=gc_boss_damage_source,
+            ),
+        },
+        'model_requirement_applicability': {
+            'non_boss_terminal_pressure': False,
+            'v28_damage_health_decay_magnitudes': bool(damage_health_decay_required),
+            'gc_boss_applicable_damage_semantics': bool(gc_boss_applicable_damage_required),
+        },
+        'explicit_runtime_overrides_supported': [
+            'boss_time_to_contact_seconds',
+            'orb_boss_total_damage_pct',
+            'boss_applicable_damage_per_second',
+            'boss_applicable_damage_factor',
+            'boss_edamage_target_share',
+            'boss_edamage_cadence_uptime_factor',
+            'boss_edamage_reliability_factor',
+            'boss_edamage_semantic_normalizer',
+            'enemy_level_skip_decay_start_wave',
+            'enemy_level_skip_decay_pct',
+            'enemy_level_skip_decay_interval_waves',
+            'tower_damage_decay_start_wave',
+            'tower_damage_decay_pct',
+            'tower_health_decay_start_wave',
+            'tower_health_decay_pct',
+            'fleet_terminal_max_wave',
+            'elite_terminal_max_wave',
+            'protector_terminal_max_wave',
+            'armored_terminal_max_wave',
+        ],
+    }
+_BOSS_WAVE_DISSONANCE_RUNTIME_INPUT_KEYS: tuple[str, ...] = (
+    'dissonance_run_category',
+    'dissonant_run_category',
+    'disco_run_category',
+    'disco_category',
 )
 _BOSS_WAVE_SKIP_WORKSHOP_TRACK_BY_SURFACE: dict[str, str] = {
     'state::tower.enemy_attack_level_skip_pct': 'Enemy Attack Level Skip',
@@ -168,6 +411,101 @@ def _normalize_boss_wave_source(source_id: str | None) -> str:
     if normalized != BOSS_WAVE_SOURCE_REPLACEMENT:
         raise ValueError(f"unsupported Boss Waves source {source_id!r}; Boss Waves product path is replacement-only")
     return normalized
+
+
+def _normalize_boss_wave_dissonance_run_category(value: object | None) -> str:
+    normalized = str(value or '').strip().lower().replace('-', '_')
+    normalized = ' '.join(normalized.replace('_', ' ').split())
+    category = _BOSS_WAVE_DISSONANCE_RUN_ALIASES.get(normalized)
+    if category is None:
+        compact = normalized.replace(' ', '_')
+        category = _BOSS_WAVE_DISSONANCE_RUN_ALIASES.get(compact)
+    if category is None:
+        raise ValueError(
+            f"unsupported Boss Waves Dissonant Run category {value!r}; "
+            f"expected one of {', '.join(_BOSS_WAVE_DISSONANCE_RUN_MATRIX_CATEGORIES)}"
+        )
+    return category
+
+
+def _boss_wave_dissonance_run_category_from_inputs(
+    *,
+    explicit_category: object | None,
+    scenario_runtime_inputs: Mapping[str, object] | None,
+) -> str:
+    if explicit_category is not None:
+        return _normalize_boss_wave_dissonance_run_category(explicit_category)
+    raw = scenario_runtime_inputs or {}
+    for key in _BOSS_WAVE_DISSONANCE_RUNTIME_INPUT_KEYS:
+        if key in raw and raw[key] is not None:
+            return _normalize_boss_wave_dissonance_run_category(raw[key])
+    return 'none'
+
+
+def _boss_wave_dissonance_restriction_spec(category: str) -> dict[str, object]:
+    from qe.kb_surfaces import load_dissonant_run_restrictions
+
+    normalized = _normalize_boss_wave_dissonance_run_category(category)
+    if normalized == 'none':
+        return {
+            'primitive_restrictions': {},
+            'conditional_primitive_restrictions': {},
+            'zero_workshop_tracks': (),
+            'disabled_runtime_systems': (),
+        }
+    restrictions = load_dissonant_run_restrictions()
+    return dict(restrictions[normalized])
+
+
+def _boss_wave_dissonance_support_rows(category: str) -> dict[str, StatRow]:
+    normalized = _normalize_boss_wave_dissonance_run_category(category)
+    if normalized == 'none':
+        return {}
+    surface_id = f'support_surface::dissonance.{normalized}_run_active'
+    return {
+        surface_id: StatRow(
+            stat_name=surface_id,
+            final_value=True,
+            value_type='bool',
+            source_count=1,
+            status='resolved',
+            notes=f'boss_waves_dissonant_run_category:{normalized}',
+            contributors=[
+                {
+                    'stat_name': 'context::boss_waves.dissonance_run_category',
+                    'source_class': 'runtime_scenario',
+                    'contributor_id': f'boss_waves__dissonance_run__{normalized}_mask',
+                    'value': True,
+                    'value_type': 'bool',
+                    'composition_stage': 'gate_enable_disable',
+                    'active': True,
+                }
+            ],
+        )
+    }
+
+
+def _boss_wave_decomposed_edamage_bridge_factor(runtime_inputs: ScenarioRuntimeInputs) -> float | None:
+    fields = (
+        'boss_edamage_target_share',
+        'boss_edamage_cadence_uptime_factor',
+        'boss_edamage_reliability_factor',
+        'boss_edamage_semantic_normalizer',
+    )
+    values = [getattr(runtime_inputs, field) for field in fields]
+    provided = [value is not None for value in values]
+    if not any(provided):
+        return None
+    if not all(provided):
+        missing = ', '.join(field for field, is_provided in zip(fields, provided) if not is_provided)
+        raise ValueError(
+            'Boss Waves decomposed eDamage bridge requires all component factors when any are supplied; '
+            f'missing {missing}.'
+        )
+    factor = 1.0
+    for value in values:
+        factor *= max(0.0, float(value or 0.0))
+    return factor
 
 
 def _boss_wave_source_selection_payload(
@@ -196,6 +534,89 @@ def _boss_wave_mode_id_for_preset(preset_name: str) -> str:
     if preset_name == 'Milestone':
         return 'milestone'
     return 'farming'
+
+
+def _boss_wave_loadout_profile_preset(*, boss_preset_name: str, perk_policy_preset: str | None) -> str:
+    policy = str(perk_policy_preset or '').strip().lower()
+    if 'farming' in policy or policy.endswith(' farm'):
+        return 'Farming'
+    if policy.startswith('gc '):
+        return 'Tourney'
+    if policy.startswith('ehp '):
+        return 'Farming'
+    if boss_preset_name in {'Farming', 'Tourney'}:
+        return boss_preset_name
+    return 'Farming'
+
+
+def _boss_wave_loadout_type(perk_policy_preset: str | None) -> str:
+    policy = str(perk_policy_preset or '').strip().lower()
+    if 'farming' in policy or policy.endswith(' farm'):
+        return 'farm'
+    if policy.startswith('gc '):
+        return 'gc'
+    if policy.startswith('ehp '):
+        return 'ehp'
+    return 'loadout'
+
+
+def _bounded_boss_wave_pct(value: object) -> float:
+    try:
+        raw = float(value or 0.0)
+    except (TypeError, ValueError):
+        return 0.0
+    if raw <= 0.0:
+        return 0.0
+    return min(100.0, raw) / 100.0
+
+
+def _boss_wave_contact_time_seconds(
+    runtime_inputs: ScenarioRuntimeInputs,
+    *,
+    primitives: Mapping[str, object],
+) -> tuple[float, str, dict[str, float]]:
+    explicit_contact_time = getattr(runtime_inputs, 'boss_time_to_contact_seconds')
+    if explicit_contact_time is not None:
+        contact_time = max(0.0, float(explicit_contact_time))
+        return (
+            contact_time,
+            'runtime_input_boss_time_to_contact_seconds',
+            {
+                'base_seconds': 2.0,
+                'chrono_field_average_slow_fraction': 0.0,
+                'slow_aura_fraction': 0.0,
+                'speed_remaining_fraction': 1.0,
+                'energy_net_hold_seconds': 0.0,
+            },
+        )
+    base_seconds = 2.0
+    cf_duration = max(0.0, float(primitives.get('chrono_field_duration_seconds') or 0.0))
+    cf_cooldown = max(0.0, float(primitives.get('chrono_field_cooldown_seconds') or 0.0))
+    cf_uptime = min(1.0, cf_duration / cf_cooldown) if cf_duration > 0.0 and cf_cooldown > 0.0 else 0.0
+    cf_average_slow = _bounded_boss_wave_pct(primitives.get('chrono_field_slow_pct')) * cf_uptime
+    slow_aura = _bounded_boss_wave_pct(primitives.get('slow_aura_enemy_speed_pct'))
+    speed_remaining = max(0.01, (1.0 - cf_average_slow) * (1.0 - slow_aura))
+    energy_net_hold = max(0.0, float(primitives.get('energy_net_duration_seconds') or 0.0))
+    contact_time = (base_seconds / speed_remaining) + energy_net_hold
+    return (
+        contact_time,
+        'derived_base_2s_cf_slow_aura_energy_net',
+        {
+            'base_seconds': base_seconds,
+            'chrono_field_average_slow_fraction': cf_average_slow,
+            'slow_aura_fraction': slow_aura,
+            'speed_remaining_fraction': speed_remaining,
+            'energy_net_hold_seconds': energy_net_hold,
+        },
+    )
+
+
+def _boss_wave_replacement_primitive_surface_ids(account_state, *, preset_name: str) -> tuple[str, ...]:
+    surface_ids = list(BOSS_WAVE_REPLACEMENT_PRIMITIVE_SURFACE_IDS)
+    equipped_cards = set((getattr(account_state, 'card_presets', {}) or {}).get(preset_name, []) or [])
+    if 'Slow Aura' in equipped_cards:
+        surface_ids.extend(BOSS_WAVE_OPTIONAL_PRIMITIVE_SURFACE_IDS)
+    return tuple(dict.fromkeys(surface_ids))
 
 
 def _extract_optional_wave_number(raw_value) -> int | None:
@@ -268,7 +689,7 @@ def _resolve_boss_wave_run_context(
         scenario_config = ScenarioConfig(mode_id=mode_id, tier=int(tier_number))
 
     scenario_surfaces = compute_scenario_surfaces(scenario_config)
-    actual_boss_interval_waves = 1
+    actual_boss_interval_waves = max(1, int(getattr(scenario_surfaces, 'boss_wave_interval', None) or 10))
     checkpoint_every_bosses = max(1, int(checkpoint_every_bosses))
     perks_enabled = mode_id != 'tournament'
     scenario_perk_state = 'off' if mode_id == 'tournament' else 'on'
@@ -378,6 +799,53 @@ def compute_perk_max_effect_displays(
     return rows
 
 
+def _resolve_boss_wave_perk_request(
+    *,
+    scenario_mode_id: str,
+    requested_perk_mode: str,
+    requested_perk_state: str,
+) -> dict[str, object]:
+    requested_mode = _normalize_perk_mode(requested_perk_mode)
+    requested_state = _normalize_perk_state(requested_perk_state)
+    if scenario_mode_id == 'tournament':
+        matched = requested_mode == 'none' and requested_state in ('auto', 'off')
+        return {
+            'perks_enabled': False,
+            'perk_state': 'off',
+            'perk_mode': 'none',
+            'perk_contract_owner': 'scenario_policy_with_request_controls',
+            'perk_state_source': 'scenario_policy_tournament_off',
+            'perk_mode_source': 'scenario_policy_tournament_none',
+            'perk_request_resolution': 'matched_scenario_policy' if matched else 'scenario_policy_overrides_request',
+            'perk_timeline_mode': 'disabled_by_tournament_scenario',
+        }
+    if requested_mode == 'none' or requested_state == 'off':
+        return {
+            'perks_enabled': False,
+            'perk_state': 'off',
+            'perk_mode': 'none',
+            'perk_contract_owner': 'request_policy_with_scenario_guard',
+            'perk_state_source': 'request_perk_state_or_mode_disabled',
+            'perk_mode_source': 'request_perk_mode_none_or_state_off',
+            'perk_request_resolution': 'matched_request',
+            'perk_timeline_mode': 'disabled_by_perk_mode_or_state',
+        }
+    return {
+        'perks_enabled': True,
+        'perk_state': 'on',
+        'perk_mode': requested_mode,
+        'perk_contract_owner': 'request_policy_with_scenario_guard',
+        'perk_state_source': 'request_perk_state_auto_or_on',
+        'perk_mode_source': 'request_perk_mode',
+        'perk_request_resolution': 'matched_request',
+        'perk_timeline_mode': (
+            'runtime_policy_projection'
+            if requested_mode == 'runtime_timeline'
+            else 'max_progression_policy_static'
+        ),
+    }
+
+
 def build_boss_wave_payload(
     request: PipelineRunRequest,
     *,
@@ -389,46 +857,56 @@ def build_boss_wave_payload(
     scenario_runtime_inputs: dict[str, float],
     boss_wave_source: str = BOSS_WAVE_SOURCE_REPLACEMENT,
     perk_policy_override: dict[str, object] | None = None,
+    dissonance_run_category: str | None = None,
+    include_dissonance_run_matrix: bool = False,
+    scenario_runtime_input_sources: dict[str, str] | None = None,
 ) -> dict[str, object]:
     from simulators.perk_timeline_generator import PerkTimelinePolicy, generate_timeline_from_policy, perk_state_at_wave
     source_id = _normalize_boss_wave_source(boss_wave_source)
+    dissonance_category = _boss_wave_dissonance_run_category_from_inputs(
+        explicit_category=(
+            dissonance_run_category
+            if dissonance_run_category is not None
+            else getattr(request, 'dissonance_run_category', None)
+        ),
+        scenario_runtime_inputs=scenario_runtime_inputs,
+    )
     requested_perk_mode = _normalize_perk_mode(getattr(request, 'perk_mode', None))
     requested_perk_state = _normalize_perk_state(getattr(request, 'perk_state', 'auto'))
-    bundle = load_inputs(ids_path=request.ids, manual_inputs_path=request.manual_inputs)
-    perk_policy = _merged_perk_policy(getattr(bundle, 'perk_policy', {}) or {}, perk_policy_override)
+    requested_policy_preset = _normalize_perk_policy_preset_name(getattr(request, 'perk_policy_preset', None))
+    scenario_mode_id = _boss_wave_mode_id_for_preset(preset_name)
+    perk_request = _resolve_boss_wave_perk_request(
+        scenario_mode_id=scenario_mode_id,
+        requested_perk_mode=requested_perk_mode,
+        requested_perk_state=requested_perk_state,
+    )
+    applied_perk_mode = str(perk_request['perk_mode'])
+    bundle, account_state, perk_config_resolution, account_state_cache_hit = _get_boss_wave_account_state_bundle(
+        ids_path=request.ids,
+        manual_inputs_path=request.manual_inputs,
+        perk_mode=applied_perk_mode,
+        perk_policy_preset=requested_policy_preset,
+    )
+    perk_policy = _merged_perk_policy(
+        _select_perk_policy(getattr(bundle, 'perk_policy', {}) or {}, requested_policy_preset),
+        perk_policy_override,
+    )
     perk_policy_payload, _perk_context = _perk_policy_context(bundle.ids_raw, perk_policy)
     perk_policy_validation = _perk_policy_validation_ledger(perk_policy_payload, _perk_context)
-    scenario_mode_id = _boss_wave_mode_id_for_preset(preset_name)
-    applied_perk_mode = 'none' if scenario_mode_id == 'tournament' else 'runtime_timeline'
-    resolved_perk_config, perk_config_resolution = _resolve_perk_config(
-        perk_mode=applied_perk_mode,
-        primary_config=bundle.perk_config,
-        perk_policy=perk_policy,
-        ids_raw=bundle.ids_raw,
-        diag_output_dir=None,
-    )
-    account_state = build_runtime_state(bundle.ids_raw, loadout_config=bundle.loadout_config, perk_config=resolved_perk_config)
     resolved_context = _resolve_boss_wave_run_context(
         account_state,
         preset_name=preset_name,
         tier_number=int(tier_number),
         checkpoint_every_bosses=int(boss_wave_step),
     )
-    applied_perk_state = str(resolved_context.get('perk_state') or ('off' if resolved_context.get('mode_id') == 'tournament' else 'on'))
-    applied_perk_mode = str(
-        resolved_context.get('perk_mode') or ('none' if not bool(resolved_context.get('perks_enabled')) else 'runtime_timeline')
-    )
-    perk_contract_owner = str(resolved_context.get('perk_contract_owner') or 'scenario_policy')
-    perk_mode_source = str(resolved_context.get('perk_mode_source') or '')
-    perk_state_source = str(resolved_context.get('perk_state_source') or '')
-    requested_matches_applied = requested_perk_mode == applied_perk_mode and (
-        requested_perk_state in ('auto', applied_perk_state)
-    )
-    perk_request_resolution = (
-        'matched_scenario_policy'
-        if requested_matches_applied
-        else 'scenario_policy_overrides_request'
-    )
+    if bool(resolved_context.get('resolved')):
+        resolved_context.update(perk_request)
+    applied_perk_state = str(perk_request['perk_state'])
+    applied_perk_mode = str(perk_request['perk_mode'])
+    perk_contract_owner = str(perk_request['perk_contract_owner'])
+    perk_mode_source = str(perk_request['perk_mode_source'])
+    perk_state_source = str(perk_request['perk_state_source'])
+    perk_request_resolution = str(perk_request['perk_request_resolution'])
     perk_timeline: list[dict[str, object]] = []
     perk_timeline_diag: dict[str, object] = {
         'enabled': False,
@@ -436,7 +914,7 @@ def build_boss_wave_payload(
         'final_wave': 0,
         'generated_rows': 0,
     }
-    effective_perks_enabled = bool(resolved_context.get('perks_enabled'))
+    effective_perks_enabled = bool(perk_request.get('perks_enabled'))
     perk_application_mode = 'disabled'
     static_perk_counts: dict[str, int] = {}
     if effective_perks_enabled and not perk_policy_validation['ok']:
@@ -470,7 +948,7 @@ def build_boss_wave_payload(
                 'payload_owner': 'app.pipeline.build_boss_wave_payload',
                 'simulator_owner': 'simulators.evaluator_kernel.build_scenario_overlay_table',
                 'row_output_kind': 'boss_wave_replacement_selected_operator_rows',
-                'summary_kind': 'max_wave_survivability',
+                'summary_kind': 'unified_selected_max_wave_with_diagnostic_lanes',
                 'checkpoint_mode': 'actual_boss_cadence_with_sampling',
                 'start_state_basis': 'start_of_run',
                 'perk_timeline_mode': 'disabled_until_context_resolves',
@@ -487,7 +965,18 @@ def build_boss_wave_payload(
                 'state_mode': 'start_of_run',
                 'max_wave': 0,
                 'max_surviving_wave': 0,
+                'selected_max_wave': 0,
+                'selected_first_failed_wave': 0,
+                'selected_max_independent_wave': 0,
+                'selected_model': 'unified_hit_by_hit_boss_survival',
+                'selected_loadout_type': _boss_wave_loadout_type(str(perk_policy.get('_selected_policy_preset') or '')),
+                'selected_policy_preset': str(perk_policy.get('_selected_policy_preset') or ''),
+                'last_contiguous_surviving_wave': 0,
+                'max_independent_surviving_wave': 0,
                 'first_failed_wave': 0,
+                'gc_pre_contact_max_wave': 0,
+                'gc_pre_contact_first_failed_wave': 0,
+                'gc_pre_contact_max_independent_wave': 0,
                 'row_count': 0,
                 'terminal_display_wave': 0,
                 'survives_through_end': False,
@@ -503,6 +992,18 @@ def build_boss_wave_payload(
                 'league': resolved_context.get('league'),
                 'tournament_wave': resolved_context.get('tournament_wave'),
                 'perks_enabled': False,
+                'model_scope': 'boss_contact_survivability',
+                'not_full_max_wave_model': True,
+                'model_certification': _boss_wave_model_certification_payload(
+                    contact_time_source=dict(
+                        scenario_runtime_input_sources
+                        or {str(key): 'caller_supplied_runtime_input' for key in scenario_runtime_inputs}
+                    ).get('boss_time_to_contact_seconds'),
+                    runtime_inputs=ScenarioRuntimeInputs.from_mapping(scenario_runtime_inputs),
+                    damage_health_decay_required=scenario_mode_id == 'tournament',
+                    gc_boss_applicable_damage_required=False,
+                ),
+                'unsupported_terminal_pressures': [],
                 'perk_timeline_enabled': False,
                 'context_status': 'error',
                 'context_error': resolved_context.get('context_error'),
@@ -513,15 +1014,22 @@ def build_boss_wave_payload(
                 'requested_start_wave': 1,
                 'first_checkpoint_wave': None,
                 'scenario_runtime_inputs': dict(scenario_runtime_inputs),
+                'scenario_runtime_input_sources': dict(
+                    scenario_runtime_input_sources
+                    or {str(key): 'caller_supplied_runtime_input' for key in scenario_runtime_inputs}
+                ),
                 'perk_mode': applied_perk_mode,
                 'perk_state': applied_perk_state,
                 'requested_perk_mode': requested_perk_mode,
                 'requested_perk_state': requested_perk_state,
+                'requested_perk_policy_preset': requested_policy_preset,
+                'perk_policy_preset': str(perk_policy.get('_selected_policy_preset') or ''),
                 'perk_contract_owner': perk_contract_owner,
                 'perk_mode_source': perk_mode_source,
                 'perk_state_source': perk_state_source,
                 'perk_request_resolution': perk_request_resolution,
                 'perk_config_resolution': dict(perk_config_resolution),
+                'account_state_cache_hit': bool(account_state_cache_hit),
             },
             'download': {
                 'format': 'csv',
@@ -554,6 +1062,12 @@ def build_boss_wave_payload(
         'perk_state': applied_perk_state,
         'requested_perk_mode': requested_perk_mode,
         'requested_perk_state': requested_perk_state,
+        'requested_perk_policy_preset': requested_policy_preset,
+        'perk_policy_preset': str(perk_policy.get('_selected_policy_preset') or ''),
+        'loadout_profile_preset': _boss_wave_loadout_profile_preset(
+            boss_preset_name=preset_name,
+            perk_policy_preset=str(perk_policy.get('_selected_policy_preset') or ''),
+        ),
         'perk_contract_owner': perk_contract_owner,
         'perk_mode_source': perk_mode_source,
         'perk_state_source': perk_state_source,
@@ -561,12 +1075,18 @@ def build_boss_wave_payload(
         'perk_application_mode': perk_application_mode,
         'perk_config_resolution': dict(perk_config_resolution),
         'perk_policy_validation': dict(perk_policy_validation),
+        'account_state_cache_hit': bool(account_state_cache_hit),
         'perk_policy_override_active': bool(perk_policy_override),
         'perk_timeline': tuple(dict(row or {}) for row in perk_timeline) if perk_application_mode == 'runtime_timeline' else (),
         'static_perk_count': len(static_perk_counts),
         'static_perk_pick_count': sum(int(value) for value in static_perk_counts.values()),
         'scenario_config': resolved_context.get('scenario_config'),
         'scenario_surfaces': dict(resolved_context.get('scenario_surfaces') or {}),
+        'scenario_runtime_input_sources': dict(
+            scenario_runtime_input_sources
+            or {str(key): 'caller_supplied_runtime_input' for key in scenario_runtime_inputs}
+        ),
+        'dissonance_run_category': dissonance_category,
     }
     perk_counts = (
         perk_state_at_wave(perk_timeline, 0)
@@ -601,19 +1121,19 @@ def build_boss_wave_payload(
         primitive_semantics_ledger=primitive_semantics_ledger,
     )
     active_owner = 'simulators.evaluator_kernel.evaluate_overlay_row'
-    tower_damage_mode = 'v21_event_only_replacement_for_operator_table'
+    tower_damage_mode = 'v21_event_plus_gc_boss_continuous_damage'
     survivability_semantics = 'staged_replacement_product_surfaces'
     cutover_scope = 'boss_waves_replacement_product_complete'
     csv_export_source = source_id
     diagnostics_source = source_id
-    return {
+    payload = {
         'artifact': 'boss_wave_dashboard_payload',
         'schema_version': 1,
         'contract': {
             'payload_owner': 'app.pipeline.build_boss_wave_payload',
             'simulator_owner': active_owner,
             'row_output_kind': 'boss_wave_replacement_selected_operator_rows',
-            'summary_kind': 'max_wave_survivability',
+            'summary_kind': 'unified_selected_max_wave_with_diagnostic_lanes',
             'checkpoint_mode': 'actual_boss_cadence_with_sampling',
             'start_state_basis': 'start_of_run',
             'perk_timeline_mode': (
@@ -644,15 +1164,42 @@ def build_boss_wave_payload(
             'state_mode': config['state_mode'],
             'max_wave': int(selected_summary.get('max_wave') or 0),
             'max_surviving_wave': int(selected_summary.get('max_surviving_wave') or 0),
+            'selected_max_wave': int(selected_summary.get('selected_max_wave') or 0),
+            'selected_first_failed_wave': int(selected_summary.get('selected_first_failed_wave') or 0),
+            'selected_max_independent_wave': int(selected_summary.get('selected_max_independent_wave') or 0),
+            'selected_model': selected_summary.get('selected_model'),
+            'selected_loadout_type': selected_summary.get('selected_loadout_type'),
+            'selected_policy_preset': selected_summary.get('selected_policy_preset'),
+            'last_contiguous_surviving_wave': int(selected_summary.get('last_contiguous_surviving_wave') or 0),
+            'max_independent_surviving_wave': int(selected_summary.get('max_independent_surviving_wave') or 0),
             'first_failed_wave': int(selected_summary.get('first_failed_wave') or 0),
+            'hit_by_hit_max_wave': int(selected_summary.get('hit_by_hit_max_wave') or 0),
+            'hit_by_hit_first_failed_wave': int(selected_summary.get('hit_by_hit_first_failed_wave') or 0),
+            'contact_envelope_max_wave': int(selected_summary.get('contact_envelope_max_wave') or 0),
+            'contact_envelope_first_failed_wave': int(selected_summary.get('contact_envelope_first_failed_wave') or 0),
+            'contact_envelope_max_independent_surviving_wave': int(selected_summary.get('contact_envelope_max_independent_surviving_wave') or 0),
+            'contact_envelope_model': selected_summary.get('contact_envelope_model'),
+            'gc_pre_contact_max_wave': int(selected_summary.get('gc_pre_contact_max_wave') or 0),
+            'gc_pre_contact_first_failed_wave': int(selected_summary.get('gc_pre_contact_first_failed_wave') or 0),
+            'gc_pre_contact_max_independent_wave': int(selected_summary.get('gc_pre_contact_max_independent_wave') or 0),
+            'gc_pre_contact_model': selected_summary.get('gc_pre_contact_model'),
+            'terminal_pressure_limits': dict(selected_summary.get('terminal_pressure_limits') or {}),
+            'terminal_pressure_limiter': selected_summary.get('terminal_pressure_limiter'),
+            'terminal_pressure_limited': bool(selected_summary.get('terminal_pressure_limited')),
             'row_count': int(selected_summary.get('row_count') or len(operator_rows)),
             'terminal_display_wave': int(selected_summary.get('terminal_display_wave') or 0),
             'survives_through_end': bool(selected_summary.get('survives_through_end')),
+            'contact_envelope_survives_through_end': bool(selected_summary.get('contact_envelope_survives_through_end')),
+            'gc_pre_contact_survives_through_end': bool(selected_summary.get('gc_pre_contact_survives_through_end')),
             'result_consistent_with_rows': bool(selected_summary.get('result_consistent_with_rows')),
             'status': selected_summary.get('status') or 'complete',
             'failure_kind': selected_summary.get('failure_kind'),
             'failure_message': selected_summary.get('failure_message'),
             'first_unresolved_wave': selected_summary.get('first_unresolved_wave'),
+            'post_failure_truncation_kind': selected_summary.get('post_failure_truncation_kind'),
+            'post_failure_truncation_message': selected_summary.get('post_failure_truncation_message'),
+            'dissonance_run_category': dissonance_category,
+            'dissonance_run_label': _BOSS_WAVE_DISSONANCE_RUN_LABELS[dissonance_category],
         },
         'diagnostics': selected_diagnostics,
         'download': {
@@ -667,6 +1214,648 @@ def build_boss_wave_payload(
             diagnostics_source=diagnostics_source,
         ),
     }
+    if include_dissonance_run_matrix and dissonance_category == 'none':
+        payload['dissonance_run_matrix'] = _build_boss_wave_dissonance_run_matrix(
+            request,
+            preset_name=preset_name,
+            tier_number=int(tier_number),
+            end_wave=int(end_wave),
+            boss_wave_step=int(boss_wave_step),
+            stop_on_failure=bool(stop_on_failure),
+            scenario_runtime_inputs=dict(scenario_runtime_inputs),
+            boss_wave_source=source_id,
+            perk_policy_override=perk_policy_override,
+        )
+    return payload
+
+
+def _build_boss_wave_dissonance_run_matrix(
+    request: PipelineRunRequest,
+    *,
+    preset_name: str,
+    tier_number: int,
+    end_wave: int,
+    boss_wave_step: int,
+    stop_on_failure: bool,
+    scenario_runtime_inputs: dict[str, float],
+    boss_wave_source: str,
+    perk_policy_override: dict[str, object] | None,
+) -> list[dict[str, object]]:
+    rows: list[dict[str, object]] = []
+    for category in _BOSS_WAVE_DISSONANCE_RUN_MATRIX_CATEGORIES:
+        payload = build_boss_wave_payload(
+            request,
+            preset_name=preset_name,
+            tier_number=int(tier_number),
+            end_wave=int(end_wave),
+            boss_wave_step=int(boss_wave_step),
+            stop_on_failure=bool(stop_on_failure),
+            scenario_runtime_inputs=dict(scenario_runtime_inputs),
+            boss_wave_source=boss_wave_source,
+            perk_policy_override=perk_policy_override,
+            dissonance_run_category=category,
+            include_dissonance_run_matrix=False,
+        )
+        summary = dict(payload.get('summary') or {})
+        diagnostics = dict(payload.get('diagnostics') or {})
+        rows.append(
+            {
+                'dissonance_run_category': category,
+                'label': _BOSS_WAVE_DISSONANCE_RUN_LABELS[category],
+                'selected_max_wave': int(summary.get('selected_max_wave') or 0),
+                'selected_first_failed_wave': int(summary.get('selected_first_failed_wave') or 0),
+                'selected_model': summary.get('selected_model'),
+                'hit_by_hit_max_wave': int(summary.get('hit_by_hit_max_wave') or 0),
+                'contact_envelope_max_wave': int(summary.get('contact_envelope_max_wave') or 0),
+                'gc_pre_contact_max_wave': int(summary.get('gc_pre_contact_max_wave') or 0),
+                'status': summary.get('status') or diagnostics.get('context_status') or 'complete',
+                'post_failure_truncation_kind': summary.get('post_failure_truncation_kind'),
+                'mask_summary': dict(diagnostics.get('dissonance_run_mask') or {}),
+            }
+        )
+    return rows
+
+
+def _boss_wave_milestone_matrix_cell(wave: int, loadout: str, *, capped: bool) -> str:
+    suffix = '+' if capped and wave > 0 else ''
+    return f'{int(wave)}{suffix} ({loadout})'
+
+
+def _boss_wave_milestone_matrix_selection_rank(row: dict[str, object], policy_presets: tuple[str, ...]) -> tuple[int, int, int]:
+    policy = str(row.get('loadout_policy_preset') or '')
+    try:
+        policy_rank = policy_presets.index(policy)
+    except ValueError:
+        policy_rank = len(policy_presets)
+    return (
+        1 if str(row.get('status') or '') == 'complete' else 0,
+        int(row.get('selected_max_wave') or 0),
+        -policy_rank,
+    )
+
+
+def _boss_wave_matrix_certification_from_selected_rows(
+    base_certification: dict[str, object],
+    rows: list[dict[str, object]],
+) -> dict[str, object]:
+    blockers = sorted({
+        str(blocker)
+        for row in rows
+        for blocker in list(row.get('model_completion_blockers') or [])
+    })
+    certification = dict(base_certification)
+    certification['model_completion_blockers'] = blockers
+    requirement_applicability = dict(certification.get('model_requirement_applicability') or {})
+    requirement_applicability['non_boss_terminal_pressure'] = False
+    requirement_applicability['v28_damage_health_decay_magnitudes'] = (
+        'source_owned_v28_damage_health_decay_magnitudes' in blockers
+    )
+    requirement_applicability['gc_boss_applicable_damage_semantics'] = (
+        'source_owned_full_gc_boss_applicable_damage_semantics' in blockers
+    )
+    certification['model_requirement_applicability'] = requirement_applicability
+    return certification
+
+
+def _boss_wave_matrix_comparison_inputs_from_args(args) -> dict[str, float] | None:
+    mapping = {
+        'boss_wave_bridge_target_share': 'boss_edamage_target_share',
+        'boss_wave_bridge_cadence_uptime': 'boss_edamage_cadence_uptime_factor',
+        'boss_wave_bridge_reliability': 'boss_edamage_reliability_factor',
+        'boss_wave_bridge_semantic_normalizer': 'boss_edamage_semantic_normalizer',
+    }
+    values: dict[str, float] = {}
+    for arg_name, runtime_name in mapping.items():
+        value = float(getattr(args, arg_name, 0.0) or 0.0)
+        if value > 0.0:
+            values[runtime_name] = value
+    return values or None
+
+
+def _boss_wave_matrix_runtime_inputs_from_args(args) -> dict[str, float] | None:
+    mapping = {
+        'boss_wave_contact_time_seconds': 'boss_time_to_contact_seconds',
+        'boss_wave_orb_boss_total_damage_pct': 'orb_boss_total_damage_pct',
+    }
+    values: dict[str, float] = {}
+    for arg_name, runtime_name in mapping.items():
+        raw_value = getattr(args, arg_name, None)
+        if raw_value is None:
+            continue
+        value = float(raw_value)
+        if value > 0.0:
+            values[runtime_name] = value
+    return values or None
+
+
+def _boss_wave_matrix_candidate_end_waves(
+    *,
+    final_end_wave: int,
+    tier_number: int,
+    dissonance_run_category: str,
+    stop_on_failure: bool,
+) -> tuple[int, ...]:
+    final_end = max(1, int(final_end_wave))
+    if not bool(stop_on_failure) or final_end <= 1000:
+        return (final_end,)
+    category = _normalize_boss_wave_dissonance_run_category(dissonance_run_category)
+    if int(tier_number) < 12 and category != 'defense':
+        return (final_end,)
+    if category != 'defense':
+        return tuple(dict.fromkeys(horizon for horizon in (6000, final_end) if horizon <= final_end))
+    horizons: list[int] = []
+    for horizon in (1000, 3000):
+        if horizon < final_end:
+            horizons.append(horizon)
+    horizon = 6000
+    while horizon < final_end:
+        horizons.append(horizon)
+        horizon *= 2
+    horizons.append(final_end)
+    return tuple(dict.fromkeys(int(horizon) for horizon in horizons))
+
+
+def _boss_wave_matrix_payload_needs_more_horizon(
+    payload: dict[str, object],
+    *,
+    current_end_wave: int,
+    final_end_wave: int,
+) -> bool:
+    if int(current_end_wave) >= int(final_end_wave):
+        return False
+    summary = dict(payload.get('summary') or {})
+    status = str(summary.get('status') or 'complete')
+    if status != 'complete':
+        return False
+    if int(summary.get('selected_first_failed_wave') or 0) > 0:
+        return False
+    selected_wave = int(summary.get('selected_max_wave') or 0)
+    terminal_wave = int(summary.get('terminal_display_wave') or current_end_wave)
+    return selected_wave > 0 and selected_wave >= terminal_wave
+
+
+def _build_boss_wave_payload_for_matrix_candidate(
+    request: PipelineRunRequest,
+    *,
+    preset_name: str,
+    tier_number: int,
+    end_wave: int,
+    boss_wave_step: int,
+    stop_on_failure: bool,
+    scenario_runtime_inputs: dict[str, float],
+    scenario_runtime_input_sources: dict[str, str] | None = None,
+    dissonance_run_category: str,
+) -> dict[str, object]:
+    payload: dict[str, object] | None = None
+    for candidate_end_wave in _boss_wave_matrix_candidate_end_waves(
+        final_end_wave=int(end_wave),
+        tier_number=int(tier_number),
+        dissonance_run_category=dissonance_run_category,
+        stop_on_failure=bool(stop_on_failure),
+    ):
+        payload = build_boss_wave_payload(
+            request,
+            preset_name=preset_name,
+            tier_number=int(tier_number),
+            end_wave=int(candidate_end_wave),
+            boss_wave_step=int(boss_wave_step),
+            stop_on_failure=bool(stop_on_failure),
+            scenario_runtime_inputs=dict(scenario_runtime_inputs),
+            scenario_runtime_input_sources=dict(scenario_runtime_input_sources or {}),
+            dissonance_run_category=dissonance_run_category,
+            include_dissonance_run_matrix=False,
+        )
+        if not _boss_wave_matrix_payload_needs_more_horizon(
+            payload,
+            current_end_wave=int(candidate_end_wave),
+            final_end_wave=int(end_wave),
+        ):
+            return payload
+    if payload is None:
+        raise ValueError("Boss Waves milestone matrix candidate did not produce a payload")
+    return payload
+
+
+_BOSS_WAVE_ACCOUNT_STATE_BUNDLE_CACHE: dict[tuple, tuple] = {}
+_BOSS_WAVE_REPLACEMENT_PRIMITIVES_CACHE_MAX_SIZE = 512
+_BOSS_WAVE_REPLACEMENT_PRIMITIVES_CACHE: OrderedDict[tuple, dict[str, object]] = OrderedDict()
+
+
+def _boss_wave_cacheable_mapping_items(mapping: Mapping[str, object]) -> tuple[tuple[str, str], ...]:
+    return tuple(sorted((str(key), repr(value)) for key, value in dict(mapping or {}).items()))
+
+
+def _resolve_boss_wave_replacement_primitives_cached(
+    *,
+    account_state,
+    preset_name: str,
+    config: dict[str, object],
+    perks_enabled: bool,
+    scenario_runtime_inputs: dict[str, float],
+    workshop_levels: Mapping[str, int],
+) -> dict[str, object]:
+    cache_key = (
+        id(account_state),
+        str(preset_name),
+        str(config.get('mode_id') or ''),
+        int(config.get('tier_number') or 0),
+        str(config.get('tier_column') or ''),
+        str(config.get('league') or ''),
+        int(config.get('tournament_wave') or 0),
+        bool(perks_enabled),
+        str(config.get('dissonance_run_category') or 'none'),
+        _boss_wave_cacheable_mapping_items(scenario_runtime_inputs),
+        tuple(sorted((str(key), int(value)) for key, value in dict(workshop_levels or {}).items())),
+        id(resolve_checkpoint_surfaces),
+        id(query_response_to_statbook),
+    )
+    cached = _BOSS_WAVE_REPLACEMENT_PRIMITIVES_CACHE.get(cache_key)
+    if cached is not None:
+        _BOSS_WAVE_REPLACEMENT_PRIMITIVES_CACHE.move_to_end(cache_key)
+        return dict(cached)
+    cached = dict(
+        _resolve_boss_wave_replacement_primitives(
+            account_state=account_state,
+            preset_name=preset_name,
+            config=config,
+            perks_enabled=bool(perks_enabled),
+            scenario_runtime_inputs=scenario_runtime_inputs,
+            workshop_levels=workshop_levels,
+        )
+    )
+    _BOSS_WAVE_REPLACEMENT_PRIMITIVES_CACHE[cache_key] = cached
+    while len(_BOSS_WAVE_REPLACEMENT_PRIMITIVES_CACHE) > _BOSS_WAVE_REPLACEMENT_PRIMITIVES_CACHE_MAX_SIZE:
+        _BOSS_WAVE_REPLACEMENT_PRIMITIVES_CACHE.popitem(last=False)
+    return dict(cached)
+
+
+def _get_boss_wave_account_state_bundle(
+    *,
+    ids_path: Path,
+    manual_inputs_path: Path | None,
+    perk_mode: str,
+    perk_policy_preset: str | None,
+):
+    cache_key = (
+        _path_cache_token(ids_path),
+        _path_cache_token(_effective_manual_inputs_path(manual_inputs_path)),
+        str(perk_mode),
+        str(_normalize_perk_policy_preset_name(perk_policy_preset) or ''),
+        id(load_inputs),
+        id(build_runtime_state),
+        id(_resolve_perk_config),
+    )
+    cached = _BOSS_WAVE_ACCOUNT_STATE_BUNDLE_CACHE.get(cache_key)
+    if cached is not None:
+        return (*cached, True)
+    input_bundle = load_inputs(ids_path=ids_path, manual_inputs_path=manual_inputs_path)
+    selected_policy = _select_perk_policy(input_bundle.perk_policy, perk_policy_preset)
+    perk_config, perk_config_resolution = _resolve_perk_config(
+        perk_mode=perk_mode,
+        primary_config=input_bundle.perk_config,
+        perk_policy=selected_policy,
+        ids_raw=input_bundle.ids_raw,
+        diag_output_dir=None,
+    )
+    if selected_policy.get('_selected_policy_preset'):
+        perk_config_resolution['perk_policy_preset'] = str(selected_policy['_selected_policy_preset'])
+    account_state = build_runtime_state(
+        input_bundle.ids_raw,
+        loadout_config=input_bundle.loadout_config,
+        perk_config=perk_config,
+    )
+    cached = (input_bundle, account_state, perk_config_resolution)
+    _BOSS_WAVE_ACCOUNT_STATE_BUNDLE_CACHE[cache_key] = cached
+    return (*cached, False)
+
+
+def _int_or_default(value: object, default: int = 0) -> int:
+    if value is None:
+        return int(default)
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return int(default)
+
+
+def _select_summary_lane(summary: dict[str, object], *, prefix: str, model: str) -> None:
+    max_key = f'{prefix}_max_wave'
+    failed_key = f'{prefix}_first_failed_wave'
+    independent_key = (
+        f'{prefix}_max_independent_surviving_wave'
+        if prefix == 'contact_envelope'
+        else f'{prefix}_max_independent_wave'
+    )
+    summary.update(
+        {
+            'selected_max_wave': int(summary.get(max_key) or 0),
+            'selected_first_failed_wave': int(summary.get(failed_key) or 0),
+            'selected_max_independent_wave': int(summary.get(independent_key) or 0),
+            'selected_model': model,
+        }
+    )
+
+
+def _apply_dissonance_selected_lane_constraints(summary: dict[str, object], *, dissonance_run_category: str) -> None:
+    category = _normalize_boss_wave_dissonance_run_category(dissonance_run_category)
+    if category != 'none':
+        summary['selected_model'] = f'unified_hit_by_hit_boss_survival_under_{category}_dissonance'
+
+
+def build_boss_wave_milestone_matrix(
+    request: PipelineRunRequest,
+    *,
+    tiers: tuple[int, ...] | list[int] = BOSS_WAVE_MILESTONE_MATRIX_TIERS,
+    end_wave: int = 30000,
+    boss_wave_step: int = 10,
+    stop_on_failure: bool = True,
+    scenario_runtime_inputs: dict[str, float] | None = None,
+    comparison_scenario_runtime_inputs: dict[str, float] | None = None,
+    comparison_label: str = 'bridge_assumptions',
+    loadout_policy_presets: tuple[str, ...] = BOSS_WAVE_PERK_POLICY_PRESETS,
+    dissonance_run_categories: tuple[str, ...] = _BOSS_WAVE_DISSONANCE_RUN_MATRIX_CATEGORIES,
+) -> dict[str, object]:
+    provided_runtime_inputs = dict(scenario_runtime_inputs or {})
+    runtime_inputs = dict(BOSS_WAVE_MILESTONE_MATRIX_DEFAULT_RUNTIME_INPUTS)
+    runtime_inputs.update(provided_runtime_inputs)
+    runtime_input_sources = {
+        str(key): 'matrix_default_assumption'
+        for key in BOSS_WAVE_MILESTONE_MATRIX_DEFAULT_RUNTIME_INPUTS
+    }
+    runtime_input_sources.update({str(key): 'caller_supplied_runtime_input' for key in provided_runtime_inputs})
+    matrix_model_certification = _boss_wave_model_certification_payload(
+        contact_time_source=runtime_input_sources.get('boss_time_to_contact_seconds'),
+        runtime_inputs=ScenarioRuntimeInputs.from_mapping(runtime_inputs),
+        damage_health_decay_required=False,
+    )
+    from simulators.evaluator_kernel import KernelAmbiguityError
+
+    categories = tuple(_normalize_boss_wave_dissonance_run_category(category) for category in dissonance_run_categories)
+    policy_presets = tuple(loadout_policy_presets)
+    rows: list[dict[str, object]] = []
+    wide_rows: list[dict[str, object]] = []
+
+    for tier in tiers:
+        tier_number = int(tier)
+        tier_label = f'Tier {tier_number}'
+        wide: dict[str, object] = {'tier': tier_number, 'tier_column': tier_label}
+        tier_reference_wave: int | None = None
+        for category in categories:
+            candidates: list[dict[str, object]] = []
+            for policy_preset in policy_presets:
+                policy_request = replace(
+                    request,
+                    preset='Milestone',
+                    perk_mode='max_progression_policy',
+                    perk_state='auto',
+                    perk_policy_preset=str(policy_preset),
+                    tier=tier_number,
+                )
+                try:
+                    payload = _build_boss_wave_payload_for_matrix_candidate(
+                        policy_request,
+                        preset_name='Milestone',
+                        tier_number=tier_number,
+                        end_wave=int(end_wave),
+                        boss_wave_step=int(boss_wave_step),
+                        stop_on_failure=bool(stop_on_failure),
+                        scenario_runtime_inputs=dict(runtime_inputs),
+                        scenario_runtime_input_sources=dict(runtime_input_sources),
+                        dissonance_run_category=category,
+                    )
+                    summary = dict(payload.get('summary') or {})
+                    diagnostics = dict(payload.get('diagnostics') or {})
+                    primitive_values = dict(
+                        dict(diagnostics.get('replacement_primitive_inputs') or {}).get('values') or {}
+                    )
+                except KernelAmbiguityError as exc:
+                    summary = {
+                        'selected_max_wave': 0,
+                        'selected_first_failed_wave': 0,
+                        'selected_model': 'kernel_ambiguity',
+                        'status': 'incomplete',
+                        'failure_kind': 'kernel_ambiguity',
+                        'failure_message': str(exc),
+                    }
+                    _, candidate_account_state, _, _ = _get_boss_wave_account_state_bundle(
+                        ids_path=policy_request.ids,
+                        manual_inputs_path=policy_request.manual_inputs,
+                        perk_mode='max_progression_policy',
+                        perk_policy_preset=str(policy_preset),
+                    )
+                    ambiguity_alignment = _boss_wave_milestone_alignment(
+                        account_state=candidate_account_state,
+                        tier_number=tier_number,
+                        dissonance_run_category=category,
+                        summary=summary,
+                    )
+                    ambiguity_alignment['comparison_status'] = 'kernel_ambiguity'
+                    diagnostics = {
+                        'loadout_profile_preset': _boss_wave_loadout_profile_preset(
+                            boss_preset_name='Milestone',
+                            perk_policy_preset=str(policy_preset),
+                        ),
+                        'model_certification': matrix_model_certification,
+                        'milestone_alignment': ambiguity_alignment,
+                    }
+                    primitive_values = {}
+                milestone_alignment = dict(diagnostics.get('milestone_alignment') or {})
+                if tier_reference_wave is None and milestone_alignment.get('reference_wave') is not None:
+                    tier_reference_wave = int(milestone_alignment.get('reference_wave') or 0)
+                selected_wave = _int_or_default(summary.get('selected_max_wave'), 0)
+                active_reference_wave = _extract_optional_wave_number(milestone_alignment.get('active_reference_wave'))
+                delta_vs_reference_wave = (
+                    selected_wave - int(active_reference_wave)
+                    if active_reference_wave is not None and active_reference_wave > 0
+                    else None
+                )
+                candidates.append(
+                    {
+                        'loadout_policy_preset': str(policy_preset),
+                        'loadout_profile_preset': diagnostics.get('loadout_profile_preset'),
+                        'selected_loadout_type': summary.get('selected_loadout_type') or diagnostics.get('selected_loadout_type'),
+                        'selected_model': summary.get('selected_model'),
+                        'selected_max_wave': selected_wave,
+                        'selected_first_failed_wave': int(summary.get('selected_first_failed_wave') or 0),
+                        'hit_by_hit_max_wave': int(summary.get('hit_by_hit_max_wave') or 0),
+                        'contact_envelope_max_wave': int(summary.get('contact_envelope_max_wave') or 0),
+                        'gc_pre_contact_max_wave': int(summary.get('gc_pre_contact_max_wave') or 0),
+                        'gc_boss_damage_source': primitive_values.get('gc_boss_damage_source'),
+                        'status': summary.get('status') or diagnostics.get('context_status') or 'complete',
+                        'model_certification_status': dict(
+                            diagnostics.get('model_certification') or matrix_model_certification
+                        ).get('model_certification_status'),
+                        'certified_full_max_wave_model': bool(
+                            dict(diagnostics.get('model_certification') or matrix_model_certification).get(
+                                'certified_full_max_wave_model'
+                            )
+                        ),
+                        'model_completion_blockers': list(
+                            dict(diagnostics.get('model_certification') or matrix_model_certification).get(
+                                'model_completion_blockers'
+                            )
+                            or []
+                        ),
+                        'survives_through_end': bool(summary.get('survives_through_end')),
+                        'contact_envelope_survives_through_end': bool(summary.get('contact_envelope_survives_through_end')),
+                        'gc_pre_contact_survives_through_end': bool(summary.get('gc_pre_contact_survives_through_end')),
+                        'post_failure_truncation_kind': summary.get('post_failure_truncation_kind'),
+                        'reference_kind': milestone_alignment.get('active_reference_kind'),
+                        'reference_source': milestone_alignment.get('active_reference_source'),
+                        'reference_wave': active_reference_wave,
+                        'dissonance_pb_reference_wave': milestone_alignment.get('dissonance_pb_reference_wave'),
+                        'delta_vs_reference_wave': delta_vs_reference_wave,
+                        'alignment': milestone_alignment,
+                    }
+                )
+
+            best = max(candidates, key=lambda row: _boss_wave_milestone_matrix_selection_rank(row, policy_presets))
+            category_label = _BOSS_WAVE_DISSONANCE_RUN_LABELS[category]
+            category_key = 'regular' if category == 'none' else category
+            best_wave = int(best.get('selected_max_wave') or 0)
+            best_reference_wave = _extract_optional_wave_number(best.get('reference_wave'))
+            best_gc_boss_damage_source = (
+                best.get('gc_boss_damage_source')
+                if str(best.get('selected_loadout_type') or '') == 'gc'
+                else None
+            )
+            capped = bool(best.get('survives_through_end')) or best_wave >= int(end_wave)
+            row = {
+                'tier': tier_number,
+                'tier_column': tier_label,
+                'milestone_reference_wave': tier_reference_wave,
+                'dissonance_run_category': category,
+                'label': category_label,
+                'reference_kind': best.get('reference_kind'),
+                'reference_source': best.get('reference_source'),
+                'reference_wave': best_reference_wave,
+                'dissonance_pb_reference_wave': best.get('dissonance_pb_reference_wave'),
+                'best_selected_max_wave': best_wave,
+                'best_loadout_policy_preset': best.get('loadout_policy_preset'),
+                'best_loadout_profile_preset': best.get('loadout_profile_preset'),
+                'best_selected_loadout_type': best.get('selected_loadout_type'),
+                'best_selected_model': best.get('selected_model'),
+                'best_gc_boss_damage_source': best_gc_boss_damage_source,
+                'best_status': best.get('status'),
+                'best_model_certification_status': best.get('model_certification_status'),
+                'certified_full_max_wave_model': bool(best.get('certified_full_max_wave_model')),
+                'model_completion_blockers': list(best.get('model_completion_blockers') or []),
+                'best_survives_through_end': bool(best.get('survives_through_end')),
+                'best_display': _boss_wave_milestone_matrix_cell(
+                    best_wave,
+                    str(best.get('loadout_policy_preset') or ''),
+                    capped=capped,
+                ),
+                'candidate_results': candidates,
+            }
+            if tier_reference_wave:
+                row['delta_vs_ids_milestone_wave'] = best_wave - int(tier_reference_wave)
+            if best_reference_wave is not None and best_reference_wave > 0:
+                row['delta_vs_reference_wave'] = best_wave - int(best_reference_wave)
+            rows.append(row)
+            wide[f'{category_key}_wave'] = best_wave
+            wide[f'{category_key}_best_loadout'] = best.get('loadout_policy_preset')
+            wide[f'{category_key}_best_model'] = best.get('selected_model')
+            wide[f'{category_key}_best_gc_boss_damage_source'] = best_gc_boss_damage_source
+            wide[f'{category_key}_status'] = best.get('status')
+            wide[f'{category_key}_model_certification_status'] = best.get('model_certification_status')
+            wide[f'{category_key}_certified_full_max_wave_model'] = bool(best.get('certified_full_max_wave_model'))
+            wide[f'{category_key}_display'] = row['best_display']
+            wide[f'{category_key}_reference_kind'] = best.get('reference_kind')
+            wide[f'{category_key}_reference_wave'] = best_reference_wave
+            wide[f'{category_key}_delta_vs_reference_wave'] = row.get('delta_vs_reference_wave')
+        wide['milestone_reference_wave'] = tier_reference_wave
+        wide_rows.append(wide)
+
+    selected_model_certification = _boss_wave_matrix_certification_from_selected_rows(
+        matrix_model_certification,
+        rows,
+    )
+    payload = {
+        'artifact': 'boss_wave_milestone_matrix',
+        'schema_version': 1,
+        'contract': {
+            'payload_owner': 'app.pipeline.build_boss_wave_milestone_matrix',
+            'row_owner': 'app.pipeline.build_boss_wave_payload',
+            'simulator_owner': 'simulators.evaluator_kernel.evaluate_overlay_row',
+            'scope': 'milestone_all_tiers_best_loadout_by_dissonant_run_category',
+            'model_scope': 'boss_contact_survivability',
+            'not_full_max_wave_model': True,
+            'model_certification': selected_model_certification,
+            'selection_policy': 'complete candidates first, then highest selected_max_wave across named loadout presets',
+        },
+        'preset_name': 'Milestone',
+        'tiers': [int(tier) for tier in tiers],
+        'end_wave': int(end_wave),
+        'boss_wave_step': int(boss_wave_step),
+        'stop_on_failure': bool(stop_on_failure),
+        'scenario_runtime_inputs': runtime_inputs,
+        'scenario_runtime_input_sources': runtime_input_sources,
+        'model_certification': selected_model_certification,
+        'contact_time_contract': {
+            'boss_time_to_contact_seconds': {
+                'value': runtime_inputs.get('boss_time_to_contact_seconds'),
+                'source': runtime_input_sources.get(
+                    'boss_time_to_contact_seconds',
+                    'per_candidate_derived_base_2s_cf_slow_aura_energy_net',
+                ),
+                'ownership': 'runtime_input_override_or_per_candidate_simulator_derivation',
+                'derived_by_simulator': 'boss_time_to_contact_seconds' not in runtime_inputs,
+                'matrix_default_is_uncertified_assumption': (
+                    runtime_input_sources.get('boss_time_to_contact_seconds') == 'matrix_default_assumption'
+                ),
+            },
+        },
+        'loadout_policy_presets': list(policy_presets),
+        'dissonance_run_categories': list(categories),
+        'rows': rows,
+        'wide_rows': wide_rows,
+    }
+    if comparison_scenario_runtime_inputs:
+        comparison_runtime_inputs = dict(runtime_inputs)
+        comparison_runtime_inputs.update(dict(comparison_scenario_runtime_inputs))
+        comparison_matrix = build_boss_wave_milestone_matrix(
+            request,
+            tiers=tuple(int(tier) for tier in tiers),
+            end_wave=int(end_wave),
+            boss_wave_step=int(boss_wave_step),
+            stop_on_failure=bool(stop_on_failure),
+            scenario_runtime_inputs=comparison_runtime_inputs,
+            comparison_scenario_runtime_inputs=None,
+            comparison_label=comparison_label,
+            loadout_policy_presets=policy_presets,
+            dissonance_run_categories=categories,
+        )
+        comparison_wide_by_tier = {
+            int(row.get('tier') or 0): row
+            for row in comparison_matrix.get('wide_rows') or []
+        }
+        comparison_rows: list[dict[str, object]] = []
+        for base_wide in wide_rows:
+            tier_number = int(base_wide.get('tier') or 0)
+            bridge_wide = dict(comparison_wide_by_tier.get(tier_number) or {})
+            comparison_row: dict[str, object] = {
+                'tier': tier_number,
+                'tier_column': base_wide.get('tier_column'),
+                'milestone_reference_wave': base_wide.get('milestone_reference_wave'),
+            }
+            for category in categories:
+                category_key = 'regular' if category == 'none' else category
+                base_wave = int(base_wide.get(f'{category_key}_wave') or 0)
+                bridge_wave = int(bridge_wide.get(f'{category_key}_wave') or 0)
+                comparison_row[f'{category_key}_default_wave'] = base_wave
+                comparison_row[f'{category_key}_comparison_wave'] = bridge_wave
+                comparison_row[f'{category_key}_delta_wave'] = bridge_wave - base_wave
+                comparison_row[f'{category_key}_default_display'] = base_wide.get(f'{category_key}_display')
+                comparison_row[f'{category_key}_comparison_display'] = bridge_wide.get(f'{category_key}_display')
+            comparison_rows.append(comparison_row)
+        payload['comparison'] = {
+            'label': str(comparison_label or 'bridge_assumptions'),
+            'scenario_runtime_inputs': comparison_runtime_inputs,
+            'matrix': comparison_matrix,
+            'wide_rows': comparison_rows,
+        }
+    return payload
 
 
 def _build_replacement_operator_table_and_summary(
@@ -695,15 +1884,26 @@ def _build_replacement_operator_table_and_summary(
         ScenarioSurvivabilityTransforms,
         evaluate_overlay_row,
     )
+    from simulators.scenario import normalize_els_reduction_to_fraction, overheat_enemy_skip_decay_schedule
 
-    workshop_levels, track_max_levels = _boss_wave_workshop_level_inputs(account_state, preset_name=preset_name)
-    primitives = _resolve_boss_wave_replacement_primitives(
+    loadout_profile_preset = str(config.get('loadout_profile_preset') or preset_name)
+    workshop_levels, track_max_levels = _boss_wave_workshop_level_inputs(account_state, preset_name=loadout_profile_preset)
+    primitives = _resolve_boss_wave_replacement_primitives_cached(
         account_state=account_state,
-        preset_name=preset_name,
+        preset_name=loadout_profile_preset,
         config=config,
         perks_enabled=bool(config['perks_enabled']),
         scenario_runtime_inputs=scenario_runtime_inputs,
         workshop_levels=workshop_levels,
+    )
+    dissonance_run_category = _normalize_boss_wave_dissonance_run_category(
+        config.get('dissonance_run_category') or 'none'
+    )
+    dissonance_mask = _boss_wave_apply_dissonance_run_mask(
+        dissonance_run_category,
+        primitives=primitives,
+        workshop_levels=workshop_levels,
+        track_max_levels=track_max_levels,
     )
     runtime_inputs = ScenarioRuntimeInputs.from_mapping(scenario_runtime_inputs)
     scenario_surfaces = dict(config.get('scenario_surfaces') or {})
@@ -717,6 +1917,8 @@ def _build_replacement_operator_table_and_summary(
         account_state,
         scenario_runtime_inputs=scenario_runtime_inputs,
     )
+    if dissonance_run_category == 'ultimate_weapons':
+        death_wave_health_max_multiplier = 1.0
     death_wave_health_max_wave = int(
         _optional_runtime_float(scenario_runtime_inputs, 'death_wave_health_max_wave') or 1000
     )
@@ -724,6 +1926,11 @@ def _build_replacement_operator_table_and_summary(
     bh_dr_pct = float(timed_dr_sources['black_hole_pbh']['damage_reduction_pct'])
     bh_duration_seconds = float(timed_dr_sources['black_hole_pbh']['duration_seconds'])
     bh_cooldown_seconds = float(timed_dr_sources['black_hole_pbh']['cooldown_seconds'])
+    bh_explicit_uptime_fraction = (
+        float(timed_dr_sources['black_hole_pbh']['uptime_fraction'])
+        if timed_dr_sources['black_hole_pbh'].get('uptime_source') == 'explicit_uptime_fraction'
+        else None
+    )
     cf_dr_pct = float(primitives['chrono_field_damage_reduction_pct'])
     cf_duration_seconds = float(primitives['chrono_field_duration_seconds'])
     cf_cooldown_seconds = float(primitives['chrono_field_cooldown_seconds'])
@@ -772,6 +1979,7 @@ def _build_replacement_operator_table_and_summary(
         black_hole_damage_reduction_pct=bh_dr_pct,
         black_hole_duration_seconds=bh_duration_seconds,
         black_hole_cooldown_seconds=bh_cooldown_seconds,
+        black_hole_explicit_uptime_fraction=bh_explicit_uptime_fraction,
         chrono_field_damage_reduction_pct=cf_dr_pct,
         chrono_field_duration_seconds=cf_duration_seconds,
         chrono_field_cooldown_seconds=cf_cooldown_seconds,
@@ -788,6 +1996,40 @@ def _build_replacement_operator_table_and_summary(
         standard_bonus_pct=float((getattr(account_state, 'labs', {}) or {}).get('Standard Perks Bonus') or 0.0),
         tradeoff_bonus_pct=float((getattr(account_state, 'labs', {}) or {}).get('Improve Trade-off Perks') or 0.0),
     )
+    runtime_skip_reduction = getattr(runtime_inputs, 'enemy_level_skip_reduction_pp')
+    skip_reduction_raw = (
+        float(runtime_skip_reduction)
+        if runtime_skip_reduction is not None
+        else float(scenario_surfaces.get('bc_enemy_level_skip_reduction_pp') or 0.0)
+    )
+    skip_reduction_fraction = normalize_els_reduction_to_fraction(skip_reduction_raw)
+    skip_delta = -skip_reduction_fraction
+    overheat_start_wave = int(
+        getattr(runtime_inputs, 'enemy_level_skip_decay_start_wave') or scenario_surfaces.get('overheat_start_wave') or 0
+    )
+    skip_decay_fraction = normalize_els_reduction_to_fraction(
+        getattr(runtime_inputs, 'enemy_level_skip_decay_pct')
+    )
+    skip_decay_interval = int(getattr(runtime_inputs, 'enemy_level_skip_decay_interval_waves') or 0)
+    skip_decay_schedule: dict[int, float] = {}
+    skip_decay_source = 'not_active'
+    if skip_decay_fraction > 0.0 and skip_decay_interval > 0:
+        skip_decay_source = 'scenario_runtime_input'
+    elif overheat_start_wave > 0:
+        skip_decay_schedule = overheat_enemy_skip_decay_schedule()
+        skip_decay_source = 'kb.tournaments.tables.battle-condition-magnitudes.csv:enemy_level_skip'
+    tower_damage_decay_fraction = normalize_els_reduction_to_fraction(
+        getattr(runtime_inputs, 'tower_damage_decay_pct')
+    )
+    tower_damage_decay_start_wave = int(
+        getattr(runtime_inputs, 'tower_damage_decay_start_wave') or scenario_surfaces.get('overheat_start_wave') or 0
+    )
+    tower_health_decay_fraction = normalize_els_reduction_to_fraction(
+        getattr(runtime_inputs, 'tower_health_decay_pct')
+    )
+    tower_health_decay_start_wave = int(
+        getattr(runtime_inputs, 'tower_health_decay_start_wave') or scenario_surfaces.get('overheat_start_wave') or 0
+    )
     table1 = build_common_trajectory(
         CommonTrajectoryInputs(
             start_wave=int(config['start_wave']),
@@ -797,6 +2039,12 @@ def _build_replacement_operator_table_and_summary(
             tier_column=str(config['tier_column']),
             attack_skip_chance=float(primitives['attack_skip_chance']),
             health_skip_chance=float(primitives['health_skip_chance']),
+            attack_skip_chance_delta=skip_delta,
+            health_skip_chance_delta=skip_delta,
+            enemy_skip_decay_start_wave=overheat_start_wave if (skip_decay_fraction > 0.0 and skip_decay_interval > 0) or skip_decay_schedule else 0,
+            enemy_skip_decay_fraction_per_step=skip_decay_fraction,
+            enemy_skip_decay_interval_waves=skip_decay_interval,
+            enemy_skip_decay_schedule=skip_decay_schedule,
             attack_skip_static_percent_points=float(primitives['attack_skip_static_percent_points']),
             attack_skip_multiplier=float(primitives['attack_skip_multiplier']),
             attack_skip_workshop_track=str(primitives['attack_skip_workshop_track'] or ''),
@@ -822,13 +2070,6 @@ def _build_replacement_operator_table_and_summary(
             death_wave_health_max_wave=death_wave_health_max_wave,
         )
     )
-    runtime_skip_reduction = getattr(runtime_inputs, 'enemy_level_skip_reduction_pp')
-    skip_reduction_pp = (
-        float(runtime_skip_reduction)
-        if runtime_skip_reduction is not None
-        else float(scenario_surfaces.get('bc_enemy_level_skip_reduction_pp') or 0.0)
-    )
-    skip_delta = -max(0.0, skip_reduction_pp) / 100.0
     runtime_incoming_mult = getattr(runtime_inputs, 'incoming_damage_multiplier')
     incoming_mult = (
         float(runtime_incoming_mult)
@@ -837,14 +2078,39 @@ def _build_replacement_operator_table_and_summary(
     )
     wall_thorns_damage_increase_per_hit = _boss_wave_wall_thorns_damage_increase_per_hit(
         account_state,
-        preset_name=preset_name,
+        preset_name=loadout_profile_preset,
     )
+    if 'wall_thorns_damage_increase_per_hit' in primitives:
+        wall_thorns_damage_increase_per_hit = max(
+            0.0,
+            float(primitives['wall_thorns_damage_increase_per_hit'] or 0.0),
+        )
+    boss_time_to_contact_seconds, boss_time_to_contact_source, boss_time_to_contact_components = (
+        _boss_wave_contact_time_seconds(runtime_inputs, primitives=primitives)
+    )
+    primitives['boss_time_to_contact_seconds'] = boss_time_to_contact_seconds
+    primitives['boss_time_to_contact_source'] = boss_time_to_contact_source
+    primitives['boss_time_to_contact_base_seconds'] = boss_time_to_contact_components['base_seconds']
+    primitives['boss_time_to_contact_chrono_field_average_slow_fraction'] = boss_time_to_contact_components[
+        'chrono_field_average_slow_fraction'
+    ]
+    primitives['boss_time_to_contact_slow_aura_fraction'] = boss_time_to_contact_components['slow_aura_fraction']
+    primitives['boss_time_to_contact_speed_remaining_fraction'] = boss_time_to_contact_components[
+        'speed_remaining_fraction'
+    ]
+    primitives['boss_time_to_contact_energy_net_hold_seconds'] = boss_time_to_contact_components[
+        'energy_net_hold_seconds'
+    ]
     scenario = ScenarioOverlayInputs(
         scenario_key='boss_waves_replacement_product',
         tier_column=str(config['tier_column']),
         tournament_perks_enabled=True,
-        attack_skip_chance_delta=skip_delta,
-        health_skip_chance_delta=skip_delta,
+        tower_damage_decay_start_wave=tower_damage_decay_start_wave if tower_damage_decay_fraction > 0.0 else 0,
+        tower_damage_decay_fraction_per_step=tower_damage_decay_fraction,
+        tower_damage_decay_interval_waves=10,
+        tower_health_decay_start_wave=tower_health_decay_start_wave if tower_health_decay_fraction > 0.0 else 0,
+        tower_health_decay_fraction_per_step=tower_health_decay_fraction,
+        tower_health_decay_interval_waves=10,
         survivability_transforms=ScenarioSurvivabilityTransforms(
             incoming_damage_multiplier=incoming_mult,
         ),
@@ -852,12 +2118,23 @@ def _build_replacement_operator_table_and_summary(
     combat = CombatInputs(
         plasma_cannon_effect_pct=float(primitives['plasma_cannon_effect_pct']),
         tower_thorns_damage_pct=float(primitives['wall_thorns_contact_damage_pct']),
+        continuous_boss_damage_per_second=float(primitives.get('gc_boss_damage_per_second') or 0.0),
+        continuous_boss_damage_multiplier=float(primitives.get('energy_net_mastery_multiplier') or 1.0),
+        continuous_boss_damage_multiplier_duration_seconds=float(primitives.get('energy_net_damage_multiplier_duration_seconds') or 0.0),
         orb_boss_hit_pct=float(getattr(runtime_inputs, 'orb_boss_hit_pct') or 0.0),
-        orb_boss_total_damage_pct=float(boss_ttk_defaults['orb_boss_total_damage_pct']),
+        orb_boss_total_damage_pct=(
+            0.0
+            if dissonance_run_category == 'defense'
+            else float(boss_ttk_defaults['orb_boss_total_damage_pct'])
+        ),
         orb_boss_hit_count=getattr(runtime_inputs, 'orb_boss_hit_count'),
-        electron_total_damage_pct=float(boss_ttk_defaults['electron_total_damage_pct']),
+        electron_total_damage_pct=(
+            0.0
+            if dissonance_run_category == 'defense'
+            else float(boss_ttk_defaults['electron_total_damage_pct'])
+        ),
         electron_hit_count=getattr(runtime_inputs, 'electron_hit_count'),
-        boss_time_to_contact_seconds=getattr(runtime_inputs, 'boss_time_to_contact_seconds'),
+        boss_time_to_contact_seconds=boss_time_to_contact_seconds,
         boss_hit_interval_seconds=(
             float(getattr(runtime_inputs, 'boss_hit_interval_seconds'))
             if getattr(runtime_inputs, 'boss_hit_interval_seconds') is not None
@@ -908,7 +2185,11 @@ def _build_replacement_operator_table_and_summary(
                 incoming_damage_multiplier=incoming_mult,
             )
         )
-        if bool(stop_on_failure) and not bool(operator_rows[-1].get('survives_boss')):
+        if (
+            bool(stop_on_failure)
+            and not bool(operator_rows[-1].get('survives_boss'))
+            and not bool(operator_rows[-1].get('contact_envelope_survives_boss'))
+        ):
             break
     semantic_ledger = _boss_wave_primitive_semantics_ledger(
         primitives=primitives,
@@ -923,12 +2204,122 @@ def _build_replacement_operator_table_and_summary(
         boss_ttk_defaults=boss_ttk_defaults,
         wall_thorns_damage_increase_per_hit=wall_thorns_damage_increase_per_hit,
     )
-    summary = _replacement_summary_from_operator_rows(operator_rows)
+    summary = _replacement_summary_from_operator_rows(
+        operator_rows,
+        perk_policy_preset=str(config.get('perk_policy_preset') or ''),
+        terminal_pressure_limits=_boss_wave_terminal_pressure_limits(runtime_inputs),
+    )
+    _apply_dissonance_selected_lane_constraints(
+        summary,
+        dissonance_run_category=dissonance_run_category,
+    )
     if kernel_failure:
-        summary.update(kernel_failure)
+        selected_first_failed = int(summary.get('selected_first_failed_wave') or 0)
+        first_unresolved = int(kernel_failure.get('first_unresolved_wave') or 0)
+        if selected_first_failed > 0 and first_unresolved > selected_first_failed:
+            summary.update(
+                {
+                    'status': 'complete',
+                    'failure_kind': None,
+                    'failure_message': None,
+                    'first_unresolved_wave': first_unresolved,
+                    'post_failure_truncation_kind': str(kernel_failure.get('failure_kind') or ''),
+                    'post_failure_truncation_message': str(kernel_failure.get('failure_message') or ''),
+                }
+            )
+        else:
+            summary.update(kernel_failure)
     else:
         summary.setdefault('status', 'complete')
-    return operator_rows, summary, dict(primitives), semantic_ledger
+    returned_primitives = dict(primitives)
+    returned_primitives.update({
+        'enemy_level_skip_reduction_raw': skip_reduction_raw,
+        'enemy_level_skip_reduction_fraction': skip_reduction_fraction,
+        'enemy_level_skip_chance_delta': skip_delta,
+        'enemy_level_skip_decay_fraction_per_step': skip_decay_fraction,
+        'enemy_level_skip_decay_interval_waves': skip_decay_interval,
+        'enemy_level_skip_decay_start_wave': overheat_start_wave if (skip_decay_fraction > 0.0 and skip_decay_interval > 0) or skip_decay_schedule else 0,
+        'enemy_level_skip_decay_schedule': skip_decay_schedule,
+        'enemy_level_skip_decay_source': skip_decay_source,
+        'tower_damage_decay_fraction_per_step': tower_damage_decay_fraction,
+        'tower_damage_decay_start_wave': tower_damage_decay_start_wave if tower_damage_decay_fraction > 0.0 else 0,
+        'tower_health_decay_fraction_per_step': tower_health_decay_fraction,
+        'tower_health_decay_start_wave': tower_health_decay_start_wave if tower_health_decay_fraction > 0.0 else 0,
+        'dissonance_run_category': dissonance_run_category,
+    })
+    if dissonance_mask:
+        returned_primitives['dissonance_run_mask'] = dict(dissonance_mask)
+        semantic_ledger['dissonance_run_mask'] = dict(dissonance_mask)
+        summary['dissonance_run_category'] = dissonance_run_category
+        summary['dissonance_run_label'] = _BOSS_WAVE_DISSONANCE_RUN_LABELS[dissonance_run_category]
+    return operator_rows, summary, returned_primitives, semantic_ledger
+
+
+def _boss_wave_apply_dissonance_run_mask(
+    category: str,
+    *,
+    primitives: dict[str, object],
+    workshop_levels: dict[str, int],
+    track_max_levels: dict[str, int],
+) -> dict[str, object]:
+    normalized = _normalize_boss_wave_dissonance_run_category(category)
+    if normalized == 'none':
+        return {
+            'category': 'none',
+            'label': _BOSS_WAVE_DISSONANCE_RUN_LABELS['none'],
+            'applied': False,
+            'disabled_runtime_systems': [],
+            'restricted_primitives': {},
+            'zeroed_workshop_tracks': [],
+            'conditional_primitive_restrictions': {},
+        }
+
+    restricted_primitives: dict[str, object] = {}
+    zeroed_tracks: list[str] = []
+    disabled_systems: list[str] = []
+    conditional_primitive_restrictions: dict[str, dict[str, object]] = {}
+    spec = _boss_wave_dissonance_restriction_spec(normalized)
+
+    def restrict_primitive(key: str, value: object) -> None:
+        if isinstance(value, str):
+            primitives[key] = value
+            restricted_primitives[key] = value
+            return
+        primitives[key] = float(value)
+        restricted_primitives[key] = float(value)
+
+    def zero_track(track_name: str) -> None:
+        if track_name not in zeroed_tracks:
+            zeroed_tracks.append(track_name)
+        if track_name in workshop_levels:
+            workshop_levels[track_name] = 0
+        if track_name in track_max_levels:
+            track_max_levels[track_name] = 0
+
+    for key, value in dict(spec.get('primitive_restrictions') or {}).items():
+        restrict_primitive(str(key), value)
+    for track in sorted(str(track) for track in (spec.get('zero_workshop_tracks') or ())):
+        zero_track(track)
+    disabled_systems.extend(str(item) for item in (spec.get('disabled_runtime_systems') or ()))
+    for key, conditional in dict(spec.get('conditional_primitive_restrictions') or {}).items():
+        conditional_payload = dict(conditional or {})
+        unless_source = str(conditional_payload.get('unless_gc_boss_damage_source') or '')
+        if key == 'gc_boss_damage_per_second' and primitives.get('gc_boss_damage_source') == unless_source:
+            continue
+        restrict_primitive(str(key), conditional_payload.get('value', 0.0))
+        conditional_primitive_restrictions[str(key)] = conditional_payload
+        masked_source = str(conditional_payload.get('masked_source') or '')
+        if key == 'gc_boss_damage_per_second' and masked_source:
+            primitives['gc_boss_damage_source'] = masked_source
+    return {
+        'category': normalized,
+        'label': _BOSS_WAVE_DISSONANCE_RUN_LABELS[normalized],
+        'applied': normalized != 'none',
+        'disabled_runtime_systems': disabled_systems,
+        'restricted_primitives': restricted_primitives,
+        'zeroed_workshop_tracks': zeroed_tracks,
+        'conditional_primitive_restrictions': conditional_primitive_restrictions,
+    }
 
 
 def _resolve_boss_wave_replacement_primitives(
@@ -948,22 +2339,97 @@ def _resolve_boss_wave_replacement_primitives(
     from simulators.timing import resolve_timing_consumer_bundle
 
     primitive_preset_name = _boss_wave_workshop_source_preset(account_state, preset_name=preset_name)
+    scenario_context = {
+        'mode_id': str(config.get('mode_id') or 'farming'),
+        'tier': int(config.get('tier_number') or 1),
+        'league': config.get('league'),
+        'tournament_wave': config.get('tournament_wave'),
+        'dissonance_run_category': str(config.get('dissonance_run_category') or 'none'),
+    }
+    primitive_surface_ids = _boss_wave_replacement_primitive_surface_ids(
+        account_state,
+        preset_name=primitive_preset_name,
+    )
     response = resolve_checkpoint_surfaces(
         account_state,
-        requested_surface_ids=BOSS_WAVE_REPLACEMENT_PRIMITIVE_SURFACE_IDS,
+        requested_surface_ids=primitive_surface_ids,
         preset_name=primitive_preset_name,
+        card_preset_name=primitive_preset_name,
+        module_preset_name=primitive_preset_name,
         state_mode='start_of_run',
         perks_enabled=False,
         scenario_runtime_inputs=ScenarioRuntimeInputs.from_mapping(scenario_runtime_inputs),
-        scenario_context={
-            'mode_id': str(config.get('mode_id') or 'farming'),
-            'tier': int(config.get('tier_number') or 1),
-            'league': config.get('league'),
-            'tournament_wave': config.get('tournament_wave'),
-        },
+        scenario_context=scenario_context,
     )
     statbook = query_response_to_statbook(response, notes='Boss Waves replacement primitive resolution.')
+    dissonance_run_category = _normalize_boss_wave_dissonance_run_category(
+        config.get('dissonance_run_category') or 'none'
+    )
     publish_query_surfaces(statbook.rows, account_state_labs=getattr(account_state, 'labs', {}) or {})
+    damage_statbook = statbook
+    damage_state_mode = 'start_of_run'
+    damage_perks_enabled = False
+    if bool(perks_enabled):
+        damage_response = resolve_checkpoint_surfaces(
+            account_state,
+            requested_surface_ids=primitive_surface_ids,
+            preset_name=primitive_preset_name,
+            card_preset_name=primitive_preset_name,
+            module_preset_name=primitive_preset_name,
+            state_mode='max_progression',
+            perks_enabled=True,
+            scenario_runtime_inputs=ScenarioRuntimeInputs.from_mapping(scenario_runtime_inputs),
+            scenario_context=scenario_context,
+        )
+        damage_statbook = query_response_to_statbook(
+            damage_response,
+            notes='Boss Waves replacement active-policy damage primitive resolution.',
+        )
+        publish_query_surfaces(damage_statbook.rows, account_state_labs=getattr(account_state, 'labs', {}) or {})
+        damage_state_mode = 'max_progression'
+        damage_perks_enabled = True
+    chain_lightning_boss_dps = _optional_statbook_float(
+        damage_statbook,
+        'derived::edamage.uw.chain_lightning_dps',
+        default=0.0,
+    )
+    qe_boss_applicable_cl_only_dps = _optional_statbook_float(
+        damage_statbook,
+        'derived::edamage.boss_applicable_dps_cl_only',
+        default=chain_lightning_boss_dps,
+    )
+    edamage = _optional_statbook_float(damage_statbook, 'derived::edamage', default=0.0)
+    runtime_inputs = ScenarioRuntimeInputs.from_mapping(scenario_runtime_inputs)
+    explicit_boss_dps = _runtime_nonnegative_float(runtime_inputs, 'boss_applicable_damage_per_second')
+    explicit_boss_damage_factor = _runtime_nonnegative_float(runtime_inputs, 'boss_applicable_damage_factor')
+    decomposed_boss_damage_factor = _boss_wave_decomposed_edamage_bridge_factor(runtime_inputs)
+    if explicit_boss_dps is not None:
+        gc_boss_damage_per_second = float(explicit_boss_dps)
+        gc_boss_damage_source = 'runtime_input_boss_applicable_damage_per_second'
+    elif explicit_boss_damage_factor is not None and explicit_boss_damage_factor > 0.0:
+        gc_boss_damage_per_second = max(0.0, edamage) * float(explicit_boss_damage_factor)
+        gc_boss_damage_source = 'runtime_input_edamage_times_boss_applicable_damage_factor'
+    elif decomposed_boss_damage_factor is not None:
+        gc_boss_damage_per_second = max(0.0, edamage) * float(decomposed_boss_damage_factor)
+        gc_boss_damage_source = 'runtime_input_edamage_times_decomposed_boss_bridge'
+    else:
+        gc_boss_damage_per_second = qe_boss_applicable_cl_only_dps
+        gc_boss_damage_source = 'qe_derived_boss_applicable_dps_cl_only_fail_closed_default'
+    energy_net_duration_seconds = _optional_statbook_float(
+        statbook,
+        'state::cards.energy_net.duration_seconds',
+        default=0.0,
+    )
+    energy_net_mastery_multiplier = _optional_statbook_float(
+        statbook,
+        'state::cards.energy_net.mastery_effect',
+        default=1.0,
+    )
+    energy_net_damage_multiplier_duration_seconds = (
+        max(0.0, energy_net_duration_seconds) + 10.0
+        if energy_net_duration_seconds > 0.0 and energy_net_mastery_multiplier > 1.0
+        else 0.0
+    )
     attack_skip_seed = _boss_wave_skip_seed_from_qe_row(
         surface_id='state::tower.enemy_attack_level_skip_pct',
         statbook_row=_required_statbook_row(statbook, 'state::tower.enemy_attack_level_skip_pct'),
@@ -1038,6 +2504,28 @@ def _resolve_boss_wave_replacement_primitives(
         'free_attack_upgrade_chance': _required_statbook_fraction(statbook, 'state::tower.free_attack_upgrade_chance_pct'),
         'free_defense_upgrade_chance': _required_statbook_fraction(statbook, 'state::tower.free_defense_upgrade_chance_pct'),
         'free_utility_upgrade_chance': _required_statbook_fraction(statbook, 'state::tower.free_utility_upgrade_chance_pct'),
+        'tower_damage': _optional_statbook_float(statbook, 'state::tower.damage', default=0.0),
+        'tower_attack_speed': _optional_statbook_float(statbook, 'state::tower.attack_speed', default=0.0),
+        'tower_crit_chance_pct': _optional_statbook_float(statbook, 'state::tower.crit_chance_pct', default=0.0),
+        'tower_crit_multiplier': _optional_statbook_float(statbook, 'state::tower.crit_multiplier', default=1.0),
+        'tower_range_m': _optional_statbook_float(statbook, 'state::tower.range_m', default=0.0),
+        'tower_damage_per_meter_multiplier': _optional_statbook_float(statbook, 'state::tower.damage_per_meter_multiplier', default=0.0),
+        'tower_shockwave_size_m': _optional_statbook_float(statbook, 'state::tower.shockwave_size_m', default=0.0),
+        'tower_shockwave_interval_seconds': _optional_statbook_float(statbook, 'state::tower.shockwave_interval_seconds', default=0.0),
+        'tower_multishot_chance_pct': _optional_statbook_float(statbook, 'state::tower.multishot_chance_pct', default=0.0),
+        'tower_multishot_targets': _optional_statbook_float(statbook, 'state::tower.multishot_targets', default=0.0),
+        'tower_rapid_fire_chance_pct': _optional_statbook_float(statbook, 'state::tower.rapid_fire_chance_pct', default=0.0),
+        'tower_rapid_fire_duration_seconds': _optional_statbook_float(statbook, 'state::tower.rapid_fire_duration_seconds', default=0.0),
+        'tower_bounce_shot_chance_pct': _optional_statbook_float(statbook, 'state::tower.bounce_shot_chance_pct', default=0.0),
+        'tower_bounce_shot_targets': _optional_statbook_float(statbook, 'state::tower.bounce_shot_targets', default=0.0),
+        'tower_bounce_shot_range_m': _optional_statbook_float(statbook, 'state::tower.bounce_shot_range_m', default=0.0),
+        'tower_supercrit_chance_pct': _optional_statbook_float(statbook, 'state::tower.supercrit_chance_pct', default=0.0),
+        'tower_supercrit_multiplier': _optional_statbook_float(statbook, 'state::tower.supercrit_multiplier', default=1.0),
+        'tower_rend_armor_chance_pct': _optional_statbook_float(statbook, 'state::tower.rend_armor_chance_pct', default=0.0),
+        'tower_rend_armor_multiplier': _optional_statbook_float(statbook, 'state::tower.rend_armor_multiplier', default=1.0),
+        'tower_max_rend_multiplier': _optional_statbook_float(statbook, 'state::tower.max_rend_multiplier', default=1.0),
+        'edamage_attack_dissonance_restricted': _optional_statbook_float(statbook, 'derived::edamage.attack_dissonance_restricted', default=0.0),
+        'edamage_defense_dissonance_shockwave_restricted': _optional_statbook_float(statbook, 'derived::edamage.defense_dissonance_shockwave_restricted', default=0.0),
         'tower_hp': tower_hp,
         'tower_hp_qe_surface': tower_hp_qe_surface,
         'tower_regen': tower_regen,
@@ -1059,6 +2547,26 @@ def _resolve_boss_wave_replacement_primitives(
         'wall_thorns_level': float(wall_thorns_level),
         'wall_thorns_contact_damage_pct': wall_thorns_contact_damage_pct,
         'plasma_cannon_effect_pct': _required_statbook_float(statbook, 'state::cards.plasma_cannon.effect_pct'),
+        'chain_lightning_boss_damage_per_second': chain_lightning_boss_dps,
+        'qe_boss_applicable_cl_only_damage_per_second': qe_boss_applicable_cl_only_dps,
+        'edamage': edamage,
+        'boss_damage_state_mode': damage_state_mode,
+        'boss_damage_perks_enabled': 1.0 if damage_perks_enabled else 0.0,
+        'dissonance_attack_run_active': _optional_statbook_bool(statbook, 'support_surface::dissonance.attack_run_active'),
+        'dissonance_defense_run_active': _optional_statbook_bool(statbook, 'support_surface::dissonance.defense_run_active'),
+        'dissonance_utility_run_active': _optional_statbook_bool(statbook, 'support_surface::dissonance.utility_run_active'),
+        'dissonance_ultimate_weapons_run_active': _optional_statbook_bool(statbook, 'support_surface::dissonance.ultimate_weapons_run_active'),
+        'boss_applicable_damage_factor': float(explicit_boss_damage_factor or 0.0),
+        'boss_edamage_target_share': float(runtime_inputs.boss_edamage_target_share or 0.0),
+        'boss_edamage_cadence_uptime_factor': float(runtime_inputs.boss_edamage_cadence_uptime_factor or 0.0),
+        'boss_edamage_reliability_factor': float(runtime_inputs.boss_edamage_reliability_factor or 0.0),
+        'boss_edamage_semantic_normalizer': float(runtime_inputs.boss_edamage_semantic_normalizer or 0.0),
+        'boss_edamage_decomposed_bridge_factor': float(decomposed_boss_damage_factor or 0.0),
+        'gc_boss_damage_per_second': gc_boss_damage_per_second,
+        'gc_boss_damage_source': gc_boss_damage_source,
+        'energy_net_duration_seconds': energy_net_duration_seconds,
+        'energy_net_mastery_multiplier': energy_net_mastery_multiplier,
+        'energy_net_damage_multiplier_duration_seconds': energy_net_damage_multiplier_duration_seconds,
         'orbital_augment_electron_count': _optional_statbook_float(statbook, 'state::module.orbital_augment.electron_count', default=0.0),
         'primordial_collapse_bh_damage_reduction_pct': _optional_statbook_float(statbook, 'state::module.primordial_collapse.bh_damage_reduction_pct', default=0.0),
         'black_hole_duration_seconds': black_hole_duration_seconds,
@@ -1066,6 +2574,9 @@ def _resolve_boss_wave_replacement_primitives(
         'chrono_field_duration_seconds': _required_statbook_float(statbook, 'state::uw.chrono_field.duration_seconds'),
         'chrono_field_cooldown_seconds': _required_statbook_float(statbook, 'state::uw.chrono_field.cooldown_seconds'),
         'chrono_field_damage_reduction_pct': _required_statbook_float(statbook, 'state::uw.chrono_field.damage_reduction_pct'),
+        'chrono_field_slow_pct': _required_statbook_float(statbook, 'state::uw.chrono_field.slow_pct'),
+        'slow_aura_enemy_speed_pct': _optional_statbook_float(statbook, 'state::cards.slow_aura.enemy_speed_pct', default=0.0),
+        'flame_bot_owned': _optional_statbook_bool(statbook, 'state::bot.flame.owned', default=False),
         'flame_bot_damage_reduction_pct': _optional_statbook_float(statbook, 'state::bot.flame.damage_reduction_pct', default=0.0),
         'flame_bot_cooldown_seconds': _optional_statbook_float(statbook, 'state::bot.flame.cooldown_seconds', default=0.0),
         'flame_bot_range_m': _optional_statbook_float(statbook, 'state::bot.flame.range_m', default=0.0),
@@ -1135,6 +2646,14 @@ def _boss_wave_skip_seed_from_qe_row(
     contributors = tuple(dict(row or {}) for row in (getattr(statbook_row, 'contributors', None) or ()))
     if not contributors:
         raise ValueError(f"Boss Waves skip surface {surface_id!r} is missing contributor metadata")
+    if any(str(contributor.get('contributor_id') or '').startswith('dissonance_restriction_override::') for contributor in contributors):
+        return {
+            'chance_fraction': 0.0,
+            'static_percent_points': 0.0,
+            'multiplier': 1.0,
+            'workshop_track': '',
+            'workshop_baseline_level': 0,
+        }
     workshop_track = _BOSS_WAVE_SKIP_WORKSHOP_TRACK_BY_SURFACE.get(surface_id)
     if not workshop_track:
         raise ValueError(f"Boss Waves skip surface {surface_id!r} has no workshop-track mapping")
@@ -1463,6 +2982,48 @@ def _boss_wave_primitive_semantics_ledger(
                 meaning='QE-published Plasma Cannon opening reduction percent used by v21 event-only TTK',
                 owner='QE publishes; evaluator consumes combat input',
             ),
+            'derived::edamage.uw.chain_lightning_dps': _primitive_ledger_entry(
+                source='qe.publication.publish_query_surfaces(derived::edamage.uw.chain_lightning_dps)',
+                value=float(primitives.get('chain_lightning_boss_damage_per_second') or 0.0),
+                meaning=f"QE-published Chain Lightning DPS support surface resolved for Boss Waves damage state_mode={primitives.get('boss_damage_state_mode')} perks_enabled={bool(primitives.get('boss_damage_perks_enabled'))}. Boss Waves consumes the QE-owned CL-only boss-applicable lane derived from this surface when no explicit boss-applicable eDamage bridge is supplied.",
+                owner='QE publishes derived CL DPS; QE also publishes the fail-closed CL-only boss-applicable lane consumed by Boss Waves',
+            ),
+            'derived::edamage.boss_applicable_dps_cl_only': _primitive_ledger_entry(
+                source='qe.publication.publish_query_surfaces(derived::edamage.boss_applicable_dps_cl_only)',
+                value=float(primitives.get('qe_boss_applicable_cl_only_damage_per_second') or 0.0),
+                meaning=f"QE-published fail-closed Boss Waves GC damage lane resolved for state_mode={primitives.get('boss_damage_state_mode')} perks_enabled={bool(primitives.get('boss_damage_perks_enabled'))}. This includes confirmed Chain Lightning continuous DPS only and remains below full eDamage-to-boss semantics.",
+                owner='QE owns the CL-only boss-applicable support lane; app selects explicit runtime bridges above it when provided',
+            ),
+            'derived::edamage': _primitive_ledger_entry(
+                source='qe.publication.publish_query_surfaces(derived::edamage)',
+                value=float(primitives.get('edamage') or 0.0),
+                meaning=f"QE-published eDamage objective surface resolved for Boss Waves damage state_mode={primitives.get('boss_damage_state_mode')} perks_enabled={bool(primitives.get('boss_damage_perks_enabled'))}. It is not converted into boss DPS unless the caller supplies a single boss_applicable_damage_factor or the complete decomposed eDamage boss-bridge factor set.",
+                owner='QE publishes eDamage; scenario runtime input owns any eDamage-to-boss applicability factors until a source-owned intrinsic bridge exists',
+            ),
+            'state::combat.gc_boss_damage_per_second': _primitive_ledger_entry(
+                source=str(primitives.get('gc_boss_damage_source') or ''),
+                value=float(primitives.get('gc_boss_damage_per_second') or 0.0),
+                meaning='Final continuous boss damage used by the GC/pre-contact lane. Defaults to the QE-owned CL-only boss-applicable DPS lane and can be explicitly overridden, bridged from eDamage by a single scenario factor, or bridged from eDamage by the complete decomposed scenario factor set.',
+                owner='app selects explicit runtime scenario input or QE-owned fail-closed boss-applicable support surface; evaluator integrates the final continuous damage value event-by-event',
+            ),
+            'state::combat.boss_edamage_decomposed_bridge_factor': _primitive_ledger_entry(
+                source='scenario_runtime_inputs.boss_edamage_target_share * boss_edamage_cadence_uptime_factor * boss_edamage_reliability_factor * boss_edamage_semantic_normalizer',
+                value=float(primitives.get('boss_edamage_decomposed_bridge_factor') or 0.0),
+                meaning='Explicit decomposed eDamage-to-boss bridge factor. The simulator requires all component factors before using this path so missing assumptions do not silently default to 1.0.',
+                owner='manual_or_explicit_runtime_input',
+            ),
+            'state::cards.energy_net.duration_seconds': _primitive_ledger_entry(
+                source='qe.routing.resolve_checkpoint_surfaces(state::cards.energy_net.duration_seconds)',
+                value=float(primitives.get('energy_net_duration_seconds') or 0.0),
+                meaning='QE-published Energy Net base duration used to time the Energy Net mastery boss-damage multiplier window.',
+                owner='QE publishes card duration; app assembles duration+mastery combat primitive; evaluator consumes generic continuous-damage multiplier timing',
+            ),
+            'state::cards.energy_net.mastery_effect': _primitive_ledger_entry(
+                source='qe.routing.resolve_checkpoint_surfaces(state::cards.energy_net.mastery_effect)',
+                value=float(primitives.get('energy_net_mastery_multiplier') or 1.0),
+                meaning='QE-published Energy Net mastery boss damage multiplier. The app applies it only for Energy Net duration plus the mastery 10s after-window.',
+                owner='QE publishes card mastery effect; app assembles generic continuous-damage multiplier primitive; evaluator consumes it without card-specific branching',
+            ),
             'state::module.orbital_augment.electron_count': _primitive_ledger_entry(
                 source='qe.routing.resolve_checkpoint_surfaces(state::module.orbital_augment.electron_count)',
                 value=float(primitives.get('orbital_augment_electron_count') or 0.0),
@@ -1505,11 +3066,17 @@ def _boss_wave_primitive_semantics_ledger(
                 meaning='Effective current-account Chrono Field damage reduction percent, used as a separate DR source after defense',
                 owner='QE publishes effective UW timing primitive; app assembles named primitive; evaluator consumes multiplicative DR lane input',
             ),
+            'state::bot.flame.owned': _primitive_ledger_entry(
+                source='qe.routing.resolve_checkpoint_surfaces(state::bot.flame.owned)',
+                value=1.0 if primitives.get('flame_bot_owned') else 0.0,
+                meaning='_IDS-owned Flame Bot unlock flag. When false, QE gates Flame Bot track primitives to zero before Boss Waves consumes them.',
+                owner='input parses _IDS bot unlock flag; QE publishes owned state and gated bot tracks; app consumes the resolved state',
+            ),
             'state::bot.flame.damage_reduction_pct': _primitive_ledger_entry(
                 source='qe.routing.resolve_checkpoint_surfaces(state::bot.flame.damage_reduction_pct)',
                 value=float(primitives.get('flame_bot_damage_reduction_pct') or 0.0),
-                meaning='QE-published Flame Bot DR track value. Boss Waves combines this with a manual Flame Bot boss-hit chance runtime surface for average expected DR, or with explicit duration/cooldown if those runtime primitives are supplied.',
-                owner='QE publishes bot DR track; app assembles average or timed DR semantics from explicit runtime inputs',
+                meaning='QE-published Flame Bot DR track value after the _IDS bot owned flag is applied. Boss Waves combines this with a manual Flame Bot boss-hit chance runtime surface for average expected DR, or with explicit duration/cooldown if those runtime primitives are supplied.',
+                owner='QE publishes bot owned flag and gated DR track; app assembles average or timed DR semantics from explicit runtime inputs',
             ),
             'state::bot.flame.cooldown_seconds': _primitive_ledger_entry(
                 source='qe.routing.resolve_checkpoint_surfaces(state::bot.flame.cooldown_seconds)',
@@ -1662,6 +3229,18 @@ def _optional_statbook_float(statbook, surface_id: str, *, default: float = 0.0)
     return float(value)
 
 
+def _optional_statbook_bool(statbook, surface_id: str, *, default: bool = False) -> bool:
+    row = (getattr(statbook, 'rows', {}) or {}).get(surface_id)
+    if row is None or str(getattr(row, 'status', '') or '').strip() != 'resolved':
+        return bool(default)
+    value = getattr(row, 'final_value', None)
+    if value is None:
+        return bool(default)
+    if isinstance(value, str):
+        return value.strip().lower() == 'true'
+    return bool(value)
+
+
 def _required_statbook_row(statbook, surface_id: str):
     row = (getattr(statbook, 'rows', {}) or {}).get(surface_id)
     if row is None:
@@ -1682,6 +3261,15 @@ def _replacement_operator_row_from_overlay(
 ) -> dict[str, object]:
     summary = overlay.summary_combat
     boss_damage = overlay.boss_damage_breakdown
+    boss_time_to_contact = combat.boss_time_to_contact_seconds
+    boss_ttk = summary.ttk_seconds
+    boss_killed_before_contact = (
+        boss_time_to_contact is not None
+        and boss_ttk is not None
+        and float(boss_ttk) <= float(boss_time_to_contact)
+    )
+    heat = dict(getattr(overlay, 'heat', {}) or {})
+    tower_damage_decay_multiplier = float(heat.get('tower_damage_decay_multiplier') or 1.0)
     return {
         'display_wave': overlay.display_wave,
         'attack_wave': overlay.effective_attack_wave,
@@ -1690,18 +3278,21 @@ def _replacement_operator_row_from_overlay(
         'boss_health': overlay.enemy_health,
         'wall_pre_fort_hp': overlay.final_wall_hp,
         'wall_regen': overlay.final_wall_regen,
-        'tower_damage_per_second': None,
+        'tower_damage_per_second': float(combat.continuous_boss_damage_per_second) * tower_damage_decay_multiplier,
         'effective_damage_reduction_pct': overlay.damage_reduction_pct,
         'boss_ttk_seconds': summary.ttk_seconds,
+        'boss_killed_before_contact': boss_killed_before_contact,
         'boss_plasma_cannon_damage_to_boss_pct': boss_damage.plasma_cannon_damage_pct,
         'boss_orb_damage_to_boss_pct': boss_damage.orb_damage_pct,
         'boss_electron_damage_to_boss_pct': boss_damage.electron_damage_pct,
+        'boss_continuous_damage_to_boss_pct': boss_damage.continuous_damage_pct,
         'boss_wall_thorns_damage_to_boss_pct': boss_damage.thorns_damage_pct,
         'boss_expected_wall_thorns_damage_from_hits_pct': boss_damage.thorns_expected_damage_pct_from_hits,
         'boss_wall_thorns_contact_kill_seconds': summary.contact_thorns_kill_seconds,
         'boss_time_to_contact_seconds': combat.boss_time_to_contact_seconds,
         'boss_hit_interval_seconds': combat.boss_hit_interval_seconds,
         'incoming_damage_multiplier': incoming_damage_multiplier,
+        'overheat_effects': heat,
         'boss_hits_taken': summary.boss_hits_taken,
         'boss_hits_to_player': summary.boss_hits_taken,
         'boss_wall_thorns_hits': boss_damage.thorns_hits,
@@ -1709,6 +3300,11 @@ def _replacement_operator_row_from_overlay(
         'boss_survival_margin_hp': summary.survival_margin_hp,
         'wall_hp': summary.wall_hp,
         'wall_regen_gained_hp': summary.wall_regen_gained_hp,
+        'contact_envelope_total_damage_taken': summary.contact_envelope_total_damage_taken,
+        'contact_envelope_survival_margin_hp': summary.contact_envelope_survival_margin_hp,
+        'contact_envelope_wall_regen_gained_hp': summary.contact_envelope_wall_regen_gained_hp,
+        'contact_envelope_survives_boss': summary.contact_envelope_survives,
+        'contact_envelope_fail_reason': summary.contact_envelope_fail_reason,
         'survives_boss': summary.survives,
         'fail_reason': summary.fail_reason,
         'replacement_source': active_source,
@@ -1720,28 +3316,105 @@ def _replacement_operator_row_from_overlay(
 
 def _replacement_summary_from_operator_rows(
     operator_rows: list[dict[str, object]],
+    *,
+    perk_policy_preset: str | None = None,
+    terminal_pressure_limits: Mapping[str, int] | None = None,
 ) -> dict[str, object]:
-    surviving_waves = [
-        int(row.get('display_wave') or 0)
-        for row in operator_rows
-        if bool(row.get('survives_boss'))
-    ]
-    failed_waves = [
-        int(row.get('display_wave') or 0)
-        for row in operator_rows
-        if not bool(row.get('survives_boss'))
-    ]
-    max_surviving = max(surviving_waves) if surviving_waves else 0
-    first_failed = min(failed_waves) if failed_waves else 0
+    hit_by_hit = _summary_wave_fields(operator_rows, survive_field='survives_boss')
+    contact_envelope = _summary_wave_fields(operator_rows, survive_field='contact_envelope_survives_boss')
+    gc_pre_contact = _summary_wave_fields(operator_rows, survive_field='boss_killed_before_contact')
+    loadout_type = _boss_wave_loadout_type(perk_policy_preset)
+    selected = hit_by_hit
+    selected_model = 'unified_hit_by_hit_boss_survival'
     terminal = int(operator_rows[-1].get('display_wave') or 0) if operator_rows else 0
-    return {
-        'max_wave': max_surviving,
-        'max_surviving_wave': max_surviving,
-        'first_failed_wave': first_failed,
+    summary = {
+        'max_wave': hit_by_hit['last_contiguous_surviving_wave'],
+        'max_surviving_wave': hit_by_hit['last_contiguous_surviving_wave'],
+        'selected_max_wave': selected['last_contiguous_surviving_wave'],
+        'selected_first_failed_wave': selected['first_failed_wave'],
+        'selected_max_independent_wave': selected['max_independent_surviving_wave'],
+        'selected_model': selected_model,
+        'selected_loadout_type': loadout_type,
+        'selected_policy_preset': str(perk_policy_preset or ''),
+        'last_contiguous_surviving_wave': hit_by_hit['last_contiguous_surviving_wave'],
+        'max_independent_surviving_wave': hit_by_hit['max_independent_surviving_wave'],
+        'first_failed_wave': hit_by_hit['first_failed_wave'],
+        'hit_by_hit_max_wave': hit_by_hit['last_contiguous_surviving_wave'],
+        'hit_by_hit_first_failed_wave': hit_by_hit['first_failed_wave'],
+        'contact_envelope_max_wave': contact_envelope['last_contiguous_surviving_wave'],
+        'contact_envelope_first_failed_wave': contact_envelope['first_failed_wave'],
+        'contact_envelope_max_independent_surviving_wave': contact_envelope['max_independent_surviving_wave'],
+        'contact_envelope_model': 'wall_pool_plus_contact_window_regen_vs_first_boss_hit',
+        'gc_pre_contact_max_wave': gc_pre_contact['last_contiguous_surviving_wave'],
+        'gc_pre_contact_first_failed_wave': gc_pre_contact['first_failed_wave'],
+        'gc_pre_contact_max_independent_wave': gc_pre_contact['max_independent_surviving_wave'],
+        'gc_pre_contact_model': 'boss_ttk_seconds_less_than_or_equal_to_boss_time_to_contact_seconds',
         'row_count': len(operator_rows),
         'terminal_display_wave': terminal,
-        'survives_through_end': bool(operator_rows) and first_failed == 0,
+        'survives_through_end': bool(operator_rows) and hit_by_hit['first_failed_wave'] == 0,
+        'contact_envelope_survives_through_end': bool(operator_rows) and contact_envelope['first_failed_wave'] == 0,
+        'gc_pre_contact_survives_through_end': bool(operator_rows) and gc_pre_contact['first_failed_wave'] == 0,
         'result_consistent_with_rows': True,
+    }
+    _apply_terminal_pressure_limits(summary, terminal_pressure_limits or {})
+    return summary
+
+
+def _apply_terminal_pressure_limits(summary: dict[str, object], terminal_pressure_limits: Mapping[str, int]) -> None:
+    normalized: dict[str, int] = {
+        str(cause): int(max_wave)
+        for cause, max_wave in terminal_pressure_limits.items()
+        if int(max_wave or 0) > 0
+    }
+    summary['terminal_pressure_limits'] = dict(sorted(normalized.items()))
+    summary['terminal_pressure_limiter'] = None
+    summary['terminal_pressure_limited'] = False
+    if not normalized:
+        return
+    limiting_cause, limiting_wave = min(normalized.items(), key=lambda item: item[1])
+    selected_wave = int(summary.get('selected_max_wave') or 0)
+    if selected_wave <= 0 or limiting_wave >= selected_wave:
+        return
+    previous_model = str(summary.get('selected_model') or '')
+    summary.update(
+        {
+            'selected_max_wave': int(limiting_wave),
+            'selected_first_failed_wave': int(limiting_wave) + 1,
+            'selected_max_independent_wave': min(
+                int(summary.get('selected_max_independent_wave') or limiting_wave),
+                int(limiting_wave),
+            ),
+            'selected_model': f'{previous_model}_limited_by_{limiting_cause}',
+            'terminal_pressure_limiter': limiting_cause,
+            'terminal_pressure_limited': True,
+        }
+    )
+
+
+def _summary_wave_fields(
+    operator_rows: list[dict[str, object]],
+    *,
+    survive_field: str,
+) -> dict[str, int]:
+    first_failed = 0
+    last_contiguous_surviving = 0
+    independent_surviving_waves: list[int] = []
+    reached_failure = False
+    for row in operator_rows:
+        wave = int(row.get('display_wave') or 0)
+        survives = bool(row.get(survive_field))
+        if survives:
+            independent_surviving_waves.append(wave)
+            if not reached_failure:
+                last_contiguous_surviving = wave
+        elif not reached_failure:
+            first_failed = wave
+            reached_failure = True
+    max_independent_surviving = max(independent_surviving_waves) if independent_surviving_waves else 0
+    return {
+        'last_contiguous_surviving_wave': last_contiguous_surviving,
+        'max_independent_surviving_wave': max_independent_surviving,
+        'first_failed_wave': first_failed,
     }
 
 
@@ -1777,7 +3450,22 @@ def _build_replacement_diagnostics(
     milestone_alignment = _boss_wave_milestone_alignment(
         account_state=account_state,
         tier_number=int(config['tier_number']),
+        dissonance_run_category=str(config.get('dissonance_run_category') or 'none'),
         summary=summary,
+    )
+    certification_runtime_inputs = ScenarioRuntimeInputs.from_mapping(scenario_runtime_inputs)
+    certification_gc_boss_damage_source = str((primitive_inputs or {}).get('gc_boss_damage_source') or '')
+    certification_payload = _boss_wave_model_certification_payload(
+        contact_time_source=dict(config.get('scenario_runtime_input_sources') or {}).get(
+            'boss_time_to_contact_seconds'
+        ),
+        runtime_inputs=certification_runtime_inputs,
+        gc_boss_damage_source=certification_gc_boss_damage_source,
+        damage_health_decay_required=str(config.get('mode_id') or '') == 'tournament',
+        gc_boss_applicable_damage_required=_boss_wave_selected_model_requires_full_gc_bridge(
+            selected_model=summary.get('selected_model'),
+            gc_boss_damage_source=certification_gc_boss_damage_source,
+        ),
     )
     return {
         'preset_name': preset_name,
@@ -1791,6 +3479,10 @@ def _build_replacement_diagnostics(
         'perk_state': str(config.get('perk_state') or ''),
         'requested_perk_mode': str(config.get('requested_perk_mode') or ''),
         'requested_perk_state': str(config.get('requested_perk_state') or ''),
+        'requested_perk_policy_preset': str(config.get('requested_perk_policy_preset') or ''),
+        'perk_policy_preset': str(config.get('perk_policy_preset') or ''),
+        'loadout_profile_preset': str(config.get('loadout_profile_preset') or ''),
+        'selected_loadout_type': _boss_wave_loadout_type(str(config.get('perk_policy_preset') or '')),
         'perk_contract_owner': str(config.get('perk_contract_owner') or ''),
         'perk_mode_source': str(config.get('perk_mode_source') or ''),
         'perk_state_source': str(config.get('perk_state_source') or ''),
@@ -1807,6 +3499,22 @@ def _build_replacement_diagnostics(
         'context_status': summary.get('status') or 'complete',
         'context_error': summary.get('failure_kind'),
         'context_error_message': summary.get('failure_message'),
+        'post_failure_truncation_kind': summary.get('post_failure_truncation_kind'),
+        'post_failure_truncation_message': summary.get('post_failure_truncation_message'),
+        'terminal_pressure_limits': dict(summary.get('terminal_pressure_limits') or {}),
+        'terminal_pressure_limiter': summary.get('terminal_pressure_limiter'),
+        'terminal_pressure_limited': bool(summary.get('terminal_pressure_limited')),
+        'model_scope': 'boss_contact_survivability',
+        'not_full_max_wave_model': True,
+        'model_certification': certification_payload,
+        'unsupported_terminal_pressures': [],
+        'dissonance_run_category': str(config.get('dissonance_run_category') or 'none'),
+        'dissonance_run_label': _BOSS_WAVE_DISSONANCE_RUN_LABELS[
+            _normalize_boss_wave_dissonance_run_category(config.get('dissonance_run_category') or 'none')
+        ],
+        'dissonance_run_mask': dict((primitive_semantics_ledger or {}).get('dissonance_run_mask') or {}),
+        'pbh_explicit_uptime_supported': True,
+        'pbh_explicit_uptime_mode': 'active_when_runtime_input_present_else_duration_over_cooldown',
         'actual_boss_interval_waves': int(config['boss_interval_waves']),
         'checkpoint_every_bosses': int(config['checkpoint_every_bosses']),
         'checkpoint_stride_waves': int(config['boss_interval_waves']) * int(config['checkpoint_every_bosses']),
@@ -1816,6 +3524,32 @@ def _build_replacement_diagnostics(
         'checkpoint_mode': 'actual_boss_cadence_with_sampling',
         'stop_on_failure': bool(stop_on_failure),
         'scenario_runtime_inputs': dict(scenario_runtime_inputs),
+        'scenario_runtime_input_sources': dict(config.get('scenario_runtime_input_sources') or {}),
+        'contact_time_contract': {
+            'boss_time_to_contact_seconds': {
+                'value': (primitive_inputs or {}).get('boss_time_to_contact_seconds'),
+                'source': (primitive_inputs or {}).get('boss_time_to_contact_source')
+                or dict(config.get('scenario_runtime_input_sources') or {}).get(
+                    'boss_time_to_contact_seconds',
+                    'not_supplied',
+                ),
+                'ownership': 'runtime_input_override_or_simulator_derived_from_base_travel_and_slow_effects',
+                'derived_by_simulator': (primitive_inputs or {}).get('boss_time_to_contact_source')
+                != 'runtime_input_boss_time_to_contact_seconds',
+                'required_for_self_closing_boss_waves': True,
+                'base_seconds': (primitive_inputs or {}).get('boss_time_to_contact_base_seconds'),
+                'chrono_field_average_slow_fraction': (primitive_inputs or {}).get(
+                    'boss_time_to_contact_chrono_field_average_slow_fraction'
+                ),
+                'slow_aura_fraction': (primitive_inputs or {}).get('boss_time_to_contact_slow_aura_fraction'),
+                'speed_remaining_fraction': (primitive_inputs or {}).get(
+                    'boss_time_to_contact_speed_remaining_fraction'
+                ),
+                'energy_net_hold_seconds': (primitive_inputs or {}).get(
+                    'boss_time_to_contact_energy_net_hold_seconds'
+                ),
+            },
+        },
         'scenario_surfaces': dict(config.get('scenario_surfaces') or {}),
         'execution_mode': 'staged_replacement',
         'checkpoint_resolution_mode': 'replacement_table1_table2_overlay',
@@ -1834,17 +3568,20 @@ def _build_replacement_diagnostics(
             'run_plan_owner': 'qe.run_plan',
             'combat_owner': 'simulators.evaluator_kernel',
             'contract_version': 'boss_waves_replacement_v1',
+            'model_scope': 'boss_contact_survivability',
+            'not_full_max_wave_model': True,
+            'model_certification': certification_payload,
             'table1_source_basis': 'app_pipeline_qe_checkpoint_surfaces_to_run_plan',
             'table2_source_basis': 'replacement_scenario_overlay',
             'survivability_derivation': 'baseline_qe_primitives_rederived_per_table1_row_from_workshop_levels_then_finalized_by_table2',
             'perk_state_derivation': 'table1_compiled_perk_state_per_checkpoint_from_runtime_policy_projection',
             'death_wave_health_multiplier_applies_to': 'table1_row_evolved_tower_hp_then_wall_hp_not_wall_regen_or_enemy_health',
-            'boss_ttk_contract': 'v21_event_only',
-            'boss_kill_sources': ['plasma_cannon', 'orbs', 'electrons', 'thorns_contact'],
+            'boss_ttk_contract': 'v21_events_plus_gc_boss_continuous_damage',
+            'boss_kill_sources': ['plasma_cannon', 'orbs', 'electrons', 'gc_boss_continuous_damage', 'thorns_contact'],
             'contact_resolution_sources': ['wall_thorns_contact'],
             'thorns_contact_source': 'wall_thorns_contact_damage_pct_derived_from_tower_thorns_and_wall_thorns_lab',
             'wall_thorns_repeated_hit_multiplier': 'Sharp Fortitude primary armor adds +1% wall-thorns damage taken per subsequent contact hit',
-            'boss_survival_model': 'max_waves_compares_v21_ttk_against_hit_by_hit_wall_ttd_with_between_hit_regen_only',
+            'boss_survival_model': 'max_waves_compares_v21_plus_gc_boss_ttk_against_hit_by_hit_wall_ttd_with_between_hit_regen_only',
             'damage_reduction_perk_sources': [
                 'PERK_DEFENSE_PERCENT_4_00:tower_defense_pct_points_add',
                 'PERK_X1_15_DEFENSE_ABSOLUTE:tower_defense_absolute_multiplier',
@@ -1853,6 +3590,8 @@ def _build_replacement_diagnostics(
             ],
             'timed_dr_perk_sources': ['PERK_BLACK_HOLE_DURATION_12_0S:black_hole_duration_seconds_add', 'PERK_CHRONO_FIELD_DURATION_5S:chrono_field_duration_seconds_add'],
             'perk_contract_owner': str(config.get('perk_contract_owner') or ''),
+            'perk_policy_preset': str(config.get('perk_policy_preset') or ''),
+            'loadout_profile_preset': str(config.get('loadout_profile_preset') or ''),
             'perk_mode_source': str(config.get('perk_mode_source') or ''),
             'perk_state_source': str(config.get('perk_state_source') or ''),
             'perk_request_resolution': str(config.get('perk_request_resolution') or ''),
@@ -1862,12 +3601,16 @@ def _build_replacement_diagnostics(
             'timed_dr_sources': list(
                 ((primitive_semantics_ledger or {}).get('timed_dr_semantic_contract') or {}).get('sources', {}).keys()
             ),
-            'continuous_tower_dps_included': False,
+            'continuous_tower_dps_included': True,
+            'selected_max_wave_model': summary.get('selected_model'),
+            'dissonance_run_category': str(config.get('dissonance_run_category') or 'none'),
+            'dissonance_run_mask_owner': 'kb/global-rules/contracts/dissonant-run-restrictions.yaml via qe.kb_surfaces; app.pipeline applies the loaded mask before qe.run_plan Table 1',
+            'gc_pre_contact_model': summary.get('gc_pre_contact_model'),
             'lane_order': lane_order,
             'summary_lane_id': 'avg',
             'field_map_artifact': str(BOSS_WAVE_FIELD_MAP_PATH.relative_to(ROOT)),
             'intentional_semantic_differences': {
-                'boss_ttk': 'replacement uses v21 event-only kill sources and excludes continuous tower/projectile DPS',
+                'boss_ttk': 'replacement uses v21 boss-event kill sources plus QE-owned Chain Lightning continuous boss DPS; generic projectile DPS remains excluded until KB/QE-owned',
             },
         },
         'replacement_primitive_inputs': {
@@ -1891,6 +3634,8 @@ def _build_replacement_diagnostics(
             'first_operator_handle_id': first_row.get('operator_handle_id'),
             'first_lane_handle_ids': dict(first_row.get('lane_handle_ids') or {}),
             'max_surviving_wave': int(summary.get('max_surviving_wave') or 0),
+            'last_contiguous_surviving_wave': int(summary.get('last_contiguous_surviving_wave') or 0),
+            'max_independent_surviving_wave': int(summary.get('max_independent_surviving_wave') or 0),
             'first_failed_wave': int(summary.get('first_failed_wave') or 0),
             'execution_status': summary.get('status') or 'complete',
             'failure_kind': summary.get('failure_kind'),
@@ -1899,21 +3644,54 @@ def _build_replacement_diagnostics(
     }
 
 
-def _boss_wave_milestone_alignment(*, account_state, tier_number: int, summary: dict[str, object]) -> dict[str, object]:
+def _boss_wave_milestone_alignment(
+    *,
+    account_state,
+    tier_number: int,
+    dissonance_run_category: str = 'none',
+    summary: dict[str, object],
+) -> dict[str, object]:
     tier_label = f'Tier {int(tier_number)}'
+    category = _normalize_boss_wave_dissonance_run_category(dissonance_run_category)
     raw_reference = (getattr(account_state, 'tier_progression_waves', {}) or {}).get(tier_label)
     reference_wave = _extract_optional_wave_number(raw_reference)
-    calculated_wave = int(summary.get('max_surviving_wave') or summary.get('max_wave') or 0)
+    dissonance_pbs = dict((getattr(account_state, 'dissonance_pbs_by_tier', {}) or {}).get(tier_label) or {})
+    dissonance_pb_reference_wave = (
+        _extract_optional_wave_number(dissonance_pbs.get(category))
+        if category != 'none'
+        else None
+    )
+    active_reference_kind = 'ids_milestone_wave' if category == 'none' else 'ids_dissonant_pb_wave'
+    active_reference_source = (
+        'IDS::Player & Stuff.tier_progression_waves'
+        if category == 'none'
+        else 'IDS::Player & Stuff.dissonance_pbs_by_tier'
+    )
+    active_reference_wave = reference_wave if category == 'none' else dissonance_pb_reference_wave
+    selected_wave = summary.get('selected_max_wave')
+    calculated_wave = (
+        int(selected_wave)
+        if selected_wave is not None
+        else int(summary.get('max_surviving_wave') or summary.get('max_wave') or 0)
+    )
     out: dict[str, object] = {
         'source': 'IDS::Player & Stuff.tier_progression_waves',
         'tier_column': tier_label,
+        'dissonance_run_category': category,
         'reference_wave': reference_wave,
+        'dissonance_pb_source': 'IDS::Player & Stuff.dissonance_pbs_by_tier',
+        'dissonance_pb_reference_wave': dissonance_pb_reference_wave,
+        'active_reference_kind': active_reference_kind,
+        'active_reference_source': active_reference_source,
+        'active_reference_wave': active_reference_wave,
         'calculated_max_surviving_wave': calculated_wave,
-        'comparison_status': 'no_ids_milestone_reference',
+        'calculated_selected_max_wave': calculated_wave,
+        'selected_model': summary.get('selected_model'),
+        'comparison_status': f'no_{active_reference_kind}',
     }
-    if reference_wave is None or reference_wave <= 0:
+    if active_reference_wave is None or active_reference_wave <= 0:
         return out
-    delta = calculated_wave - int(reference_wave)
+    delta = calculated_wave - int(active_reference_wave)
     out.update(
         {
             'comparison_status': (
@@ -1923,7 +3701,7 @@ def _boss_wave_milestone_alignment(*, account_state, tier_number: int, summary: 
             ),
             'delta_waves': delta,
             'abs_delta_waves': abs(delta),
-            'calculated_to_reference_ratio': calculated_wave / float(reference_wave),
+            'calculated_to_reference_ratio': calculated_wave / float(active_reference_wave),
         }
     )
     return out
@@ -1950,9 +3728,11 @@ def _boss_wave_debug_ledger(operator_rows: list[dict[str, object]]) -> dict[str,
                 'boss_hp': row.get('boss_health'),
                 'boss_attack': row.get('boss_attack'),
                 'ttk_seconds': row.get('boss_ttk_seconds'),
+                'boss_killed_before_contact': bool(row.get('boss_killed_before_contact')),
                 'plasma_cannon_damage_to_boss_pct': row.get('boss_plasma_cannon_damage_to_boss_pct'),
                 'orb_damage_to_boss_pct': row.get('boss_orb_damage_to_boss_pct'),
                 'electron_damage_to_boss_pct': row.get('boss_electron_damage_to_boss_pct'),
+                'continuous_damage_to_boss_pct': row.get('boss_continuous_damage_to_boss_pct'),
                 'wall_thorns_damage_to_boss_pct': row.get('boss_wall_thorns_damage_to_boss_pct'),
                 'expected_wall_thorns_damage_from_hits_pct': row.get('boss_expected_wall_thorns_damage_from_hits_pct'),
                 'wall_thorns_contact_kill_seconds': row.get('boss_wall_thorns_contact_kill_seconds'),
@@ -1968,6 +3748,10 @@ def _boss_wave_debug_ledger(operator_rows: list[dict[str, object]]) -> dict[str,
                 'total_damage_taken': row.get('boss_total_damage_taken'),
                 'survival_margin': row.get('boss_survival_margin_hp'),
                 'survives': bool(row.get('survives_boss')),
+                'contact_envelope_regen_gained': row.get('contact_envelope_wall_regen_gained_hp'),
+                'contact_envelope_damage_taken': row.get('contact_envelope_total_damage_taken'),
+                'contact_envelope_survival_margin': row.get('contact_envelope_survival_margin_hp'),
+                'contact_envelope_survives': bool(row.get('contact_envelope_survives_boss')),
                 'fail_reason': row.get('fail_reason'),
             }
         )
@@ -2152,6 +3936,24 @@ def _runtime_nonnegative_float(runtime_inputs: ScenarioRuntimeInputs, name: str)
         return None
     value = float(raw_value)
     return value if value >= 0.0 else None
+
+
+def _boss_wave_terminal_pressure_limits(runtime_inputs: ScenarioRuntimeInputs) -> dict[str, int]:
+    fields = {
+        'fleet_non_boss_pressure': 'fleet_terminal_max_wave',
+        'elite_non_boss_pressure': 'elite_terminal_max_wave',
+        'protector_non_boss_pressure': 'protector_terminal_max_wave',
+        'armored_non_boss_pressure': 'armored_terminal_max_wave',
+    }
+    limits: dict[str, int] = {}
+    for cause, field_name in fields.items():
+        raw_value = getattr(runtime_inputs, field_name)
+        if raw_value in (None, ''):
+            continue
+        value = int(float(raw_value))
+        if value > 0:
+            limits[cause] = value
+    return limits
 
 
 def _positive_or_none(raw_value: object) -> float | None:
@@ -2502,13 +4304,21 @@ def _run_stats_scenario_config(account_state, *, preset_name: str, tier_number: 
     return ScenarioConfig(mode_id='farming', tier=int(tier))
 
 
-def _run_stats_scenario_context(scenario_config) -> dict[str, object]:
-    return {
+def _run_stats_scenario_context(
+    scenario_config,
+    *,
+    dissonance_run_category: object | None = None,
+) -> dict[str, object]:
+    context = {
         'mode_id': scenario_config.mode_id,
         'tier': scenario_config.tier,
         'league': scenario_config.league,
         'tournament_wave': scenario_config.tournament_wave,
     }
+    category = _normalize_boss_wave_dissonance_run_category(dissonance_run_category or 'none')
+    if category != 'none':
+        context['dissonance_run_category'] = category
+    return context
 
 
 def _run_stats_perk_state(account_state, *, preset_name: str, perk_state: str, perk_mode: str, state_mode: str) -> tuple[str | None, bool]:
@@ -2683,10 +4493,81 @@ def _resolve_manual_banned_perks(perk_policy: dict) -> list[str]:
     return _resolve_policy_banned_perk_names(perk_policy or {})
 
 
+def _perk_policy_presets(perk_policy: dict | None) -> dict[str, dict]:
+    raw = (perk_policy or {}).get('policy_presets') or {}
+    if not isinstance(raw, dict):
+        return {}
+    return {
+        str(name).strip(): dict(payload)
+        for name, payload in raw.items()
+        if str(name).strip() and isinstance(payload, dict)
+    }
+
+
+def _normalize_perk_policy_preset_name(value: str | None) -> str | None:
+    text = str(value or '').strip()
+    if not text:
+        return None
+    lowered = text.lower().replace('-', ' ').replace('_', ' ')
+    compact = ' '.join(lowered.split())
+    aliases = {
+        'ehp max waves': 'eHP Max Waves',
+        'ehp max wave': 'eHP Max Waves',
+        'ehp milestone': 'eHP Max Waves',
+        'ehp farming': 'eHP Farming',
+        'ehp farm': 'eHP Farming',
+        'gc max waves': 'GC Max Waves',
+        'gc max wave': 'GC Max Waves',
+        'gc milestone': 'GC Max Waves',
+        'gc farming': 'GC Farming',
+        'gc farm': 'GC Farming',
+    }
+    return aliases.get(compact, text)
+
+
+def _base_perk_policy_fields(perk_policy: dict | None) -> dict:
+    policy = dict(perk_policy or {})
+    policy.pop('policy_presets', None)
+    policy.pop('active_policy_preset', None)
+    return policy
+
+
+def _select_perk_policy(base_policy: dict | None, policy_preset: str | None) -> dict:
+    base = dict(base_policy or {})
+    presets = _perk_policy_presets(base)
+    requested = _normalize_perk_policy_preset_name(policy_preset)
+    selected = requested or _normalize_perk_policy_preset_name(str(base.get('active_policy_preset') or ''))
+    policy = _base_perk_policy_fields(base)
+    if selected:
+        if selected not in presets:
+            raise ValueError(f"Unknown perk_policy_preset {selected!r}; expected one of {sorted(presets)}")
+        policy.update(dict(presets[selected]))
+        policy['_selected_policy_preset'] = selected
+    return policy
+
+
+def _store_selected_perk_policy(base_policy: dict | None, selected_policy: dict, policy_preset: str | None) -> dict:
+    selected = _normalize_perk_policy_preset_name(policy_preset)
+    clean = {
+        key: value
+        for key, value in dict(selected_policy or {}).items()
+        if not str(key).startswith('_')
+    }
+    if not selected:
+        return clean
+    out = dict(base_policy or {})
+    presets = _perk_policy_presets(out)
+    presets[selected] = clean
+    out['policy_presets'] = presets
+    out['active_policy_preset'] = selected
+    return out
+
+
 def _merged_perk_policy(base_policy: dict | None, override: dict[str, object] | None) -> dict:
     merged = dict(base_policy or {})
     if not override:
         return merged
+    merged['_policy_override_active'] = True
     merged['_base_banned_perks_count'] = len(_resolve_policy_banned_perk_names(base_policy or {}))
     for key in ("seed", "target_wave", "banned_perks", "priority_order", "first_perk_choice"):
         if key not in override:
@@ -2705,6 +4586,226 @@ def _merged_perk_policy(base_policy: dict | None, override: dict[str, object] | 
         elif value not in (None, ""):
             merged[key] = int(value)
     return merged
+
+
+_PERK_FIXED_OPENERS: tuple[str, str] = (
+    "Perk Wave Requirement -20.00%",
+    "Increase Max Game Speed by +1.00",
+)
+
+_PERK_GOAL_TARGET_WEIGHTS: dict[str, dict[str, float]] = {
+    "eHP Max Waves": {
+        "tower_hp": 110.0,
+        "tower_regen": 70.0,
+        "def_pct": 12.0,
+        "absolute_defense": 8.0,
+        "enemy_damage": -95.0,
+        "boss_health": -35.0,
+        "boss_speed": -35.0,
+        "enemy_health": -10.0,
+        "tower_damage": 10.0,
+        "uw_black_hole_duration_seconds": 24.0,
+        "uw_chrono_field_duration_seconds": 24.0,
+        "uw_death_wave_waves": 35.0,
+        "orb_count": 12.0,
+        "free_upgrade_chance_all": 8.0,
+    },
+    "eHP Farming": {
+        "coins_per_kill_bonus": 120.0,
+        "uw_golden_tower_bonus": 110.0,
+        "uw_black_hole_duration_seconds": 90.0,
+        "free_upgrade_chance_all": 15.0,
+        "tower_hp": 45.0,
+        "tower_regen": 25.0,
+        "def_pct": 8.0,
+        "enemy_damage": -70.0,
+        "boss_health": -25.0,
+        "boss_speed": -20.0,
+        "uw_death_wave_waves": 35.0,
+        "uw_chrono_field_duration_seconds": 18.0,
+        "cash_bonus": 5.0,
+        "cash_per_wave": 2.0,
+        "enemy_kill_cash": 3.0,
+        "tower_damage": 4.0,
+        "uw_chain_lightning_damage": 6.0,
+    },
+    "GC Max Waves": {
+        "tower_damage": 120.0,
+        "uw_spotlight_damage_bonus": 110.0,
+        "uw_chain_lightning_damage": 110.0,
+        "boss_health": -145.0,
+        "boss_speed": -30.0,
+        "enemy_health": -25.0,
+        "bounce_shot_count": 28.0,
+        "orb_count": 22.0,
+        "uw_chrono_field_duration_seconds": 18.0,
+        "uw_black_hole_duration_seconds": 10.0,
+        "enemy_damage": -25.0,
+        "tower_hp": 5.0,
+        "coins_per_kill_bonus": 1.0,
+    },
+    "GC Farming": {
+        "coins_per_kill_bonus": 120.0,
+        "uw_golden_tower_bonus": 110.0,
+        "uw_black_hole_duration_seconds": 95.0,
+        "free_upgrade_chance_all": 14.0,
+        "tower_damage": 55.0,
+        "uw_spotlight_damage_bonus": 45.0,
+        "uw_chain_lightning_damage": 45.0,
+        "boss_health": -50.0,
+        "boss_speed": -20.0,
+        "bounce_shot_count": 12.0,
+        "orb_count": 8.0,
+        "tower_hp": 18.0,
+        "tower_regen": 10.0,
+        "enemy_damage": -45.0,
+        "uw_death_wave_waves": 15.0,
+    },
+}
+
+_PERK_GOAL_NAME_SCORE_BIAS: dict[str, dict[str, float]] = {
+    "eHP Max Waves": {
+        "Interest x1.50": -8.0,
+        "Land Mine Damage x3.50": -8.0,
+        "x1.15 Cash Bonus": -6.0,
+        "4 More Smart Missiles": -5.0,
+        "Swamp Radius x1.5": -5.0,
+        "Extra Set of Inner Mines": -5.0,
+        "Unlock a Random Ultimate Weapon": -4.0,
+    },
+    "eHP Farming": {
+        "Interest x1.50": -8.0,
+        "Land Mine Damage x3.50": -8.0,
+        "x1.15 Cash Bonus": -6.0,
+        "4 More Smart Missiles": -5.0,
+        "Swamp Radius x1.5": -5.0,
+        "Extra Set of Inner Mines": -5.0,
+        "Unlock a Random Ultimate Weapon": -4.0,
+    },
+    "GC Max Waves": {
+        "Interest x1.50": -8.0,
+        "Land Mine Damage x3.50": -8.0,
+        "x1.15 Cash Bonus": -6.0,
+        "x1.15 All Coin Bonuses": -4.0,
+        "Golden Tower Bonus x1.5": -4.0,
+        "x12.00 Cash Per Wave, But Enemy Kill Don't Give Cash": -6.0,
+    },
+    "GC Farming": {
+        "Interest x1.50": -8.0,
+        "Land Mine Damage x3.50": -8.0,
+        "x1.15 Cash Bonus": -6.0,
+        "4 More Smart Missiles": -5.0,
+        "Swamp Radius x1.5": -5.0,
+        "Extra Set of Inner Mines": -5.0,
+        "Unlock a Random Ultimate Weapon": -4.0,
+    },
+}
+
+
+def _perk_goal_effect_delta(*, operation: str, value: object) -> float:
+    try:
+        numeric = float(value)
+    except (TypeError, ValueError):
+        return 0.0
+    if operation in {'multiplier', 'remaining_fraction'}:
+        return numeric - 1.0
+    if operation == 'percentage_points_add':
+        return numeric / 5.0
+    if operation == 'seconds_add':
+        return numeric / 10.0
+    if operation in {'count_add', 'raw_add'}:
+        return numeric
+    if operation == 'set_to':
+        return numeric - 1.0
+    return 0.0
+
+
+def _perk_goal_score_matrix(*, labs: dict[str, int]) -> tuple[list[dict[str, object]], dict[str, dict[str, float]]]:
+    effects = load_perk_effects()
+    perk_lab_state = {
+        'standard_bonus_multiplier': 1.0 + (float(labs.get('Standard Perks Bonus', 0) or 0) / 100.0),
+        'tradeoff_bonus_multiplier': 1.0 + (float(labs.get('Improve Trade-off Perks', 0) or 0) / 100.0),
+    }
+    matrix: list[dict[str, object]] = []
+    score_by_goal: dict[str, dict[str, float]] = {goal: {} for goal in BOSS_WAVE_PERK_POLICY_PRESETS}
+    for perk_id, perk_meta in sorted(load_perk_entities().items(), key=lambda item: str(item[1].get('perk_name') or item[0])):
+        perk_name = str(perk_meta.get('perk_name') or perk_id)
+        try:
+            max_picks = max(1, int(perk_meta.get('max_picks') or 1))
+        except (TypeError, ValueError):
+            max_picks = 1
+        scores = {goal: 0.0 for goal in BOSS_WAVE_PERK_POLICY_PRESETS}
+        for effect in effects.get(perk_id, []):
+            target = str(effect.get('target_stat_id') or '').strip()
+            operation = str(effect.get('operation') or '').strip()
+            if not target or not operation:
+                continue
+            effect_index = str(effect.get('effect_index') or '').strip()
+            scaled = scaled_perk_value(
+                perk_meta=perk_meta,
+                perk_id=perk_id,
+                operation=operation,
+                raw_value=str(effect.get('effect_value') or ''),
+                picks=max_picks,
+                effect_index=effect_index,
+                perk_lab_state=perk_lab_state,
+                perk_effect_meta=effect,
+            )
+            delta = _perk_goal_effect_delta(operation=operation, value=scaled)
+            for goal, weights in _PERK_GOAL_TARGET_WEIGHTS.items():
+                scores[goal] += float(weights.get(target, 0.0)) * delta
+        row: dict[str, object] = {'perk': perk_name}
+        for goal in BOSS_WAVE_PERK_POLICY_PRESETS:
+            scores[goal] += _PERK_GOAL_NAME_SCORE_BIAS.get(goal, {}).get(perk_name, 0.0)
+            score = round(scores[goal], 6)
+            row[goal] = score
+            score_by_goal[goal][perk_name] = score
+        matrix.append(row)
+    return matrix, score_by_goal
+
+
+def _generated_goal_perk_policy(
+    *,
+    policy: dict,
+    preset_name: str,
+    labs: dict[str, int],
+    ban_capacity: int,
+    unlocked_ultimate_weapons: list[str],
+) -> tuple[dict[str, object], dict[str, object]]:
+    from qe.perk_tables import load_perk_definitions
+
+    matrix, score_by_goal = _perk_goal_score_matrix(labs=labs)
+    scores = score_by_goal[preset_name]
+    unlocked_uw = {str(name).strip().lower() for name in unlocked_ultimate_weapons if str(name).strip()}
+    locked_uw_perks = {
+        perk.perk_name
+        for perk in load_perk_definitions()
+        if perk.category == 'ultimate_weapon' and str(perk.required_uw or '').strip().lower() not in unlocked_uw
+    }
+    fixed = [name for name in _PERK_FIXED_OPENERS if name in scores]
+    candidates = [name for name in scores if name not in fixed and name not in locked_uw_perks]
+    banned = sorted(candidates, key=lambda name: (scores[name], name))[: max(0, int(ban_capacity))]
+    banned_set = set(banned)
+    priority = fixed + [
+        name
+        for name in sorted(candidates, key=lambda name: (-scores[name], name))
+        if name not in banned_set and scores[name] > 0.0
+    ]
+    generated = dict(policy)
+    generated['first_perk_choice'] = fixed[0] if fixed else policy.get('first_perk_choice')
+    generated['priority_order'] = priority
+    generated['banned_perks'] = banned
+    generated.pop('banned_perk_aliases', None)
+    return generated, {
+        'generator': 'goal_benefit_matrix_v1',
+        'preset_name': preset_name,
+        'ban_capacity': int(ban_capacity),
+        'fixed_openers': fixed,
+        'generated_priority_order': priority,
+        'generated_banned_perks': banned,
+        'locked_uw_perks_excluded_before_ban_ranking': sorted(locked_uw_perks),
+        'perk_goal_benefit_matrix': matrix,
+    }
 
 
 def _perk_policy_validation_ledger(policy_payload: dict, context: dict) -> dict[str, object]:
@@ -2764,7 +4865,9 @@ def build_perk_timeline_preview(
     from simulators.perk_timeline_generator import PerkTimelinePolicy, generate_timeline_from_policy
 
     bundle = load_inputs(ids_path=request.ids, manual_inputs_path=request.manual_inputs)
-    policy = _merged_perk_policy(getattr(bundle, "perk_policy", {}) or {}, perk_policy_override)
+    selected_policy_preset = _normalize_perk_policy_preset_name(getattr(request, 'perk_policy_preset', None))
+    base_policy = getattr(bundle, "perk_policy", {}) or {}
+    policy = _merged_perk_policy(_select_perk_policy(base_policy, selected_policy_preset), perk_policy_override)
     policy_payload, context = _perk_policy_context(bundle.ids_raw, policy)
     validation = _perk_policy_validation_ledger(policy_payload, context)
     timeline: list[dict[str, object]] = []
@@ -2787,7 +4890,9 @@ def build_perk_timeline_preview(
         "schema_version": 1,
         "owner": "app.pipeline.build_perk_timeline_preview",
         "generator_owner": "simulators.perk_timeline_generator",
-        "policy_source": "manual_inputs.yaml:perk_policy + streamlit_session_override",
+        "policy_source": "manual_inputs.yaml:perk_policy.policy_presets + streamlit_session_override",
+        "available_policy_presets": sorted(_perk_policy_presets(base_policy)),
+        "policy_preset": str(policy.get('_selected_policy_preset') or ''),
         "resolved_policy": dict(policy_payload),
         "policy_override": dict(perk_policy_override or {}),
         "validation": validation,
@@ -2805,18 +4910,24 @@ def save_perk_policy_override(
     perk_policy_override: dict[str, object],
 ) -> dict[str, object]:
     bundle = load_inputs(ids_path=request.ids, manual_inputs_path=request.manual_inputs)
-    policy = _merged_perk_policy(getattr(bundle, "perk_policy", {}) or {}, perk_policy_override)
+    selected_policy_preset = _normalize_perk_policy_preset_name(getattr(request, 'perk_policy_preset', None))
+    base_policy = getattr(bundle, "perk_policy", {}) or {}
+    policy = _merged_perk_policy(_select_perk_policy(base_policy, selected_policy_preset), perk_policy_override)
     policy_payload, context = _perk_policy_context(bundle.ids_raw, policy)
     validation = _perk_policy_validation_ledger(policy_payload, context)
     if not validation["ok"]:
         raise ValueError(f"Perk policy is invalid: {validation['errors']!r}")
-    saved_policy = write_perk_policy(policy, manual_inputs_path=request.manual_inputs)
+    saved_policy = write_perk_policy(
+        _store_selected_perk_policy(base_policy, policy, selected_policy_preset or str(policy.get('_selected_policy_preset') or '')),
+        manual_inputs_path=request.manual_inputs,
+    )
     return {
         "artifact": "perk_policy_save_result",
         "schema_version": 1,
         "owner": "app.pipeline.save_perk_policy_override",
         "input_owner": "input.loader.write_perk_policy",
         "manual_inputs_path": str(request.manual_inputs or MANUAL_INPUTS_PATH),
+        "policy_preset": str(policy.get('_selected_policy_preset') or selected_policy_preset or ''),
         "saved_policy": dict(saved_policy),
         "resolved_policy": dict(policy_payload),
         "validation": validation,
@@ -2825,6 +4936,8 @@ def save_perk_policy_override(
 
 def _perk_policy_context(ids_raw, perk_policy: dict) -> tuple[dict, dict]:
     policy = perk_policy or {}
+    if 'policy_presets' in policy and not policy.get('_selected_policy_preset'):
+        policy = _select_perk_policy(policy, None)
     lab_rows = ids_raw.raw_sections.get('Labs', []) if ids_raw else []
     labs = {}
     for row in lab_rows:
@@ -2834,14 +4947,30 @@ def _perk_policy_context(ids_raw, perk_policy: dict) -> tuple[dict, dict]:
             except Exception:
                 pass
 
-    banned_names = _resolve_manual_banned_perks(policy)
     standard_perk_bonus_level = labs.get('Standard Perks Bonus', 0)
     tradeoff_bonus_level = labs.get('Improve Trade-off Perks', 0)
     target_wave = int(policy.get('target_wave', 50000) or 50000)
     first_perk_choice_level = _ids_player_value(ids_raw, 'First Perk Choice', 0)
+    ban_perks_capacity_ids = _ids_player_value(ids_raw, 'Ban Perks', 0)
+    unlocked_ultimate_weapons = _ids_unlocked_ultimate_weapons(ids_raw)
+    generated_policy_context: dict[str, object] = {}
+    selected_policy_preset = str(policy.get('_selected_policy_preset') or '')
+    policy_strategy = str(policy.get('strategy') or '').strip().lower()
+    if (
+        selected_policy_preset in BOSS_WAVE_PERK_POLICY_PRESETS
+        and policy_strategy != 'manual_explicit_v1'
+        and not bool(policy.get('_policy_override_active'))
+    ):
+        policy, generated_policy_context = _generated_goal_perk_policy(
+            policy=policy,
+            preset_name=selected_policy_preset,
+            labs=labs,
+            ban_capacity=ban_perks_capacity_ids,
+            unlocked_ultimate_weapons=unlocked_ultimate_weapons,
+        )
+    banned_names = _resolve_manual_banned_perks(policy)
     configured_priority = list(policy.get('priority_order', []) or [])
     configured_first_perk_choice = policy.get('first_perk_choice')
-    unlocked_ultimate_weapons = _ids_unlocked_ultimate_weapons(ids_raw)
     if first_perk_choice_level > 0 and 'first_perk_choice' in policy and not configured_first_perk_choice:
         raise ValueError(
             "First Perk Choice lab is unlocked, but manual_inputs.yaml:perk_policy.first_perk_choice is not configured."
@@ -2852,22 +4981,27 @@ def _perk_policy_context(ids_raw, perk_policy: dict) -> tuple[dict, dict]:
         'waves_required_lab': int(labs.get('Waves Required', 0) or 0),
         'standard_perk_bonus': float(standard_perk_bonus_level) / 100.0,
         'perk_option_quantity': _ids_player_value(ids_raw, 'Perk Option Quantity', 0),
-        'ban_perks_capacity': max(_ids_player_value(ids_raw, 'Ban Perks', 0), int(policy.get('_base_banned_perks_count', len(banned_names)) or 0)),
+        'ban_perks_capacity': max(ban_perks_capacity_ids, int(policy.get('_base_banned_perks_count', len(banned_names)) or 0)),
         'banned_perks': banned_names,
         'priority_order': configured_priority,
         'first_perk_choice': configured_first_perk_choice,
         'unlocked_ultimate_weapons': unlocked_ultimate_weapons,
     }
     context = {
+        'selected_policy_preset': str(policy.get('_selected_policy_preset') or ''),
+        'policy_strategy': str(policy.get('strategy') or ''),
+        'policy_source_note': str(policy.get('source_note') or ''),
         'banned_names': banned_names,
         'standard_perk_bonus_level': standard_perk_bonus_level,
         'tradeoff_bonus_level': tradeoff_bonus_level,
         'first_perk_choice_level': first_perk_choice_level,
         'configured_first_perk_choice': configured_first_perk_choice,
         'configured_priority_order': configured_priority,
-        'ban_perks_capacity_ids': _ids_player_value(ids_raw, 'Ban Perks', 0),
+        'ban_perks_capacity_ids': ban_perks_capacity_ids,
         'banned_perk_aliases': list(policy.get('banned_perk_aliases', []) or []),
         'unlocked_ultimate_weapons': unlocked_ultimate_weapons,
+        'policy_generated_from_goal_matrix': bool(generated_policy_context),
+        'generated_policy_context': dict(generated_policy_context),
     }
     return payload, context
 
@@ -2915,6 +5049,7 @@ def _build_max_progression_policy_perk_config(ids_raw, perk_policy: dict) -> tup
         'notes': 'Deterministic max-progression forecasting assumption: all perks except manual bans from the input-owned perk policy.',
         'generator': {
             'perk_mode': 'max_progression_policy',
+            'perk_policy_preset': context['selected_policy_preset'],
             'manual_banned_perks': sorted(banned_names),
             'manual_banned_perk_aliases': context['banned_perk_aliases'],
             'selection_rule': 'all_perks_except_manual_bans_using_registry_max_picks',
@@ -2961,6 +5096,7 @@ def _build_runtime_timeline_perk_config(ids_raw, perk_policy: dict, *, diag_outp
         'notes': 'Simulator-owned runtime perk timeline projected to target_wave from the input-owned perk policy.',
         'generator': {
             'perk_mode': 'runtime_timeline',
+            'perk_policy_preset': context['selected_policy_preset'],
             'target_wave': policy.target_wave,
             'manual_banned_perks': context['banned_names'],
             'manual_banned_perk_aliases': context['banned_perk_aliases'],
@@ -2989,6 +5125,7 @@ def _build_runtime_timeline_perk_config(ids_raw, perk_policy: dict, *, diag_outp
         'fallback_applied': False,
         'fallback_reason': None,
         'perk_mode': 'runtime_timeline',
+        'perk_policy_preset': context['selected_policy_preset'],
         'target_wave': policy.target_wave,
     }
     if diag_output_dir is not None:
@@ -3037,16 +5174,20 @@ def _build_account_state(
     manual_inputs_path: Path | None,
     preset: str,
     perk_mode: str,
+    perk_policy_preset: str | None = None,
     diag_output_dir: Path | None = None,
 ):
     input_bundle = load_inputs(ids_path=ids_path, manual_inputs_path=manual_inputs_path)
+    selected_policy = _select_perk_policy(input_bundle.perk_policy, perk_policy_preset)
     perk_config, perk_config_resolution = _resolve_perk_config(
         perk_mode=perk_mode,
         primary_config=input_bundle.perk_config,
-        perk_policy=input_bundle.perk_policy,
+        perk_policy=selected_policy,
         ids_raw=input_bundle.ids_raw,
         diag_output_dir=diag_output_dir,
     )
+    if selected_policy.get('_selected_policy_preset'):
+        perk_config_resolution['perk_policy_preset'] = str(selected_policy['_selected_policy_preset'])
     account_state = build_runtime_state(
         input_bundle.ids_raw,
         default_preset=preset,
@@ -3083,11 +5224,13 @@ class RunStatsSession:
         ids_path: Path,
         manual_inputs_path: Path | None,
         perk_mode: str,
+        perk_policy_preset: str | None,
     ) -> tuple:
         return (
             _path_cache_token(ids_path),
             _path_cache_token(_effective_manual_inputs_path(manual_inputs_path)),
             str(perk_mode),
+            str(_normalize_perk_policy_preset_name(perk_policy_preset) or ''),
         )
 
     def get_account_state_bundle(
@@ -3096,12 +5239,14 @@ class RunStatsSession:
         ids_path: Path,
         manual_inputs_path: Path | None,
         perk_mode: str,
+        perk_policy_preset: str | None,
         diag_output_dir: Path | None,
     ):
         cache_key = self._account_state_cache_key(
             ids_path=ids_path,
             manual_inputs_path=manual_inputs_path,
             perk_mode=perk_mode,
+            perk_policy_preset=perk_policy_preset,
         )
         cached = self._account_state_cache.get(cache_key)
         if cached is not None:
@@ -3111,6 +5256,7 @@ class RunStatsSession:
             manual_inputs_path=manual_inputs_path,
             preset='Farming',
             perk_mode=perk_mode,
+            perk_policy_preset=perk_policy_preset,
             diag_output_dir=diag_output_dir,
         )
         cached_value = (input_bundle, account_state, perk_config_resolution)
@@ -3120,15 +5266,24 @@ class RunStatsSession:
     def build_run_stats_artifacts(self, args):
         args.perk_state = _normalize_perk_state(args.perk_state)
         args.perk_mode = _normalize_perk_mode(getattr(args, 'perk_mode', None))
+        args.perk_policy_preset = _normalize_perk_policy_preset_name(getattr(args, 'perk_policy_preset', None))
+        args.dissonance_run_category = _normalize_boss_wave_dissonance_run_category(
+            getattr(args, 'dissonance_run_category', None) or 'none'
+        )
 
         build_start = perf_counter()
         input_bundle, account_state, perk_config_resolution, account_state_cache_hit = self.get_account_state_bundle(
             ids_path=args.ids,
             manual_inputs_path=getattr(args, 'manual_inputs', None),
             perk_mode=args.perk_mode,
+            perk_policy_preset=args.perk_policy_preset,
             diag_output_dir=args.out / 'diagnostics' / 'perks',
         )
         account_state_build_ms = _elapsed_ms(build_start)
+        requested_perk_policy_preset = args.perk_policy_preset
+        resolved_perk_policy_preset = (
+            str(perk_config_resolution.get('perk_policy_preset') or requested_perk_policy_preset or '').strip() or None
+        )
 
         preset_names = ['Farming', 'Tourney']
         run_stats_payload = {'presets': {}, 'diagnostics': {}}
@@ -3168,13 +5323,17 @@ class RunStatsSession:
                     preset_name=preset_name,
                     tier_number=getattr(args, 'tier', None),
                 )
+                scenario_context = _run_stats_scenario_context(
+                    scenario_config,
+                    dissonance_run_category=args.dissonance_run_category,
+                )
                 base_stat_inputs = tuple(compile_stat_inputs(
                     account_state,
                     preset_name=preset_name,
                     state_mode=state_mode,
                     perk_preset_name=perk_preset_name,
                     perks_enabled=perks_enabled,
-                    scenario_context=_run_stats_scenario_context(scenario_config),
+                    scenario_context=scenario_context,
                 ))
                 if preset_name == 'Farming' and state_mode == 'start_of_run':
                     primary_stats_stat_inputs_payload = [row.to_dict() for row in base_stat_inputs]
@@ -3185,7 +5344,7 @@ class RunStatsSession:
                         state_mode=state_mode,
                         perk_preset_name=perk_preset_name,
                         perks_enabled=perks_enabled,
-                        scenario_context=_run_stats_scenario_context(scenario_config),
+                        scenario_context=scenario_context,
                     ),
                     stat_inputs=base_stat_inputs,
                 )
@@ -3201,6 +5360,11 @@ class RunStatsSession:
                             'tier': scenario_config.tier,
                             'league': scenario_config.league,
                             'tournament_wave': scenario_config.tournament_wave,
+                            **(
+                                {'dissonance_run_category': args.dissonance_run_category}
+                                if args.dissonance_run_category != 'none'
+                                else {}
+                            ),
                         },
                     ),
                     stat_inputs=base_stat_inputs,
@@ -3386,7 +5550,19 @@ class RunStatsSession:
             'state_modes': ['start_of_run', 'max_progression'],
             'perk_state': args.perk_state,
             'perk_mode': args.perk_mode,
+            'dissonance_run_category': args.dissonance_run_category,
+            'requested_perk_policy_preset': requested_perk_policy_preset,
+            'perk_policy_preset': resolved_perk_policy_preset,
             'perk_config_resolution': perk_config_resolution,
+            'perk_support': {
+                'perk_policy_source': 'manual_inputs.yaml:perk_policy.policy_presets',
+                'available_policy_presets': list(BOSS_WAVE_PERK_POLICY_PRESETS),
+                'perk_state': args.perk_state,
+                'perk_mode': args.perk_mode,
+                'requested_perk_policy_preset': requested_perk_policy_preset,
+                'perk_policy_preset': resolved_perk_policy_preset,
+                'perk_materialization': args.perk_mode != 'none' and args.perk_state != 'off',
+            },
             'qe_shared_runtime_context': self.qe_shared_runtime_context.to_dict(),
             'session': {
                 'kind': 'run_stats_session',
@@ -3417,7 +5593,8 @@ class RunStatsSession:
         contract_payload = normalize_contract_payload
         sanitized_account_state = _sanitized_account_state_for_output(artifacts['account_state'], 'Farming')
         module_card_payloads = build_module_card_payloads(artifacts['account_state'])
-        write_start = perf_counter()
+        write_outputs_ms = 0.0
+        write_segment_start = perf_counter()
         (args.out / 'account_state.json').write_text(
             json.dumps(contract_payload(sanitized_account_state), indent=2, default=str)
         )
@@ -3470,11 +5647,58 @@ class RunStatsSession:
         (args.out / 'stats_dashboard.json').write_text(
             json.dumps(contract_payload(stats_dashboard_payload), indent=2, default=str)
         )
+        optional_committed_artifacts: list[str] = []
+        if bool(getattr(args, 'include_boss_wave_milestone_matrix', False)):
+            write_outputs_ms += _elapsed_ms(write_segment_start)
+            matrix_request = PipelineRunRequest(
+                ids=args.ids,
+                out=args.out,
+                preset='Milestone',
+                manual_inputs=args.manual_inputs,
+                perk_mode='max_progression_policy',
+                perk_state='auto',
+                dissonance_run_category=args.dissonance_run_category,
+            )
+            matrix_build_start = perf_counter()
+            boss_wave_milestone_matrix = build_boss_wave_milestone_matrix(
+                matrix_request,
+                scenario_runtime_inputs=_boss_wave_matrix_runtime_inputs_from_args(args),
+                comparison_scenario_runtime_inputs=_boss_wave_matrix_comparison_inputs_from_args(args),
+            )
+            diagnostics['timings_ms']['boss_wave_milestone_matrix_build_ms'] = _elapsed_ms(matrix_build_start)
+            matrix_write_start = perf_counter()
+            (args.out / BOSS_WAVE_MILESTONE_MATRIX_ARTIFACT).write_text(
+                json.dumps(contract_payload(boss_wave_milestone_matrix), indent=2, default=str),
+                encoding='utf-8',
+            )
+            matrix_write_ms = _elapsed_ms(matrix_write_start)
+            diagnostics['timings_ms']['boss_wave_milestone_matrix_write_ms'] = matrix_write_ms
+            write_outputs_ms += matrix_write_ms
+            write_segment_start = perf_counter()
+            optional_committed_artifacts.append(BOSS_WAVE_MILESTONE_MATRIX_ARTIFACT)
+            diagnostics['boss_wave_milestone_matrix'] = {
+                'enabled': True,
+                'artifact': BOSS_WAVE_MILESTONE_MATRIX_ARTIFACT,
+                'tier_count': len(boss_wave_milestone_matrix.get('tiers') or []),
+                'row_count': len(boss_wave_milestone_matrix.get('rows') or []),
+                'wide_row_count': len(boss_wave_milestone_matrix.get('wide_rows') or []),
+                'selection_policy': boss_wave_milestone_matrix.get('contract', {}).get('selection_policy'),
+                'scenario_runtime_inputs': boss_wave_milestone_matrix.get('scenario_runtime_inputs'),
+                'comparison_enabled': 'comparison' in boss_wave_milestone_matrix,
+            }
+        else:
+            diagnostics['boss_wave_milestone_matrix'] = {
+                'enabled': False,
+                'reason': 'optional_matrix_not_requested',
+                'artifact': BOSS_WAVE_MILESTONE_MATRIX_ARTIFACT,
+            }
         diagnostics['output_contract'] = {
             'contract_kind': 'run_stats_bounded',
             'committed_baseline_artifacts': list(RUN_STATS_COMMITTED_BASELINE_ARTIFACTS),
             'local_support_artifacts': list(RUN_STATS_LOCAL_SUPPORT_ARTIFACTS),
-            'all_local_output_artifacts': list(RUN_STATS_BOUNDED_OUTPUT_ARTIFACTS),
+            'optional_committed_artifacts': optional_committed_artifacts,
+            'optional_local_artifacts': [],
+            'all_local_output_artifacts': [*RUN_STATS_BOUNDED_OUTPUT_ARTIFACTS, *optional_committed_artifacts],
             'product_artifact': 'run_stats.json',
             'query_row_artifacts': [_RUN_STATS_QUERY_OUTPUTS['start_of_run_rows'], _RUN_STATS_QUERY_OUTPUTS['max_progression_rows']],
             'query_plan_artifacts': [_RUN_STATS_QUERY_OUTPUTS['start_of_run_plan'], _RUN_STATS_QUERY_OUTPUTS['max_progression_plan']],
@@ -3485,7 +5709,8 @@ class RunStatsSession:
         (args.out / 'run_stats.json').write_text(
             json.dumps(contract_payload(stable_run_stats_payload), indent=2, default=str)
         )
-        diagnostics['timings_ms']['write_outputs_ms'] = _elapsed_ms(write_start)
+        write_outputs_ms += _elapsed_ms(write_segment_start)
+        diagnostics['timings_ms']['write_outputs_ms'] = round(write_outputs_ms, 3)
         (args.out / 'diagnostics.json').write_text(
             json.dumps(_json_sanitize(diagnostics), indent=2, default=str)
         )
@@ -3508,6 +5733,22 @@ def run_stats_pipeline(args) -> int:
     return get_default_run_stats_session().execute(args)
 
 
+def _bounded_compare_rows_from_statbooks(books_by_preset: dict[str, dict]) -> dict[str, dict]:
+    rows_by_preset: dict[str, dict] = {}
+    for preset_name, statbook_payload in (books_by_preset or {}).items():
+        rows = {
+            str(surface_id): dict(row or {})
+            for surface_id, row in dict((statbook_payload or {}).get('rows') or {}).items()
+        }
+        rows_by_preset[str(preset_name)] = rows
+    if 'Tourney' in rows_by_preset:
+        rows_by_preset['Tourney__perks_off'] = rows_by_preset['Tourney']
+    if 'Farming' in rows_by_preset:
+        rows_by_preset['Farming__perks_on'] = rows_by_preset['Farming']
+        rows_by_preset['Farming__perks_auto'] = rows_by_preset['Farming']
+    return rows_by_preset
+
+
 def run_analysis_pipeline(args) -> int:
     """
     Execute the full stat pipeline.
@@ -3518,6 +5759,7 @@ def run_analysis_pipeline(args) -> int:
     args.state_mode = normalize_state_mode(args.state_mode)
     args.perk_state = _normalize_perk_state(args.perk_state)
     args.perk_mode = _normalize_perk_mode(getattr(args, 'perk_mode', None))
+    args.perk_policy_preset = _normalize_perk_policy_preset_name(getattr(args, 'perk_policy_preset', None))
     args.out.mkdir(parents=True, exist_ok=True)
 
     from evaluators.compare import (
@@ -3571,12 +5813,19 @@ def run_analysis_pipeline(args) -> int:
     _input_bundle = load_inputs(ids_path=args.ids, manual_inputs_path=_manual_inputs_path)
     ids_raw = _input_bundle.ids_raw
     loadout_config = _input_bundle.loadout_config
+    selected_perk_policy = _select_perk_policy(_input_bundle.perk_policy, args.perk_policy_preset)
     perk_config, perk_config_resolution = _resolve_perk_config(
         perk_mode=args.perk_mode,
         primary_config=_input_bundle.perk_config,
-        perk_policy=_input_bundle.perk_policy,
+        perk_policy=selected_perk_policy,
         ids_raw=ids_raw,
         diag_output_dir=args.out / 'diagnostics' / 'perks',
+    )
+    if selected_perk_policy.get('_selected_policy_preset'):
+        perk_config_resolution['perk_policy_preset'] = str(selected_perk_policy['_selected_policy_preset'])
+    requested_perk_policy_preset = args.perk_policy_preset
+    resolved_perk_policy_preset = (
+        str(perk_config_resolution.get('perk_policy_preset') or requested_perk_policy_preset or '').strip() or None
     )
     formula_ledger = load_formula_ledger()
     ep_oracle = load_ep_oracle()
@@ -3659,6 +5908,21 @@ def run_analysis_pipeline(args) -> int:
         _materialize('Tourney')
         _materialize('Tourney', forced_perk_state='on')
         _materialize('Farming', forced_perk_state='on')
+        compare_context_presets = sorted({default_preset, 'Tourney', 'Farming'})
+
+        def _module_selection_payload(selection) -> dict[str, str | None]:
+            return {
+                'primary': getattr(selection, 'primary', None),
+                'assist': getattr(selection, 'assist', None),
+            }
+
+        def _module_preset_payload(preset_name: str) -> dict[str, dict[str, str | None]]:
+            preset = getattr(default_state, 'module_presets', {}).get(preset_name) or {}
+            return {
+                str(slot): _module_selection_payload(selection)
+                for slot, selection in preset.items()
+            }
+
         stage_context = {
             'state_mode': state_mode,
             'perk_state': perk_state,
@@ -3666,9 +5930,18 @@ def run_analysis_pipeline(args) -> int:
             'perk_materialized_by_preset': dict(sorted(perk_materialized_by_preset.items())),
             'active_perk_preset': _sanitized_active_perk_preset(default_state, default_preset),
             'default_compare_preset': default_preset,
-            'active_cards_by_preset': {default_preset: list(default_state.card_presets.get(default_preset, []))},
-            'active_modules_by_preset': {default_preset: {}},
-            'modules_inventory': {},
+            'active_cards_by_preset': {
+                preset_name: list(default_state.card_presets.get(preset_name, []))
+                for preset_name in compare_context_presets
+            },
+            'active_modules_by_preset': {
+                preset_name: _module_preset_payload(preset_name)
+                for preset_name in compare_context_presets
+            },
+            'modules_inventory': {
+                str(name): asdict(snapshot)
+                for name, snapshot in getattr(default_state, 'modules_inventory', {}).items()
+            },
         }
         return PreparedCompareRowsBundle(default_state, compare_rows_by_preset, compare_publishable_rows_by_preset, stage_context)
 
@@ -3800,6 +6073,25 @@ def run_analysis_pipeline(args) -> int:
     projected_compare_summary = _build_compare_status_summary(projected_ep_compare_publishable)
 
     run_stats_artifacts = get_default_run_stats_session().build_run_stats_artifacts(args)
+    bounded_compare_rows_by_preset = _bounded_compare_rows_from_statbooks(
+        run_stats_artifacts.get('max_books_by_preset') or {}
+    )
+    if bounded_compare_rows_by_preset:
+        ep_compare = _build_ep_compare(
+            ep_oracle, bounded_compare_rows_by_preset, formula_ledger, package_stage_context, **_ep_kwargs
+        )
+        ep_compare_publishable = _build_ep_compare(
+            ep_oracle, bounded_compare_rows_by_preset, formula_ledger, package_stage_context, **_ep_kwargs
+        )
+        _annotate_compare_display_fields(ep_compare)
+        _annotate_compare_display_fields(ep_compare_publishable)
+        current_compare_summary = _build_compare_status_summary(ep_compare_publishable)
+        projected_ep_compare_publishable = _build_ep_compare(
+            ep_oracle, bounded_compare_rows_by_preset, formula_ledger,
+            projected_stage_context, **_ep_kwargs
+        )
+        _annotate_compare_display_fields(projected_ep_compare_publishable)
+        projected_compare_summary = _build_compare_status_summary(projected_ep_compare_publishable)
 
     def _query_rows_payload(books_by_preset: dict[str, dict], *, state_mode: str) -> dict[str, dict[str, object]]:
         payload: dict[str, dict[str, object]] = {}
@@ -3897,6 +6189,8 @@ def run_analysis_pipeline(args) -> int:
         'default_preset': args.preset,
         'state_mode': args.state_mode,
         'perk_mode': args.perk_mode,
+        'requested_perk_policy_preset': requested_perk_policy_preset,
+        'perk_policy_preset': resolved_perk_policy_preset,
         'perk_config_resolution': perk_config_resolution,
         'state_mode_support': state_mode_support(args.state_mode),
         'supported_state_modes': list(SUPPORTED_STATE_MODES),
@@ -3923,6 +6217,8 @@ def run_analysis_pipeline(args) -> int:
                 'workshop_state': 'dynamic_current_or_projected_max_by_state_mode',
                 'perk_state': args.perk_state,
                 'perk_mode': args.perk_mode,
+                'requested_perk_policy_preset': requested_perk_policy_preset,
+                'perk_policy_preset': resolved_perk_policy_preset,
                 'perk_materialization': perks_enabled,
                 'perk_ids_parser_support': False,
                 'perk_external_config_support': True,
@@ -3995,6 +6291,8 @@ def run_analysis_pipeline(args) -> int:
             'perk_resolver_support': True,
             'perk_state': args.perk_state,
             'perk_mode': args.perk_mode,
+            'requested_perk_policy_preset': requested_perk_policy_preset,
+            'perk_policy_preset': resolved_perk_policy_preset,
             'perk_materialization': perks_enabled,
         },
         'card_preset_sizes': card_preset_sizes,
@@ -4120,6 +6418,41 @@ def run_analysis_pipeline(args) -> int:
     artifact_contract_manifest = _build_artifact_contract_manifest(account_state, args.preset, stat_inputs, statbook_dict)
     family_completeness_matrix = _build_family_completeness_matrix(account_state, stat_inputs)
     optimizer_scores = compute_optimizer_scores(statbook_dict)
+    boss_wave_milestone_matrix_payload = None
+    if bool(getattr(args, 'include_boss_wave_milestone_matrix', False)):
+        matrix_request = PipelineRunRequest(
+            ids=args.ids,
+            out=args.out,
+            preset='Milestone',
+            state_mode=args.state_mode,
+            manual_inputs=args.manual_inputs,
+            perk_mode='max_progression_policy',
+            perk_state='auto',
+        )
+        boss_wave_milestone_matrix_payload = build_boss_wave_milestone_matrix(
+            matrix_request,
+            scenario_runtime_inputs=_boss_wave_matrix_runtime_inputs_from_args(args),
+            comparison_scenario_runtime_inputs=_boss_wave_matrix_comparison_inputs_from_args(args),
+        )
+        diagnostics['boss_wave_milestone_matrix'] = {
+            'enabled': True,
+            'artifact': BOSS_WAVE_MILESTONE_MATRIX_ARTIFACT,
+            'tier_count': len(boss_wave_milestone_matrix_payload.get('tiers') or []),
+            'row_count': len(boss_wave_milestone_matrix_payload.get('rows') or []),
+            'wide_row_count': len(boss_wave_milestone_matrix_payload.get('wide_rows') or []),
+            'selection_policy': boss_wave_milestone_matrix_payload.get('contract', {}).get('selection_policy'),
+            'scenario_runtime_inputs': boss_wave_milestone_matrix_payload.get('scenario_runtime_inputs'),
+            'comparison_enabled': 'comparison' in boss_wave_milestone_matrix_payload,
+        }
+    else:
+        stale_matrix = args.out / BOSS_WAVE_MILESTONE_MATRIX_ARTIFACT
+        if stale_matrix.exists():
+            stale_matrix.unlink()
+        diagnostics['boss_wave_milestone_matrix'] = {
+            'enabled': False,
+            'reason': 'optional_matrix_not_requested',
+            'artifact': BOSS_WAVE_MILESTONE_MATRIX_ARTIFACT,
+        }
 
     # Prepare payloads and delegate output writing to publication authority
     account_state_payload = _sanitized_account_state_for_output(account_state, args.preset)
@@ -4156,6 +6489,11 @@ def run_analysis_pipeline(args) -> int:
         selected_preset=args.preset,
         selected_state_mode=args.state_mode,
     )
+    if boss_wave_milestone_matrix_payload is not None:
+        (args.out / BOSS_WAVE_MILESTONE_MATRIX_ARTIFACT).write_text(
+            json.dumps(_contract_json_payload(boss_wave_milestone_matrix_payload), indent=2, default=str),
+            encoding='utf-8',
+        )
 
     # Write module card payloads (QE-generated orchestration artifact, PR329)
     (args.out / 'module_card_payloads.json').write_text(
@@ -4290,9 +6628,11 @@ def _build_pipeline_trace_from_artifacts(
             'state_mode': request.state_mode,
             'manual_inputs': None if request.manual_inputs is None else _relpath_str(request.manual_inputs),
             'perk_mode': request.perk_mode,
+            'perk_policy_preset': request.perk_policy_preset,
             'include_slow_audits': request.include_slow_audits,
             'perk_state': request.perk_state,
             'tier': request.tier,
+            'include_boss_wave_milestone_matrix': request.include_boss_wave_milestone_matrix,
         },
         execution_path=execution_path,
         stages=stages,
@@ -4309,9 +6649,11 @@ def execute_pipeline(request: PipelineRunRequest) -> PipelineRunResult:
     args.state_mode = request.state_mode
     args.manual_inputs = request.manual_inputs
     args.perk_mode = request.perk_mode
+    args.perk_policy_preset = request.perk_policy_preset
     args.include_slow_audits = request.include_slow_audits
     args.perk_state = request.perk_state
     args.tier = request.tier
+    args.include_boss_wave_milestone_matrix = request.include_boss_wave_milestone_matrix
     exit_code = run_analysis_pipeline(args)
     diagnostics = _load_json_artifact(request.out / 'diagnostics.json')
     total_elapsed_ms = round((perf_counter() - started_at) * 1000.0, 3)
@@ -4351,6 +6693,7 @@ def build_verification_snapshot_set(
             state_mode=spec.state_mode,
             manual_inputs=base_request.manual_inputs,
             perk_mode=base_request.perk_mode,
+            perk_policy_preset=base_request.perk_policy_preset,
             include_slow_audits=base_request.include_slow_audits,
             perk_state=spec.perk_state,
             tier=base_request.tier,
@@ -4378,6 +6721,7 @@ def _default_verification_matrix_requests(base_request: PipelineRunRequest) -> t
             state_mode=spec.state_mode,
             manual_inputs=base_request.manual_inputs,
             perk_mode=base_request.perk_mode,
+            perk_policy_preset=base_request.perk_policy_preset,
             include_slow_audits=base_request.include_slow_audits,
             perk_state=spec.perk_state,
             tier=base_request.tier,
@@ -4396,6 +6740,7 @@ def resolve_fast_checkpoint(request: FastCheckpointRequest) -> FastCheckpointRes
         manual_inputs_path=request.manual_inputs,
         preset=request.preset,
         perk_mode=request.perk_mode,
+        perk_policy_preset=request.perk_policy_preset,
         diag_output_dir=None,
     )
     perks_enabled = _perks_enabled_for_state(account_state.active_perk_preset, request.perk_state)

@@ -154,6 +154,35 @@ def test_publish_derived_composites_applies_v28_attack_dissonance_restrictions()
     assert rows['derived::edamage.rend_factor'].final_value == pytest.approx(1.0)
 
 
+def test_publish_derived_composites_publishes_cl_only_boss_applicable_damage_lane() -> None:
+    rows = {
+        'state::tower.damage': StatRow(stat_name='state::tower.damage', final_value=100.0, value_type='damage', source_count=1, status='resolved', contributors=[], schema=None),
+        'state::tower.attack_speed': StatRow(stat_name='state::tower.attack_speed', final_value=10.0, value_type='rate', source_count=1, status='resolved', contributors=[], schema=None),
+        'state::tower.damage_per_meter_multiplier': StatRow(stat_name='state::tower.damage_per_meter_multiplier', final_value=1.0, value_type='multiplier', source_count=1, status='resolved', contributors=[], schema=None),
+        'state::tower.range_m': StatRow(stat_name='state::tower.range_m', final_value=30.0, value_type='distance', source_count=1, status='resolved', contributors=[], schema=None),
+        'state::tower.crit_chance_pct': StatRow(stat_name='state::tower.crit_chance_pct', final_value=0.0, value_type='pct', source_count=1, status='resolved', contributors=[], schema=None),
+        'state::tower.crit_multiplier': StatRow(stat_name='state::tower.crit_multiplier', final_value=1.0, value_type='multiplier', source_count=1, status='resolved', contributors=[], schema=None),
+        'state::tower.supercrit_chance_pct': StatRow(stat_name='state::tower.supercrit_chance_pct', final_value=0.0, value_type='pct', source_count=1, status='resolved', contributors=[], schema=None),
+        'state::tower.supercrit_multiplier': StatRow(stat_name='state::tower.supercrit_multiplier', final_value=1.0, value_type='multiplier', source_count=1, status='resolved', contributors=[], schema=None),
+        'state::tower.multishot_chance_pct': StatRow(stat_name='state::tower.multishot_chance_pct', final_value=0.0, value_type='pct', source_count=1, status='resolved', contributors=[], schema=None),
+        'state::tower.multishot_targets': StatRow(stat_name='state::tower.multishot_targets', final_value=0.0, value_type='scalar', source_count=1, status='resolved', contributors=[], schema=None),
+        'state::tower.bounce_shot_chance_pct': StatRow(stat_name='state::tower.bounce_shot_chance_pct', final_value=0.0, value_type='pct', source_count=1, status='resolved', contributors=[], schema=None),
+        'state::tower.bounce_shot_targets': StatRow(stat_name='state::tower.bounce_shot_targets', final_value=0.0, value_type='scalar', source_count=1, status='resolved', contributors=[], schema=None),
+        'state::tower.rapid_fire_chance_pct': StatRow(stat_name='state::tower.rapid_fire_chance_pct', final_value=0.0, value_type='pct', source_count=1, status='resolved', contributors=[], schema=None),
+        'state::tower.rapid_fire_duration_seconds': StatRow(stat_name='state::tower.rapid_fire_duration_seconds', final_value=0.0, value_type='seconds', source_count=1, status='resolved', contributors=[], schema=None),
+        'state::uw.chain_lightning.damage_multiplier': StatRow(stat_name='state::uw.chain_lightning.damage_multiplier', final_value=2.0, value_type='multiplier', source_count=1, status='resolved', contributors=[], schema=None),
+        'state::uw.chain_lightning.quantity': StatRow(stat_name='state::uw.chain_lightning.quantity', final_value=3.0, value_type='scalar', source_count=1, status='resolved', contributors=[], schema=None),
+        'state::uw.chain_lightning.chance_pct': StatRow(stat_name='state::uw.chain_lightning.chance_pct', final_value=100.0, value_type='pct', source_count=1, status='resolved', contributors=[], schema=None),
+    }
+
+    derived.publish_derived_composites(rows)
+
+    assert rows['derived::edamage.uw.chain_lightning_dps'].final_value > 0.0
+    assert rows['derived::edamage.boss_applicable_dps_cl_only'].final_value == pytest.approx(
+        rows['derived::edamage.uw.chain_lightning_dps'].final_value
+    )
+
+
 def test_publish_derived_composites_falls_back_to_final_wall_hp_divided_by_fortification() -> None:
     rows = {
         'state::tower.hp': StatRow(stat_name='state::tower.hp', final_value=100.0, value_type='hp', source_count=1, status='resolved', contributors=[], schema=None),
@@ -239,6 +268,19 @@ def test_publish_derived_composites_applies_damage_mastery_effect_to_edamage_bas
     derived.publish_derived_composites(rows)
 
     assert rows['derived::edamage.base_damage_stack'].final_value == pytest.approx(260.0)
+
+
+def test_publish_derived_composites_uses_dpm_bonus_and_default_kill_at_range_for_range_dpm() -> None:
+    rows = {
+        'state::tower.damage': StatRow(stat_name='state::tower.damage', final_value=100.0, value_type='damage', source_count=1, status='resolved', contributors=[], schema=None),
+        'state::tower.damage_per_meter_multiplier': StatRow(stat_name='state::tower.damage_per_meter_multiplier', final_value=1.1355112, value_type='multiplier', source_count=1, status='resolved', contributors=[], schema=None),
+        'state::tower.range_m': StatRow(stat_name='state::tower.range_m', final_value=127.9223999157052, value_type='m', source_count=1, status='resolved', contributors=[], schema=None),
+    }
+
+    derived.publish_derived_composites(rows)
+
+    expected = 1.0 + 127.9223999157052 * 0.1355112 * 0.25
+    assert rows['derived::edamage.range_dpm_factor'].final_value == pytest.approx(expected)
 
 
 def test_publish_derived_composites_applies_project_funding_to_edamage_objective() -> None:

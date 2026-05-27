@@ -670,18 +670,19 @@ class StatQueryKernel:
         gate_rows = [row for row in active_rows if row.composition_stage == 'gate_enable_disable']
 
         if gate_rows and not additive_rows and not multiplicative_rows:
+            gate_value = all(bool(row.value) for row in gate_rows)
             if trace_steps is not None:
                 trace_steps.append({
                     'step_index': len(trace_steps) + 1,
                     'step_kind': 'resolution_backend_result',
                     'node_id': to_v2_surface_id(surface_id),
                     'status': 'resolved',
-                    'note': 'Gate-only surface resolved true from active gate contributors.',
+                    'note': 'Gate-only surface resolved from active gate contributor values.',
                     'backend': 'kernel_direct_composition',
                     'value_type': next(iter(value_types)),
-                    'final_value': True,
+                    'final_value': gate_value,
                 })
-            return ResolvedSurfaceRow(surface_id=surface_id, final_value=True, value_type=next(iter(value_types)), status='resolved')
+            return ResolvedSurfaceRow(surface_id=surface_id, final_value=gate_value, value_type=next(iter(value_types)), status='resolved')
 
         additive_total = sum(_coerce_numeric(row.value) for row in additive_rows)
         multiplicative_total = prod(_coerce_numeric(row.value) for row in multiplicative_rows) if multiplicative_rows else 1

@@ -211,6 +211,34 @@ def test_v28_dissonant_pbs_route_from_active_ids_tier() -> None:
         assert row.notes == f'v28_dissonant_echo_source_routed:{category}:tiers=2'
 
 
+def test_v28_dissonant_tournament_context_publishes_echo_without_active_tier_pb() -> None:
+    state = replace(
+        _base_account_state(),
+        player_meta={**_base_account_state().player_meta, 'Farming Tier': 'Tier 10'},
+        dissonance_pbs_by_tier={
+            'Tier 10': {'attack': 1000, 'defense': 1001, 'utility': 1002, 'ultimate_weapons': 1003},
+        },
+    )
+    rows = compile_stat_inputs(
+        state,
+        preset_name=state.default_preset,
+        state_mode='start_of_run',
+        scenario_context={'mode_id': 'tournament', 'tier': None},
+    )
+
+    assert not [
+        row for row in rows
+        if row.destination_id == 'dissonance.ultimate_weapons.active_boost_multiplier'
+    ]
+    echo_row = _single_row_by_family(
+        rows,
+        name='Dissonant Echo Source - Ultimate Weapons',
+        source_family='player_stuff',
+    )
+    assert echo_row.destination_id == 'dissonance.ultimate_weapons.echo_source_bonus'
+    assert echo_row.value > 0.0
+
+
 def test_progression_family_publishes_active_v28_dissonant_pb_surfaces() -> None:
     state = replace(
         _base_account_state(),
@@ -775,6 +803,41 @@ def test_shockwave_frequency_module_substat_routes_to_tower_interval() -> None:
     assert row.notes == 'kb_exact_routed_module_substat_primary'
 
 
+def test_generator_free_attack_module_substat_routes_to_attack_free_upgrade_chance() -> None:
+    rows = _compiled_rows(_base_account_state())
+
+    row = next(
+        row
+        for row in rows
+        if row.stat_name == 'Free Attack Upgrade'
+        and row.source_family == 'module_substat'
+        and row.source_name == 'Singularity Harness'
+    )
+
+    assert row.value == pytest.approx(8.0)
+    assert row.value_type == 'percent_display'
+    assert row.destination_object_type == 'canonical_stat'
+    assert row.destination_id == 'free_attack_upgrade_chance_pct'
+    assert row.notes == 'kb_exact_routed_module_substat_primary'
+
+
+def test_report_snapshot_free_upgrade_chance_uses_support_multiplier_and_module_substats() -> None:
+    snapshot = QEResolutionPlanner().resolve_report_snapshot(
+        _base_account_state(),
+        preset_name='Farming',
+        state_mode='max_progression',
+        perks_enabled=True,
+    )
+
+    row = snapshot.statbook.rows['state::tower.free_attack_upgrade_chance_pct']
+
+    assert row.final_value == pytest.approx(86.58)
+    assert any(
+        contributor['source_class'] == 'module_substat' and contributor['value'] == pytest.approx(8.0)
+        for contributor in row.contributors
+    )
+
+
 def test_wave_skip_card_publishes_timing_family_state_surface() -> None:
     state = _base_account_state()
     assert 'Wave Skip' in state.cards_inventory
@@ -887,7 +950,7 @@ def test_progression_family_publishes_ultimate_crit_surface_and_uw_helper_factor
 
     assert card_row.final_value == pytest.approx(3.0)
     assert card_row.status == 'resolved'
-    assert factor_row.final_value == pytest.approx(6.8551684)
+    assert factor_row.final_value == pytest.approx(6.974614)
     assert factor_row.status == 'resolved'
     assert any(c['stat_name'] == 'state::cards.ultimate_crit.chance_pct' for c in factor_row.contributors)
 
@@ -954,7 +1017,7 @@ def test_progression_family_publishes_raw_uw_timing_rows_separately_from_timing_
     assert timing.rows['state::uw.golden_tower.cooldown_seconds'].final_value == pytest.approx(180.0)
 
 
-def test_progression_family_publishes_active_thunder_bot_duration_and_linger_surfaces() -> None:
+def test_progression_family_gates_locked_thunder_bot_duration_and_linger_surfaces() -> None:
     planner = QEResolutionPlanner()
     statbook = planner.resolve_declared_family_statbook(
         _base_account_state(),
@@ -973,23 +1036,23 @@ def test_progression_family_publishes_active_thunder_bot_duration_and_linger_sur
     linger_duration_row = statbook.rows['state::bot.thunder.linger_duration_seconds']
     linger_slow_row = statbook.rows['state::bot.thunder.linger_slow_pct']
 
-    assert duration_row.final_value == pytest.approx(5.0)
+    assert duration_row.final_value == pytest.approx(0.0)
     assert duration_row.status == 'resolved'
     assert linger_duration_row.final_value == pytest.approx(0.0)
     assert linger_duration_row.status == 'resolved'
-    assert linger_slow_row.final_value == pytest.approx(0.2)
+    assert linger_slow_row.final_value == pytest.approx(0.0)
     assert linger_slow_row.status == 'resolved'
 
 
-def test_report_snapshot_resolves_active_thunder_bot_duration_and_linger_rows() -> None:
+def test_report_snapshot_gates_locked_thunder_bot_duration_and_linger_rows() -> None:
     snapshot = _resolved_snapshot(_base_account_state())
     rows = snapshot.statbook.rows
 
-    assert rows['state::bot.thunder.duration_seconds'].final_value == pytest.approx(5.0)
+    assert rows['state::bot.thunder.duration_seconds'].final_value == pytest.approx(0.0)
     assert rows['state::bot.thunder.duration_seconds'].status == 'resolved'
     assert rows['state::bot.thunder.linger_duration_seconds'].final_value == pytest.approx(0.0)
     assert rows['state::bot.thunder.linger_duration_seconds'].status == 'resolved'
-    assert rows['state::bot.thunder.linger_slow_pct'].final_value == pytest.approx(0.2)
+    assert rows['state::bot.thunder.linger_slow_pct'].final_value == pytest.approx(0.0)
     assert rows['state::bot.thunder.linger_slow_pct'].status == 'resolved'
 
 
@@ -1029,22 +1092,93 @@ def test_v28_bot_bot_and_bot_plus_rows_route_from_ids_bots() -> None:
 
     bot_bot_duration = _single_row_by_family(rows, name='Bot Bot::Duration', source_family='bot')
     bot_bot_bonus = _single_row_by_family(rows, name='Bot Bot::Bonus', source_family='bot')
+    bot_bot_unlock = _single_row_by_family(rows, name='Bot Bot::Unlocked', source_family='bot_unlock')
     bot_plus_wildfire = _single_row_by_family(rows, name='Bot +::Wildfire', source_family='bot_plus')
+
+    assert bot_bot_unlock.destination_object_type == 'runtime_mechanic_param'
+    assert bot_bot_unlock.destination_id == 'bot.bot_bot.owned'
+    assert bot_bot_unlock.value is False
 
     assert bot_bot_duration.destination_object_type == 'mechanic_param'
     assert bot_bot_duration.destination_id == 'bot.bot_bot.duration_seconds'
-    assert bot_bot_duration.value == pytest.approx(20.0)
+    assert bot_bot_duration.value == pytest.approx(0.0)
     assert bot_bot_duration.value_type == 'resolved_value'
-    assert bot_bot_duration.notes == 'ids_bot_track_value_preserved'
+    assert bot_bot_duration.notes == 'ids_bot_locked_zeroed'
 
     assert bot_bot_bonus.destination_object_type == 'mechanic_param'
     assert bot_bot_bonus.destination_id == 'bot.bot_bot.bonus_multiplier'
-    assert bot_bot_bonus.value == pytest.approx(1.05)
+    assert bot_bot_bonus.value == pytest.approx(0.0)
 
     assert bot_plus_wildfire.destination_object_type == 'runtime_mechanic_param'
     assert bot_plus_wildfire.destination_id == 'bot.plus.wildfire.unlocked'
     assert bot_plus_wildfire.value is False
     assert bot_plus_wildfire.value_type == 'bool'
+
+
+def test_ids_bot_and_uw_unlock_flags_gate_locked_track_values() -> None:
+    state = _base_account_state()
+    assert state.bot_unlocks['Flame Bot'] is False
+    assert state.bot_unlocks['Golden Bot'] is True
+
+    rows = _compiled_rows(state)
+    flame_unlock = _single_row_by_family(rows, name='Flame Bot::Unlocked', source_family='bot_unlock')
+    golden_unlock = _single_row_by_family(rows, name='Golden Bot::Unlocked', source_family='bot_unlock')
+    flame_dr = _single_row_by_family(rows, name='Flame Bot::Damage R.', source_family='bot')
+    smart_unlock = _single_row_by_family(rows, name='Smart Missiles::Unlocked', source_family='uw_unlock')
+    smart_damage = _single_row_by_family(rows, name='Smart Missiles::Damage', source_family='uw')
+    chain_unlock = _single_row_by_family(rows, name='Chain Lightning::Unlocked', source_family='uw_unlock')
+    chain_damage = _single_row_by_family(rows, name='Chain Lightning::Damage', source_family='uw')
+
+    assert flame_unlock.value is False
+    assert flame_unlock.destination_id == 'bot.flame.owned'
+    assert flame_dr.value == pytest.approx(0.0)
+    assert flame_dr.notes == 'ids_bot_locked_zeroed'
+    assert golden_unlock.value is True
+
+    assert smart_unlock.value is False
+    assert smart_unlock.destination_id == 'uw.smart_missiles.owned'
+    assert smart_damage.value == pytest.approx(0.0)
+    assert smart_damage.notes == 'ids_uw_locked_zeroed'
+    assert chain_unlock.value is True
+    assert chain_damage.value > 0.0
+
+    statbook = QEResolutionPlanner().resolve_declared_family_statbook(
+        state,
+        family_id='progression_start_of_run',
+        requested_surface_ids=(
+            'state::bot.flame.owned',
+            'state::bot.flame.cooldown_seconds',
+        ),
+        preset_name='Farming',
+        state_mode='start_of_run',
+        notes='locked_bot_cooldown_gate_probe',
+    )
+    assert statbook.rows['state::bot.flame.owned'].final_value is False
+    flame_cooldown = statbook.rows['state::bot.flame.cooldown_seconds']
+    assert flame_cooldown.final_value == pytest.approx(0.0)
+    assert any(
+        contributor['source_class'] == 'bots' and contributor['value'] == pytest.approx(0.0)
+        for contributor in flame_cooldown.contributors
+    )
+    assert any(
+        contributor['source_class'] == 'labs' and contributor['value'] < 0.0
+        for contributor in flame_cooldown.contributors
+    )
+
+
+def test_v28_bot_track_rows_publish_values_when_ids_marks_bot_unlocked() -> None:
+    state = _base_account_state()
+    mutated = replace(state, bot_unlocks={**state.bot_unlocks, 'Bot Bot': True})
+    rows = _compiled_rows(mutated)
+
+    bot_bot_duration = _single_row_by_family(rows, name='Bot Bot::Duration', source_family='bot')
+    bot_bot_bonus = _single_row_by_family(rows, name='Bot Bot::Bonus', source_family='bot')
+    bot_bot_unlock = _single_row_by_family(rows, name='Bot Bot::Unlocked', source_family='bot_unlock')
+
+    assert bot_bot_unlock.value is True
+    assert bot_bot_duration.value == pytest.approx(20.0)
+    assert bot_bot_duration.notes == 'ids_bot_track_value_preserved'
+    assert bot_bot_bonus.value == pytest.approx(1.05)
 
 
 def test_progression_family_publishes_effective_bot_range_surfaces_with_tower_range_amplification() -> None:
@@ -1058,6 +1192,11 @@ def test_progression_family_publishes_effective_bot_range_surfaces_with_tower_ra
             'state::bot.flame.range_m',
             'state::bot.thunder.range_m',
             'state::bot.bot_bot.range_m',
+            'state::bot.golden.owned',
+            'state::bot.amplify.owned',
+            'state::bot.flame.owned',
+            'state::bot.thunder.owned',
+            'state::bot.bot_bot.owned',
             'state::bot.global.range_bonus_m',
             'state::tower.range_m',
             'state::bot.golden.effective_range_m',
@@ -1080,8 +1219,11 @@ def test_progression_family_publishes_effective_bot_range_surfaces_with_tower_ra
         effective_row = statbook.rows[f'state::bot.{bot_name}.effective_range_m']
         assert raw_row.status == 'resolved'
         assert effective_row.status == 'resolved'
-        assert effective_row.final_value == pytest.approx((raw_row.final_value + global_bonus) * amplification)
+        owned_row = statbook.rows[f'state::bot.{bot_name}.owned']
+        expected = (raw_row.final_value + global_bonus) * amplification if owned_row.final_value else 0.0
+        assert effective_row.final_value == pytest.approx(expected)
         contributor_ids = {c['stat_name'] for c in effective_row.contributors}
+        assert f'state::bot.{bot_name}.owned' in contributor_ids
         assert f'state::bot.{bot_name}.range_m' in contributor_ids
         assert 'state::bot.global.range_bonus_m' in contributor_ids
         assert 'state::tower.range_m' in contributor_ids

@@ -84,9 +84,11 @@ from app.inspector_data import (
     verification_rows_frame,
 )
 from app.pipeline import (
+    BOSS_WAVE_PERK_POLICY_PRESETS,
     FastCheckpointRequest,
     PipelineRunRequest,
     build_boss_wave_payload,
+    build_boss_wave_milestone_matrix,
     build_perk_timeline_preview,
     build_verification_snapshot_set,
     compute_perk_max_effect_displays,
@@ -183,6 +185,7 @@ def _build_boss_wave_operator_frame(frame: pd.DataFrame) -> pd.DataFrame:
             'Regen Gain': _series('wall_regen_gained_hp').map(_boss_wave_compact_text),
             'DR Used': _series('effective_damage_reduction_pct').map(_boss_wave_percent_text),
             'TTK (s)': _series('boss_ttk_seconds').map(_boss_wave_seconds_text),
+            'GC Kill': _series('boss_killed_before_contact').map(lambda value: 'Yes' if bool(value) else 'No'),
             'PC Dmg %': _series('boss_plasma_cannon_damage_to_boss_pct').map(_boss_wave_percent_text),
             'Orb Dmg %': _series('boss_orb_damage_to_boss_pct').map(_boss_wave_percent_text),
             'Electron Dmg %': _series('boss_electron_damage_to_boss_pct').map(_boss_wave_percent_text),
@@ -195,6 +198,9 @@ def _build_boss_wave_operator_frame(frame: pd.DataFrame) -> pd.DataFrame:
             'Wall Thorns Hits': _series('boss_wall_thorns_hits'),
             'Damage Taken': _series('boss_total_damage_taken').map(_boss_wave_compact_text),
             'Margin': _series('boss_survival_margin_hp').map(_boss_wave_signed_compact_text),
+            'Envelope Regen': _series('contact_envelope_wall_regen_gained_hp').map(_boss_wave_compact_text),
+            'Envelope Margin': _series('contact_envelope_survival_margin_hp').map(_boss_wave_signed_compact_text),
+            'Envelope Survives': _series('contact_envelope_survives_boss').map(lambda value: 'Yes' if bool(value) else 'No'),
             'Survives': _series('survives_boss').map(lambda value: 'Yes' if bool(value) else 'No'),
         }
     )
@@ -559,6 +565,7 @@ def _sidebar() -> PipelineRunRequest:
     manual_inputs_raw = st.sidebar.text_input('Manual inputs override', value='')
     manual_inputs = Path(manual_inputs_raw) if manual_inputs_raw.strip() else None
     preset = st.sidebar.selectbox('Preset', options=['Farming', 'Tourney', 'Milestone'], index=0)
+    perk_policy_preset = st.sidebar.selectbox('Perk policy', options=list(BOSS_WAVE_PERK_POLICY_PRESETS), index=1)
     include_slow_audits = st.sidebar.checkbox('Include slow audits', value=False)
     request = PipelineRunRequest(
         ids=ids_path,
@@ -569,6 +576,7 @@ def _sidebar() -> PipelineRunRequest:
         perk_mode='max_progression_policy',
         include_slow_audits=include_slow_audits,
         perk_state='auto',
+        perk_policy_preset=perk_policy_preset,
     )
     if st.sidebar.button('Run current request', width='stretch'):
         _run_request(request)
@@ -1792,18 +1800,36 @@ def _render_boss_waves(request: PipelineRunRequest, *, perk_policy_override: dic
     st.subheader('Boss Waves')
     control_cols = st.columns(4)
     preset_name = control_cols[0].selectbox('Boss preset', options=['Farming', 'Tourney', 'Milestone'], index=['Farming', 'Tourney', 'Milestone'].index(request.preset) if request.preset in {'Farming', 'Tourney', 'Milestone'} else 0)
-    tier_number = control_cols[1].number_input('Tier', min_value=1, max_value=18, value=14, step=1)
+    tier_number = control_cols[1].number_input('Tier', min_value=1, max_value=21, value=14, step=1)
     end_wave = control_cols[2].number_input('End wave', min_value=10, value=10000, step=10)
     boss_wave_step = control_cols[3].number_input('Checkpoint every N bosses', min_value=1, max_value=1000, value=1, step=1)
     stop_on_failure = st.toggle('Stop on first failed boss', value=True)
 
     with st.expander('Manual combat assumptions', expanded=False):
-        runtime_cols = st.columns(5)
+        runtime_cols = st.columns(6)
         orb_boss_total_damage_pct = runtime_cols[0].number_input('Orb damage to boss (total %)', min_value=0.0, max_value=100.0, value=6.0, step=0.1)
         electron_total_damage_pct = runtime_cols[1].number_input('Electron damage override (total %)', min_value=0.0, max_value=100.0, value=0.0, step=0.1)
         flame_bot_boss_hit_chance_pct = runtime_cols[2].number_input('Flame Bot boss hit chance (%)', min_value=0.0, max_value=100.0, value=50.0, step=1.0)
-        boss_time_to_contact_seconds = runtime_cols[3].number_input('Boss time to contact (s)', min_value=0.0, max_value=120.0, value=1.0, step=0.1)
-        death_wave_health_max_wave = runtime_cols[4].number_input('Death Wave maxed wave', min_value=1, value=1000, step=10)
+        flame_bot_damage_reduction_pct = runtime_cols[3].number_input('Flame Bot DR override (%)', min_value=0.0, max_value=100.0, value=0.0, step=1.0)
+        boss_time_to_contact_seconds = runtime_cols[4].number_input('Boss time to contact override (s)', min_value=0.0, max_value=120.0, value=0.0, step=0.1)
+        death_wave_health_max_wave = runtime_cols[5].number_input('Death Wave maxed wave', min_value=1, value=1000, step=10)
+        gc_cols = st.columns(2)
+        boss_applicable_damage_factor = gc_cols[0].number_input('Boss eDamage applicability factor', min_value=0.0, value=0.0, step=0.0001, format='%.6f')
+        bridge_cols = st.columns(4)
+        boss_edamage_target_share = bridge_cols[0].number_input('Boss target share', min_value=0.0, value=0.0, step=0.0001, format='%.6f')
+        boss_edamage_cadence_uptime_factor = bridge_cols[1].number_input('Boss cadence uptime', min_value=0.0, value=0.0, step=0.0001, format='%.6f')
+        boss_edamage_reliability_factor = bridge_cols[2].number_input('Boss reliability', min_value=0.0, value=0.0, step=0.0001, format='%.6f')
+        boss_edamage_semantic_normalizer = bridge_cols[3].number_input('Boss semantic normalizer', min_value=0.0, value=0.0, step=0.0001, format='%.6f')
+    decomposed_bridge_inputs = {
+        **({'boss_edamage_target_share': boss_edamage_target_share} if boss_edamage_target_share > 0.0 else {}),
+        **({'boss_edamage_cadence_uptime_factor': boss_edamage_cadence_uptime_factor} if boss_edamage_cadence_uptime_factor > 0.0 else {}),
+        **({'boss_edamage_reliability_factor': boss_edamage_reliability_factor} if boss_edamage_reliability_factor > 0.0 else {}),
+        **({'boss_edamage_semantic_normalizer': boss_edamage_semantic_normalizer} if boss_edamage_semantic_normalizer > 0.0 else {}),
+    }
+    bridge_comparison_inputs = {
+        **({'boss_applicable_damage_factor': boss_applicable_damage_factor} if boss_applicable_damage_factor > 0.0 else {}),
+        **decomposed_bridge_inputs,
+    }
 
     try:
         boss_payload = build_boss_wave_payload(
@@ -1817,10 +1843,14 @@ def _render_boss_waves(request: PipelineRunRequest, *, perk_policy_override: dic
                 'orb_boss_total_damage_pct': orb_boss_total_damage_pct,
                 **({'electron_total_damage_pct': electron_total_damage_pct} if electron_total_damage_pct > 0.0 else {}),
                 **({'flame_bot_boss_hit_chance_pct': flame_bot_boss_hit_chance_pct} if flame_bot_boss_hit_chance_pct > 0.0 else {}),
-                'boss_time_to_contact_seconds': boss_time_to_contact_seconds,
+                **({'flame_bot_damage_reduction_pct': flame_bot_damage_reduction_pct} if flame_bot_damage_reduction_pct > 0.0 else {}),
+                **({'boss_applicable_damage_factor': boss_applicable_damage_factor} if boss_applicable_damage_factor > 0.0 else {}),
+                **decomposed_bridge_inputs,
+                **({'boss_time_to_contact_seconds': boss_time_to_contact_seconds} if boss_time_to_contact_seconds > 0.0 else {}),
                 'death_wave_health_max_wave': death_wave_health_max_wave,
             },
             perk_policy_override=perk_policy_override,
+            include_dissonance_run_matrix=True,
         )
     except ValueError as exc:
         st.error(str(exc))
@@ -1857,7 +1887,14 @@ def _render_boss_waves(request: PipelineRunRequest, *, perk_policy_override: dic
         'first_checkpoint_wave': payload_diagnostics.get('first_checkpoint_wave'),
         'row_count': int(payload_summary.get('row_count') or len(frame)),
         'max_surviving_wave': int(payload_summary.get('max_surviving_wave') or 0),
+        'selected_max_wave': int(payload_summary.get('selected_max_wave') or payload_summary.get('max_surviving_wave') or 0),
+        'selected_first_failed_wave': int(payload_summary.get('selected_first_failed_wave') or 0),
+        'selected_model': payload_summary.get('selected_model') or 'unified_hit_by_hit_boss_survival',
         'first_failed_wave': int(payload_summary.get('first_failed_wave') or 0),
+        'gc_pre_contact_max_wave': int(payload_summary.get('gc_pre_contact_max_wave') or 0),
+        'gc_pre_contact_first_failed_wave': int(payload_summary.get('gc_pre_contact_first_failed_wave') or 0),
+        'contact_envelope_max_wave': int(payload_summary.get('contact_envelope_max_wave') or 0),
+        'contact_envelope_first_failed_wave': int(payload_summary.get('contact_envelope_first_failed_wave') or 0),
         'max_wave': int(payload_summary.get('max_wave') or 0),
         'terminal_display_wave': int(payload_summary.get('terminal_display_wave') or 0),
         'survives_through_end': bool(payload_summary.get('survives_through_end')),
@@ -1878,7 +1915,7 @@ def _render_boss_waves(request: PipelineRunRequest, *, perk_policy_override: dic
 
     summary_cols = st.columns(4)
     summary_cols[0].metric('Rows', diagnostics['row_count'])
-    summary_cols[1].metric('Max surviving wave', diagnostics['max_surviving_wave'])
+    summary_cols[1].metric('Selected wave', diagnostics['selected_max_wave'])
     summary_cols[2].metric('Tier', diagnostics['tier_column'])
     summary_cols[3].metric('Preset', diagnostics['preset_name'])
     summary_cols_2 = st.columns(4)
@@ -1886,6 +1923,97 @@ def _render_boss_waves(request: PipelineRunRequest, *, perk_policy_override: dic
     summary_cols_2[1].metric('Boss cadence', diagnostics['actual_boss_interval_waves'] or '—')
     summary_cols_2[2].metric('Execution mode', diagnostics['execution_mode'] or '—')
     summary_cols_2[3].metric('Row/result agreement', 'Yes' if diagnostics['result_consistent_with_rows'] else 'No')
+    st.caption(
+        f"Selected model `{diagnostics['selected_model']}`; "
+        f"GC pre-contact wave `{diagnostics['gc_pre_contact_max_wave']}` "
+        f"(first failed `{diagnostics['gc_pre_contact_first_failed_wave'] or 'none'}`); "
+        f"Fast contact-envelope wave `{diagnostics['contact_envelope_max_wave']}` "
+        f"(first failed `{diagnostics['contact_envelope_first_failed_wave'] or 'none'}`); "
+        f"hit-by-hit first failed `{diagnostics['first_failed_wave'] or 'none'}`."
+    )
+    dissonance_matrix = boss_payload.get('dissonance_run_matrix') or []
+    if dissonance_matrix:
+        matrix_frame = pd.DataFrame(dissonance_matrix)
+        display_columns = [
+            'label',
+            'selected_max_wave',
+            'selected_first_failed_wave',
+            'hit_by_hit_max_wave',
+            'contact_envelope_max_wave',
+            'gc_pre_contact_max_wave',
+            'status',
+        ]
+        available_columns = [column for column in display_columns if column in matrix_frame.columns]
+        st.dataframe(matrix_frame[available_columns], width='stretch', hide_index=True)
+        st.caption('Dissonant Run rows apply the v28 category restriction masks before the same Boss Waves run-plan table is evaluated.')
+    if st.button('Build all-tier milestone matrix'):
+        milestone_matrix = build_boss_wave_milestone_matrix(
+            request,
+            end_wave=int(end_wave),
+            boss_wave_step=int(boss_wave_step),
+            stop_on_failure=bool(stop_on_failure),
+            scenario_runtime_inputs={
+                'orb_boss_total_damage_pct': orb_boss_total_damage_pct,
+                **({'electron_total_damage_pct': electron_total_damage_pct} if electron_total_damage_pct > 0.0 else {}),
+                **({'flame_bot_boss_hit_chance_pct': flame_bot_boss_hit_chance_pct} if flame_bot_boss_hit_chance_pct > 0.0 else {}),
+                **({'flame_bot_damage_reduction_pct': flame_bot_damage_reduction_pct} if flame_bot_damage_reduction_pct > 0.0 else {}),
+                **({'boss_time_to_contact_seconds': boss_time_to_contact_seconds} if boss_time_to_contact_seconds > 0.0 else {}),
+                'death_wave_health_max_wave': death_wave_health_max_wave,
+            },
+            comparison_scenario_runtime_inputs=bridge_comparison_inputs or None,
+            comparison_label='bridge_assumptions',
+        )
+        milestone_frame = pd.DataFrame(milestone_matrix.get('wide_rows') or [])
+        display_columns = [
+            'tier_column',
+            'milestone_reference_wave',
+            'regular_display',
+            'regular_reference_wave',
+            'regular_delta_vs_reference_wave',
+            'attack_display',
+            'attack_reference_wave',
+            'attack_delta_vs_reference_wave',
+            'defense_display',
+            'defense_reference_wave',
+            'defense_delta_vs_reference_wave',
+            'utility_display',
+            'utility_reference_wave',
+            'utility_delta_vs_reference_wave',
+            'ultimate_weapons_display',
+            'ultimate_weapons_reference_wave',
+            'ultimate_weapons_delta_vs_reference_wave',
+            'regular_status',
+            'attack_status',
+            'defense_status',
+            'utility_status',
+            'ultimate_weapons_status',
+        ]
+        st.dataframe(milestone_frame[[column for column in display_columns if column in milestone_frame.columns]], width='stretch', hide_index=True)
+        comparison_payload = dict(milestone_matrix.get('comparison') or {})
+        comparison_rows = comparison_payload.get('wide_rows') or []
+        if comparison_rows:
+            comparison_frame = pd.DataFrame(comparison_rows)
+            comparison_columns = [
+                'tier_column',
+                'milestone_reference_wave',
+                'regular_default_display',
+                'regular_comparison_display',
+                'regular_delta_wave',
+                'attack_default_display',
+                'attack_comparison_display',
+                'attack_delta_wave',
+                'defense_default_display',
+                'defense_comparison_display',
+                'defense_delta_wave',
+                'utility_default_display',
+                'utility_comparison_display',
+                'utility_delta_wave',
+                'ultimate_weapons_default_display',
+                'ultimate_weapons_comparison_display',
+                'ultimate_weapons_delta_wave',
+            ]
+            st.dataframe(comparison_frame[[column for column in comparison_columns if column in comparison_frame.columns]], width='stretch', hide_index=True)
+        st.caption('Each cell prefers complete milestone-mode candidates, then the highest selected wave across the four named loadout presets.')
     milestone_alignment = diagnostics['milestone_alignment']
     milestone_reference = milestone_alignment.get('reference_wave')
     if milestone_reference:
@@ -1924,7 +2052,7 @@ def _render_boss_waves(request: PipelineRunRequest, *, perk_policy_override: dic
         'skips are accumulated across the intervening waves using the interval-start resolved values, while boss kill '
         'time uses the sanctioned runtime damage proxy rather than a static max-progression shortcut.'
     )
-    if diagnostics['context_status'] != 'resolved':
+    if diagnostics['context_status'] not in {'resolved', 'complete'}:
         st.error(diagnostics['context_error_message'] or 'Boss Waves cannot resolve the required scenario context for this request.')
     st.info(
         'Boss Waves is a bounded runtime estimate. The main table shows the operator-facing survival view; '

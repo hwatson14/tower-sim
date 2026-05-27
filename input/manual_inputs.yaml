@@ -29,32 +29,90 @@ perk_config:
 perk_policy:
   seed: 42
   target_wave: 50000
+  active_policy_preset: "eHP Farming"
   priority_order:
     - "Perk Wave Requirement -20.00%"
-    - "Black Hole Duration +12.0s"
-    - "x1.80 coins, but Tower Max Health -70%"
     - "Increase Max Game Speed by +1.00"
-    - "+1 Wave on Death Wave"
+    - "x1.80 coins, but Tower Max Health -70%"
     - "Golden Tower Bonus x1.5"
+    - "Black Hole Duration +12.0s"
+    - "+1 Wave on Death Wave"
     - "x1.15 All Coin Bonuses"
     - "Free Upgrade Chance for All +5.0%"
-    - "Defense Percent +4.00"
+    - "Enemies Damage -50%, but Tower Damage -50%"
     - "Tower Health Regen x8.00, But Tower Max Max Health -60%"
-    - "x1.20 Max Health"
+    - "Defense Percent +4.00"
     - "x1.75 Health Regen"
+    - "x1.20 Max Health"
   first_perk_choice: "Perk Wave Requirement -20.00%"
   notes: >-
     Projected max progression perk availability is generated from IDS-backed
     Waves Required / Standard Perk Bonus / Perk Option Quantity / Ban Perks
-    plus this policy file. Edit banned_perks and/or priority_order here
-    to set the default manual bans used by the generator when perk_config above
-    has no active preset.
+    plus this policy file. Use policy_presets for goal-specific timeline
+    policies; PWR is always first choice / highest priority, followed by
+    game speed. The flat policy remains as a fallback for older callers.
   banned_perks:
     - "Enemies Have -50% Health, but Tower Health Regen and Lifesteal -90%"
-    - "Enemies Speed -40%, But Enemies Damage x2.5"
     - "Interest x1.50"
     - "Land Mine Damage x3.50"
+    - "x1.15 Defense Absolute"
+    - "Enemies Speed -40%, But Enemies Damage x2.5"
     - "x1.15 Cash Bonus"
+  policy_presets:
+    "eHP Max Waves":
+      strategy: goal_benefit_matrix_v1
+    "eHP Farming":
+      strategy: manual_explicit_v1
+      source_note: "User screenshot import 2026-05-22; screenshot values are lab-scaled, stored here by canonical base perk name."
+      priority_order:
+        - "Perk Wave Requirement -20.00%"
+        - "Increase Max Game Speed by +1.00"
+        - "x1.80 coins, but Tower Max Health -70%"
+        - "Golden Tower Bonus x1.5"
+        - "Black Hole Duration +12.0s"
+        - "+1 Wave on Death Wave"
+        - "x1.15 All Coin Bonuses"
+        - "Free Upgrade Chance for All +5.0%"
+        - "Enemies Damage -50%, but Tower Damage -50%"
+        - "Tower Health Regen x8.00, But Tower Max Max Health -60%"
+        - "Defense Percent +4.00"
+        - "x1.75 Health Regen"
+        - "x1.20 Max Health"
+      first_perk_choice: "Perk Wave Requirement -20.00%"
+      banned_perks:
+        - "Enemies Have -50% Health, but Tower Health Regen and Lifesteal -90%"
+        - "Interest x1.50"
+        - "Land Mine Damage x3.50"
+        - "x1.15 Defense Absolute"
+        - "Enemies Speed -40%, But Enemies Damage x2.5"
+        - "x1.15 Cash Bonus"
+    "GC Max Waves":
+      strategy: goal_benefit_matrix_v1
+    "GC Farming":
+      strategy: manual_explicit_v1
+      source_note: "User guidance 2026-05-22: GC Farming mirrors eHP Farming economy spine, replacing eHP survivability picks with damage/clear picks."
+      priority_order:
+        - "Perk Wave Requirement -20.00%"
+        - "Increase Max Game Speed by +1.00"
+        - "x1.80 coins, but Tower Max Health -70%"
+        - "Golden Tower Bonus x1.5"
+        - "Black Hole Duration +12.0s"
+        - "+1 Wave on Death Wave"
+        - "x1.15 All Coin Bonuses"
+        - "Free Upgrade Chance for All +5.0%"
+        - "x1.15 Damage"
+        - "Spotlight Damage Bonus x1.5"
+        - "Chain Lightning Damage x2"
+        - "Boss Health -70%, But Boss Speed +50%"
+        - "Bounce Shot +2"
+      first_perk_choice: "Perk Wave Requirement -20.00%"
+      banned_perks:
+        - "Interest x1.50"
+        - "Land Mine Damage x3.50"
+        - "x1.15 Defense Absolute"
+        - "Enemies Speed -40%, But Enemies Damage x2.5"
+        - "Tower Health Regen x8.00, But Tower Max Max Health -60%"
+        - "x1.15 Cash Bonus"
 
 manual_advisory_inputs:
   inputs:

@@ -19,6 +19,7 @@ from qe.compat.legacy_surface_ids import (
     legacy_flag_surface_id as _compat_flag,
     legacy_mechanic_surface_id as _compat_mech,
     legacy_runtime_surface_id as _compat_runtime,
+    to_legacy_surface_id as _compat_to_legacy_surface_id,
 )
 from qe.contracts import normalize_surface_id_to_contract, to_v2_surface_id
 from qe.models import BoundStatInputs, StateIdentity, StateIdentityBinding, compile_stat_inputs_with_identity
@@ -105,11 +106,13 @@ def _resolve_free_upgrade_chance_pct(
     destination_id: str,
     contributors: list[StatInput],
     schema: dict[str, object],
+    resolved_rows: Mapping[str, StatRow] | None = None,
 ) -> tuple[float | None, str, str, dict[str, object]]:
     workshop_base = next((_as_float(row.value) for row in contributors if row.source_family == 'workshop'), None)
     if workshop_base is None:
         return None, 'mapped_not_resolved', f'Missing workshop base for {destination_id}.', schema
     enhancement_multiplier = 1.0
+    saw_direct_enhancement = False
     additive_bonus_pp = 0.0
     for row in contributors:
         if row.source_family == 'workshop':
@@ -118,12 +121,24 @@ def _resolve_free_upgrade_chance_pct(
         if value is None:
             continue
         if row.source_family == 'enhancement':
+            saw_direct_enhancement = True
             enhancement_multiplier *= _canonical_source_multiplier(destination_id, row, value)
             continue
         if row.source_family in {'relic', 'vault'} and 0.0 <= value <= 1.0:
             additive_bonus_pp += value * 100.0
             continue
         additive_bonus_pp += value
+    if not saw_direct_enhancement and resolved_rows:
+        for support_surface_id in (
+            'state::tower.free_upgrade_multiplier',
+            'support_surface::free_upgrade_multiplier',
+            _compat_to_legacy_surface_id('state::tower.free_upgrade_multiplier'),
+        ):
+            support_row = resolved_rows.get(support_surface_id)
+            support_value = _as_float(getattr(support_row, 'final_value', None)) if support_row is not None else None
+            if support_value is not None:
+                enhancement_multiplier *= support_value
+                break
     final = (workshop_base + additive_bonus_pp) * enhancement_multiplier
     cap = CANONICAL_PCT_CAPS.get(destination_id)
     if cap is not None:
@@ -205,6 +220,8 @@ def _destination_type_schema(destination_id: str, meta: dict[str, str]) -> dict[
     }
     if destination_id in overrides:
         expected_semantics = overrides[destination_id]
+    if destination_id.endswith('.owned'):
+        expected_semantics = ['bool']
     explicit_caps = {}
     if destination_id in CANONICAL_PCT_CAPS:
         explicit_caps['max'] = CANONICAL_PCT_CAPS[destination_id]
@@ -619,6 +636,23 @@ def _resolve_bucket(
     meta: dict[str, str],
 ) -> tuple[float | None, str, str, dict[str, object]]:
     schema = _destination_type_schema(destination_id, meta)
+    dissonance_override = next(
+        (
+            row
+            for row in contributors
+            if row.active
+            and row.source_family == 'scenario_rules'
+            and str(row.contributor_id or '').startswith('dissonance_restriction_override::')
+        ),
+        None,
+    )
+    if dissonance_override is not None:
+        return (
+            dissonance_override.value,
+            'resolved',
+            'v28 Dissonant Run scenario restriction override from KB contract.',
+            schema,
+        )
     publish_ok, publish_note, bad_contributors, schema = _publish_gate_check(
         destination_object_type, destination_id, contributors, meta
     )
@@ -727,6 +761,16 @@ def _resolve_bucket(
         return value, status, notes, schema
 
     if destination_object_type == 'mechanic_param' and destination_id.startswith('bot.'):
+        if destination_id.endswith('.owned'):
+            value, status, notes = _safe_single_or_uniform_resolution(destination_object_type, destination_id, contributors)
+            return value, status, notes, schema
+        resolved_rows = meta.get('_resolved_rows', {})
+        bot_prefix = '.'.join(destination_id.split('.')[:2])
+        unlock_row = resolved_rows.get(_compat_mech(f'{bot_prefix}.owned')) or resolved_rows.get(_compat_cap(f'{bot_prefix}.owned'))
+        if unlock_row is not None and bool(unlock_row.final_value) is False:
+            return 0.0, 'resolved', f'Bot unlock-gated to zero because {bot_prefix} is not owned.', schema
+        if any(row.source_family == 'bot' and str(row.notes or '') == 'ids_bot_locked_zeroed' for row in contributors):
+            return 0.0, 'resolved', f'Bot unlock-gated to zero from locked IDS bot-track contributor because {bot_prefix} is not owned.', schema
         numeric_values = [_as_float(row.value) for row in contributors]
         numeric_values = [value for value in numeric_values if value is not None]
         if not numeric_values:
@@ -825,7 +869,7 @@ def _resolve_bucket(
     if destination_id in {'tower_crit_multiplier', 'tower_supercrit_multiplier'}:
         return _resolve_additive_base_times_post_multipliers(destination_id, contributors, schema)
     if destination_id in _FREE_UPGRADE_CHANCE_DESTINATIONS:
-        return _resolve_free_upgrade_chance_pct(destination_id, contributors, schema)
+        return _resolve_free_upgrade_chance_pct(destination_id, contributors, schema, meta.get('_resolved_rows', {}))
 
     unit = meta.get('unit', 'unknown')
     resolver = meta.get('resolver', 'unknown')
@@ -1144,7 +1188,10 @@ class QEResolutionPlanner:
         requested_surface_ids: Sequence[str],
         trace_mode: str = 'contributors',
     ) -> QEFamilyQueryResult:
-        family_id = _infer_manifest_approved_family(bound_inputs.stat_inputs)
+        family_id = _infer_manifest_approved_family_for_requested_surfaces(
+            bound_inputs.stat_inputs,
+            requested_surface_ids,
+        )
         if family_id is None:
             raise ValueError('Requested QE family query has no manifest-approved native family for the supplied stat inputs.')
         return self.resolve_bound_declared_family_query(
@@ -1472,7 +1519,7 @@ def _resolve_compat_statbook(stat_inputs: Sequence[StatInput]) -> StatBook:
 def _build_report_snapshot(bound_inputs: BoundStatInputs) -> QEResolvedSnapshot:
     native_family_id = _infer_manifest_approved_family(bound_inputs.stat_inputs)
     resolution_path = 'report_snapshot_compat'
-    statbook = _resolve_hybrid_statbook_from_bound_inputs(bound_inputs)
+    statbook = _normalize_report_statbook_surface_ids(_resolve_hybrid_statbook_from_bound_inputs(bound_inputs))
     if native_family_id is not None:
         resolution_path = 'report_snapshot_hybrid'
     diagnostics = dict(statbook.diagnostics)
@@ -1610,6 +1657,35 @@ def _with_native_fallback_diagnostics(
     if fallback_error:
         diagnostics['qe_native_family_fallback']['error'] = fallback_error
     return StatBook(rows=statbook.rows, diagnostics=diagnostics)
+
+
+def _normalize_report_statbook_surface_ids(statbook: StatBook) -> StatBook:
+    rows: dict[str, StatRow] = {}
+    collisions: dict[str, list[str]] = {}
+    for raw_key, raw_row in statbook.rows.items():
+        surface_id = normalize_surface_id_to_contract(str(raw_key))
+        if surface_id in rows:
+            collisions.setdefault(surface_id, [rows[surface_id].stat_name]).append(str(raw_key))
+        row = copy.copy(raw_row)
+        row.stat_name = surface_id
+        normalized_contributors: list[dict[str, object]] = []
+        for contributor in row.contributors or []:
+            normalized = dict(contributor)
+            normalized.setdefault('surface_id', surface_id)
+            if 'source_class' not in normalized and 'source_family' in normalized:
+                normalized['source_class'] = normalized.get('source_family')
+            if 'input_value_type' not in normalized and 'value_type' in normalized:
+                normalized['input_value_type'] = normalized.get('value_type')
+            if 'provenance_ref' not in normalized and 'provenance' in normalized:
+                normalized['provenance_ref'] = normalized.get('provenance')
+            normalized_contributors.append(normalized)
+        row.contributors = normalized_contributors
+        rows[surface_id] = row
+    diagnostics = dict(statbook.diagnostics or {})
+    diagnostics['report_snapshot_surface_id_contract'] = 'active_v2'
+    if collisions:
+        diagnostics['report_snapshot_surface_id_collisions'] = collisions
+    return StatBook(rows=rows, diagnostics=diagnostics)
 
 
 def _build_rows_family_query_result(
@@ -2129,6 +2205,34 @@ def _infer_manifest_approved_family(stat_inputs: Sequence[StatInput]) -> str | N
         return _PROGRESSION_START_OF_RUN
 
     return None
+
+
+def _infer_manifest_approved_family_for_requested_surfaces(
+    stat_inputs: Sequence[StatInput],
+    requested_surface_ids: Sequence[str],
+) -> str | None:
+    candidate = _infer_manifest_approved_family(stat_inputs)
+    requested = {to_v2_surface_id(str(surface_id)) for surface_id in requested_surface_ids}
+    if candidate is not None and requested.issubset(
+        {to_v2_surface_id(surface_id) for surface_id in _DELEGATED_FAMILY_SURFACE_IDS[candidate]}
+    ):
+        return candidate
+
+    progression_requested = requested.issubset(
+        {to_v2_surface_id(surface_id) for surface_id in _PROGRESSION_V1_SURFACE_IDS}
+    )
+    if progression_requested and _looks_like_progression_family_rows(stat_inputs):
+        if any(row.source_family == 'perk' for row in stat_inputs):
+            return _PROGRESSION_RUNTIME_WITH_PERKS
+        return _PROGRESSION_START_OF_RUN
+
+    timing_requested = requested.issubset({to_v2_surface_id(surface_id) for surface_id in _TIMING_V1_SURFACE_IDS})
+    if timing_requested and any(row.source_family == 'scenario_rules' for row in stat_inputs):
+        preset_names = {str(row.preset_name).strip() for row in stat_inputs if row.preset_name}
+        if len(preset_names) == 1:
+            return _TIMING_FAMILY_BY_PRESET.get(next(iter(preset_names)))
+
+    return candidate
 
 
 def _looks_like_progression_family_rows(stat_inputs: Sequence[StatInput]) -> bool:

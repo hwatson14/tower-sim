@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import csv
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from functools import lru_cache
 from math import inf, isfinite
 from pathlib import Path
@@ -82,6 +82,12 @@ class ScenarioOverlayInputs:
     removed_perk_ids: tuple[str, ...] = ()
     attack_skip_chance_delta: float = 0.0
     health_skip_chance_delta: float = 0.0
+    tower_damage_decay_start_wave: int = 0
+    tower_damage_decay_fraction_per_step: float = 0.0
+    tower_damage_decay_interval_waves: int = 10
+    tower_health_decay_start_wave: int = 0
+    tower_health_decay_fraction_per_step: float = 0.0
+    tower_health_decay_interval_waves: int = 10
     survivability_transforms: ScenarioSurvivabilityTransforms = field(default_factory=ScenarioSurvivabilityTransforms)
 
 
@@ -89,6 +95,9 @@ class ScenarioOverlayInputs:
 class CombatInputs:
     plasma_cannon_effect_pct: float = 0.0
     tower_thorns_damage_pct: float = 0.0
+    continuous_boss_damage_per_second: float = 0.0
+    continuous_boss_damage_multiplier: float = 1.0
+    continuous_boss_damage_multiplier_duration_seconds: float = 0.0
     orb_boss_hit_pct: float | None = None
     orb_boss_total_damage_pct: float | None = None
     orb_boss_hit_count: float | None = None
@@ -110,10 +119,12 @@ class BossDamageBreakdown:
     plasma_cannon_damage: float = 0.0
     orb_damage: float = 0.0
     electron_damage: float = 0.0
+    continuous_damage: float = 0.0
     thorns_damage: float = 0.0
     plasma_cannon_damage_pct: float = 0.0
     orb_damage_pct: float = 0.0
     electron_damage_pct: float = 0.0
+    continuous_damage_pct: float = 0.0
     thorns_damage_pct: float = 0.0
     thorns_expected_damage_pct_from_hits: float = 0.0
     thorns_hits: int = 0
@@ -136,11 +147,13 @@ class BossContactThornsResult:
     thorns_damage_pct: float
     thorns_expected_damage_pct_from_hits: float
     thorns_hits: int
+    continuous_damage: float = 0.0
+    continuous_damage_pct: float = 0.0
 
 
 @dataclass(frozen=True)
 class BossCombatTimeline:
-    ttk_seconds: float
+    ttk_seconds: float | None
     damage_breakdown: BossDamageBreakdown
     wall_thorns_kill_seconds: float | None
     boss_hits_to_player: int
@@ -170,6 +183,11 @@ class CombatLaneEvaluation:
     wall_hp: float
     wall_regen_gained_hp: float
     damage_reduction_fraction: float
+    contact_envelope_survives: bool = True
+    contact_envelope_fail_reason: str | None = None
+    contact_envelope_total_damage_taken: float = 0.0
+    contact_envelope_survival_margin_hp: float = 0.0
+    contact_envelope_wall_regen_gained_hp: float = 0.0
 
 
 @dataclass(frozen=True)
@@ -264,31 +282,37 @@ def evaluate_overlay_row(
 ) -> ScenarioOverlayRow:
     _validate_combat(combat)
     transforms = scenario.survivability_transforms
-    effective_attack_skip = _bounded_fraction(float(row.common_inputs.get("attack_skip_chance", 0.0)) + float(scenario.attack_skip_chance_delta))
-    effective_health_skip = _bounded_fraction(float(row.common_inputs.get("health_skip_chance", 0.0)) + float(scenario.health_skip_chance_delta))
-    effective_progression = _effective_progression_for_row(
-        row.wave_progression,
-        start_progression_wave=int(row.common_inputs.get("start_progression_wave", 0)),
-        attack_skip_chance=effective_attack_skip,
-        health_skip_chance=effective_health_skip,
+    if float(scenario.attack_skip_chance_delta) or float(scenario.health_skip_chance_delta):
+        raise KernelAmbiguityError(
+            "scenario ELS deltas must be applied by the Table 1 trajectory builder; "
+            "Table 2 cannot replay prior waves from a row-local skip chance"
+        )
+    effective_attack_skip = _bounded_fraction(float(row.common_inputs.get("attack_skip_chance", 0.0)))
+    effective_health_skip = _bounded_fraction(float(row.common_inputs.get("health_skip_chance", 0.0)))
+    effective_progression = row.wave_progression
+    row_transforms, row_combat, overheat_effects = _row_overheat_inputs(
+        row=row,
+        scenario=scenario,
+        transforms=transforms,
+        combat=combat,
     )
-    enemy_attack = _required_enemy_value(ENEMY_DAMAGE_TABLE, effective_progression.attack_wave, scenario.tier_column) * max(0.0, float(transforms.enemy_attack_multiplier))
+    enemy_attack = _required_enemy_value(ENEMY_DAMAGE_TABLE, effective_progression.attack_wave, scenario.tier_column) * max(0.0, float(row_transforms.enemy_attack_multiplier))
     enemy_health = (
         _required_enemy_value(ENEMY_HEALTH_TABLE, effective_progression.health_wave, scenario.tier_column)
         * float(BOSS_HP_MULTIPLIER)
-        * max(0.0, float(transforms.enemy_health_multiplier))
+        * max(0.0, float(row_transforms.enemy_health_multiplier))
     )
     active_perk_counts, active_perk_contributions = _active_perk_state(row, scenario)
-    final_wall_hp = _derive_wall_hp(row.survivability_contributors, transforms, active_perk_contributions)
-    final_wall_regen = _derive_wall_regen(row.survivability_contributors, transforms, active_perk_contributions)
+    final_wall_hp = _derive_wall_hp(row.survivability_contributors, row_transforms, active_perk_contributions)
+    final_wall_regen = _derive_wall_regen(row.survivability_contributors, row_transforms, active_perk_contributions)
     tower_defense_fraction = _tower_defense_fraction(row.survivability_contributors, active_perk_contributions)
     tower_defense_absolute = _tower_defense_absolute_value(row.survivability_contributors, active_perk_contributions)
-    lane_non_defense_drs = _derive_lane_non_defense_damage_reduction(row.survivability_contributors, transforms, active_perk_contributions)
+    lane_non_defense_drs = _derive_lane_non_defense_damage_reduction(row.survivability_contributors, row_transforms, active_perk_contributions)
     lane_drs = _compose_lane_damage_reduction(
         tower_defense_fraction=tower_defense_fraction,
         lane_non_defense_drs=lane_non_defense_drs,
     )
-    boss_timeline = _simulate_boss_combat_timeline(enemy_health=enemy_health, combat=combat)
+    boss_timeline = _simulate_boss_combat_timeline(enemy_health=enemy_health, combat=row_combat)
     ttk_seconds = boss_timeline.ttk_seconds
     contact_thorns_kill_seconds = boss_timeline.wall_thorns_kill_seconds
     boss_damage_breakdown = boss_timeline.damage_breakdown
@@ -298,16 +322,16 @@ def evaluate_overlay_row(
             enemy_attack=enemy_attack,
             pre_fort_wall_hp=final_wall_hp,
             wall_regen=final_wall_regen,
-            wall_fortification_multiplier=row.survivability_contributors.wall_fortification_multiplier * max(0.0, float(transforms.wall_fortification_multiplier)),
+            wall_fortification_multiplier=row.survivability_contributors.wall_fortification_multiplier * max(0.0, float(row_transforms.wall_fortification_multiplier)),
             tower_defense_fraction=tower_defense_fraction,
             tower_defense_absolute=tower_defense_absolute,
             non_defense_damage_reduction_fraction=lane_non_defense_drs[lane_id],
             damage_reduction_fraction=lane_drs[lane_id],
-            incoming_damage_multiplier=max(0.0, float(transforms.incoming_damage_multiplier)),
+            incoming_damage_multiplier=max(0.0, float(row_transforms.incoming_damage_multiplier)),
             ttk_seconds=ttk_seconds,
             contact_thorns_kill_seconds=contact_thorns_kill_seconds,
             boss_hits_to_player=boss_timeline.boss_hits_to_player,
-            combat=combat,
+            combat=row_combat,
         )
         for lane_id in LANE_ORDER
     )
@@ -329,7 +353,7 @@ def evaluate_overlay_row(
         display_wave=row.display_wave,
         scenario_key=scenario.scenario_key,
         battle_conditions=tuple(scenario.battle_conditions),
-        heat=dict(scenario.heat),
+        heat={**dict(scenario.heat), **dict(overheat_effects)},
         tournament_perks_enabled=bool(scenario.tournament_perks_enabled),
         active_perk_counts=active_perk_counts,
         active_perk_contributions=active_perk_contributions,
@@ -415,11 +439,17 @@ def _derive_lane_non_defense_damage_reduction(
     transforms: ScenarioSurvivabilityTransforms,
     perk_contributions: Mapping[str, float],
 ) -> dict[str, float]:
-    black_hole_dr = _timed_dr_fraction_by_lane(
-        damage_reduction_pct=contributors.black_hole_damage_reduction_pct,
-        duration_seconds=contributors.black_hole_duration_seconds + _perk_contribution_sum(perk_contributions, "black_hole_duration_seconds_add"),
-        cooldown_seconds=contributors.black_hole_cooldown_seconds,
-    )
+    if contributors.black_hole_explicit_uptime_fraction is None:
+        black_hole_dr = _timed_dr_fraction_by_lane(
+            damage_reduction_pct=contributors.black_hole_damage_reduction_pct,
+            duration_seconds=contributors.black_hole_duration_seconds + _perk_contribution_sum(perk_contributions, "black_hole_duration_seconds_add"),
+            cooldown_seconds=contributors.black_hole_cooldown_seconds,
+        )
+    else:
+        black_hole_dr = _timed_dr_fraction_by_lane(
+            damage_reduction_pct=contributors.black_hole_damage_reduction_pct,
+            explicit_uptime_fraction=contributors.black_hole_explicit_uptime_fraction,
+        )
     chrono_field_dr = _timed_dr_fraction_by_lane(
         damage_reduction_pct=contributors.chrono_field_damage_reduction_pct,
         duration_seconds=contributors.chrono_field_duration_seconds + _perk_contribution_sum(perk_contributions, "chrono_field_duration_seconds_add"),
@@ -465,6 +495,61 @@ def _effective_progression_for_row(progression: WaveProgressionRecurrence, *, st
         attack_skip_chance=attack_skip_chance,
         health_skip_chance=health_skip_chance,
     )
+
+
+def _decay_multiplier_for_wave(
+    *,
+    display_wave: int,
+    start_wave: int,
+    fraction_per_step: float,
+    interval_waves: int,
+) -> tuple[int, float]:
+    start = int(start_wave)
+    interval = int(interval_waves)
+    fraction = _bounded_fraction(float(fraction_per_step))
+    if start <= 0 or interval <= 0 or fraction <= 0.0 or int(display_wave) < start:
+        return 0, 1.0
+    steps = max(0, (int(display_wave) - start) // interval)
+    return steps, max(0.0, 1.0 - (fraction * steps))
+
+
+def _row_overheat_inputs(
+    *,
+    row: CommonTrajectoryRow,
+    scenario: ScenarioOverlayInputs,
+    transforms: ScenarioSurvivabilityTransforms,
+    combat: CombatInputs,
+) -> tuple[ScenarioSurvivabilityTransforms, CombatInputs, Mapping[str, float]]:
+    damage_steps, damage_multiplier = _decay_multiplier_for_wave(
+        display_wave=row.display_wave,
+        start_wave=scenario.tower_damage_decay_start_wave,
+        fraction_per_step=scenario.tower_damage_decay_fraction_per_step,
+        interval_waves=scenario.tower_damage_decay_interval_waves,
+    )
+    health_steps, health_multiplier = _decay_multiplier_for_wave(
+        display_wave=row.display_wave,
+        start_wave=scenario.tower_health_decay_start_wave,
+        fraction_per_step=scenario.tower_health_decay_fraction_per_step,
+        interval_waves=scenario.tower_health_decay_interval_waves,
+    )
+    row_transforms = transforms
+    if health_multiplier != 1.0:
+        row_transforms = replace(
+            row_transforms,
+            wall_hp_multiplier=max(0.0, float(row_transforms.wall_hp_multiplier)) * health_multiplier,
+        )
+    row_combat = combat
+    if damage_multiplier != 1.0:
+        row_combat = replace(
+            row_combat,
+            continuous_boss_damage_per_second=max(0.0, float(row_combat.continuous_boss_damage_per_second or 0.0)) * damage_multiplier,
+        )
+    return row_transforms, row_combat, {
+        "tower_damage_decay_steps": float(damage_steps),
+        "tower_damage_decay_multiplier": float(damage_multiplier),
+        "tower_health_decay_steps": float(health_steps),
+        "tower_health_decay_multiplier": float(health_multiplier),
+    }
 
 
 def _active_perk_state(row: CommonTrajectoryRow, scenario: ScenarioOverlayInputs) -> tuple[dict[str, int], dict[str, float]]:
@@ -556,13 +641,39 @@ def _evaluate_boss_ttd_lane(
     boss_hits_to_player: int,
     combat: CombatInputs,
 ) -> CombatLaneEvaluation:
-    if ttk_seconds is None:
-        raise KernelAmbiguityError("boss TTD requires finite boss_ttk_seconds")
     wall_hp = pre_fort_wall_hp * max(0.0, float(wall_fortification_multiplier))
     hits = _bounded_whole_hit_count(boss_hits_to_player, "boss_hits_to_player")
+    if ttk_seconds is None:
+        heat_multiplier = 1.0
+        raw_damage = float(enemy_attack) * incoming_damage_multiplier * heat_multiplier
+        post_defense_pct_damage = raw_damage * max(0.0, 1.0 - tower_defense_fraction)
+        post_defense_absolute_damage = max(0.0, post_defense_pct_damage - max(0.0, float(tower_defense_absolute)))
+        first_hit_damage = post_defense_absolute_damage * max(0.0, 1.0 - non_defense_damage_reduction_fraction)
+        contact_window_seconds = 0.0 if combat.boss_time_to_contact_seconds is None else max(0.0, float(combat.boss_time_to_contact_seconds))
+        envelope_regen = max(0.0, wall_regen * contact_window_seconds)
+        envelope_margin = wall_hp + envelope_regen - first_hit_damage
+        return CombatLaneEvaluation(
+            lane_id,
+            False,
+            "boss_not_killed_by_modeled_sources",
+            None,
+            contact_thorns_kill_seconds,
+            hits,
+            first_hit_damage,
+            wall_hp - first_hit_damage,
+            wall_hp,
+            0.0,
+            damage_reduction_fraction,
+            False,
+            "boss_not_killed_by_modeled_sources",
+            first_hit_damage,
+            envelope_margin,
+            0.0,
+        )
     current_wall_hp = wall_hp
     wall_regen_gained = 0.0
     total_damage = 0.0
+    first_hit_damage = 0.0
     for hit_index in range(hits):
         if hit_index > 0:
             regen_window_seconds = max(0.0, float(combat.boss_hit_interval_seconds))
@@ -574,13 +685,36 @@ def _evaluate_boss_ttd_lane(
         post_defense_pct_damage = raw_damage * max(0.0, 1.0 - tower_defense_fraction)
         post_defense_absolute_damage = max(0.0, post_defense_pct_damage - max(0.0, float(tower_defense_absolute)))
         hit_damage = post_defense_absolute_damage * max(0.0, 1.0 - non_defense_damage_reduction_fraction)
+        if hit_index == 0:
+            first_hit_damage = hit_damage
         total_damage += hit_damage
         current_wall_hp -= hit_damage
     margin = current_wall_hp
-    return CombatLaneEvaluation(lane_id, margin >= 0.0, None if margin >= 0.0 else "boss_wall_damage_exceeds_hp", ttk_seconds, contact_thorns_kill_seconds, hits, total_damage, margin, wall_hp, wall_regen_gained, damage_reduction_fraction)
+    contact_window_seconds = 0.0 if combat.boss_time_to_contact_seconds is None else max(0.0, float(combat.boss_time_to_contact_seconds))
+    envelope_regen = max(0.0, wall_regen * contact_window_seconds)
+    envelope_margin = wall_hp + envelope_regen - first_hit_damage
+    envelope_survives = envelope_margin >= 0.0
+    return CombatLaneEvaluation(
+        lane_id,
+        margin >= 0.0,
+        None if margin >= 0.0 else "boss_wall_damage_exceeds_hp",
+        ttk_seconds,
+        contact_thorns_kill_seconds,
+        hits,
+        total_damage,
+        margin,
+        wall_hp,
+        wall_regen_gained,
+        damage_reduction_fraction,
+        contact_envelope_survives=envelope_survives,
+        contact_envelope_fail_reason=None if envelope_survives else "boss_contact_envelope_damage_exceeds_hp",
+        contact_envelope_total_damage_taken=first_hit_damage,
+        contact_envelope_survival_margin_hp=envelope_margin,
+        contact_envelope_wall_regen_gained_hp=envelope_regen,
+    )
 
 
-def _simulate_boss_ttk(*, enemy_health: float, combat: CombatInputs) -> float:
+def _simulate_boss_ttk(*, enemy_health: float, combat: CombatInputs) -> float | None:
     return _simulate_boss_combat_timeline(enemy_health=enemy_health, combat=combat).ttk_seconds
 
 
@@ -610,10 +744,20 @@ def _simulate_boss_combat_timeline(*, enemy_health: float, combat: CombatInputs)
             plasma_cannon_damage=pre_contact_kill.damage_breakdown.plasma_cannon_damage,
             orb_damage=pre_contact_kill.damage_breakdown.orb_damage,
             electron_damage=pre_contact_kill.damage_breakdown.electron_damage,
+            continuous_damage=pre_contact_kill.damage_breakdown.continuous_damage + contact_thorns_result.continuous_damage,
             thorns_damage=contact_thorns_result.thorns_damage,
             plasma_cannon_damage_pct=pre_contact_kill.damage_breakdown.plasma_cannon_damage_pct,
             orb_damage_pct=pre_contact_kill.damage_breakdown.orb_damage_pct,
             electron_damage_pct=pre_contact_kill.damage_breakdown.electron_damage_pct,
+            continuous_damage_pct=(
+                0.0
+                if pre_contact_kill.starting_hp <= 0.0
+                else (
+                    (pre_contact_kill.damage_breakdown.continuous_damage + contact_thorns_result.continuous_damage)
+                    / pre_contact_kill.starting_hp
+                )
+                * 100.0
+            ),
             thorns_damage_pct=contact_thorns_result.thorns_damage_pct,
             thorns_expected_damage_pct_from_hits=contact_thorns_result.thorns_expected_damage_pct_from_hits,
             thorns_hits=contact_thorns_result.thorns_hits,
@@ -637,6 +781,72 @@ def _pre_contact_event_seconds(combat: CombatInputs) -> float:
     if not isfinite(seconds) or seconds < 0.0:
         raise KernelAmbiguityError("boss_time_to_contact_seconds must be finite and non-negative")
     return seconds
+
+
+def _continuous_boss_dps(combat: CombatInputs) -> float:
+    value = float(combat.continuous_boss_damage_per_second or 0.0)
+    if not isfinite(value) or value < 0.0:
+        raise KernelAmbiguityError("continuous_boss_damage_per_second must be finite and non-negative")
+    return value
+
+
+def _continuous_damage_multiplier(combat: CombatInputs) -> float:
+    value = float(combat.continuous_boss_damage_multiplier or 1.0)
+    if not isfinite(value) or value < 0.0:
+        raise KernelAmbiguityError("continuous_boss_damage_multiplier must be finite and non-negative")
+    return max(1.0, value)
+
+
+def _continuous_damage_multiplier_duration(combat: CombatInputs) -> float:
+    value = float(combat.continuous_boss_damage_multiplier_duration_seconds or 0.0)
+    if not isfinite(value) or value < 0.0:
+        raise KernelAmbiguityError("continuous_boss_damage_multiplier_duration_seconds must be finite and non-negative")
+    return value
+
+
+def _continuous_damage_between(*, start_seconds: float, end_seconds: float, combat: CombatInputs) -> float:
+    start = max(0.0, float(start_seconds))
+    end = max(start, float(end_seconds))
+    dps = _continuous_boss_dps(combat)
+    if dps <= 0.0 or end <= start:
+        return 0.0
+    multiplier = _continuous_damage_multiplier(combat)
+    multiplier_until = _continuous_damage_multiplier_duration(combat)
+    boosted_end = min(end, max(start, multiplier_until))
+    boosted_seconds = max(0.0, boosted_end - start)
+    base_seconds = max(0.0, end - start - boosted_seconds)
+    return dps * ((boosted_seconds * multiplier) + base_seconds)
+
+
+def _continuous_kill_seconds_in_interval(
+    *,
+    start_seconds: float,
+    end_seconds: float,
+    hp_to_kill: float,
+    combat: CombatInputs,
+) -> float | None:
+    remaining = max(0.0, float(hp_to_kill))
+    if remaining <= 0.0:
+        return max(0.0, float(start_seconds))
+    start = max(0.0, float(start_seconds))
+    end = max(start, float(end_seconds))
+    dps = _continuous_boss_dps(combat)
+    if dps <= 0.0 or end <= start:
+        return None
+    multiplier = _continuous_damage_multiplier(combat)
+    multiplier_until = _continuous_damage_multiplier_duration(combat)
+    boosted_end = min(end, max(start, multiplier_until))
+    boosted_seconds = max(0.0, boosted_end - start)
+    boosted_rate = dps * multiplier
+    if boosted_rate > 0.0 and boosted_seconds > 0.0:
+        boosted_capacity = boosted_rate * boosted_seconds
+        if remaining <= boosted_capacity:
+            return start + (remaining / boosted_rate)
+        remaining -= boosted_capacity
+    base_seconds = max(0.0, end - start - boosted_seconds)
+    if dps > 0.0 and base_seconds > 0.0 and remaining <= dps * base_seconds:
+        return start + boosted_seconds + (remaining / dps)
+    return None
 
 
 def _simulate_boss_pre_contact_kill_state(*, enemy_health: float, combat: CombatInputs) -> BossPreContactKillState:
@@ -672,7 +882,7 @@ def _simulate_boss_pre_contact_kill_state(*, enemy_health: float, combat: Combat
             0.0,
         )
     if combat.orb_boss_total_damage_pct is not None:
-        orb_pct = (_bounded_percent(float(combat.orb_boss_total_damage_pct)) / 100.0) * max(0.0, float(combat.orb_resistance_multiplier))
+        orb_pct = _bounded_percent(float(combat.orb_boss_total_damage_pct)) / 100.0
         orb_damage_pct = orb_pct * 100.0
         before = remaining_hp
         remaining_hp *= max(0.0, 1.0 - orb_pct)
@@ -731,8 +941,66 @@ def _simulate_boss_pre_contact_kill_state(*, enemy_health: float, combat: Combat
             ),
             event_seconds,
         )
+    continuous_damage = 0.0
+    continuous_damage_pct = 0.0
+    if _continuous_boss_dps(combat) > 0.0 and combat.boss_time_to_contact_seconds is not None:
+        event_seconds = _pre_contact_event_seconds(combat)
+        kill_seconds = _continuous_kill_seconds_in_interval(
+            start_seconds=0.0,
+            end_seconds=event_seconds,
+            hp_to_kill=max(0.0, remaining_hp - kill_threshold),
+            combat=combat,
+        )
+        if kill_seconds is not None:
+            continuous_damage = min(
+                max(0.0, remaining_hp - kill_threshold),
+                _continuous_damage_between(start_seconds=0.0, end_seconds=kill_seconds, combat=combat),
+            )
+            remaining_hp = max(0.0, remaining_hp - continuous_damage)
+            continuous_damage_pct = 0.0 if starting_hp <= 0.0 else (continuous_damage / starting_hp) * 100.0
+            return BossPreContactKillState(
+                kill_seconds,
+                remaining_hp,
+                starting_hp,
+                kill_threshold,
+                BossDamageBreakdown(
+                    plasma_cannon_damage=plasma_cannon_damage,
+                    orb_damage=orb_damage,
+                    electron_damage=electron_damage,
+                    continuous_damage=continuous_damage,
+                    plasma_cannon_damage_pct=plasma_cannon_damage_pct,
+                    orb_damage_pct=orb_damage_pct,
+                    electron_damage_pct=electron_damage_pct,
+                    continuous_damage_pct=continuous_damage_pct,
+                ),
+                kill_seconds,
+            )
+        continuous_damage = min(
+            max(0.0, remaining_hp - kill_threshold),
+            _continuous_damage_between(start_seconds=0.0, end_seconds=event_seconds, combat=combat),
+        )
+        remaining_hp = max(0.0, remaining_hp - continuous_damage)
+        continuous_damage_pct = 0.0 if starting_hp <= 0.0 else (continuous_damage / starting_hp) * 100.0
+        if remaining_hp <= kill_threshold:
+            return BossPreContactKillState(
+                event_seconds,
+                remaining_hp,
+                starting_hp,
+                kill_threshold,
+                BossDamageBreakdown(
+                    plasma_cannon_damage=plasma_cannon_damage,
+                    orb_damage=orb_damage,
+                    electron_damage=electron_damage,
+                    continuous_damage=continuous_damage,
+                    plasma_cannon_damage_pct=plasma_cannon_damage_pct,
+                    orb_damage_pct=orb_damage_pct,
+                    electron_damage_pct=electron_damage_pct,
+                    continuous_damage_pct=continuous_damage_pct,
+                ),
+                event_seconds,
+            )
     pre_contact_event_seconds = None
-    if (orb_damage > 0.0 or electron_damage > 0.0) and combat.boss_time_to_contact_seconds is not None:
+    if (orb_damage > 0.0 or electron_damage > 0.0 or continuous_damage > 0.0) and combat.boss_time_to_contact_seconds is not None:
         pre_contact_event_seconds = _pre_contact_event_seconds(combat)
     return BossPreContactKillState(
         None,
@@ -743,9 +1011,11 @@ def _simulate_boss_pre_contact_kill_state(*, enemy_health: float, combat: Combat
             plasma_cannon_damage=plasma_cannon_damage,
             orb_damage=orb_damage,
             electron_damage=electron_damage,
+            continuous_damage=continuous_damage,
             plasma_cannon_damage_pct=plasma_cannon_damage_pct,
             orb_damage_pct=orb_damage_pct,
             electron_damage_pct=electron_damage_pct,
+            continuous_damage_pct=continuous_damage_pct,
         ),
         pre_contact_event_seconds,
     )
@@ -782,14 +1052,42 @@ def _simulate_boss_contact_thorns_result(
     thorns_damage = 0.0
     thorns_expected_damage_pct_from_hits = 0.0
     thorns_hits = 0
+    continuous_damage = 0.0
+    last_event_seconds = 0.0
     max_ttk = float(combat.max_ttk_seconds)
     while remaining_hp > kill_threshold:
         t = next_contact
         if not isfinite(t) or t > max_ttk:
             if thorns_pct <= 0.0:
                 thorns_damage_pct = 0.0 if starting_hp <= 0.0 else (thorns_damage / starting_hp) * 100.0
-                return BossContactThornsResult(None, thorns_damage, thorns_damage_pct, thorns_expected_damage_pct_from_hits, thorns_hits)
+                continuous_damage_pct = 0.0 if starting_hp <= 0.0 else (continuous_damage / starting_hp) * 100.0
+                return BossContactThornsResult(None, thorns_damage, thorns_damage_pct, thorns_expected_damage_pct_from_hits, thorns_hits, continuous_damage, continuous_damage_pct)
             raise KernelAmbiguityError("boss contact thorns resolution exceeded event horizon without kill")
+        continuous_kill_seconds = _continuous_kill_seconds_in_interval(
+            start_seconds=last_event_seconds,
+            end_seconds=t,
+            hp_to_kill=max(0.0, remaining_hp - kill_threshold),
+            combat=combat,
+        )
+        if continuous_kill_seconds is not None:
+            interval_damage = min(
+                max(0.0, remaining_hp - kill_threshold),
+                _continuous_damage_between(start_seconds=last_event_seconds, end_seconds=continuous_kill_seconds, combat=combat),
+            )
+            continuous_damage += interval_damage
+            remaining_hp = max(0.0, remaining_hp - interval_damage)
+            thorns_damage_pct = 0.0 if starting_hp <= 0.0 else (thorns_damage / starting_hp) * 100.0
+            continuous_damage_pct = 0.0 if starting_hp <= 0.0 else (continuous_damage / starting_hp) * 100.0
+            return BossContactThornsResult(float(continuous_kill_seconds), thorns_damage, thorns_damage_pct, thorns_expected_damage_pct_from_hits, thorns_hits, continuous_damage, continuous_damage_pct)
+        interval_damage = min(
+            max(0.0, remaining_hp - kill_threshold),
+            _continuous_damage_between(start_seconds=last_event_seconds, end_seconds=t, combat=combat),
+        )
+        continuous_damage += interval_damage
+        remaining_hp = max(0.0, remaining_hp - interval_damage)
+        last_event_seconds = t
+        if remaining_hp <= kill_threshold:
+            break
         if abs(next_contact - t) <= 1e-12:
             before = remaining_hp
             thorns_fraction = thorns_pct + (thorns_increase_per_hit * contact_hit_index)
@@ -804,7 +1102,8 @@ def _simulate_boss_contact_thorns_result(
                 raise KernelAmbiguityError("boss_hit_interval_seconds must be positive")
             next_contact += float(combat.boss_hit_interval_seconds)
     thorns_damage_pct = 0.0 if starting_hp <= 0.0 else (thorns_damage / starting_hp) * 100.0
-    return BossContactThornsResult(float(t), thorns_damage, thorns_damage_pct, thorns_expected_damage_pct_from_hits, thorns_hits)
+    continuous_damage_pct = 0.0 if starting_hp <= 0.0 else (continuous_damage / starting_hp) * 100.0
+    return BossContactThornsResult(float(t), thorns_damage, thorns_damage_pct, thorns_expected_damage_pct_from_hits, thorns_hits, continuous_damage, continuous_damage_pct)
 
 
 def _boss_total_ttk_seconds(
@@ -822,7 +1121,7 @@ def _boss_total_ttk_seconds(
         return max(0.0, min(candidates))
     if combat.boss_time_to_contact_seconds is None:
         raise KernelAmbiguityError("boss cannot be killed by pre-contact events and contact timing is unavailable")
-    raise KernelAmbiguityError("boss cannot be killed by pre-contact TTK events or contact thorns within the modeled horizon")
+    return None
 
 
 def _timed_dr_fraction(*, damage_reduction_pct: float, duration_seconds: float, cooldown_seconds: float) -> float:
@@ -834,13 +1133,24 @@ def _timed_dr_fraction(*, damage_reduction_pct: float, duration_seconds: float, 
     return _bounded_fraction(dr * min(1.0, duration / cooldown))
 
 
-def _timed_dr_fraction_by_lane(*, damage_reduction_pct: float, duration_seconds: float, cooldown_seconds: float) -> dict[str, float]:
+def _timed_dr_fraction_by_lane(
+    *,
+    damage_reduction_pct: float,
+    duration_seconds: float = 0.0,
+    cooldown_seconds: float = 0.0,
+    explicit_uptime_fraction: float | None = None,
+) -> dict[str, float]:
     dr = _bounded_percent(damage_reduction_pct) / 100.0
-    duration = max(0.0, float(duration_seconds))
-    cooldown = max(0.0, float(cooldown_seconds))
-    if dr <= 0.0 or duration <= 0.0 or cooldown <= 0.0:
+    if explicit_uptime_fraction is None:
+        duration = max(0.0, float(duration_seconds))
+        cooldown = max(0.0, float(cooldown_seconds))
+        if dr <= 0.0 or duration <= 0.0 or cooldown <= 0.0:
+            return {"min": 0.0, "avg": 0.0, "max": 0.0}
+        uptime = min(1.0, duration / cooldown)
+    else:
+        uptime = _bounded_fraction(float(explicit_uptime_fraction))
+    if dr <= 0.0 or uptime <= 0.0:
         return {"min": 0.0, "avg": 0.0, "max": 0.0}
-    uptime = min(1.0, duration / cooldown)
     if uptime >= 1.0:
         return {"min": dr, "avg": dr, "max": dr}
     return {"min": 0.0, "avg": _bounded_fraction(dr * uptime), "max": dr}
@@ -857,6 +1167,8 @@ def _validate_survivability_contributors(contributors: SurvivabilityContributorB
     ):
         if float(getattr(contributors, name)) < 0.0:
             raise KernelAmbiguityError(f"survivability contributor {name} cannot be negative")
+    if contributors.black_hole_explicit_uptime_fraction is not None and float(contributors.black_hole_explicit_uptime_fraction) < 0.0:
+        raise KernelAmbiguityError("survivability contributor black_hole_explicit_uptime_fraction cannot be negative")
 
 
 def _registry_by_id(registry: tuple[ColumnFormulaSpec, ...]) -> dict[str, ColumnFormulaSpec]:

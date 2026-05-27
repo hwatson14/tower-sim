@@ -83,11 +83,12 @@ operator_table_fields:
   - product_field: Tower DPS
     consumer_input: tower_damage_per_second
     legacy_source: legacy rows.tower_damage_per_second
-    replacement_source: none
-    comparability: not_comparable
-    normalization: null_display_dash
+    replacement_source: operator_rows.tower_damage_per_second
+    comparability: intentional_semantic_difference
+    normalization: numeric_display_compact
     required_for: [table]
-    cutover_behavior: not_exposed_in_replacement_v21_event_only_ttk
+    cutover_behavior: switch_now
+    semantic_note: Replacement Tower DPS defaults to the QE-owned Chain Lightning continuous boss DPS lane. QE eDamage can feed this lane only through explicit runtime bridge inputs: either a single boss_applicable_damage_factor or the complete decomposed target-share/cadence/reliability/semantic-normalizer factor set.
   - product_field: Wall HP
     consumer_input: wall_hp
     legacy_source: legacy rows.wall_pool_hp_used
@@ -129,6 +130,15 @@ operator_table_fields:
     required_for: [table]
     cutover_behavior: switch_now
     semantic_note: Replacement TTK is total v21 event-only boss kill time and includes contact thorns when the boss is not killed before contact.
+  - product_field: GC Kill
+    consumer_input: boss_killed_before_contact
+    legacy_source: none
+    replacement_source: operator_rows.boss_killed_before_contact
+    comparability: not_comparable
+    normalization: boolean_yes_no
+    required_for: [table]
+    cutover_behavior: switch_now
+    semantic_note: True when boss_ttk_seconds is finite and no greater than boss_time_to_contact_seconds.
   - product_field: PC Dmg %
     consumer_input: boss_plasma_cannon_damage_to_boss_pct
     legacy_source: none
@@ -251,6 +261,23 @@ summary_fields:
     normalization: integer
     required_for: [summary]
     cutover_behavior: switch_now
+  - product_field: Selected wave
+    consumer_input: summary.selected_max_wave
+    legacy_source: none
+    replacement_source: summary.selected_max_wave
+    comparability: not_comparable
+    normalization: integer
+    required_for: [summary]
+    cutover_behavior: switch_now
+    semantic_note: All loadout policies select the unified hit-by-hit boss-survival lane; GC contact-envelope and pre-contact boss-kill values remain diagnostics fed by the same loadout-specific stats.
+  - product_field: GC pre-contact wave
+    consumer_input: summary.gc_pre_contact_max_wave
+    legacy_source: none
+    replacement_source: summary.gc_pre_contact_max_wave
+    comparability: not_comparable
+    normalization: integer
+    required_for: [summary]
+    cutover_behavior: switch_now
   - product_field: Tier
     consumer_input: summary.tier_column
     legacy_source: legacy summary.tier_column
@@ -299,6 +326,26 @@ summary_fields:
     normalization: boolean_yes_no
     required_for: [summary]
     cutover_behavior: switch_now
+dissonance_run_matrix_fields:
+  derivation_basis: Streamlit renders payload.dissonance_run_matrix when requested by the Boss Waves product surface
+  source: payload.dissonance_run_matrix
+  replacement_source: app.pipeline._build_boss_wave_dissonance_run_matrix
+  cutover_behavior: switch_now
+  row_policy:
+    comparability: not_comparable
+    normalization: one row for Regular plus Attack, Defense, Utility, and Ultimate Weapon Dissonant Run categories
+    required_for: [summary]
+    note: Each Dissonant Run row is computed by the same replacement Boss Waves path after applying the v28 category mask before Table 1/Table 2 evaluation. GC rows select the better of pre-contact boss kill and the GC contact-envelope survival lane when an explicit boss-damage bridge is supplied.
+  replacement_columns:
+    - {consumer_input: label, legacy_source: none, replacement_source: dissonance_run_matrix.label, comparability: not_comparable, normalization: string, required_surface: summary, cutover_behavior: switch_now}
+    - {consumer_input: selected_max_wave, legacy_source: none, replacement_source: dissonance_run_matrix.selected_max_wave, comparability: not_comparable, normalization: integer, required_surface: summary, cutover_behavior: switch_now}
+    - {consumer_input: selected_first_failed_wave, legacy_source: none, replacement_source: dissonance_run_matrix.selected_first_failed_wave, comparability: not_comparable, normalization: integer_zero_as_dash, required_surface: summary, cutover_behavior: switch_now}
+    - {consumer_input: selected_model, legacy_source: none, replacement_source: dissonance_run_matrix.selected_model, comparability: not_comparable, normalization: string, required_surface: summary, cutover_behavior: switch_now}
+    - {consumer_input: hit_by_hit_max_wave, legacy_source: none, replacement_source: dissonance_run_matrix.hit_by_hit_max_wave, comparability: not_comparable, normalization: integer, required_surface: summary, cutover_behavior: switch_now}
+    - {consumer_input: contact_envelope_max_wave, legacy_source: none, replacement_source: dissonance_run_matrix.contact_envelope_max_wave, comparability: not_comparable, normalization: integer, required_surface: summary, cutover_behavior: switch_now}
+    - {consumer_input: gc_pre_contact_max_wave, legacy_source: none, replacement_source: dissonance_run_matrix.gc_pre_contact_max_wave, comparability: not_comparable, normalization: integer, required_surface: summary, cutover_behavior: switch_now}
+    - {consumer_input: status, legacy_source: none, replacement_source: dissonance_run_matrix.status, comparability: not_comparable, normalization: string, required_surface: summary, cutover_behavior: switch_now}
+    - {consumer_input: post_failure_truncation_kind, legacy_source: none, replacement_source: dissonance_run_matrix.post_failure_truncation_kind, comparability: not_comparable, normalization: string_or_null, required_surface: diagnostics, cutover_behavior: switch_now}
 payload_split:
   operator_rows: replacement-backed selected rows for table rendering
   rows: selected rows retained as backward-compatible table alias
@@ -322,9 +369,10 @@ export_fields:
     - {consumer_input: boss_health, legacy_source: legacy rows.boss_health, replacement_source: download_rows.boss_health, comparability: transformed, normalization: float, required_surface: export, cutover_behavior: switch_now}
     - {consumer_input: wall_pre_fort_hp, legacy_source: legacy rows.wall_hp, replacement_source: download_rows.wall_pre_fort_hp, comparability: transformed, normalization: float, required_surface: export, cutover_behavior: switch_now}
     - {consumer_input: wall_regen, legacy_source: legacy rows.wall_regen, replacement_source: download_rows.wall_regen, comparability: transformed, normalization: float, required_surface: export, cutover_behavior: switch_now}
-    - {consumer_input: tower_damage_per_second, legacy_source: legacy rows.tower_damage_per_second, replacement_source: download_rows.tower_damage_per_second, comparability: intentional_semantic_difference, normalization: null_for_v21_event_only_ttk, required_surface: export, cutover_behavior: switch_now}
+    - {consumer_input: tower_damage_per_second, legacy_source: legacy rows.tower_damage_per_second, replacement_source: download_rows.tower_damage_per_second, comparability: intentional_semantic_difference, normalization: float_gc_boss_continuous_dps_defaulting_to_qe_chain_lightning_unless_explicit_bridge_supplied, required_surface: export, cutover_behavior: switch_now}
     - {consumer_input: effective_damage_reduction_pct, legacy_source: legacy rows.effective_damage_reduction_pct, replacement_source: download_rows.effective_damage_reduction_pct, comparability: transformed, normalization: percent_float, required_surface: export, cutover_behavior: switch_now}
-    - {consumer_input: boss_ttk_seconds, legacy_source: legacy rows.boss_ttk_seconds, replacement_source: download_rows.boss_ttk_seconds, comparability: intentional_semantic_difference, normalization: seconds_float_total_v21_event_only, required_surface: export, cutover_behavior: switch_now}
+    - {consumer_input: boss_ttk_seconds, legacy_source: legacy rows.boss_ttk_seconds, replacement_source: download_rows.boss_ttk_seconds, comparability: intentional_semantic_difference, normalization: seconds_float_event_sources_plus_gc_boss_continuous_damage, required_surface: export, cutover_behavior: switch_now}
+    - {consumer_input: boss_killed_before_contact, legacy_source: none, replacement_source: download_rows.boss_killed_before_contact, comparability: not_comparable, normalization: boolean, required_surface: export, cutover_behavior: switch_now}
     - {consumer_input: boss_plasma_cannon_damage_to_boss_pct, legacy_source: none, replacement_source: download_rows.boss_plasma_cannon_damage_to_boss_pct, comparability: not_comparable, normalization: percent_float, required_surface: export, cutover_behavior: switch_now}
     - {consumer_input: boss_orb_damage_to_boss_pct, legacy_source: none, replacement_source: download_rows.boss_orb_damage_to_boss_pct, comparability: not_comparable, normalization: percent_float, required_surface: export, cutover_behavior: switch_now}
     - {consumer_input: boss_electron_damage_to_boss_pct, legacy_source: none, replacement_source: download_rows.boss_electron_damage_to_boss_pct, comparability: not_comparable, normalization: percent_float, required_surface: export, cutover_behavior: switch_now}
@@ -380,6 +428,12 @@ diagnostics_fields:
       normalization: string_or_null
       required_for: [diagnostics]
     - consumer_input: diagnostics.context_error_message
+      normalization: string_or_null
+      required_for: [diagnostics]
+    - consumer_input: diagnostics.post_failure_truncation_kind
+      normalization: string_or_null
+      required_for: [diagnostics]
+    - consumer_input: diagnostics.post_failure_truncation_message
       normalization: string_or_null
       required_for: [diagnostics]
     - consumer_input: diagnostics.actual_boss_interval_waves

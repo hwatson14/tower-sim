@@ -736,6 +736,54 @@ nodes:
     verification_status: verified
     blocker_reason: ''
     notes: Damage Card Mastery multiplier consumed by eDamage.
+  - node_id: source_input::card:Energy Net
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: verified
+    blocker_reason: ''
+    notes: Energy Net card source for boss-contact damage timing and mastery multiplier surfaces.
+  - node_id: source_input::lab:Energy Net Mastery
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: verified
+    blocker_reason: ''
+    notes: Energy Net Mastery lab source for the boss damage multiplier surface.
+  - node_id: state::cards.energy_net.duration_seconds
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: debug_only
+    verification_status: verified
+    blocker_reason: ''
+    notes: Energy Net base-card duration consumed by Boss Waves damage multiplier timing.
+  - node_id: state::cards.energy_net.mastery_effect
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: debug_only
+    verification_status: verified
+    blocker_reason: ''
+    notes: Energy Net Mastery boss damage multiplier consumed by Boss Waves continuous boss-damage timing.
+  - node_id: source_input::card:Slow Aura
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: verified
+    blocker_reason: ''
+    notes: Slow Aura card source for Boss Waves contact-time enemy speed reduction.
+  - node_id: state::cards.slow_aura.enemy_speed_pct
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: debug_only
+    verification_status: verified
+    blocker_reason: ''
+    notes: Slow Aura base-card enemy speed reduction consumed by Boss Waves contact-time derivation.
   - node_id: source_input::card:Ultimate Crit
     node_kind: source_input
     family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
@@ -1128,6 +1176,14 @@ nodes:
     verification_status: analysis_provisional
     blocker_reason: ''
     notes: Query-owned Amplify Bot effective-range surface.
+  - node_id: state::bot.amplify.owned
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_default
+    verification_status: verified
+    blocker_reason: ''
+    notes: Query-owned Amplify Bot unlock flag parsed from _IDS.
   - node_id: state::bot.flame.cooldown_seconds
     node_kind: surface
     family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
@@ -1152,6 +1208,14 @@ nodes:
     verification_status: analysis_provisional
     blocker_reason: ''
     notes: Query-owned Flame Bot damage reduction surface.
+  - node_id: state::bot.flame.owned
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_default
+    verification_status: verified
+    blocker_reason: ''
+    notes: Query-owned Flame Bot unlock flag parsed from _IDS.
   - node_id: state::bot.flame.range_m
     node_kind: surface
     family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
@@ -1192,6 +1256,14 @@ nodes:
     verification_status: analysis_provisional
     blocker_reason: ''
     notes: Query-owned Golden Bot bonus multiplier surface.
+  - node_id: state::bot.golden.owned
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_default
+    verification_status: verified
+    blocker_reason: ''
+    notes: Query-owned Golden Bot unlock flag parsed from _IDS.
   - node_id: state::bot.golden.cooldown_seconds
     node_kind: surface
     family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
@@ -1224,6 +1296,14 @@ nodes:
     verification_status: analysis_provisional
     blocker_reason: ''
     notes: Query-owned Golden Bot effective-range surface.
+  - node_id: state::bot.thunder.owned
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_default
+    verification_status: verified
+    blocker_reason: ''
+    notes: Query-owned Thunder Bot unlock flag parsed from _IDS.
   - node_id: state::bot.thunder.cooldown_seconds
     node_kind: surface
     family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
@@ -1272,6 +1352,14 @@ nodes:
     verification_status: analysis_provisional
     blocker_reason: ''
     notes: Query-owned Thunder Bot effective-range surface.
+  - node_id: state::bot.bot_bot.owned
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_default
+    verification_status: verified
+    blocker_reason: ''
+    notes: Query-owned v28 Bot Bot unlock flag parsed from _IDS.
   - node_id: state::bot.bot_bot.duration_seconds
     node_kind: surface
     family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
@@ -1880,6 +1968,78 @@ nodes:
     verification_status: verified
     blocker_reason: ''
     notes: Query-owned Chain Lightning chance for eDamage.
+  - node_id: state::uw.chain_lightning.owned
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: support_only
+    verification_status: verified
+    blocker_reason: ''
+    notes: Query-owned Chain Lightning unlock flag parsed from _IDS.
+  - node_id: state::uw.smart_missiles.owned
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: support_only
+    verification_status: verified
+    blocker_reason: ''
+    notes: Query-owned Smart Missiles unlock flag parsed from _IDS.
+  - node_id: state::uw.death_wave.owned
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: support_only
+    verification_status: verified
+    blocker_reason: ''
+    notes: Query-owned Death Wave unlock flag parsed from _IDS.
+  - node_id: state::uw.chrono_field.owned
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: support_only
+    verification_status: verified
+    blocker_reason: ''
+    notes: Query-owned Chrono Field unlock flag parsed from _IDS.
+  - node_id: state::uw.inner_land_mines.owned
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: support_only
+    verification_status: verified
+    blocker_reason: ''
+    notes: Query-owned Inner Land Mines unlock flag parsed from _IDS.
+  - node_id: state::uw.golden_tower.owned
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: support_only
+    verification_status: verified
+    blocker_reason: ''
+    notes: Query-owned Golden Tower unlock flag parsed from _IDS.
+  - node_id: state::uw.poison_swamp.owned
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: support_only
+    verification_status: verified
+    blocker_reason: ''
+    notes: Query-owned Poison Swamp unlock flag parsed from _IDS.
+  - node_id: state::uw.black_hole.owned
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: support_only
+    verification_status: verified
+    blocker_reason: ''
+    notes: Query-owned Black Hole unlock flag parsed from _IDS.
+  - node_id: state::uw.spotlight.owned
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: support_only
+    verification_status: verified
+    blocker_reason: ''
+    notes: Query-owned Spotlight unlock flag parsed from _IDS.
   - node_id: state::uw.death_wave.damage_multiplier
     node_kind: surface
     family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
@@ -2625,6 +2785,38 @@ nodes:
     verification_status: analysis_provisional
     blocker_reason: ''
     notes: Query-owned v28 Ultimate Weapons Dissonant Echo source bonus.
+  - node_id: support_surface::dissonance.attack_run_active
+    node_kind: support_surface
+    family_ids: [derived_v1]
+    is_publishable: true
+    publication_relevance: support_publishable
+    verification_status: verified
+    blocker_reason: ''
+    notes: Boss Waves runtime scenario flag for an active Attack Dissonant Run; consumed by the QE eDamage restricted branch.
+  - node_id: support_surface::dissonance.defense_run_active
+    node_kind: support_surface
+    family_ids: [derived_v1]
+    is_publishable: true
+    publication_relevance: support_publishable
+    verification_status: verified
+    blocker_reason: ''
+    notes: Boss Waves runtime scenario flag for an active Defense Dissonant Run; consumed by the QE eDamage Shockwave restriction branch.
+  - node_id: support_surface::dissonance.utility_run_active
+    node_kind: support_surface
+    family_ids: [derived_v1]
+    is_publishable: true
+    publication_relevance: support_publishable
+    verification_status: verified
+    blocker_reason: ''
+    notes: Boss Waves runtime scenario flag for an active Utility Dissonant Run; published for diagnostics and support-surface parity.
+  - node_id: support_surface::dissonance.ultimate_weapons_run_active
+    node_kind: support_surface
+    family_ids: [derived_v1]
+    is_publishable: true
+    publication_relevance: support_publishable
+    verification_status: verified
+    blocker_reason: ''
+    notes: Boss Waves runtime scenario flag for an active Ultimate Weapon Dissonant Run; published for diagnostics and support-surface parity.
 edges:
   - upstream_node_id: source_input::lab:Dissonant Echo - Attack
     downstream_node_id: state::labs.dissonant_echo.attack.level
@@ -3159,6 +3351,27 @@ edges:
     publication_relevance: support_only
     verification_status: verified
     notes: Damage Mastery lab level governs the eDamage card-mastery multiplier surface.
+  - upstream_node_id: source_input::card:Energy Net
+    downstream_node_id: state::cards.energy_net.duration_seconds
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [card_assertions]
+    publication_relevance: support_only
+    verification_status: verified
+    notes: Energy Net equipped state and card level govern the Boss Waves net duration surface.
+  - upstream_node_id: source_input::lab:Energy Net Mastery
+    downstream_node_id: state::cards.energy_net.mastery_effect
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [lab_level_change]
+    publication_relevance: support_only
+    verification_status: verified
+    notes: Energy Net Mastery lab level governs the Boss Waves boss damage multiplier surface.
+  - upstream_node_id: source_input::card:Slow Aura
+    downstream_node_id: state::cards.slow_aura.enemy_speed_pct
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [card_assertions]
+    publication_relevance: support_only
+    verification_status: verified
+    notes: Slow Aura equipped state and card level govern the Boss Waves contact-time speed surface.
   - upstream_node_id: source_input::card:Ultimate Crit
     downstream_node_id: state::cards.ultimate_crit.chance_pct
     invalidation_semantics: recompute_downstream
@@ -3356,6 +3569,13 @@ edges:
     verification_status: analysis_provisional
     notes: Starting Cash lab routes to starting cash bonus.
   - upstream_node_id: source_input::bot:Amplify Bot
+    downstream_node_id: state::bot.amplify.owned
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [bot_unlock_mutation]
+    publication_relevance: publishable_path
+    verification_status: verified
+    notes: Amplify Bot _IDS unlock flag routes to owned state.
+  - upstream_node_id: source_input::bot:Amplify Bot
     downstream_node_id: state::bot.amplify.bonus_multiplier
     invalidation_semantics: recompute_downstream
     mutation_classes: [bot_upgrade_mutation]
@@ -3383,6 +3603,13 @@ edges:
     publication_relevance: publishable_path
     verification_status: analysis_provisional
     notes: Amplify Bot base source routes to range.
+  - upstream_node_id: source_input::bot:Flame Bot
+    downstream_node_id: state::bot.flame.owned
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [bot_unlock_mutation]
+    publication_relevance: publishable_path
+    verification_status: verified
+    notes: Flame Bot _IDS unlock flag routes to owned state.
   - upstream_node_id: source_input::bot:Flame Bot
     downstream_node_id: state::bot.flame.cooldown_seconds
     invalidation_semantics: recompute_downstream
@@ -3440,6 +3667,13 @@ edges:
     verification_status: analysis_provisional
     notes: Flame Bot range and shared-range modifiers route to effective range.
   - upstream_node_id: source_input::bot:Golden Bot
+    downstream_node_id: state::bot.golden.owned
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [bot_unlock_mutation]
+    publication_relevance: publishable_path
+    verification_status: verified
+    notes: Golden Bot _IDS unlock flag routes to owned state.
+  - upstream_node_id: source_input::bot:Golden Bot
     downstream_node_id: state::bot.golden.bonus_multiplier
     invalidation_semantics: recompute_downstream
     mutation_classes: [bot_upgrade_mutation]
@@ -3474,6 +3708,13 @@ edges:
     publication_relevance: publishable_path
     verification_status: analysis_provisional
     notes: Golden Bot range and shared-range modifiers route to effective range.
+  - upstream_node_id: source_input::bot:Thunder Bot
+    downstream_node_id: state::bot.thunder.owned
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [bot_unlock_mutation]
+    publication_relevance: publishable_path
+    verification_status: verified
+    notes: Thunder Bot _IDS unlock flag routes to owned state.
   - upstream_node_id: source_input::bot:Thunder Bot
     downstream_node_id: state::bot.thunder.cooldown_seconds
     invalidation_semantics: recompute_downstream
@@ -3516,6 +3757,13 @@ edges:
     publication_relevance: publishable_path
     verification_status: analysis_provisional
     notes: Thunder Bot range and shared-range modifiers route to effective range.
+  - upstream_node_id: source_input::bot:Bot Bot
+    downstream_node_id: state::bot.bot_bot.owned
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [bot_unlock_mutation]
+    publication_relevance: publishable_path
+    verification_status: verified
+    notes: Bot Bot _IDS unlock flag routes to owned state.
   - upstream_node_id: source_input::bot:Bot Bot
     downstream_node_id: state::bot.bot_bot.duration_seconds
     invalidation_semantics: recompute_downstream
@@ -3986,6 +4234,69 @@ edges:
     publication_relevance: support_only
     verification_status: verified
     notes: Spotlight damage bonus affects eDamage publication.
+  - upstream_node_id: source_input::uw:Damage Ultimate Weapons
+    downstream_node_id: state::uw.chain_lightning.owned
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [account_state, runtime_state]
+    publication_relevance: support_only
+    verification_status: verified
+    notes: Chain Lightning _IDS unlock flag routes to owned state.
+  - upstream_node_id: source_input::uw:Damage Ultimate Weapons
+    downstream_node_id: state::uw.smart_missiles.owned
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [account_state, runtime_state]
+    publication_relevance: support_only
+    verification_status: verified
+    notes: Smart Missiles _IDS unlock flag routes to owned state.
+  - upstream_node_id: source_input::uw:Damage Ultimate Weapons
+    downstream_node_id: state::uw.death_wave.owned
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [account_state, runtime_state]
+    publication_relevance: support_only
+    verification_status: verified
+    notes: Death Wave _IDS unlock flag routes to owned state.
+  - upstream_node_id: source_input::uw:Damage Ultimate Weapons
+    downstream_node_id: state::uw.chrono_field.owned
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [account_state, runtime_state]
+    publication_relevance: support_only
+    verification_status: verified
+    notes: Chrono Field _IDS unlock flag routes to owned state.
+  - upstream_node_id: source_input::uw:Damage Ultimate Weapons
+    downstream_node_id: state::uw.inner_land_mines.owned
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [account_state, runtime_state]
+    publication_relevance: support_only
+    verification_status: verified
+    notes: Inner Land Mines _IDS unlock flag routes to owned state.
+  - upstream_node_id: source_input::uw:Economy Ultimate Weapons
+    downstream_node_id: state::uw.golden_tower.owned
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [account_state, runtime_state]
+    publication_relevance: support_only
+    verification_status: verified
+    notes: Golden Tower _IDS unlock flag routes to owned state.
+  - upstream_node_id: source_input::uw:Damage Ultimate Weapons
+    downstream_node_id: state::uw.poison_swamp.owned
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [account_state, runtime_state]
+    publication_relevance: support_only
+    verification_status: verified
+    notes: Poison Swamp _IDS unlock flag routes to owned state.
+  - upstream_node_id: source_input::uw:Economy Ultimate Weapons
+    downstream_node_id: state::uw.black_hole.owned
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [account_state, runtime_state]
+    publication_relevance: support_only
+    verification_status: verified
+    notes: Black Hole _IDS unlock flag routes to owned state.
+  - upstream_node_id: source_input::uw:Economy Ultimate Weapons
+    downstream_node_id: state::uw.spotlight.owned
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [account_state, runtime_state]
+    publication_relevance: support_only
+    verification_status: verified
+    notes: Spotlight _IDS unlock flag routes to owned state.
   - upstream_node_id: source_input::card:Plasma Cannon
     downstream_node_id: state::cards.plasma_cannon.effect_pct
     invalidation_semantics: recompute_downstream

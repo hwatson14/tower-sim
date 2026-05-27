@@ -19,7 +19,10 @@ class PipelineRunRequest:
     perk_mode: str = 'max_progression_policy'
     include_slow_audits: bool = False
     perk_state: str = 'auto'
+    perk_policy_preset: str | None = None
     tier: int | None = None
+    dissonance_run_category: str | None = None
+    include_boss_wave_milestone_matrix: bool = False
 
 
 def _run_stats_args_from_payload(payload: dict[str, object]):
@@ -29,7 +32,14 @@ def _run_stats_args_from_payload(payload: dict[str, object]):
         manual_inputs=Path(str(payload['manual_inputs'])) if payload.get('manual_inputs') else None,
         perk_mode=str(payload.get('perk_mode', 'max_progression_policy')),
         perk_state=str(payload.get('perk_state', 'auto')),
+        perk_policy_preset=str(payload['perk_policy_preset']) if payload.get('perk_policy_preset') else None,
         tier=int(payload['tier']) if payload.get('tier') is not None else None,
+        dissonance_run_category=(
+            str(payload['dissonance_run_category'])
+            if payload.get('dissonance_run_category') is not None
+            else None
+        ),
+        include_boss_wave_milestone_matrix=bool(payload.get('include_boss_wave_milestone_matrix', False)),
     )
 
 
@@ -94,6 +104,7 @@ class FastCheckpointRequest:
     manual_inputs: Path | None = None
     perk_mode: str = 'max_progression_policy'
     perk_state: str = 'auto'
+    perk_policy_preset: str | None = None
     requested_surface_ids: tuple[str, ...] = ()
 
 

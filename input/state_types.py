@@ -158,6 +158,7 @@ class AccountState:
     relics: Dict[str, Optional[float]]
     vault: Dict[str, Any]
     bots: List[str]
+    bot_unlocks: Dict[str, bool]
     bot_upgrades: Dict[str, Dict[str, int]]
     bot_upgrade_tracks: Dict[str, List[BotUpgradeSnapshot]]
     guardians: TableSnapshot
@@ -233,10 +234,27 @@ class ScenarioRuntimeInputs:
     black_hole_duration_seconds: Optional[float] = None
     black_hole_cooldown_seconds: Optional[float] = None
     pbh_encounter_uptime_fraction: Optional[float] = None
+    boss_applicable_damage_per_second: Optional[float] = None
+    boss_applicable_damage_factor: Optional[float] = None
+    boss_edamage_target_share: Optional[float] = None
+    boss_edamage_cadence_uptime_factor: Optional[float] = None
+    boss_edamage_reliability_factor: Optional[float] = None
+    boss_edamage_semantic_normalizer: Optional[float] = None
     death_wave_health_max_multiplier: Optional[float] = None
     death_wave_health_max_wave: Optional[float] = None
     boss_wave_interval: Optional[float] = None
     enemy_level_skip_reduction_pp: Optional[float] = None
+    enemy_level_skip_decay_pct: Optional[float] = None
+    enemy_level_skip_decay_interval_waves: Optional[float] = None
+    enemy_level_skip_decay_start_wave: Optional[float] = None
+    tower_damage_decay_pct: Optional[float] = None
+    tower_damage_decay_start_wave: Optional[float] = None
+    tower_health_decay_pct: Optional[float] = None
+    tower_health_decay_start_wave: Optional[float] = None
+    fleet_terminal_max_wave: Optional[float] = None
+    elite_terminal_max_wave: Optional[float] = None
+    protector_terminal_max_wave: Optional[float] = None
+    armored_terminal_max_wave: Optional[float] = None
 
     @classmethod
     def from_mapping(cls, raw: Mapping[str, Any]) -> 'ScenarioRuntimeInputs':

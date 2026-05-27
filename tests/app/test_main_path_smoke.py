@@ -149,3 +149,76 @@ def test_run_stats_main_defaults_to_in_process_pipeline(monkeypatch):
 
     assert run_stats_mod.main() == 0
     assert called == {"pipeline": 1}
+
+
+def test_run_stats_main_threads_tier_override_to_pipeline(monkeypatch):
+    import app.pipeline as pipeline_mod
+    import app.run_stats as run_stats_mod
+
+    captured = {}
+
+    def _pipeline(args):
+        captured["tier"] = args.tier
+        return 0
+
+    monkeypatch.setattr(pipeline_mod, "run_stats_pipeline", _pipeline)
+    monkeypatch.setattr(sys, "argv", ["app.run_stats", "--tier", "14"])
+
+    assert run_stats_mod.main() == 0
+    assert captured["tier"] == 14
+
+
+def test_run_stats_main_threads_boss_wave_milestone_matrix_flag_to_pipeline(monkeypatch):
+    import app.pipeline as pipeline_mod
+    import app.run_stats as run_stats_mod
+
+    captured = {}
+
+    def _pipeline(args):
+        captured["include_boss_wave_milestone_matrix"] = args.include_boss_wave_milestone_matrix
+        return 0
+
+    monkeypatch.setattr(pipeline_mod, "run_stats_pipeline", _pipeline)
+    monkeypatch.setattr(sys, "argv", ["app.run_stats", "--include-boss-wave-milestone-matrix"])
+
+    assert run_stats_mod.main() == 0
+    assert captured["include_boss_wave_milestone_matrix"] is True
+
+
+def test_run_stats_main_threads_boss_wave_bridge_comparison_factors_to_pipeline(monkeypatch):
+    import app.pipeline as pipeline_mod
+    import app.run_stats as run_stats_mod
+
+    captured = {}
+
+    def _pipeline(args):
+        captured["target_share"] = args.boss_wave_bridge_target_share
+        captured["cadence"] = args.boss_wave_bridge_cadence_uptime
+        captured["reliability"] = args.boss_wave_bridge_reliability
+        captured["normalizer"] = args.boss_wave_bridge_semantic_normalizer
+        return 0
+
+    monkeypatch.setattr(pipeline_mod, "run_stats_pipeline", _pipeline)
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        [
+            "app.run_stats",
+            "--boss-wave-bridge-target-share",
+            "0.5",
+            "--boss-wave-bridge-cadence-uptime",
+            "0.6",
+            "--boss-wave-bridge-reliability",
+            "0.7",
+            "--boss-wave-bridge-semantic-normalizer",
+            "0.8",
+        ],
+    )
+
+    assert run_stats_mod.main() == 0
+    assert captured == {
+        "target_share": 0.5,
+        "cadence": 0.6,
+        "reliability": 0.7,
+        "normalizer": 0.8,
+    }

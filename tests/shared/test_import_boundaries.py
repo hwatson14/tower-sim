@@ -971,6 +971,7 @@ def test_active_generated_outputs_do_not_publish_legacy_surface_prefixes():
     import subprocess
     expected_tracked = {
         ROOT / "out" / "account_state.json",
+        ROOT / "out" / "boss_wave_milestone_matrix.json",
         ROOT / "out" / "run_stats.json",
         ROOT / "out" / "run_stats_query_plan_start_of_run.json",
         ROOT / "out" / "run_stats_query_plan_max_progression.json",

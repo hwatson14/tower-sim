@@ -10,6 +10,9 @@ families:
       - timing_tournament_no_perks
       - timing_farm_with_perks
       - timing_scenario_probe
+      - progression_start_of_run
+      - progression_runtime_no_perks
+      - progression_runtime_with_perks
       query_resolvable_phase_1: true
       queryable_directly: true
       consumer_only: false
@@ -17,7 +20,7 @@ families:
       publish_default: true
       debug_only: false
       scenario_scoped: false
-      semantics: additive recovery-package chance percent visible to timing queries.
+      semantics: additive recovery-package chance percent visible to timing and progression queries.
     - surface_id: state::uw.black_hole.cooldown_seconds
       surface_kind: runtime_mechanic_surface
       surface_class: surface
@@ -26,6 +29,9 @@ families:
       - timing_tournament_no_perks
       - timing_farm_with_perks
       - timing_scenario_probe
+      - progression_start_of_run
+      - progression_runtime_no_perks
+      - progression_runtime_with_perks
       query_resolvable_phase_1: true
       queryable_directly: true
       consumer_only: false
@@ -43,6 +49,9 @@ families:
       - timing_tournament_no_perks
       - timing_farm_with_perks
       - timing_scenario_probe
+      - progression_start_of_run
+      - progression_runtime_no_perks
+      - progression_runtime_with_perks
       query_resolvable_phase_1: true
       queryable_directly: true
       consumer_only: false
@@ -1215,6 +1224,57 @@ families:
       scenario_scoped: true
       semantics: Damage Card Mastery multiplier routed from IDS labs and consumed
         by the eDamage base damage stack.
+    - surface_id: state::cards.energy_net.duration_seconds
+      surface_kind: runtime_mechanic_surface
+      surface_class: surface
+      domain: cards
+      owning_families:
+      - progression_start_of_run
+      - progression_runtime_no_perks
+      - progression_runtime_with_perks
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: false
+      debug_only: true
+      scenario_scoped: true
+      semantics: Energy Net base-card duration routed from the active card loadout
+        and consumed by Boss Waves combat timing.
+    - surface_id: state::cards.energy_net.mastery_effect
+      surface_kind: runtime_mechanic_surface
+      surface_class: surface
+      domain: cards
+      owning_families:
+      - progression_start_of_run
+      - progression_runtime_no_perks
+      - progression_runtime_with_perks
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: false
+      debug_only: true
+      scenario_scoped: true
+      semantics: Energy Net Mastery boss damage multiplier routed from IDS labs
+        and consumed by Boss Waves continuous boss-damage timing.
+    - surface_id: state::cards.slow_aura.enemy_speed_pct
+      surface_kind: runtime_mechanic_surface
+      surface_class: surface
+      domain: cards
+      owning_families:
+      - progression_start_of_run
+      - progression_runtime_no_perks
+      - progression_runtime_with_perks
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: false
+      debug_only: true
+      scenario_scoped: true
+      semantics: Slow Aura base-card enemy speed reduction routed from the active
+        card loadout and consumed by Boss Waves contact-time derivation.
     - surface_id: state::cards.ultimate_crit.chance_pct
       surface_kind: runtime_mechanic_surface
       surface_class: surface
@@ -1348,6 +1408,123 @@ families:
       debug_only: false
       scenario_scoped: true
       semantics: Chain Lightning chance percent consumed by eDamage UW publication.
+    - surface_id: state::uw.chain_lightning.owned
+      surface_kind: runtime_mechanic_surface
+      surface_class: surface
+      domain: ultimate_weapons
+      owning_families: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: false
+      debug_only: false
+      scenario_scoped: false
+      semantics: _IDS Chain Lightning unlock flag used to gate UW track values.
+    - surface_id: state::uw.smart_missiles.owned
+      surface_kind: runtime_mechanic_surface
+      surface_class: surface
+      domain: ultimate_weapons
+      owning_families: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: false
+      debug_only: false
+      scenario_scoped: false
+      semantics: _IDS Smart Missiles unlock flag used to gate UW track values.
+    - surface_id: state::uw.death_wave.owned
+      surface_kind: runtime_mechanic_surface
+      surface_class: surface
+      domain: ultimate_weapons
+      owning_families: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: false
+      debug_only: false
+      scenario_scoped: false
+      semantics: _IDS Death Wave unlock flag used to gate UW track values.
+    - surface_id: state::uw.chrono_field.owned
+      surface_kind: runtime_mechanic_surface
+      surface_class: surface
+      domain: ultimate_weapons
+      owning_families: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: false
+      debug_only: false
+      scenario_scoped: false
+      semantics: _IDS Chrono Field unlock flag used to gate UW track values.
+    - surface_id: state::uw.inner_land_mines.owned
+      surface_kind: runtime_mechanic_surface
+      surface_class: surface
+      domain: ultimate_weapons
+      owning_families: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: false
+      debug_only: false
+      scenario_scoped: false
+      semantics: _IDS Inner Land Mines unlock flag used to gate UW track values.
+    - surface_id: state::uw.golden_tower.owned
+      surface_kind: runtime_mechanic_surface
+      surface_class: surface
+      domain: ultimate_weapons
+      owning_families: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: false
+      debug_only: false
+      scenario_scoped: false
+      semantics: _IDS Golden Tower unlock flag used to gate UW track values.
+    - surface_id: state::uw.poison_swamp.owned
+      surface_kind: runtime_mechanic_surface
+      surface_class: surface
+      domain: ultimate_weapons
+      owning_families: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: false
+      debug_only: false
+      scenario_scoped: false
+      semantics: _IDS Poison Swamp unlock flag used to gate UW track values.
+    - surface_id: state::uw.black_hole.owned
+      surface_kind: runtime_mechanic_surface
+      surface_class: surface
+      domain: ultimate_weapons
+      owning_families: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: false
+      debug_only: false
+      scenario_scoped: false
+      semantics: _IDS Black Hole unlock flag used to gate UW track values.
+    - surface_id: state::uw.spotlight.owned
+      surface_kind: runtime_mechanic_surface
+      surface_class: surface
+      domain: ultimate_weapons
+      owning_families: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: false
+      debug_only: false
+      scenario_scoped: false
+      semantics: _IDS Spotlight unlock flag used to gate UW track values.
     - surface_id: state::uw.death_wave.damage_multiplier
       surface_kind: runtime_mechanic_surface
       surface_class: surface
@@ -1658,6 +1835,19 @@ families:
       debug_only: false
       scenario_scoped: false
       semantics: resolved Amplify Bot bonus multiplier available to progression queries.
+    - surface_id: state::bot.amplify.owned
+      surface_kind: runtime_mechanic_surface
+      surface_class: surface
+      domain: bots
+      owning_families: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: true
+      debug_only: false
+      scenario_scoped: false
+      semantics: _IDS Amplify Bot unlock flag used to gate bot track values.
     - surface_id: state::bot.amplify.cooldown_seconds
       surface_kind: runtime_mechanic_surface
       surface_class: surface
@@ -1723,6 +1913,19 @@ families:
       debug_only: false
       scenario_scoped: false
       semantics: resolved Flame Bot cooldown in seconds available to progression queries.
+    - surface_id: state::bot.flame.owned
+      surface_kind: runtime_mechanic_surface
+      surface_class: surface
+      domain: bots
+      owning_families: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: true
+      debug_only: false
+      scenario_scoped: false
+      semantics: _IDS Flame Bot unlock flag used to gate bot track values.
     - surface_id: state::bot.flame.damage_multiplier
       surface_kind: runtime_mechanic_surface
       surface_class: surface
@@ -1814,6 +2017,19 @@ families:
       debug_only: false
       scenario_scoped: false
       semantics: resolved Golden Bot bonus multiplier available to progression queries.
+    - surface_id: state::bot.golden.owned
+      surface_kind: runtime_mechanic_surface
+      surface_class: surface
+      domain: bots
+      owning_families: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: true
+      debug_only: false
+      scenario_scoped: false
+      semantics: _IDS Golden Bot unlock flag used to gate bot track values.
     - surface_id: state::bot.golden.cooldown_seconds
       surface_kind: runtime_mechanic_surface
       surface_class: surface
@@ -1879,6 +2095,19 @@ families:
       debug_only: false
       scenario_scoped: false
       semantics: resolved Thunder Bot cooldown in seconds available to progression queries.
+    - surface_id: state::bot.thunder.owned
+      surface_kind: runtime_mechanic_surface
+      surface_class: surface
+      domain: bots
+      owning_families: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: true
+      debug_only: false
+      scenario_scoped: false
+      semantics: _IDS Thunder Bot unlock flag used to gate bot track values.
     - surface_id: state::bot.thunder.duration_seconds
       surface_kind: runtime_mechanic_surface
       surface_class: surface
@@ -1957,6 +2186,19 @@ families:
       debug_only: false
       scenario_scoped: false
       semantics: v28 Bot Bot duration in seconds parsed from _IDS Bots.
+    - surface_id: state::bot.bot_bot.owned
+      surface_kind: runtime_mechanic_surface
+      surface_class: surface
+      domain: bots
+      owning_families: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: true
+      debug_only: false
+      scenario_scoped: false
+      semantics: _IDS Bot Bot unlock flag used to gate bot track values.
     - surface_id: state::bot.bot_bot.cooldown_seconds
       surface_kind: runtime_mechanic_surface
       surface_class: surface
@@ -2842,11 +3084,13 @@ families:
       - state::economy.coins_per_wave
       - state::economy.starting_cash_bonus
       - state::wall.rebuild_seconds
+      - state::bot.amplify.owned
       - state::bot.amplify.bonus_multiplier
       - state::bot.amplify.cooldown_seconds
       - state::bot.amplify.duration_seconds
       - state::bot.amplify.range_m
       - state::bot.amplify.effective_range_m
+      - state::bot.flame.owned
       - state::bot.flame.cooldown_seconds
       - state::bot.flame.damage_multiplier
       - state::bot.flame.damage_reduction_pct
@@ -2854,17 +3098,20 @@ families:
       - state::bot.flame.effective_range_m
       - state::bot.flame_bot.lab_burn_stack
       - state::bot.global.range_bonus_m
+      - state::bot.golden.owned
       - state::bot.golden.bonus_multiplier
       - state::bot.golden.cooldown_seconds
       - state::bot.golden.duration_seconds
       - state::bot.golden.range_m
       - state::bot.golden.effective_range_m
+      - state::bot.thunder.owned
       - state::bot.thunder.cooldown_seconds
       - state::bot.thunder.duration_seconds
       - state::bot.thunder.linger_duration_seconds
       - state::bot.thunder.linger_slow_pct
       - state::bot.thunder.range_m
       - state::bot.thunder.effective_range_m
+      - state::bot.bot_bot.owned
       - state::bot.bot_bot.duration_seconds
       - state::bot.bot_bot.cooldown_seconds
       - state::bot.bot_bot.bonus_multiplier
@@ -2895,6 +3142,9 @@ families:
       - state::guardian.summon.duration_seconds
       - state::guardian.summon.cash_bonus_multiplier
       - state::cards.plasma_cannon.effect_pct
+      - state::cards.energy_net.duration_seconds
+      - state::cards.energy_net.mastery_effect
+      - state::cards.slow_aura.enemy_speed_pct
       - state::module.orbital_augment.electron_count
       - state::module.black_hole_digestor.extra_coin_kill_bonus_per_free_upgrade_pct
       - state::module.primordial_collapse.bh_damage_reduction_pct
@@ -2920,11 +3170,20 @@ families:
       - state::uw.chrono_field.cooldown_seconds
       - state::uw.chrono_field.damage_reduction_pct
       - state::uw.chrono_field.slow_pct
+      - state::uw.chain_lightning.owned
       - state::uw.chain_lightning.max_enemy_damage_reduction_pct
       - state::uw.chain_lightning.damage_multiplier
       - state::uw.chain_lightning.quantity
       - state::uw.chain_lightning.chance_pct
+      - state::uw.smart_missiles.owned
+      - state::uw.death_wave.owned
       - state::uw.death_wave.damage_multiplier
+      - state::uw.chrono_field.owned
+      - state::uw.inner_land_mines.owned
+      - state::uw.golden_tower.owned
+      - state::uw.poison_swamp.owned
+      - state::uw.black_hole.owned
+      - state::uw.spotlight.owned
       - state::uw.spotlight.bonus_multiplier
       - state::uw.golden_tower.base_duration_seconds
       - state::uw.golden_tower.base_cooldown_seconds
@@ -2964,6 +3223,78 @@ families:
       - state::cards.berserker.assumed_bonus_multiplier
   derived_v1:
     surfaces:
+    - surface_id: support_surface::dissonance.attack_run_active
+      surface_kind: support_surface
+      surface_class: surface
+      domain: dissonance
+      query_value_type: scalar
+      owning_families:
+      - derived_v1
+      - progression_start_of_run
+      - progression_runtime_no_perks
+      - progression_runtime_with_perks
+      query_resolvable_phase_1: false
+      queryable_directly: false
+      consumer_only: true
+      support_only: true
+      publish_default: false
+      debug_only: false
+      scenario_scoped: true
+      semantics: Runtime scenario support row set when Boss Waves evaluates an active Attack Dissonant Run; consumed by QE eDamage restricted-branch publication.
+    - surface_id: support_surface::dissonance.defense_run_active
+      surface_kind: support_surface
+      surface_class: surface
+      domain: dissonance
+      query_value_type: scalar
+      owning_families:
+      - derived_v1
+      - progression_start_of_run
+      - progression_runtime_no_perks
+      - progression_runtime_with_perks
+      query_resolvable_phase_1: false
+      queryable_directly: false
+      consumer_only: true
+      support_only: true
+      publish_default: false
+      debug_only: false
+      scenario_scoped: true
+      semantics: Runtime scenario support row set when Boss Waves evaluates an active Defense Dissonant Run; consumed by QE eDamage Shockwave-restriction publication.
+    - surface_id: support_surface::dissonance.utility_run_active
+      surface_kind: support_surface
+      surface_class: surface
+      domain: dissonance
+      query_value_type: scalar
+      owning_families:
+      - derived_v1
+      - progression_start_of_run
+      - progression_runtime_no_perks
+      - progression_runtime_with_perks
+      query_resolvable_phase_1: false
+      queryable_directly: false
+      consumer_only: true
+      support_only: true
+      publish_default: false
+      debug_only: false
+      scenario_scoped: true
+      semantics: Runtime scenario support row set when Boss Waves evaluates an active Utility Dissonant Run; proves the utility restriction mask without making the app a formula owner.
+    - surface_id: support_surface::dissonance.ultimate_weapons_run_active
+      surface_kind: support_surface
+      surface_class: surface
+      domain: dissonance
+      query_value_type: scalar
+      owning_families:
+      - derived_v1
+      - progression_start_of_run
+      - progression_runtime_no_perks
+      - progression_runtime_with_perks
+      query_resolvable_phase_1: false
+      queryable_directly: false
+      consumer_only: true
+      support_only: true
+      publish_default: false
+      debug_only: false
+      scenario_scoped: true
+      semantics: Runtime scenario support row set when Boss Waves evaluates an active Ultimate Weapon Dissonant Run; proves the UW-disabled restriction mask without making the app a formula owner.
     - surface_id: derived::economy.income.bits
       surface_kind: published_derived_surface
       surface_class: surface
@@ -3216,6 +3547,20 @@ families:
       debug_only: false
       scenario_scoped: false
       semantics: 'Published EP-helper support surface for workbook parity work: derived::edamage.rend_factor.'
+    - surface_id: derived::edamage.chrono_field_plus_factor
+      surface_kind: published_derived_surface
+      surface_class: surface
+      domain: derived
+      owning_families:
+      - derived_v1
+      query_resolvable_phase_1: false
+      queryable_directly: true
+      consumer_only: false
+      support_only: true
+      publish_default: false
+      debug_only: false
+      scenario_scoped: false
+      semantics: Published EP-helper Chrono Field+ exposure multiplier before the final slow factor.
     - surface_id: derived::edamage.slow_factor
       surface_kind: published_derived_surface
       surface_class: surface
@@ -3329,6 +3674,20 @@ families:
       debug_only: false
       scenario_scoped: false
       semantics: 'Published EP-helper support surface for workbook parity work: derived::edamage.uw.chain_lightning_dps.'
+    - surface_id: derived::edamage.boss_applicable_dps_cl_only
+      surface_kind: published_derived_surface
+      surface_class: surface
+      domain: derived
+      owning_families:
+      - derived_v1
+      query_resolvable_phase_1: false
+      queryable_directly: true
+      consumer_only: false
+      support_only: true
+      publish_default: false
+      debug_only: false
+      scenario_scoped: false
+      semantics: 'Published Boss Waves fail-closed GC damage support surface containing confirmed Chain Lightning continuous boss DPS only; not a full eDamage-to-boss conversion.'
     - surface_id: derived::edamage.uw.death_wave_dps
       surface_kind: published_derived_surface
       surface_class: surface
@@ -3357,6 +3716,20 @@ families:
       debug_only: false
       scenario_scoped: false
       semantics: 'Published EP-helper support surface for workbook parity work: derived::edamage.uw.ilm_dps.'
+    - surface_id: derived::edamage.uw.ilm_charged_mines_factor
+      surface_kind: published_derived_surface
+      surface_class: surface
+      domain: derived
+      owning_families:
+      - derived_v1
+      query_resolvable_phase_1: false
+      queryable_directly: true
+      consumer_only: false
+      support_only: true
+      publish_default: false
+      debug_only: false
+      scenario_scoped: false
+      semantics: Published EP-helper Inner Land Mines Charged Mines heat multiplier for workbook parity work.
     - surface_id: derived::edamage.uw.poison_swamp_dps
       surface_kind: published_derived_surface
       surface_class: surface
@@ -3371,6 +3744,20 @@ families:
       debug_only: false
       scenario_scoped: false
       semantics: 'Published EP-helper support surface for workbook parity work: derived::edamage.uw.poison_swamp_dps.'
+    - surface_id: derived::edamage.uw.poison_swamp_death_creep_factor
+      surface_kind: published_derived_surface
+      surface_class: surface
+      domain: derived
+      owning_families:
+      - derived_v1
+      query_resolvable_phase_1: false
+      queryable_directly: true
+      consumer_only: false
+      support_only: true
+      publish_default: false
+      debug_only: false
+      scenario_scoped: false
+      semantics: Published EP-helper Poison Swamp Death Creep multiplier for workbook parity work.
     - surface_id: derived::edamage.uw.smart_missiles_dps
       surface_kind: published_derived_surface
       surface_class: surface
@@ -3385,6 +3772,20 @@ families:
       debug_only: false
       scenario_scoped: false
       semantics: 'Published EP-helper support surface for workbook parity work: derived::edamage.uw.smart_missiles_dps.'
+    - surface_id: derived::edamage.uw.smart_missiles_heatup_factor
+      surface_kind: published_derived_surface
+      surface_class: surface
+      domain: derived
+      owning_families:
+      - derived_v1
+      query_resolvable_phase_1: false
+      queryable_directly: true
+      consumer_only: false
+      support_only: true
+      publish_default: false
+      debug_only: false
+      scenario_scoped: false
+      semantics: Published EP-helper Smart Missile heatup multiplier for workbook parity work.
     - surface_id: derived::edamage.uw.spotlight_missiles_dps
       surface_kind: published_derived_surface
       surface_class: surface
@@ -4511,6 +4912,20 @@ families:
       debug_only: false
       scenario_scoped: false
       semantics: 'Published EP-helper support surface for workbook parity work: derived::ehp.health_factor.'
+    - surface_id: derived::ehp.health_raw_factor
+      surface_kind: published_derived_surface
+      surface_class: surface
+      domain: derived
+      owning_families:
+      - derived_v1
+      query_resolvable_phase_1: false
+      queryable_directly: true
+      consumer_only: false
+      support_only: true
+      publish_default: false
+      debug_only: false
+      scenario_scoped: false
+      semantics: Published EP-helper raw-health surface before the Armor-slot module health multiplier.
     - surface_id: derived::ehp.health_lab_factor
       surface_kind: published_derived_surface
       surface_class: surface

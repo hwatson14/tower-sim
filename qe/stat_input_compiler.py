@@ -69,7 +69,8 @@ from qe.query_state_mode_policy import (
 )
 from input.state_types import AccountState, ScenarioProjectionState, projection_state_for_mode
 from qe.models import bind_preset_family
-from qe.contracts import sanitize_preset_name_for_canonical_output
+from qe.contracts import sanitize_preset_name_for_canonical_output, to_legacy_surface_id, to_v2_surface_id
+from qe.kb_surfaces import load_dissonant_run_restrictions
 from qe.models import StatInput
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -500,6 +501,37 @@ DISSONANT_BOOST_CAPS = {
     'ultimate_weapons': 5.0,
 }
 
+DISSONANT_RUN_CONTEXT_KEYS: tuple[str, ...] = (
+    'dissonance_run_category',
+    'dissonant_run_category',
+    'disco_run_category',
+    'disco_category',
+)
+DISSONANT_RUN_ALIASES: Mapping[str, str] = {
+    '': 'none',
+    'none': 'none',
+    'regular': 'none',
+    'normal': 'none',
+    'baseline': 'none',
+    'off': 'none',
+    'attack': 'attack',
+    'atk': 'attack',
+    'damage': 'attack',
+    'defense': 'defense',
+    'defence': 'defense',
+    'health': 'defense',
+    'ehp': 'defense',
+    'utility': 'utility',
+    'econ': 'utility',
+    'economy': 'utility',
+    'uw': 'ultimate_weapons',
+    'ultimate': 'ultimate_weapons',
+    'ultimate_weapon': 'ultimate_weapons',
+    'ultimate_weapons': 'ultimate_weapons',
+    'ultimate weapons': 'ultimate_weapons',
+}
+DISSONANT_RUN_CATEGORIES: tuple[str, ...] = ('attack', 'defense', 'utility', 'ultimate_weapons')
+
 
 @lru_cache(maxsize=1)
 def _load_guardian_track_values() -> Dict[Tuple[str, str, int], float]:
@@ -768,6 +800,8 @@ def _active_dissonant_pb_tier_label(
     *,
     scenario_context: Mapping[str, Any] | None = None,
 ) -> str | None:
+    if str((scenario_context or {}).get('mode_id') or '').strip().lower() == 'tournament':
+        return None
     player_meta = getattr(account_state, 'player_meta', {}) or {}
     candidates = (
         (scenario_context or {}).get('tier'),
@@ -792,6 +826,76 @@ def _dissonant_boost_from_pb(category: str, wave_pb: object) -> float:
         wave = 0.0
     cap = DISSONANT_BOOST_CAPS[category]
     return 1.0 + (cap - 1.0) * ((wave / 5000.0) ** 1.75)
+
+
+def _normalize_dissonant_run_category(value: object | None) -> str:
+    normalized = str(value or '').strip().lower().replace('-', '_')
+    normalized = ' '.join(normalized.replace('_', ' ').split())
+    category = DISSONANT_RUN_ALIASES.get(normalized)
+    if category is None:
+        category = DISSONANT_RUN_ALIASES.get(normalized.replace(' ', '_'))
+    if category is None:
+        raise ValueError(f'Unsupported Dissonant Run category {value!r}.')
+    return category
+
+
+def _dissonant_run_category_from_context(scenario_context: Mapping[str, Any] | None) -> str:
+    context = scenario_context or {}
+    for key in DISSONANT_RUN_CONTEXT_KEYS:
+        if key in context and context[key] is not None:
+            return _normalize_dissonant_run_category(context[key])
+    return 'none'
+
+
+def _append_dissonant_run_scenario_rows(
+    out: List[StatInput],
+    *,
+    scenario_context: Mapping[str, Any] | None,
+) -> None:
+    category = _dissonant_run_category_from_context(scenario_context)
+    restrictions = load_dissonant_run_restrictions()
+    for candidate in DISSONANT_RUN_CATEGORIES:
+        active = category == candidate
+        row = StatInput(
+            stat_name=f'Dissonant Run Active - {candidate}',
+            source_family='scenario_rules',
+            source_name=f'Dissonant Run::{candidate}',
+            value=active,
+            value_type='bool',
+            stage='scenario_context',
+            provenance='kb/global-rules/contracts/dissonant-run-restrictions.yaml',
+            notes=f'v28_dissonant_run_active_support_surface:{candidate}',
+            contributor_id=f'dissonance_run_active::{candidate}',
+            destination_object_type='support_surface',
+            destination_id=f'dissonance.{candidate}_run_active',
+            resolver_id='scenario_gate_bool',
+            kb_mapped=True,
+        )
+        _append(out, row)
+    if category == 'none':
+        return
+    spec = restrictions[category]
+    for surface_id, value in dict(spec.get('stat_surface_restrictions') or {}).items():
+        declared_surface_id = to_v2_surface_id(str(surface_id))
+        destination_object_type, separator, destination_id = declared_surface_id.partition('::')
+        if not separator:
+            raise ValueError(f'Dissonant Run stat surface restriction must use a namespaced surface id: {surface_id!r}')
+        row = StatInput(
+            stat_name=f'Dissonant Run Restriction - {surface_id}',
+            source_family='scenario_rules',
+            source_name=f'Dissonant Run::{category}',
+            value=value,
+            value_type='bool' if isinstance(value, bool) else 'resolved_value',
+            stage='scenario_context',
+            provenance='kb/global-rules/contracts/dissonant-run-restrictions.yaml',
+            notes=f'v28_dissonant_run_stat_override:{category}:{surface_id}',
+            contributor_id=f'dissonance_restriction_override::{category}::{surface_id}',
+            destination_object_type=destination_object_type,
+            destination_id=destination_id,
+            resolver_id='dissonant_run_restriction_override',
+            kb_mapped=True,
+        )
+        _append(out, row)
 
 
 def _parse_mastery_value_token(raw: str) -> Tuple[float | None, str]:
@@ -1176,6 +1280,7 @@ def compile_stat_inputs(
     guardian_scout_values = _load_guardian_scout_values()
     active_lab_adjusters = account_state.lab_adjusters.get(preset, {})
     out: List[StatInput] = []
+    _append_dissonant_run_scenario_rows(out, scenario_context=scenario_context)
 
     # Labs: exact KB ladders where available; otherwise use the bundled lab application registry.
     for name, level in account_state.labs.items():
@@ -1719,11 +1824,21 @@ def compile_stat_inputs(
         'bot bot': 'bot_bot',
     }
     owned_bot_aliases = set()
-    for name in account_state.bots:
-        key = slug_text(str(name)).replace('_', ' ')
-        owned_bot_aliases.add(key)
-        owned_bot_aliases.add(key.replace('golden', 'gold'))
-        owned_bot_aliases.add(key.replace('amplify', 'amp'))
+    bot_unlocks = getattr(account_state, 'bot_unlocks', {}) or {}
+    if bot_unlocks:
+        for name, unlocked in bot_unlocks.items():
+            if not unlocked:
+                continue
+            key = slug_text(str(name)).replace('_', ' ')
+            owned_bot_aliases.add(key)
+            owned_bot_aliases.add(key.replace('golden', 'gold'))
+            owned_bot_aliases.add(key.replace('amplify', 'amp'))
+    else:
+        for name in account_state.bots:
+            key = slug_text(str(name)).replace('_', ' ')
+            owned_bot_aliases.add(key)
+            owned_bot_aliases.add(key.replace('golden', 'gold'))
+            owned_bot_aliases.add(key.replace('amplify', 'amp'))
     for source_name, bot_slug in bot_slug_map.items():
         unlock_row = StatInput(
             stat_name=f'{source_name.title()}::Unlocked',
@@ -1735,7 +1850,7 @@ def compile_stat_inputs(
             provenance='IDS::Bots',
             notes='ids_bot_unlock_flag_preserved',
         )
-        _set_row_field(unlock_row, 'destination_object_type', 'capability')
+        _set_row_field(unlock_row, 'destination_object_type', 'runtime_mechanic_param')
         _set_row_field(unlock_row, 'destination_id', f'bot.{bot_slug}.owned')
         _set_row_field(unlock_row, 'resolver_id', 'standard_bool')
         _set_row_field(unlock_row, 'kb_mapped', True)
@@ -1776,13 +1891,23 @@ def compile_stat_inputs(
             continue
         if level is None:
             continue
+        bot_is_owned = bool(bot_unlocks.get(bot_name, bot_name in account_state.bots if not bot_unlocks else False))
         binding = BOT_UPGRADE_BINDINGS.get((bot_name, attr))
         contributor_id, track_name = binding if binding is not None else (None, None)
         resolved = bot_track_values.get((bot_name, track_name, level)) if track_name is not None and level is not None else None
-        value = resolved if resolved is not None else (ids_resolved_value if ids_resolved_value is not None else level)
-        row = StatInput(stat_name=f'{bot_name}::{attr}', source_family='bot', source_name=bot_name, value=value, value_type='resolved_value' if (resolved is not None or ids_resolved_value is not None) else 'level', stage='account_state', provenance='IDS::Bots', notes='kb_bot_track_resolved' if resolved is not None else ('ids_bot_track_value_preserved' if ids_resolved_value is not None else 'runtime_surface_preserved_pending_bot_track_lookup'))
+        if bot_is_owned:
+            value = resolved if resolved is not None else (ids_resolved_value if ids_resolved_value is not None else level)
+            value_type = 'resolved_value' if (resolved is not None or ids_resolved_value is not None) else 'level'
+            notes = 'kb_bot_track_resolved' if resolved is not None else ('ids_bot_track_value_preserved' if ids_resolved_value is not None else 'runtime_surface_preserved_pending_bot_track_lookup')
+            resolved_value = float(resolved if resolved is not None else ids_resolved_value) if (resolved is not None or ids_resolved_value is not None) else None
+        else:
+            value = 0.0
+            value_type = 'resolved_value'
+            notes = 'ids_bot_locked_zeroed'
+            resolved_value = 0.0
+        row = StatInput(stat_name=f'{bot_name}::{attr}', source_family='bot', source_name=bot_name, value=value, value_type=value_type, stage='account_state', provenance='IDS::Bots', notes=notes)
         _set_row_field(row, 'raw_level', level)
-        _set_row_field(row, 'resolved_value', float(resolved if resolved is not None else ids_resolved_value) if (resolved is not None or ids_resolved_value is not None) else None)
+        _set_row_field(row, 'resolved_value', resolved_value)
         _set_row_field(row, 'resolved_unit', ids_resolved_unit)
         if contributor_id is not None:
             bind_kb_fields(row, contributor_id, mapping_index, canonical_stats)
@@ -1866,7 +1991,7 @@ def compile_stat_inputs(
             provenance='IDS::UWs',
             notes='ids_uw_unlock_flag_preserved',
         )
-        _set_row_field(unlock_row, 'destination_object_type', 'capability')
+        _set_row_field(unlock_row, 'destination_object_type', 'runtime_mechanic_param')
         _set_row_field(unlock_row, 'destination_id', f'uw.{uw_slug}.owned')
         _set_row_field(unlock_row, 'resolver_id', 'standard_bool')
         _set_row_field(unlock_row, 'kb_mapped', True)
@@ -1889,10 +2014,19 @@ def compile_stat_inputs(
             resolved = ids_actual_value if ids_actual_value is not None else (uw_track_values.get((uw_name, track_name, level)) if level is not None else None)
             if resolved is None and level is not None and uw_name == 'Golden Tower' and track_name == 'Duration':
                 resolved = 15.0 + float(level)
-            note = 'ids_uw_current_value_preserved' if ids_actual_value is not None else ('kb_uw_track_resolved' if resolved is not None else 'runtime_surface_preserved_pending_uw_track_lookup')
-            row = StatInput(stat_name=f'{uw_name}::{track_name}', source_family='uw', source_name=uw_name, value=resolved if resolved is not None else level, value_type='resolved_value' if resolved is not None else 'level', stage='account_state', provenance='IDS::UWs', notes=note)
+            if unlocked_bool:
+                note = 'ids_uw_current_value_preserved' if ids_actual_value is not None else ('kb_uw_track_resolved' if resolved is not None else 'runtime_surface_preserved_pending_uw_track_lookup')
+                value = resolved if resolved is not None else level
+                value_type = 'resolved_value' if resolved is not None else 'level'
+                resolved_value = float(resolved) if resolved is not None else None
+            else:
+                note = 'ids_uw_locked_zeroed'
+                value = 0.0
+                value_type = 'resolved_value'
+                resolved_value = 0.0
+            row = StatInput(stat_name=f'{uw_name}::{track_name}', source_family='uw', source_name=uw_name, value=value, value_type=value_type, stage='account_state', provenance='IDS::UWs', notes=note)
             _set_row_field(row, 'raw_level', level)
-            _set_row_field(row, 'resolved_value', float(resolved) if resolved is not None else None)
+            _set_row_field(row, 'resolved_value', resolved_value)
             contributor_id = UW_CONTRIBUTOR_OVERRIDES.get((uw_name, track_name)) or uw_contributor_id(uw_name, track_name)
             if contributor_id in mapping_index:
                 bind_kb_fields(row, contributor_id, mapping_index, canonical_stats)

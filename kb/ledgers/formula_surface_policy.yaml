@@ -41,8 +41,8 @@ surfaces:
   state::tower.max_rend_multiplier:
     formula_class: kb_contract_repaired
     publish_policy: allow
-    compare_policy: noncomparable
-    rationale: Exact max-rend formula uses the Rend Armor enhancement multiplier on the 8x base cap, with additive lab bonus and module-substat max-rend percent converted onto the base cap; publish separately from base Rend Armor Mult.
+    compare_policy: normal
+    rationale: Exact max-rend formula uses the Rend Armor enhancement multiplier on the 8x base cap, with additive lab bonus and module-substat max-rend percent converted onto the base cap.
   state::tower.defense_pct:
     formula_class: generic_validated
     publish_policy: allow
@@ -90,12 +90,50 @@ surfaces:
     compare_policy: normal
     rationale: Effective Paths Damage helper surface before downstream eDamage objective
       factors; compared in the tournament/no-perk run context.
+  derived::edamage.chrono_field_plus_factor:
+    formula_class: ep_helper_composite
+    publish_policy: allow_if_resolved
+    compare_policy: normal
+    rationale: Effective Paths Chrono Field+ exposure helper before final slow-factor
+      multiplication.
+  derived::edamage.boss_applicable_dps_cl_only:
+    formula_class: simulator_support_surface
+    publish_policy: allow_if_resolved
+    compare_policy: diagnostic_only
+    rationale: Boss Waves fail-closed GC damage lane containing QE-published Chain
+      Lightning DPS only; full eDamage-to-boss conversion still requires explicit
+      runtime bridge factors or future source-owned targeting/cadence semantics.
+  derived::edamage.uw.smart_missiles_heatup_factor:
+    formula_class: ep_helper_composite
+    publish_policy: allow_if_resolved
+    compare_policy: normal
+    rationale: Effective Paths Smart Missile heatup helper; runtime comparison remains
+      loadout and unlock-state aware.
+  derived::edamage.uw.poison_swamp_death_creep_factor:
+    formula_class: ep_helper_composite
+    publish_policy: allow_if_resolved
+    compare_policy: normal
+    rationale: Effective Paths Poison Swamp Death Creep helper; runtime comparison
+      remains loadout and unlock-state aware.
+  derived::edamage.uw.ilm_charged_mines_factor:
+    formula_class: ep_helper_composite
+    publish_policy: allow_if_resolved
+    compare_policy: normal
+    rationale: Effective Paths Inner Land Mines Charged Mines heat helper; runtime
+      comparison remains loadout and unlock-state aware.
   derived::ehp.health_factor:
     formula_class: ep_helper_composite
     publish_policy: allow_if_resolved
     compare_policy: normal
     rationale: Effective Paths Health helper surface after eHP health multipliers,
       including v28 Defense Dissonance/Echo where applicable.
+  derived::ehp.health_raw_factor:
+    formula_class: ep_helper_composite
+    publish_policy: allow_if_resolved
+    compare_policy: normal
+    rationale: Effective Paths Health raw helper before the Armor-slot module health
+      multiplier; published separately because the EP export now splits raw health
+      and armor multiplier while TowerSim also preserves the post-armor health pool.
   derived::wall.regen_hp_per_second:
     formula_class: ep_helper_composite
     publish_policy: allow_if_resolved
@@ -222,17 +260,16 @@ surfaces:
   state::tower.free_attack_upgrade_chance_pct:
     formula_class: generic_family_promoted
     publish_policy: allow
-    compare_policy: noncomparable
-    rationale: EP export surface is not directly comparable to package stage semantics
-      here.
+    compare_policy: normalize_percent_scale
+    rationale: EP exports free-upgrade chances as decimal ratios while TowerSim publishes percent points from the bounded max-progression QE row.
   state::tower.free_defense_upgrade_chance_pct:
     formula_class: generic_family_promoted
     publish_policy: allow
-    compare_policy: noncomparable
+    compare_policy: normalize_percent_scale
   state::tower.free_utility_upgrade_chance_pct:
     formula_class: generic_family_promoted
     publish_policy: allow
-    compare_policy: noncomparable
+    compare_policy: normalize_percent_scale
   state::wall.rebuild_seconds:
     formula_class: generic_validated
     publish_policy: allow

@@ -36,6 +36,18 @@ from qe.models import StatInput, StatRow
 ROOT = Path(__file__).resolve().parents[1]
 
 
+def normalize_els_reduction_to_fraction(value: float | None) -> float:
+    """Return an absolute EALS/EHLS probability subtraction.
+
+    KB tables store late-tier reductions as fractions of 1, while older
+    user-facing inputs may provide display percentage points.
+    """
+    v = max(0.0, float(value or 0.0))
+    if v > 1.0:
+        return v / 100.0
+    return v
+
+
 def _canon(destination_id: str) -> str:
     return normalize_surface_id_to_contract(f'canonical_stat::{destination_id}')
 
@@ -334,6 +346,16 @@ def _uptime(duration: float, cooldown: float) -> float:
 def overheat_start_wave_for_tier(tier: int) -> int:
     """v28 normal-tier Overheat starts: T1 W15000, T10 W12750, T20 W10250."""
     return max(0, 15000 - 250 * max(0, int(tier) - 1))
+
+
+def overheat_enemy_skip_decay_schedule() -> Dict[int, float]:
+    """Source-owned Skip Decay curve keyed by waves elapsed since Overheat starts."""
+    curve = _load_tournament_bc_magnitudes().get("enemy_level_skip", {})
+    return {
+        max(0, int(wave)): abs(float(value))
+        for wave, value in sorted(curve.items())
+        if float(value) < 0.0
+    }
 
 
 # ═══════════════════════════════════════════════════════════════════════

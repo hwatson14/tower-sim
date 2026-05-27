@@ -61,10 +61,27 @@ def test_contract_field_set__matches_expected_dataclass_fields():
         "black_hole_duration_seconds",
         "black_hole_cooldown_seconds",
         "pbh_encounter_uptime_fraction",
+        "boss_applicable_damage_per_second",
+        "boss_applicable_damage_factor",
+        "boss_edamage_target_share",
+        "boss_edamage_cadence_uptime_factor",
+        "boss_edamage_reliability_factor",
+        "boss_edamage_semantic_normalizer",
         "death_wave_health_max_multiplier",
         "death_wave_health_max_wave",
         "boss_wave_interval",
         "enemy_level_skip_reduction_pp",
+        "enemy_level_skip_decay_pct",
+        "enemy_level_skip_decay_interval_waves",
+        "enemy_level_skip_decay_start_wave",
+        "tower_damage_decay_pct",
+        "tower_damage_decay_start_wave",
+        "tower_health_decay_pct",
+        "tower_health_decay_start_wave",
+        "fleet_terminal_max_wave",
+        "elite_terminal_max_wave",
+        "protector_terminal_max_wave",
+        "armored_terminal_max_wave",
     }
     assert fields == expected
 
@@ -91,6 +108,26 @@ def test_total_boss_damage_fields_are_consumed_for_replacement_boss_waves():
 
     assert runtime_inputs.orb_boss_total_damage_pct == pytest.approx(50.0)
     assert runtime_inputs.electron_total_damage_pct == pytest.approx(25.0)
+
+
+def test_boss_applicable_damage_bridge_fields_are_explicit_runtime_inputs():
+    runtime_inputs = ScenarioRuntimeInputs.from_mapping(
+        {
+            "boss_applicable_dps": 123.0,
+            "gc_boss_applicable_damage_factor": 0.005,
+            "gc_boss_edamage_target_share": 0.5,
+            "boss_damage_cadence_uptime_factor": 0.6,
+            "gc_boss_edamage_reliability_factor": 0.7,
+            "boss_damage_semantic_normalizer": 0.8,
+        }
+    )
+
+    assert runtime_inputs.boss_applicable_damage_per_second == pytest.approx(123.0)
+    assert runtime_inputs.boss_applicable_damage_factor == pytest.approx(0.005)
+    assert runtime_inputs.boss_edamage_target_share == pytest.approx(0.5)
+    assert runtime_inputs.boss_edamage_cadence_uptime_factor == pytest.approx(0.6)
+    assert runtime_inputs.boss_edamage_reliability_factor == pytest.approx(0.7)
+    assert runtime_inputs.boss_edamage_semantic_normalizer == pytest.approx(0.8)
 
 
 def test_non_positive_rate_field__raises_value_error():

@@ -114,14 +114,15 @@ Required workflow for repo tasks:
 
 Examples:
 - search: `rtk rg "pattern" input qe tests`
-- tests: `rtk pytest -q tests/qe/test_contracts_models_smoke.py`
+- tests: `rtk .\.venv\Scripts\python.exe -m pytest -q tests/qe/test_contracts_models_smoke.py`
 - git diff: `rtk git diff -- app/run_stats.py`
-- pipeline run: `rtk python -m app.run_stats`
+- pipeline run: `rtk .\.venv\Scripts\python.exe -m app.run_stats`
 
 Notes:
 - RTK helps with shell command output. It does not govern built-in file-read tools.
 - Therefore, do not compensate for missing shell compression by scanning more files.
 - If `rtk` changes command semantics for a task, state that explicitly and use the minimum necessary non-RTK command.
+- When `.venv` exists, run Python, pytest, workbook inspection, and app commands through the project virtual environment explicitly. Do not rely on bare `rtk pytest`, `rtk python`, or system Python resolution for repo validation.
 
 ## File placement
 

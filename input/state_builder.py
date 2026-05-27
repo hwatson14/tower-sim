@@ -103,7 +103,7 @@ def build_runtime_state(ids_raw: IdsRaw, *, default_preset: str = "Farming", loa
     ultimate_weapons, uw_tracks, uw_plus_tracks = _parse_uws(raw_sections.get("UWs", []))
     relics = _parse_relics(raw_sections.get("Relics", []))
     vault = _parse_vault(raw_sections.get("Vault", []))
-    bots, bot_upgrades, bot_upgrade_tracks = _parse_bots(raw_sections.get("Bots", []))
+    bots, bot_unlocks, bot_upgrades, bot_upgrade_tracks = _parse_bots(raw_sections.get("Bots", []))
     guardians = _parse_table(raw_sections.get("Guardians", []))
     guardian_tracks = _parse_guardians(raw_sections.get("Guardians", []))
     player_meta, tier_progression_waves, dissonance_pbs_by_tier, highest_tier_unlocked_number, highest_tier_unlocked_label = _parse_player_meta(raw_sections.get("Player & Stuff", []))
@@ -127,6 +127,7 @@ def build_runtime_state(ids_raw: IdsRaw, *, default_preset: str = "Farming", loa
         relics=relics,
         vault=vault,
         bots=bots,
+        bot_unlocks=bot_unlocks,
         bot_upgrades=bot_upgrades,
         bot_upgrade_tracks=bot_upgrade_tracks,
         guardians=guardians,
@@ -542,7 +543,7 @@ def _parse_player_meta(rows: List[List[str]]) -> Tuple[Dict[str, Optional[str]],
     return out, tier_progression_waves, dissonance_pbs_by_tier, highest_tier_unlocked_number, highest_tier_unlocked_label
 
 
-def _parse_bots(rows: List[List[str]]) -> Tuple[List[str], Dict[str, Dict[str, int]], Dict[str, List[BotUpgradeSnapshot]]]:
+def _parse_bots(rows: List[List[str]]) -> Tuple[List[str], Dict[str, bool], Dict[str, Dict[str, int]], Dict[str, List[BotUpgradeSnapshot]]]:
     bot_layout = load_section_layout_contract()['bots']
     name_col = int(bot_layout['name_column'])
     attr_col = int(bot_layout['attribute_column'])
@@ -550,6 +551,7 @@ def _parse_bots(rows: List[List[str]]) -> Tuple[List[str], Dict[str, Dict[str, i
     display_col = int(bot_layout['display_token_column'])
     truthy_tokens = {str(token).strip().lower() for token in bot_layout.get('truthy_name_tokens', [])}
     bots = []
+    bot_unlocks: Dict[str, bool] = {}
     upgrades: Dict[str, Dict[str, int]] = {}
     typed_tracks: Dict[str, List[BotUpgradeSnapshot]] = {}
     current = None
@@ -561,6 +563,8 @@ def _parse_bots(rows: List[List[str]]) -> Tuple[List[str], Dict[str, Dict[str, i
             current = name
             if name not in bots:
                 bots.append(name)
+        elif current and name.lower() in truthy_tokens:
+            bot_unlocks[current] = name.lower() == 'true'
         if current and attr and display:
             level_token = display.split('|', 1)[0].strip()
             level = _parse_optional_int(level_token)
@@ -577,7 +581,7 @@ def _parse_bots(rows: List[List[str]]) -> Tuple[List[str], Dict[str, Dict[str, i
                     resolved_unit=resolved_unit,
                 )
             )
-    return bots, upgrades, typed_tracks
+    return bots, bot_unlocks, upgrades, typed_tracks
 
 
 def _extract_display_unit(display: str) -> Optional[str]:

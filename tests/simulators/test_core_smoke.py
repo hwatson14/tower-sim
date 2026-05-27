@@ -73,13 +73,37 @@ def test_timing_public_api_is_importable__query_callables_exposed():
 
 
 def test_tier_enemy_level_skip_reduction_continues_expected_late_tier_pattern():
-    from simulators.scenario import _load_tier_battle_conditions
+    from simulators.scenario import ScenarioConfig, _load_tier_battle_conditions, compute_scenario_surfaces, normalize_els_reduction_to_fraction
 
     tier_bcs = _load_tier_battle_conditions()
 
+    assert normalize_els_reduction_to_fraction(0.025) == pytest.approx(0.025)
+    assert normalize_els_reduction_to_fraction(2.5) == pytest.approx(0.025)
+    assert 0.35 - normalize_els_reduction_to_fraction(0.025) == pytest.approx(0.325)
+    assert compute_scenario_surfaces(ScenarioConfig(mode_id='farming', tier=14)).bc_enemy_level_skip_reduction_pp == pytest.approx(0.025)
+    assert compute_scenario_surfaces(ScenarioConfig(mode_id='farming', tier=15)).bc_enemy_level_skip_reduction_pp == pytest.approx(0.05)
     assert float(tier_bcs[19]['enemy_level_skip_reduction']['value']) == pytest.approx(0.15)
     assert float(tier_bcs[20]['enemy_level_skip_reduction']['value']) == pytest.approx(0.175)
     assert float(tier_bcs[21]['enemy_level_skip_reduction']['value']) == pytest.approx(0.2)
+
+
+def test_overheat_enemy_skip_decay_schedule_uses_imported_bc_curve():
+    from simulators.scenario import overheat_enemy_skip_decay_schedule
+
+    schedule = overheat_enemy_skip_decay_schedule()
+
+    assert schedule[0] == pytest.approx(0.01)
+    assert schedule[20] == pytest.approx(0.02)
+    assert schedule[1000] == pytest.approx(0.3333)
+
+
+def test_scenario_surface_owns_boss_interval_by_tier():
+    from simulators.scenario import ScenarioConfig, compute_scenario_surfaces
+
+    assert compute_scenario_surfaces(ScenarioConfig(mode_id='farming', tier=13)).boss_wave_interval == 10
+    assert compute_scenario_surfaces(ScenarioConfig(mode_id='farming', tier=14)).boss_wave_interval == 9
+    assert compute_scenario_surfaces(ScenarioConfig(mode_id='farming', tier=15)).boss_wave_interval == 8
+    assert compute_scenario_surfaces(ScenarioConfig(mode_id='farming', tier=16)).boss_wave_interval == 7
 
 
 def test_simulator_modules_reference_qe_imports__expected_qe_strings_present():

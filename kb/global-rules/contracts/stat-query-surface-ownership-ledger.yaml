@@ -80,6 +80,26 @@ surface_nodes:
   ownership_status: query_owned
   governed_by: canonical_query_engine
   downstream_policy: consume_only_no_rederivation
+- node_id: support_surface::dissonance.attack_run_active
+  ownership_class: surface
+  ownership_status: query_owned
+  governed_by: canonical_query_engine
+  downstream_policy: consume_only_no_rederivation
+- node_id: support_surface::dissonance.defense_run_active
+  ownership_class: surface
+  ownership_status: query_owned
+  governed_by: canonical_query_engine
+  downstream_policy: consume_only_no_rederivation
+- node_id: support_surface::dissonance.utility_run_active
+  ownership_class: surface
+  ownership_status: query_owned
+  governed_by: canonical_query_engine
+  downstream_policy: consume_only_no_rederivation
+- node_id: support_surface::dissonance.ultimate_weapons_run_active
+  ownership_class: surface
+  ownership_status: query_owned
+  governed_by: canonical_query_engine
+  downstream_policy: consume_only_no_rederivation
 - node_id: derived::dissonance.attack.echo_multiplier
   ownership_class: surface
   ownership_status: query_owned
@@ -155,6 +175,11 @@ surface_nodes:
   ownership_status: query_owned
   governed_by: canonical_query_engine
   downstream_policy: consume_only_no_rederivation
+- node_id: derived::edamage.defense_dissonance_shockwave_restricted
+  ownership_class: surface
+  ownership_status: query_owned
+  governed_by: canonical_query_engine
+  downstream_policy: consume_only_no_rederivation
 - node_id: derived::edamage.uw_dissonance_factor
   ownership_class: surface
   ownership_status: query_owned
@@ -211,6 +236,51 @@ surface_nodes:
   governed_by: canonical_query_engine
   downstream_policy: consume_only_no_rederivation
 - node_id: state::uw.chain_lightning.chance_pct
+  ownership_class: surface
+  ownership_status: query_owned
+  governed_by: canonical_query_engine
+  downstream_policy: consume_only_no_rederivation
+- node_id: state::uw.chain_lightning.owned
+  ownership_class: surface
+  ownership_status: query_owned
+  governed_by: canonical_query_engine
+  downstream_policy: consume_only_no_rederivation
+- node_id: state::uw.smart_missiles.owned
+  ownership_class: surface
+  ownership_status: query_owned
+  governed_by: canonical_query_engine
+  downstream_policy: consume_only_no_rederivation
+- node_id: state::uw.death_wave.owned
+  ownership_class: surface
+  ownership_status: query_owned
+  governed_by: canonical_query_engine
+  downstream_policy: consume_only_no_rederivation
+- node_id: state::uw.chrono_field.owned
+  ownership_class: surface
+  ownership_status: query_owned
+  governed_by: canonical_query_engine
+  downstream_policy: consume_only_no_rederivation
+- node_id: state::uw.inner_land_mines.owned
+  ownership_class: surface
+  ownership_status: query_owned
+  governed_by: canonical_query_engine
+  downstream_policy: consume_only_no_rederivation
+- node_id: state::uw.golden_tower.owned
+  ownership_class: surface
+  ownership_status: query_owned
+  governed_by: canonical_query_engine
+  downstream_policy: consume_only_no_rederivation
+- node_id: state::uw.poison_swamp.owned
+  ownership_class: surface
+  ownership_status: query_owned
+  governed_by: canonical_query_engine
+  downstream_policy: consume_only_no_rederivation
+- node_id: state::uw.black_hole.owned
+  ownership_class: surface
+  ownership_status: query_owned
+  governed_by: canonical_query_engine
+  downstream_policy: consume_only_no_rederivation
+- node_id: state::uw.spotlight.owned
   ownership_class: surface
   ownership_status: query_owned
   governed_by: canonical_query_engine
@@ -645,6 +715,21 @@ surface_nodes:
   ownership_status: query_owned
   governed_by: canonical_query_engine
   downstream_policy: consume_only_no_rederivation
+- node_id: state::cards.energy_net.duration_seconds
+  ownership_class: surface
+  ownership_status: query_owned
+  governed_by: canonical_query_engine
+  downstream_policy: consume_only_no_rederivation
+- node_id: state::cards.energy_net.mastery_effect
+  ownership_class: surface
+  ownership_status: query_owned
+  governed_by: canonical_query_engine
+  downstream_policy: consume_only_no_rederivation
+- node_id: state::cards.slow_aura.enemy_speed_pct
+  ownership_class: surface
+  ownership_status: query_owned
+  governed_by: canonical_query_engine
+  downstream_policy: consume_only_no_rederivation
 - node_id: state::cards.ultimate_crit.chance_pct
   ownership_class: surface
   ownership_status: query_owned
@@ -730,6 +815,11 @@ surface_nodes:
   ownership_status: query_owned
   governed_by: canonical_query_engine
   downstream_policy: consume_only_no_rederivation
+- node_id: state::bot.amplify.owned
+  ownership_class: surface
+  ownership_status: query_owned
+  governed_by: canonical_query_engine
+  downstream_policy: consume_only_no_rederivation
 - node_id: state::bot.flame.cooldown_seconds
   ownership_class: surface
   ownership_status: query_owned
@@ -741,6 +831,11 @@ surface_nodes:
   governed_by: canonical_query_engine
   downstream_policy: consume_only_no_rederivation
 - node_id: state::bot.flame.damage_reduction_pct
+  ownership_class: surface
+  ownership_status: query_owned
+  governed_by: canonical_query_engine
+  downstream_policy: consume_only_no_rederivation
+- node_id: state::bot.flame.owned
   ownership_class: surface
   ownership_status: query_owned
   governed_by: canonical_query_engine
@@ -770,6 +865,11 @@ surface_nodes:
   ownership_status: query_owned
   governed_by: canonical_query_engine
   downstream_policy: consume_only_no_rederivation
+- node_id: state::bot.golden.owned
+  ownership_class: surface
+  ownership_status: query_owned
+  governed_by: canonical_query_engine
+  downstream_policy: consume_only_no_rederivation
 - node_id: state::bot.golden.cooldown_seconds
   ownership_class: surface
   ownership_status: query_owned
@@ -786,6 +886,11 @@ surface_nodes:
   governed_by: canonical_query_engine
   downstream_policy: consume_only_no_rederivation
 - node_id: state::bot.golden.effective_range_m
+  ownership_class: surface
+  ownership_status: query_owned
+  governed_by: canonical_query_engine
+  downstream_policy: consume_only_no_rederivation
+- node_id: state::bot.thunder.owned
   ownership_class: surface
   ownership_status: query_owned
   governed_by: canonical_query_engine
@@ -816,6 +921,11 @@ surface_nodes:
   governed_by: canonical_query_engine
   downstream_policy: consume_only_no_rederivation
 - node_id: state::bot.thunder.effective_range_m
+  ownership_class: surface
+  ownership_status: query_owned
+  governed_by: canonical_query_engine
+  downstream_policy: consume_only_no_rederivation
+- node_id: state::bot.bot_bot.owned
   ownership_class: surface
   ownership_status: query_owned
   governed_by: canonical_query_engine
@@ -1135,6 +1245,11 @@ surface_nodes:
   ownership_status: query_owned
   governed_by: canonical_query_engine
   downstream_policy: consume_only_no_rederivation
+- node_id: derived::edamage.chrono_field_plus_factor
+  ownership_class: surface
+  ownership_status: query_owned
+  governed_by: canonical_query_engine
+  downstream_policy: consume_only_no_rederivation
 - node_id: derived::edamage.slow_factor
   ownership_class: surface
   ownership_status: query_owned
@@ -1170,6 +1285,11 @@ surface_nodes:
   ownership_status: query_owned
   governed_by: canonical_query_engine
   downstream_policy: consume_only_no_rederivation
+- node_id: derived::edamage.boss_applicable_dps_cl_only
+  ownership_class: surface
+  ownership_status: query_owned
+  governed_by: canonical_query_engine
+  downstream_policy: consume_only_no_rederivation
 - node_id: derived::edamage.uw.chain_lightning_dps
   ownership_class: surface
   ownership_status: query_owned
@@ -1185,12 +1305,27 @@ surface_nodes:
   ownership_status: query_owned
   governed_by: canonical_query_engine
   downstream_policy: consume_only_no_rederivation
+- node_id: derived::edamage.uw.ilm_charged_mines_factor
+  ownership_class: surface
+  ownership_status: query_owned
+  governed_by: canonical_query_engine
+  downstream_policy: consume_only_no_rederivation
 - node_id: derived::edamage.uw.poison_swamp_dps
   ownership_class: surface
   ownership_status: query_owned
   governed_by: canonical_query_engine
   downstream_policy: consume_only_no_rederivation
+- node_id: derived::edamage.uw.poison_swamp_death_creep_factor
+  ownership_class: surface
+  ownership_status: query_owned
+  governed_by: canonical_query_engine
+  downstream_policy: consume_only_no_rederivation
 - node_id: derived::edamage.uw.smart_missiles_dps
+  ownership_class: surface
+  ownership_status: query_owned
+  governed_by: canonical_query_engine
+  downstream_policy: consume_only_no_rederivation
+- node_id: derived::edamage.uw.smart_missiles_heatup_factor
   ownership_class: surface
   ownership_status: query_owned
   governed_by: canonical_query_engine
@@ -1606,6 +1741,11 @@ surface_nodes:
   governed_by: canonical_query_engine
   downstream_policy: consume_only_no_rederivation
 - node_id: derived::ehp.health_factor
+  ownership_class: surface
+  ownership_status: query_owned
+  governed_by: canonical_query_engine
+  downstream_policy: consume_only_no_rederivation
+- node_id: derived::ehp.health_raw_factor
   ownership_class: surface
   ownership_status: query_owned
   governed_by: canonical_query_engine

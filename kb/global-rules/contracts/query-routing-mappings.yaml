@@ -328,6 +328,9 @@ card_target_surface_to_destination:
   cards.energy_net.duration_seconds:
   - runtime_mechanic_param
   - cards.energy_net.duration_seconds
+  cards.energy_net.mastery_effect:
+  - runtime_mechanic_param
+  - cards.energy_net.mastery_effect
   cards.energy_shield.recharge_cooldown_seconds:
   - runtime_mechanic_param
   - cards.energy_shield.recharge_cooldown_seconds
@@ -708,6 +711,12 @@ module_substat_name_to_destination:
   orbs speed:
   - canonical_stat
   - tower_orb_speed_rpm
+  free attack upgrade:
+  - canonical_stat
+  - free_attack_upgrade_chance_pct
+  free defense upgrade:
+  - canonical_stat
+  - free_defense_upgrade_chance_pct
   free utility upgrade:
   - canonical_stat
   - free_utility_upgrade_chance_pct

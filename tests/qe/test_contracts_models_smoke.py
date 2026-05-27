@@ -282,6 +282,207 @@ def test_bot_effective_range_formula_policy__exists_for_all_tower_range_amplifie
         assert raw_surface_id in rationale
 
 
+def test_dissonant_run_restriction_contract__owns_boss_wave_masks() -> None:
+    from qe.kb_surfaces import load_dissonant_run_restrictions
+
+    restrictions = load_dissonant_run_restrictions()
+
+    assert set(restrictions) == {"attack", "defense", "utility", "ultimate_weapons"}
+    assert restrictions["attack"]["disabled_category"] == "Attack"
+    assert restrictions["attack"]["max_boost"] == pytest.approx(5.0)
+    assert "range is locked to 30m" in restrictions["attack"]["public_restriction_summary"]
+    assert restrictions["attack"]["workshop_tracks"] == (
+        "Damage",
+        "Attack Speed",
+        "Critical Chance",
+        "Critical Factor",
+        "Range",
+        "Damage / Meter",
+        "Multishot Chance",
+        "Multishot Targets",
+        "Rapid Fire Chance",
+        "Rapid Fire Duration",
+        "Bounce Shot Chance",
+        "Bounce Shot Targets",
+        "Bounce Shot Range",
+        "Super Critical Chance",
+        "Super Critical Mult",
+        "Rend Armor Chance",
+        "Rend Armor Mult",
+    )
+    assert restrictions["attack"]["zero_workshop_tracks"] == restrictions["attack"]["workshop_tracks"]
+    assert restrictions["attack"]["stat_surface_restrictions"]["state::tower.damage"] == pytest.approx(1.0)
+    assert restrictions["attack"]["stat_surface_restrictions"]["state::tower.attack_speed"] == pytest.approx(1.0)
+    assert restrictions["attack"]["primitive_restrictions"]["tower_damage"] == pytest.approx(1.0)
+    assert restrictions["attack"]["primitive_restrictions"]["tower_attack_speed"] == pytest.approx(1.0)
+    assert "Bounce Shot Range" in restrictions["attack"]["zero_workshop_tracks"]
+    assert restrictions["defense"]["disabled_category"] == "Defense"
+    assert restrictions["defense"]["max_boost"] == pytest.approx(5.0)
+    assert "Health is locked to 1" in restrictions["defense"]["public_restriction_summary"]
+    assert restrictions["defense"]["workshop_tracks"] == (
+        "Health",
+        "Health Regen",
+        "Defense %",
+        "Defense Absolute",
+        "Thorn Damage",
+        "Lifesteal",
+        "Knockback Chance",
+        "Knockback Force",
+        "Orb Speed",
+        "Orbs",
+        "Shockwave Size",
+        "Shockwave Frequency",
+        "Land Mine Chance",
+        "Land Mine Damage",
+        "Land Mine Radius",
+        "Death Defy",
+        "Wall Health",
+        "Wall Rebuild",
+    )
+    assert restrictions["defense"]["zero_workshop_tracks"] == restrictions["defense"]["workshop_tracks"]
+    assert restrictions["defense"]["non_workshop_runtime_effects"] == (
+        "Wall Regen",
+        "Wall Thorns",
+        "Wall Invincibility",
+        "Wall Fortification",
+    )
+    assert restrictions["defense"]["stat_surface_restrictions"]["state::tower.hp"] == pytest.approx(1.0)
+    assert restrictions["defense"]["stat_surface_restrictions"]["state::wall.hp"] == pytest.approx(0.0)
+    assert restrictions["defense"]["primitive_restrictions"]["tower_hp"] == pytest.approx(1.0)
+    assert restrictions["defense"]["primitive_restrictions"]["tower_shockwave_size_m"] == pytest.approx(0.0)
+    assert restrictions["defense"]["primitive_restrictions"]["wall_thorns_damage_increase_per_hit"] == pytest.approx(0.0)
+    assert "Orbs" in restrictions["defense"]["zero_workshop_tracks"]
+    assert restrictions["utility"]["disabled_category"] == "Utility"
+    assert restrictions["utility"]["max_boost"] == pytest.approx(3.0)
+    assert "enemy level skips are disabled" in restrictions["utility"]["public_restriction_summary"]
+    assert restrictions["utility"]["workshop_tracks"] == (
+        "Cash Bonus",
+        "Cash / Wave",
+        "Coin / Kill Bonus",
+        "Coin / Wave",
+        "Free Attack Upgrade",
+        "Free Defense Upgrade",
+        "Free Utility Upgrade",
+        "Interest / Wave",
+        "Recovery Amount",
+        "Max Amount",
+        "Package Chance",
+        "Enemy Attack Level Skip",
+        "Enemy Health Level Skip",
+    )
+    assert restrictions["utility"]["zero_workshop_tracks"] == restrictions["utility"]["workshop_tracks"]
+    assert restrictions["utility"]["stat_surface_restrictions"]["state::tower.enemy_attack_level_skip_pct"] == pytest.approx(0.0)
+    assert restrictions["utility"]["stat_surface_restrictions"]["state::economy.coins_per_kill_bonus"] == pytest.approx(0.0)
+    assert restrictions["utility"]["primitive_restrictions"]["attack_skip_workshop_track"] == ""
+    assert "Enemy Attack Level Skip" in restrictions["utility"]["zero_workshop_tracks"]
+    assert restrictions["ultimate_weapons"]["disabled_category"] == "Ultimate Weapons"
+    assert restrictions["ultimate_weapons"]["max_boost"] == pytest.approx(5.0)
+    assert restrictions["ultimate_weapons"]["public_restriction_summary"] == "All ultimate weapons are disabled."
+    assert restrictions["ultimate_weapons"]["workshop_tracks"] == ()
+    assert restrictions["ultimate_weapons"]["ultimate_weapon_tracks"] == (
+        "Black Hole",
+        "Chain Lightning",
+        "Chrono Field",
+        "Death Wave",
+        "Golden Tower",
+        "Inner Land Mines",
+        "Poison Swamp",
+        "Smart Missiles",
+        "Spotlight",
+    )
+    assert restrictions["ultimate_weapons"]["stat_surface_restrictions"]["state::uw.chain_lightning.damage_multiplier"] == pytest.approx(0.0)
+    assert restrictions["ultimate_weapons"]["stat_surface_restrictions"]["state::uw.chrono_field.damage_reduction_pct"] == pytest.approx(0.0)
+    conditional = restrictions["ultimate_weapons"]["conditional_primitive_restrictions"]["gc_boss_damage_per_second"]
+    assert conditional["unless_gc_boss_damage_source"] == "runtime_input_boss_applicable_damage_per_second"
+    assert conditional["value"] == pytest.approx(0.0)
+
+
+def test_dissonant_run_scenario_context_restricts_qe_stat_surfaces() -> None:
+    from qe.kb_surfaces import load_dissonant_run_restrictions
+    from qe.publication import publish_query_surfaces
+    from qe.routing import query_response_to_statbook, resolve_checkpoint_surfaces
+
+    bundle = load_inputs()
+    account_state = build_runtime_state(
+        bundle.ids_raw,
+        default_preset="Farming",
+        loadout_config=bundle.loadout_config,
+        perk_config=bundle.perk_config,
+    )
+
+    restrictions = load_dissonant_run_restrictions()
+    support_surfaces = tuple(
+        f"support_surface::dissonance.{category}_run_active"
+        for category in restrictions
+    )
+
+    def restricted_book(category: str) -> StatBook:
+        spec = restrictions[category]
+        requested_surface_ids = tuple(
+            dict.fromkeys(
+                tuple(dict(spec.get("stat_surface_restrictions") or {}).keys())
+                + support_surfaces
+            )
+        )
+        response = resolve_checkpoint_surfaces(
+            account_state,
+            requested_surface_ids=requested_surface_ids,
+            preset_name="Farming",
+            state_mode="start_of_run",
+            perks_enabled=False,
+            scenario_context={"mode_id": "farming", "tier": 14, "dissonance_run_category": category},
+        )
+        book = query_response_to_statbook(response, notes=f"test {category} dissonance scenario")
+        publish_query_surfaces(book.rows, account_state_labs=account_state.labs)
+        return book
+
+    books = {category: restricted_book(category) for category in restrictions}
+
+    for category, spec in restrictions.items():
+        book = books[category]
+        for support_category in restrictions:
+            support_surface_id = f"support_surface::dissonance.{support_category}_run_active"
+            assert book.rows[support_surface_id].final_value is (support_category == category)
+        for surface_id, expected_value in dict(spec.get("stat_surface_restrictions") or {}).items():
+            actual_value = book.rows[str(surface_id)].final_value
+            if isinstance(expected_value, bool):
+                assert actual_value is expected_value
+            elif isinstance(expected_value, str):
+                assert actual_value == expected_value
+            else:
+                assert actual_value == pytest.approx(float(expected_value))
+
+    attack_book = books["attack"]
+    assert attack_book.rows["support_surface::dissonance.attack_run_active"].final_value is True
+    assert attack_book.rows["support_surface::dissonance.defense_run_active"].final_value is False
+    assert attack_book.rows["state::tower.damage"].final_value == pytest.approx(1.0)
+    assert attack_book.rows["state::tower.attack_speed"].final_value == pytest.approx(1.0)
+    assert attack_book.rows["state::tower.range_m"].final_value == pytest.approx(30.0)
+    assert attack_book.rows["derived::edamage.attack_dissonance_restricted"].final_value == pytest.approx(1.0)
+
+    defense_book = books["defense"]
+    assert defense_book.rows["support_surface::dissonance.defense_run_active"].final_value is True
+    assert defense_book.rows["state::tower.hp"].final_value == pytest.approx(1.0)
+    assert defense_book.rows["state::tower.regen"].final_value == pytest.approx(1.0)
+    assert defense_book.rows["state::wall.hp"].final_value == pytest.approx(0.0)
+    assert defense_book.rows["state::wall.fortification_multiplier"].final_value == pytest.approx(1.0)
+    assert defense_book.rows["derived::ehp"].final_value <= 1.0
+
+    utility_book = books["utility"]
+    assert utility_book.rows["support_surface::dissonance.utility_run_active"].final_value is True
+    assert utility_book.rows["state::tower.free_attack_upgrade_chance_pct"].final_value == pytest.approx(0.0)
+    assert utility_book.rows["state::tower.enemy_attack_level_skip_pct"].final_value == pytest.approx(0.0)
+    assert utility_book.rows["state::economy.coins_per_kill_bonus"].final_value == pytest.approx(0.0)
+    assert utility_book.rows["state::tower.package_chance_pct"].final_value == pytest.approx(0.0)
+    assert utility_book.rows["derived::eecon"].final_value == pytest.approx(0.0)
+
+    uw_book = books["ultimate_weapons"]
+    assert uw_book.rows["support_surface::dissonance.ultimate_weapons_run_active"].final_value is True
+    assert uw_book.rows["state::uw.chain_lightning.damage_multiplier"].final_value == pytest.approx(0.0)
+    assert uw_book.rows["state::uw.chrono_field.damage_reduction_pct"].final_value == pytest.approx(0.0)
+    assert uw_book.rows["derived::edamage.uw.chain_lightning_dps"].final_value == pytest.approx(0.0)
+
+
 def test_bot_runtime_contract__declares_raw_and_effective_range_split() -> None:
     contract_path = ROOT / "kb" / "bots" / "contracts" / "bot-runtime-contract.md"
     text = contract_path.read_text(encoding="utf-8")
@@ -307,6 +508,8 @@ def test_workshop_defense_pct_formula_matches_expected_track() -> None:
 def test_workshop_attack_chance_formulas_match_verified_max_rows() -> None:
     assert WORKSHOP_FORMULA_VALUES['Multishot Chance'](99) == pytest.approx(49.5)
     assert WORKSHOP_FORMULA_VALUES['Rapid Fire Chance'](85) == pytest.approx(34.0)
+    assert WORKSHOP_FORMULA_VALUES['Bounce Shot Chance'](0) == pytest.approx(0.0)
+    assert WORKSHOP_FORMULA_VALUES['Bounce Shot Chance'](85) == pytest.approx(68.0)
 
 
 def test_workshop_interest_per_wave_formula_matches_corrected_track() -> None:
@@ -606,3 +809,41 @@ def test_run_stats_progression_core_bundle__resolves_for_progression_family():
     assert "state::tower.hp" in bundle.surface_ids
     assert "state::tower.free_attack_upgrade_chance_pct" in bundle.surface_ids
     assert "state::module.orbital_augment.electron_count" in bundle.surface_ids
+
+
+def test_dissonant_run_active_support_surfaces_are_contract_owned() -> None:
+    support_surfaces = {
+        "support_surface::dissonance.attack_run_active",
+        "support_surface::dissonance.defense_run_active",
+        "support_surface::dissonance.utility_run_active",
+        "support_surface::dissonance.ultimate_weapons_run_active",
+    }
+    ownership = yaml.safe_load(
+        (ROOT / "kb/global-rules/contracts/stat-query-surface-ownership-ledger.yaml").read_text(encoding="utf-8")
+    )
+    owned = {row["node_id"] for row in ownership["surface_nodes"]}
+    assert support_surfaces <= owned
+    assert "derived::edamage.defense_dissonance_shockwave_restricted" in owned
+
+    initial_set = yaml.safe_load(
+        (ROOT / "kb/global-rules/contracts/stat-query-initial-surface-set.yaml").read_text(encoding="utf-8")
+    )
+    derived_surfaces = {
+        row["surface_id"]
+        for row in initial_set["families"]["derived_v1"]["surfaces"]
+    }
+    assert support_surfaces <= derived_surfaces
+
+    ledger = yaml.safe_load(
+        (ROOT / "kb/global-rules/contracts/stat-query-dependency-invalidation-ledger.yaml").read_text(encoding="utf-8")
+    )
+    dependency_nodes = {row["node_id"] for row in ledger["nodes"]}
+    assert support_surfaces <= dependency_nodes
+
+    queryable = {
+        row["surface_id"]: row
+        for row in initial_set["families"]["derived_v1"]["surfaces"]
+        if row["surface_id"] in support_surfaces
+    }
+    assert all(row["queryable_directly"] is False for row in queryable.values())
+    assert all(row["consumer_only"] is True for row in queryable.values())

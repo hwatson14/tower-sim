@@ -24,7 +24,7 @@
     "Dissonant Echo - Ultimate Weapons": 2,
     "Damage": 79,
     "Attack Speed": 76,
-    "Critical Factor": 94,
+    "Critical Factor": 95,
     "Range": 50,
     "Damage / Meter": 16,
     "Super Crit Chance": 9,
@@ -32,7 +32,7 @@
     "Max Rend Armor Multiplier": 0,
     "Light Speed Shots": 1,
     "Health": 68,
-    "Health Regen": 68,
+    "Health Regen": 69,
     "Defense Absolute": 14,
     "Defense %": 28,
     "Orbs Speed": 20,
@@ -49,7 +49,7 @@
     "Garlic Thorns": 10,
     "Cash Bonus": 36,
     "Cash / Wave": 8,
-    "Coins / Kill Bonus": 97,
+    "Coins / Kill Bonus": 98,
     "Coins / Wave": 6,
     "Interest": 11,
     "Max Interest": 8,
@@ -103,7 +103,7 @@
     "Extra Orb Adjuster": 1,
     "Extra Extra Orbs": 2,
     "Energy Shield Extra Hit": 2,
-    "Super Tower Bonus": 18,
+    "Super Tower Bonus": 20,
     "Recharge Second Wind": 7,
     "Recharge Demon Mode": 4,
     "Recharge Nuke": 2,
@@ -167,7 +167,7 @@
     "Assist Module Bonus - Armor": 0,
     "Assist Module Bonus - Generator": 0,
     "Assist Module Bonus - Core": 0,
-    "Damage Mastery": 3,
+    "Damage Mastery": 4,
     "Attack Speed Mastery": 0,
     "Health Mastery": 0,
     "Health Regen Mastery": 0,
@@ -188,7 +188,7 @@
     "Land Mine Stun Mastery": 0,
     "Recovery Package Chance Mastery": 4,
     "Death Ray Mastery": 0,
-    "Energy Net Mastery": 2,
+    "Energy Net Mastery": 3,
     "Super Tower Mastery": 0,
     "Second Wind Mastery": 0,
     "Demon Mode Mastery": 0,
@@ -335,8 +335,8 @@
       "name": "Damage / Meter",
       "unlocked": null,
       "preset_levels": {
-        "Farming": 180,
-        "Tourney": 180,
+        "Farming": 160,
+        "Tourney": 160,
         "Milestone": null,
         "Preset 4": null,
         "Preset 5": null
@@ -535,8 +535,8 @@
       "name": "Rend Armor Chance",
       "unlocked": null,
       "preset_levels": {
-        "Farming": 120,
-        "Tourney": 120,
+        "Farming": null,
+        "Tourney": null,
         "Milestone": null,
         "Preset 4": null,
         "Preset 5": null
@@ -555,8 +555,8 @@
       "name": "Rend Armor Mult",
       "unlocked": null,
       "preset_levels": {
-        "Farming": 90,
-        "Tourney": 90,
+        "Farming": null,
+        "Tourney": null,
         "Milestone": null,
         "Preset 4": null,
         "Preset 5": null
@@ -835,8 +835,8 @@
       "name": "Land Mine Damage",
       "unlocked": null,
       "preset_levels": {
-        "Farming": 170,
-        "Tourney": 170,
+        "Farming": 100,
+        "Tourney": 100,
         "Milestone": null,
         "Preset 4": null,
         "Preset 5": null
@@ -895,8 +895,8 @@
       "name": "Wall Health",
       "unlocked": null,
       "preset_levels": {
-        "Farming": 1700,
-        "Tourney": 1700,
+        "Farming": 1800,
+        "Tourney": 1800,
         "Milestone": null,
         "Preset 4": null,
         "Preset 5": null
@@ -1155,8 +1155,8 @@
       "name": "Enemy Attack Level Skip",
       "unlocked": null,
       "preset_levels": {
-        "Farming": 350,
-        "Tourney": 350,
+        "Farming": 360,
+        "Tourney": 360,
         "Milestone": null,
         "Preset 4": null,
         "Preset 5": null
@@ -1175,8 +1175,8 @@
       "name": "Enemy Health Level Skip",
       "unlocked": null,
       "preset_levels": {
-        "Farming": 340,
-        "Tourney": 340,
+        "Farming": 360,
+        "Tourney": 360,
         "Milestone": null,
         "Preset 4": null,
         "Preset 5": null
@@ -1201,7 +1201,7 @@
       "Preset 3",
       "Preset 4",
       "Preset 5",
-      "17.55 q"
+      "16.24 q"
     ],
     "rows": [
       [
@@ -1216,9 +1216,9 @@
       ],
       [
         "Damage +",
-        "1.5899999999999999",
-        "59",
-        "59",
+        "1.62",
+        "62",
+        "62",
         "",
         "",
         "",
@@ -1236,9 +1236,9 @@
       ],
       [
         "Critical Factor +",
-        "1.62",
-        "62",
-        "62",
+        "1.6400000000000001",
+        "64",
+        "64",
         "",
         "",
         "",
@@ -1256,9 +1256,9 @@
       ],
       [
         "Super Crit Multi +",
-        "1.58",
-        "58",
-        "58",
+        "1.6099999999999999",
+        "61",
+        "61",
         "",
         "",
         "",
@@ -1286,9 +1286,9 @@
       ],
       [
         "Health Regen +",
-        "1.6",
-        "60",
-        "60",
+        "1.6800000000000002",
+        "68",
+        "68",
         "",
         "",
         "",
@@ -1326,9 +1326,9 @@
       ],
       [
         "Orb Size +",
-        "1.24",
-        "24",
-        "24",
+        "1.25",
+        "25",
+        "25",
         "",
         "",
         "",
@@ -1336,9 +1336,9 @@
       ],
       [
         "Cash Bonus +",
-        "1.3",
-        "30",
-        "30",
+        "1.4",
+        "40",
+        "40",
         "",
         "",
         "",
@@ -1346,9 +1346,9 @@
       ],
       [
         "Coin Bonus +",
-        "1.3900000000000001",
-        "39",
-        "39",
+        "1.37",
+        "37",
+        "37",
         "",
         "",
         "",
@@ -1356,9 +1356,9 @@
       ],
       [
         "Cells / Kill Bonus +",
-        "1.3",
-        "30",
-        "30",
+        "1.31",
+        "31",
+        "31",
         "",
         "",
         "",
@@ -1366,9 +1366,9 @@
       ],
       [
         "Free Upgrades +",
-        "1.18",
-        "18",
-        "18",
+        "1.17",
+        "17",
+        "17",
         "",
         "",
         "",
@@ -1399,10 +1399,10 @@
   "workshop_enhancement_tracks": {
     "Damage +": {
       "name": "Damage +",
-      "current_multiplier": 1.5899999999999999,
+      "current_multiplier": 1.62,
       "preset_levels": {
-        "Farming": 59,
-        "Tourney": 59,
+        "Farming": 62,
+        "Tourney": 62,
         "Milestone": null,
         "Preset 4": null,
         "Preset 5": null
@@ -1425,10 +1425,10 @@
     },
     "Critical Factor +": {
       "name": "Critical Factor +",
-      "current_multiplier": 1.62,
+      "current_multiplier": 1.6400000000000001,
       "preset_levels": {
-        "Farming": 62,
-        "Tourney": 62,
+        "Farming": 64,
+        "Tourney": 64,
         "Milestone": null,
         "Preset 4": null,
         "Preset 5": null
@@ -1451,10 +1451,10 @@
     },
     "Super Crit Multi +": {
       "name": "Super Crit Multi +",
-      "current_multiplier": 1.58,
+      "current_multiplier": 1.6099999999999999,
       "preset_levels": {
-        "Farming": 58,
-        "Tourney": 58,
+        "Farming": 61,
+        "Tourney": 61,
         "Milestone": null,
         "Preset 4": null,
         "Preset 5": null
@@ -1490,10 +1490,10 @@
     },
     "Health Regen +": {
       "name": "Health Regen +",
-      "current_multiplier": 1.6,
+      "current_multiplier": 1.6800000000000002,
       "preset_levels": {
-        "Farming": 60,
-        "Tourney": 60,
+        "Farming": 68,
+        "Tourney": 68,
         "Milestone": null,
         "Preset 4": null,
         "Preset 5": null
@@ -1542,10 +1542,10 @@
     },
     "Orb Size +": {
       "name": "Orb Size +",
-      "current_multiplier": 1.24,
+      "current_multiplier": 1.25,
       "preset_levels": {
-        "Farming": 24,
-        "Tourney": 24,
+        "Farming": 25,
+        "Tourney": 25,
         "Milestone": null,
         "Preset 4": null,
         "Preset 5": null
@@ -1555,10 +1555,10 @@
     },
     "Cash Bonus +": {
       "name": "Cash Bonus +",
-      "current_multiplier": 1.3,
+      "current_multiplier": 1.4,
       "preset_levels": {
-        "Farming": 30,
-        "Tourney": 30,
+        "Farming": 40,
+        "Tourney": 40,
         "Milestone": null,
         "Preset 4": null,
         "Preset 5": null
@@ -1568,10 +1568,10 @@
     },
     "Coin Bonus +": {
       "name": "Coin Bonus +",
-      "current_multiplier": 1.3900000000000001,
+      "current_multiplier": 1.37,
       "preset_levels": {
-        "Farming": 39,
-        "Tourney": 39,
+        "Farming": 37,
+        "Tourney": 37,
         "Milestone": null,
         "Preset 4": null,
         "Preset 5": null
@@ -1581,10 +1581,10 @@
     },
     "Cells / Kill Bonus +": {
       "name": "Cells / Kill Bonus +",
-      "current_multiplier": 1.3,
+      "current_multiplier": 1.31,
       "preset_levels": {
-        "Farming": 30,
-        "Tourney": 30,
+        "Farming": 31,
+        "Tourney": 31,
         "Milestone": null,
         "Preset 4": null,
         "Preset 5": null
@@ -1594,10 +1594,10 @@
     },
     "Free Upgrades +": {
       "name": "Free Upgrades +",
-      "current_multiplier": 1.18,
+      "current_multiplier": 1.17,
       "preset_levels": {
-        "Farming": 18,
-        "Tourney": 18,
+        "Farming": 17,
+        "Tourney": 17,
         "Milestone": null,
         "Preset 4": null,
         "Preset 5": null
@@ -2129,12 +2129,19 @@
     "Amplify Bot",
     "Bot Bot"
   ],
+  "bot_unlocks": {
+    "Flame Bot": false,
+    "Thunder Bot": false,
+    "Golden Bot": true,
+    "Amplify Bot": false,
+    "Bot Bot": false
+  },
   "bot_upgrades": {
     "Flame Bot": {
-      "Damage R.": 5,
-      "Cooldown": 8,
+      "Damage R.": 0,
+      "Cooldown": 0,
       "Damage": 0,
-      "Range": 4
+      "Range": 0
     },
     "Thunder Bot": {
       "Duration": 0,
@@ -2170,15 +2177,15 @@
       {
         "bot_name": "Flame Bot",
         "track_name": "Damage R.",
-        "level": 5,
-        "resolved_value": 0.3500000000000001,
+        "level": 0,
+        "resolved_value": 0.2,
         "resolved_unit": "%"
       },
       {
         "bot_name": "Flame Bot",
         "track_name": "Cooldown",
-        "level": 8,
-        "resolved_value": 51.0,
+        "level": 0,
+        "resolved_value": 75.0,
         "resolved_unit": "s"
       },
       {
@@ -2191,8 +2198,8 @@
       {
         "bot_name": "Flame Bot",
         "track_name": "Range",
-        "level": 4,
-        "resolved_value": 46.0,
+        "level": 0,
+        "resolved_value": 30.0,
         "resolved_unit": "m"
       }
     ],
@@ -2740,7 +2747,7 @@
       "name": "Damage",
       "level": 7,
       "mastery_unlocked": true,
-      "mastery_lab_level": 3
+      "mastery_lab_level": 4
     },
     "Attack Speed": {
       "name": "Attack Speed",
@@ -2866,7 +2873,7 @@
       "name": "Energy Net",
       "level": 7,
       "mastery_unlocked": true,
-      "mastery_lab_level": 2
+      "mastery_lab_level": 3
     },
     "Super Tower": {
       "name": "Super Tower",
@@ -2895,7 +2902,7 @@
     "Wave Accelerator": {
       "name": "Wave Accelerator",
       "level": 7,
-      "mastery_unlocked": false,
+      "mastery_unlocked": true,
       "mastery_lab_level": 0
     },
     "Berserker": {
@@ -3767,10 +3774,6 @@
         "picks": 5
       },
       {
-        "perk_id": "PERK_X1_15_DEFENSE_ABSOLUTE",
-        "picks": 5
-      },
-      {
         "perk_id": "PERK_X1_75_HEALTH_REGEN",
         "picks": 5
       },
@@ -4007,7 +4010,7 @@
       ],
       [
         "Critical Factor",
-        "94",
+        "95",
         "",
         "99"
       ],
@@ -4055,7 +4058,7 @@
       ],
       [
         "Health Regen",
-        "68",
+        "69",
         "",
         "100"
       ],
@@ -4157,7 +4160,7 @@
       ],
       [
         "Coins / Kill Bonus",
-        "97",
+        "98",
         "",
         "99"
       ],
@@ -4481,7 +4484,7 @@
       ],
       [
         "Super Tower Bonus",
-        "18",
+        "20",
         "",
         "30"
       ],
@@ -4865,7 +4868,7 @@
       ],
       [
         "Damage Mastery",
-        "3",
+        "4",
         "",
         "9"
       ],
@@ -4991,7 +4994,7 @@
       ],
       [
         "Energy Net Mastery",
-        "2",
+        "3",
         "",
         "9"
       ],
@@ -5277,9 +5280,9 @@
       ],
       [
         "Damage / Meter",
-        "180",
+        "160",
         "200",
-        "180",
+        "160",
         "200",
         "",
         "",
@@ -5417,9 +5420,9 @@
       ],
       [
         "Rend Armor Chance",
-        "120",
+        "",
         "299",
-        "120",
+        "",
         "299",
         "",
         "",
@@ -5431,9 +5434,9 @@
       ],
       [
         "Rend Armor Mult",
-        "90",
+        "",
         "299",
-        "90",
+        "",
         "299",
         "",
         "",
@@ -5627,9 +5630,9 @@
       ],
       [
         "Land Mine Damage",
-        "170",
+        "100",
         "200",
-        "170",
+        "100",
         "200",
         "",
         "",
@@ -5669,9 +5672,9 @@
       ],
       [
         "Wall Health",
-        "1700",
         "1800",
-        "1700",
+        "1800",
+        "1800",
         "1800",
         "",
         "",
@@ -5851,9 +5854,9 @@
       ],
       [
         "Enemy Attack Level Skip",
-        "350",
+        "360",
         "699",
-        "350",
+        "360",
         "699",
         "",
         "",
@@ -5865,9 +5868,9 @@
       ],
       [
         "Enemy Health Level Skip",
-        "340",
+        "360",
         "699",
-        "340",
+        "360",
         "699",
         "",
         "",
@@ -5887,7 +5890,7 @@
         "Preset 3",
         "Preset 4",
         "Preset 5",
-        "17.55 q"
+        "16.24 q"
       ],
       [
         "",
@@ -5901,9 +5904,9 @@
       ],
       [
         "Damage +",
-        "1.5899999999999999",
-        "59",
-        "59",
+        "1.62",
+        "62",
+        "62",
         "",
         "",
         "",
@@ -5921,9 +5924,9 @@
       ],
       [
         "Critical Factor +",
-        "1.62",
-        "62",
-        "62",
+        "1.6400000000000001",
+        "64",
+        "64",
         "",
         "",
         "",
@@ -5941,9 +5944,9 @@
       ],
       [
         "Super Crit Multi +",
-        "1.58",
-        "58",
-        "58",
+        "1.6099999999999999",
+        "61",
+        "61",
         "",
         "",
         "",
@@ -5971,9 +5974,9 @@
       ],
       [
         "Health Regen +",
-        "1.6",
-        "60",
-        "60",
+        "1.6800000000000002",
+        "68",
+        "68",
         "",
         "",
         "",
@@ -6011,9 +6014,9 @@
       ],
       [
         "Orb Size +",
-        "1.24",
-        "24",
-        "24",
+        "1.25",
+        "25",
+        "25",
         "",
         "",
         "",
@@ -6021,9 +6024,9 @@
       ],
       [
         "Cash Bonus +",
-        "1.3",
-        "30",
-        "30",
+        "1.4",
+        "40",
+        "40",
         "",
         "",
         "",
@@ -6031,9 +6034,9 @@
       ],
       [
         "Coin Bonus +",
-        "1.3900000000000001",
-        "39",
-        "39",
+        "1.37",
+        "37",
+        "37",
         "",
         "",
         "",
@@ -6041,9 +6044,9 @@
       ],
       [
         "Cells / Kill Bonus +",
-        "1.3",
-        "30",
-        "30",
+        "1.31",
+        "31",
+        "31",
         "",
         "",
         "",
@@ -6051,9 +6054,9 @@
       ],
       [
         "Free Upgrades +",
-        "1.18",
-        "18",
-        "18",
+        "1.17",
+        "17",
+        "17",
         "",
         "",
         "",
@@ -6634,7 +6637,7 @@
       [
         "Wave Accelerator",
         "7",
-        "false",
+        "true",
         "",
         "",
         "",
@@ -7223,24 +7226,24 @@
         "Flame Bot",
         "",
         "Damage R.",
-        "0.3500000000000001",
-        "05 | 35% | Cost 260 ? | Next 300 ?",
+        "0.2",
+        "00 | 20% | Cost 0 ? | Next 100 ?",
         "false",
-        "05 | 35% | Cost 260 ? | Next 300 ?",
+        "00 | 20% | Cost 0 ? | Next 100 ?",
         "false",
-        "05 | 35% | Cost 260 ? | Next 300 ?",
+        "00 | 20% | Cost 0 ? | Next 100 ?",
         "false"
       ],
       [
         "",
         "",
         "Cooldown",
-        "51",
-        "08 | 51s | Cost 380 ? | Next 420 ?",
+        "75",
+        "00 | 75s | Cost 0 ? | Next 100 ?",
         "",
-        "08 | 51s | Cost 380 ? | Next 420 ?",
+        "00 | 75s | Cost 0 ? | Next 100 ?",
         "",
-        "08 | 51s | Cost 380 ? | Next 420 ?",
+        "00 | 75s | Cost 0 ? | Next 100 ?",
         ""
       ],
       [
@@ -7256,15 +7259,15 @@
         ""
       ],
       [
-        "true",
-        "Unlocked",
+        "false",
+        "Locked",
         "Range",
-        "46",
-        "04 | 46m | Cost 220 ? | Next 260 ?",
+        "30",
+        "00 | 30m | Cost 0 ? | Next 100 ?",
         "",
-        "04 | 46m | Cost 220 ? | Next 260 ?",
+        "00 | 30m | Cost 0 ? | Next 100 ?",
         "",
-        "04 | 46m | Cost 220 ? | Next 260 ?",
+        "00 | 30m | Cost 0 ? | Next 100 ?",
         ""
       ],
       [

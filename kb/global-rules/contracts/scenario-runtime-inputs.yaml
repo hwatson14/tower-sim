@@ -61,6 +61,9 @@ fields:
       - boss_time_to_contact_seconds
       - state::combat.boss_time_to_contact_seconds
     min: 0.0
+    ownership_class: optional_scenario_runtime_override
+    owned_by: manual_override_or_boss_waves_contact_time_derivation
+    rationale: Boss Waves derives contact time from a 2s base plus owned CF, Energy Net, and Slow Aura effects when this override is omitted.
   boss_hit_interval_seconds:
     aliases:
       - boss_hit_interval_seconds
@@ -152,6 +155,65 @@ fields:
     ownership_class: scenario_runtime_input
     owned_by: manual_or_explicit_runtime_input
     rationale: Primordial Black Hole encounter overlap is an explicit Boss Waves runtime state until exact encounter timing is owned by a deeper simulator.
+  boss_applicable_damage_per_second:
+    aliases:
+      - boss_applicable_damage_per_second
+      - boss_applicable_dps
+      - state::combat.boss_applicable_damage_per_second
+    min: 0.0
+    ownership_class: scenario_runtime_input
+    owned_by: manual_or_explicit_runtime_input
+    rationale: Explicit Boss Waves GC damage bridge when a caller owns a boss-applicable DPS value; omitted by default so the simulator does not hide an unresolved eDamage-to-boss conversion.
+  boss_applicable_damage_factor:
+    aliases:
+      - boss_applicable_damage_factor
+      - boss_applicable_edamage_factor
+      - gc_boss_applicable_damage_factor
+      - state::combat.boss_applicable_damage_factor
+    min: 0.0
+    ownership_class: scenario_runtime_input
+    owned_by: manual_or_explicit_runtime_input
+    rationale: Explicit multiplier from QE-published eDamage into boss-applicable DPS for spreadsheet comparison or caller-owned scenario analysis; omitted by default so GC remains fail-closed rather than calibrated silently.
+  boss_edamage_target_share:
+    aliases:
+      - boss_edamage_target_share
+      - boss_target_share
+      - gc_boss_edamage_target_share
+      - state::combat.boss_edamage_target_share
+    min: 0.0
+    ownership_class: scenario_runtime_input
+    owned_by: manual_or_explicit_runtime_input
+    rationale: Decomposed GC bridge factor for the share of QE-published eDamage actually directed at the boss; all decomposed bridge factors must be supplied together.
+  boss_edamage_cadence_uptime_factor:
+    aliases:
+      - boss_edamage_cadence_uptime_factor
+      - boss_damage_cadence_uptime_factor
+      - gc_boss_edamage_cadence_uptime_factor
+      - state::combat.boss_edamage_cadence_uptime_factor
+    min: 0.0
+    ownership_class: scenario_runtime_input
+    owned_by: manual_or_explicit_runtime_input
+    rationale: Decomposed GC bridge factor for effective cadence and uptime of QE-published eDamage during boss contact; all decomposed bridge factors must be supplied together.
+  boss_edamage_reliability_factor:
+    aliases:
+      - boss_edamage_reliability_factor
+      - boss_damage_reliability_factor
+      - gc_boss_edamage_reliability_factor
+      - state::combat.boss_edamage_reliability_factor
+    min: 0.0
+    ownership_class: scenario_runtime_input
+    owned_by: manual_or_explicit_runtime_input
+    rationale: Decomposed GC bridge factor for shock/reliability or similar effects not otherwise represented in QE eDamage; all decomposed bridge factors must be supplied together.
+  boss_edamage_semantic_normalizer:
+    aliases:
+      - boss_edamage_semantic_normalizer
+      - boss_damage_semantic_normalizer
+      - gc_boss_edamage_semantic_normalizer
+      - state::combat.boss_edamage_semantic_normalizer
+    min: 0.0
+    ownership_class: scenario_runtime_input
+    owned_by: manual_or_explicit_runtime_input
+    rationale: Decomposed GC bridge factor for unit/semantic normalization between QE-published eDamage and boss HP per second; all decomposed bridge factors must be supplied together.
   death_wave_health_max_multiplier:
     aliases:
       - death_wave_health_max_multiplier
@@ -179,4 +241,94 @@ fields:
       - enemy_level_skip_reduction_pp
       - state::combat.enemy_level_skip_reduction_pp
     min: 0.0
+  enemy_level_skip_decay_pct:
+    aliases:
+      - enemy_level_skip_decay_pct
+      - battle_condition__skip_decay__pct
+      - state::combat.enemy_level_skip_decay_pct
+    min: 0.0
+    ownership_class: scenario_runtime_input
+    owned_by: explicit_runtime_input
+    rationale: Optional v28 Skip Decay amount override; when omitted, Boss Waves uses the KB-imported battle-condition magnitude curve as the source-owned default.
+  enemy_level_skip_decay_interval_waves:
+    aliases:
+      - enemy_level_skip_decay_interval_waves
+      - battle_condition__skip_decay_interval_waves__count
+      - state::combat.enemy_level_skip_decay_interval_waves
+    min_exclusive: 0.0
+    ownership_class: scenario_runtime_input
+    owned_by: explicit_runtime_input
+    rationale: Optional v28 Skip Decay interval override for constant-step scenario comparisons; when omitted, Boss Waves uses the KB-imported battle-condition magnitude curve.
+  enemy_level_skip_decay_start_wave:
+    aliases:
+      - enemy_level_skip_decay_start_wave
+      - state::combat.enemy_level_skip_decay_start_wave
+    min: 0.0
+    ownership_class: scenario_runtime_input
+    owned_by: explicit_runtime_input_or_scenario_overheat_start_wave
+    rationale: Optional override for the wave where v28 Enemy Skip Decay begins; boss-wave projections default to the scenario Overheat start wave when a decay magnitude and interval are supplied.
+  tower_damage_decay_pct:
+    aliases:
+      - tower_damage_decay_pct
+      - state::combat.tower_damage_decay_pct
+    min: 0.0
+    ownership_class: scenario_runtime_input
+    owned_by: explicit_runtime_input
+    rationale: v28 tournament Overheat Damage Decay magnitude per 10-wave step; public notes define cadence but not magnitude.
+  tower_damage_decay_start_wave:
+    aliases:
+      - tower_damage_decay_start_wave
+      - state::combat.tower_damage_decay_start_wave
+    min: 0.0
+    ownership_class: scenario_runtime_input
+    owned_by: explicit_runtime_input_or_scenario_overheat_start_wave
+    rationale: Optional override for the wave where tournament Damage Decay begins; defaults to scenario Overheat start wave when a magnitude is supplied.
+  tower_health_decay_pct:
+    aliases:
+      - tower_health_decay_pct
+      - state::combat.tower_health_decay_pct
+    min: 0.0
+    ownership_class: scenario_runtime_input
+    owned_by: explicit_runtime_input
+    rationale: v28 tournament Overheat Health Decay magnitude per 10-wave step; public notes define cadence but not magnitude.
+  tower_health_decay_start_wave:
+    aliases:
+      - tower_health_decay_start_wave
+      - state::combat.tower_health_decay_start_wave
+    min: 0.0
+    ownership_class: scenario_runtime_input
+    owned_by: explicit_runtime_input_or_scenario_overheat_start_wave
+    rationale: Optional override for the wave where tournament Health Decay begins; defaults to scenario Overheat start wave when a magnitude is supplied.
+  fleet_terminal_max_wave:
+    aliases:
+      - fleet_terminal_max_wave
+      - state::combat.fleet_terminal_max_wave
+    min: 0.0
+    ownership_class: scenario_runtime_input
+    owned_by: explicit_runtime_input
+    rationale: Explicit maximum surviving wave for fleet/non-boss pressure when externally observed or source-modeled; avoids inventing fleet pressure math.
+  elite_terminal_max_wave:
+    aliases:
+      - elite_terminal_max_wave
+      - state::combat.elite_terminal_max_wave
+    min: 0.0
+    ownership_class: scenario_runtime_input
+    owned_by: explicit_runtime_input
+    rationale: Explicit maximum surviving wave for elite/non-boss pressure when externally observed or source-modeled; avoids inventing elite pressure math.
+  protector_terminal_max_wave:
+    aliases:
+      - protector_terminal_max_wave
+      - state::combat.protector_terminal_max_wave
+    min: 0.0
+    ownership_class: scenario_runtime_input
+    owned_by: explicit_runtime_input
+    rationale: Explicit maximum surviving wave for protector/control-stall pressure when externally observed or source-modeled; avoids inventing protector pressure math.
+  armored_terminal_max_wave:
+    aliases:
+      - armored_terminal_max_wave
+      - state::combat.armored_terminal_max_wave
+    min: 0.0
+    ownership_class: scenario_runtime_input
+    owned_by: explicit_runtime_input
+    rationale: Explicit maximum surviving wave for armored-hit pressure when externally observed or source-modeled; avoids inventing hit-density math.
 

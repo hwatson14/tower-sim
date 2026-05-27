@@ -1,0 +1,323 @@
+contract_id: dissonant_run_restrictions_v1
+source_authority: tower_wiki_dissonance_checked_2026_05_22_plus_ep_parity_mapping
+owner: kb
+source_references:
+  - label: The Tower Wiki - Dissonance
+    url: https://the-tower-idle-tower-defense.fandom.com/wiki/Dissonance
+    checked: '2026-05-22'
+  - label: The Tower Wiki - Attack Upgrades
+    url: https://the-tower-idle-tower-defense.fandom.com/wiki/Attack_Upgrades
+    checked: '2026-05-22'
+  - label: The Tower Wiki - Defense Upgrades
+    url: https://the-tower-idle-tower-defense.fandom.com/wiki/Defense_Upgrades
+    checked: '2026-05-22'
+  - label: The Tower Wiki - Utility Upgrades
+    url: https://the-tower-idle-tower-defense.fandom.com/wiki/Utility_Upgrades
+    checked: '2026-05-22'
+  - label: The Tower Wiki - Workshop Upgrades
+    url: https://the-tower-idle-tower-defense.fandom.com/wiki/Workshop_Upgrades
+    checked: '2026-05-22'
+mechanic:
+  unlock:
+    tier: 4
+    wave: 90
+  disabled_category_effect: The selected Dissonant Run category replaces its upgrades with DISABLED; workshop, enhancement, card, and module effects do not apply to disabled categories except for explicitly documented public exceptions.
+  boost_caps:
+    attack: 5.0
+    defense: 5.0
+    utility: 3.0
+    ultimate_weapons: 5.0
+  boost_formula_source: public_wiki_dissonance_formula
+categories:
+  attack:
+    disabled_category: Attack
+    public_restriction_summary: Attack damage is locked to 1, range is locked to 30m, and attack speed is locked to 1.
+    max_boost: 5.0
+    boost_target: tower_attack
+    workshop_tracks:
+      - Damage
+      - Attack Speed
+      - Critical Chance
+      - Critical Factor
+      - Range
+      - Damage / Meter
+      - Multishot Chance
+      - Multishot Targets
+      - Rapid Fire Chance
+      - Rapid Fire Duration
+      - Bounce Shot Chance
+      - Bounce Shot Targets
+      - Bounce Shot Range
+      - Super Critical Chance
+      - Super Critical Mult
+      - Rend Armor Chance
+      - Rend Armor Mult
+    stat_surface_restrictions:
+      state::tower.damage: 1.0
+      state::tower.attack_speed: 1.0
+      state::tower.crit_chance_pct: 0.0
+      state::tower.crit_multiplier: 1.0
+      state::tower.range_m: 30.0
+      state::tower.damage_per_meter_multiplier: 0.0
+      state::tower.multishot_chance_pct: 0.0
+      state::tower.multishot_targets: 0.0
+      state::tower.rapid_fire_chance_pct: 0.0
+      state::tower.rapid_fire_duration_seconds: 0.0
+      state::tower.bounce_shot_chance_pct: 0.0
+      state::tower.bounce_shot_targets: 0.0
+      state::tower.bounce_shot_range_m: 0.0
+      state::tower.supercrit_chance_pct: 0.0
+      state::tower.supercrit_multiplier: 1.0
+      state::tower.rend_armor_chance_pct: 0.0
+      state::tower.rend_armor_multiplier: 1.0
+      state::tower.max_rend_multiplier: 1.0
+    primitive_restrictions:
+      tower_damage: 1.0
+      tower_attack_speed: 1.0
+      tower_crit_chance_pct: 0.0
+      tower_crit_multiplier: 1.0
+      tower_range_m: 30.0
+      tower_damage_per_meter_multiplier: 0.0
+      tower_multishot_chance_pct: 0.0
+      tower_multishot_targets: 0.0
+      tower_rapid_fire_chance_pct: 0.0
+      tower_rapid_fire_duration_seconds: 0.0
+      tower_bounce_shot_chance_pct: 0.0
+      tower_bounce_shot_targets: 0.0
+      tower_bounce_shot_range_m: 0.0
+      tower_supercrit_chance_pct: 0.0
+      tower_supercrit_multiplier: 1.0
+      tower_rend_armor_chance_pct: 0.0
+      tower_rend_armor_multiplier: 1.0
+      tower_max_rend_multiplier: 1.0
+    zero_workshop_tracks:
+      - Damage
+      - Attack Speed
+      - Critical Chance
+      - Critical Factor
+      - Range
+      - Damage / Meter
+      - Multishot Chance
+      - Multishot Targets
+      - Rapid Fire Chance
+      - Rapid Fire Duration
+      - Bounce Shot Chance
+      - Bounce Shot Targets
+      - Bounce Shot Range
+      - Super Critical Chance
+      - Super Critical Mult
+      - Rend Armor Chance
+      - Rend Armor Mult
+    disabled_runtime_systems:
+      - attack_workshop_damage_range_speed_locked
+      - crit_supercrit_multishot_bounce_rapidfire_dpm_rend_restricted_by_qe_edamage_branch
+  defense:
+    disabled_category: Defense
+    public_restriction_summary: Health is locked to 1, regen is locked to 1 per second, and the rest of the defensive category is disabled.
+    max_boost: 5.0
+    boost_target: tower_health
+    workshop_tracks:
+      - Health
+      - Health Regen
+      - Defense %
+      - Defense Absolute
+      - Thorn Damage
+      - Lifesteal
+      - Knockback Chance
+      - Knockback Force
+      - Orb Speed
+      - Orbs
+      - Shockwave Size
+      - Shockwave Frequency
+      - Land Mine Chance
+      - Land Mine Damage
+      - Land Mine Radius
+      - Death Defy
+      - Wall Health
+      - Wall Rebuild
+    non_workshop_runtime_effects:
+      - Wall Regen
+      - Wall Thorns
+      - Wall Invincibility
+      - Wall Fortification
+    stat_surface_restrictions:
+      state::tower.hp: 1.0
+      state::tower.regen: 1.0
+      state::tower.shockwave_size_m: 0.0
+      state::tower.shockwave_interval_seconds: 0.0
+      state::wall.hp: 0.0
+      state::wall.regen: 0.0
+      state::wall.fortification_multiplier: 1.0
+      state::tower.defense_pct: 0.0
+      state::tower.defense_absolute: 0.0
+      state::tower.thorns_damage_pct: 0.0
+      state::wall.thorns_damage_pct: 0.0
+    primitive_restrictions:
+      tower_hp: 1.0
+      tower_hp_qe_surface: 1.0
+      tower_regen: 1.0
+      tower_shockwave_size_m: 0.0
+      tower_shockwave_interval_seconds: 0.0
+      wall_hp_qe_surface: 0.0
+      wall_hp: 0.0
+      wall_hp_percent_points: 0.0
+      wall_hp_ratio: 0.0
+      wall_hp_multiplier: 1.0
+      wall_hp_per_workshop_level_pre_fort: 0.0
+      wall_regen: 0.0
+      wall_regen_percent_points: 0.0
+      wall_fortification_multiplier: 1.0
+      tower_defense_pct: 0.0
+      tower_defense_absolute: 0.0
+      tower_thorns_damage_pct: 0.0
+      wall_thorns_level: 0.0
+      wall_thorns_contact_damage_pct: 0.0
+      wall_thorns_damage_increase_per_hit: 0.0
+      orb_boss_total_damage_pct: 0.0
+      electron_total_damage_pct: 0.0
+    zero_workshop_tracks:
+      - Health
+      - Health Regen
+      - Defense %
+      - Defense Absolute
+      - Thorn Damage
+      - Lifesteal
+      - Knockback Chance
+      - Knockback Force
+      - Orb Speed
+      - Orbs
+      - Shockwave Size
+      - Shockwave Frequency
+      - Land Mine Chance
+      - Land Mine Damage
+      - Land Mine Radius
+      - Death Defy
+      - Wall Health
+      - Wall Rebuild
+    disabled_runtime_systems:
+      - tower_health_locked_to_1
+      - tower_regen_locked_to_1_per_second
+      - wall_and_defensive_workshop_functions_disabled
+      - defense_percent_and_defense_absolute_disabled
+      - wall_thorns_and_sharp_fortitude_contact_damage_disabled
+  utility:
+    disabled_category: Utility
+    public_restriction_summary: Cash, coins, packages, free upgrades, and enemy level skips are disabled; only Starting Cash can add cash during the run.
+    max_boost: 3.0
+    boost_target: coins
+    workshop_tracks:
+      - Cash Bonus
+      - Cash / Wave
+      - Coin / Kill Bonus
+      - Coin / Wave
+      - Free Attack Upgrade
+      - Free Defense Upgrade
+      - Free Utility Upgrade
+      - Interest / Wave
+      - Recovery Amount
+      - Max Amount
+      - Package Chance
+      - Enemy Attack Level Skip
+      - Enemy Health Level Skip
+    stat_surface_restrictions:
+      state::tower.free_attack_upgrade_chance_pct: 0.0
+      state::tower.free_defense_upgrade_chance_pct: 0.0
+      state::tower.free_utility_upgrade_chance_pct: 0.0
+      state::tower.enemy_attack_level_skip_pct: 0.0
+      state::tower.enemy_health_level_skip_pct: 0.0
+      state::economy.coins_per_kill_bonus: 0.0
+      state::economy.coins_per_wave: 0.0
+      state::economy.interest_per_wave_pct: 0.0
+      state::tower.recovery_amount_pct: 0.0
+      state::tower.max_recovery_multiplier: 0.0
+      state::tower.package_chance_pct: 0.0
+    primitive_restrictions:
+      attack_skip_chance: 0.0
+      attack_skip_static_percent_points: 0.0
+      attack_skip_multiplier: 1.0
+      attack_skip_workshop_track: ''
+      attack_skip_workshop_baseline_level: 0.0
+      health_skip_chance: 0.0
+      health_skip_static_percent_points: 0.0
+      health_skip_multiplier: 1.0
+      health_skip_workshop_track: ''
+      health_skip_workshop_baseline_level: 0.0
+      free_attack_upgrade_chance: 0.0
+      free_defense_upgrade_chance: 0.0
+      free_utility_upgrade_chance: 0.0
+    zero_workshop_tracks:
+      - Cash Bonus
+      - Cash / Wave
+      - Coin / Kill Bonus
+      - Coin / Wave
+      - Free Attack Upgrade
+      - Free Defense Upgrade
+      - Free Utility Upgrade
+      - Interest / Wave
+      - Recovery Amount
+      - Max Amount
+      - Package Chance
+      - Enemy Attack Level Skip
+      - Enemy Health Level Skip
+    disabled_runtime_systems:
+      - free_upgrades_disabled
+      - enemy_level_skips_disabled
+      - packages_disabled
+      - cash_and_coin_runtime_economy_disabled
+  ultimate_weapons:
+    disabled_category: Ultimate Weapons
+    public_restriction_summary: All ultimate weapons are disabled.
+    max_boost: 5.0
+    boost_target: uw_damage
+    workshop_tracks: []
+    ultimate_weapon_tracks:
+      - Black Hole
+      - Chain Lightning
+      - Chrono Field
+      - Death Wave
+      - Golden Tower
+      - Inner Land Mines
+      - Poison Swamp
+      - Smart Missiles
+      - Spotlight
+    stat_surface_restrictions:
+      state::tower.ultimate_damage_multiplier: 1.0
+      state::uw.black_hole.duration_seconds: 0.0
+      state::uw.black_hole.cooldown_seconds: 0.0
+      state::uw.chrono_field.duration_seconds: 0.0
+      state::uw.chrono_field.cooldown_seconds: 0.0
+      state::uw.chrono_field.damage_reduction_pct: 0.0
+      state::uw.chrono_field.slow_pct: 0.0
+      state::uw.chain_lightning.damage_multiplier: 0.0
+      state::uw.chain_lightning.quantity: 0.0
+      state::uw.chain_lightning.chance_pct: 0.0
+      state::uw.chain_lightning.max_enemy_damage_reduction_pct: 0.0
+      state::uw.death_wave.damage_multiplier: 0.0
+      state::uw.death_wave.effect_wave_count: 0.0
+      state::uw.death_wave.cooldown_seconds: 0.0
+      state::uw.spotlight.bonus_multiplier: 1.0
+      state::uw.spotlight.angle_degrees: 0.0
+      state::uw.spotlight.count: 0.0
+    primitive_restrictions:
+      chain_lightning_boss_damage_per_second: 0.0
+      qe_boss_applicable_cl_only_damage_per_second: 0.0
+      black_hole_duration_seconds: 0.0
+      black_hole_cooldown_seconds: 0.0
+      chrono_field_duration_seconds: 0.0
+      chrono_field_cooldown_seconds: 0.0
+      chrono_field_damage_reduction_pct: 0.0
+      primordial_collapse_bh_damage_reduction_pct: 0.0
+      energy_net_mastery_multiplier: 1.0
+      energy_net_damage_multiplier_duration_seconds: 0.0
+    conditional_primitive_restrictions:
+      gc_boss_damage_per_second:
+        value: 0.0
+        unless_gc_boss_damage_source: runtime_input_boss_applicable_damage_per_second
+        masked_source: ultimate_weapon_dissonance_mask_disabled_unowned_or_uw_containing_gc_damage_bridge
+    zero_workshop_tracks: []
+    disabled_runtime_systems:
+      - ultimate_weapons_disabled
+      - chain_lightning_continuous_boss_damage_disabled
+      - black_hole_and_primordial_black_hole_dr_disabled
+      - chrono_field_dr_disabled
+      - death_wave_health_multiplier_disabled

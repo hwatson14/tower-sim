@@ -13,8 +13,10 @@ Split:
 from __future__ import annotations
 
 import csv
+from functools import lru_cache
 from pathlib import Path
 from typing import Callable
+import yaml
 
 _ROOT = Path(__file__).resolve().parents[1]
 _BOSS_SUMMARY_PATH = _ROOT / 'kb' / 'enemies' / 'tables' / 'wiki-verified-boss-summary.csv'
@@ -22,6 +24,8 @@ _STAT_CAPS_PATH = _ROOT / 'kb' / 'global-rules' / 'tables' / 'game-mechanic-stat
 _WORKSHOP_FORMULAS_PATH = _ROOT / 'kb' / 'global-rules' / 'tables' / 'workshop-formula-params-canonical.csv'
 _RUNTIME_FORMULA_AUTHORITY_PATH = _ROOT / 'kb' / 'global-rules' / 'tables' / 'runtime-formula-authority.csv'
 _CANONICAL_FORMULA_REGISTRY_PATH = _ROOT / 'kb' / 'formulas' / 'tables' / 'canonical-formula-registry.csv'
+_DISSONANT_RUN_RESTRICTIONS_PATH = _ROOT / 'kb' / 'global-rules' / 'contracts' / 'dissonant-run-restrictions.yaml'
+_YAML_LOADER = getattr(yaml, 'CSafeLoader', yaml.SafeLoader)
 _CANONICAL_DOMAIN_ALIASES: dict[str, set[str]] = {
     'lab': {'labs'},
 }
@@ -34,6 +38,40 @@ RUNTIME_CALLABLE_GENERATOR_KINDS: frozenset[str] = frozenset({
 def _read_csv(path: Path) -> list[dict]:
     with open(path, newline='', encoding='utf-8') as f:
         return list(csv.DictReader(f))
+
+
+@lru_cache(maxsize=1)
+def load_dissonant_run_restrictions() -> dict[str, dict[str, object]]:
+    payload = yaml.load(_DISSONANT_RUN_RESTRICTIONS_PATH.read_text(encoding='utf-8'), Loader=_YAML_LOADER) or {}
+    categories = payload.get('categories') or {}
+    expected = {'attack', 'defense', 'utility', 'ultimate_weapons'}
+    if set(categories) != expected:
+        raise ValueError(f'Dissonant Run restriction contract must define exactly {sorted(expected)!r}.')
+    out: dict[str, dict[str, object]] = {}
+    for category, spec in categories.items():
+        raw_primitives = dict((spec or {}).get('primitive_restrictions') or {})
+        raw_stat_surfaces = dict((spec or {}).get('stat_surface_restrictions') or {})
+        raw_conditionals = dict((spec or {}).get('conditional_primitive_restrictions') or {})
+        workshop_tracks = tuple(str(track) for track in ((spec or {}).get('workshop_tracks') or ()))
+        non_workshop_runtime_effects = tuple(str(item) for item in ((spec or {}).get('non_workshop_runtime_effects') or ()))
+        ultimate_weapon_tracks = tuple(str(track) for track in ((spec or {}).get('ultimate_weapon_tracks') or ()))
+        zero_tracks = tuple(str(track) for track in ((spec or {}).get('zero_workshop_tracks') or ()))
+        disabled_systems = tuple(str(item) for item in ((spec or {}).get('disabled_runtime_systems') or ()))
+        out[str(category)] = {
+            'disabled_category': str((spec or {}).get('disabled_category') or ''),
+            'public_restriction_summary': str((spec or {}).get('public_restriction_summary') or ''),
+            'max_boost': float((spec or {}).get('max_boost') or 0.0),
+            'boost_target': str((spec or {}).get('boost_target') or ''),
+            'workshop_tracks': workshop_tracks,
+            'non_workshop_runtime_effects': non_workshop_runtime_effects,
+            'ultimate_weapon_tracks': ultimate_weapon_tracks,
+            'stat_surface_restrictions': raw_stat_surfaces,
+            'primitive_restrictions': raw_primitives,
+            'conditional_primitive_restrictions': raw_conditionals,
+            'zero_workshop_tracks': zero_tracks,
+            'disabled_runtime_systems': disabled_systems,
+        }
+    return out
 
 
 def load_boss_constants() -> dict[str, float]:

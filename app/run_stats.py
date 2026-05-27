@@ -33,6 +33,65 @@ def main() -> int:
         help='Explicit perk materialization mode for the run.',
     )
     parser.add_argument('--perk-state', type=str, default='auto', choices=['auto', 'on', 'off'])
+    parser.add_argument(
+        '--perk-policy-preset',
+        type=str,
+        default=None,
+        help='Optional named perk policy preset from manual_inputs.yaml:perk_policy.policy_presets.',
+    )
+    parser.add_argument(
+        '--tier',
+        type=int,
+        default=None,
+        help='Optional farming tier override for tier-scoped stat surfaces such as Dissonance.',
+    )
+    parser.add_argument(
+        '--dissonance-run-category',
+        type=str,
+        default=None,
+        help='Optional Dissonant Run scenario category for stat calculations: none, attack, defense, utility, ultimate_weapons.',
+    )
+    parser.add_argument(
+        '--include-boss-wave-milestone-matrix',
+        action='store_true',
+        help='Also publish the optional all-tier Boss Waves milestone/Dissonant Run best-loadout matrix.',
+    )
+    parser.add_argument(
+        '--boss-wave-contact-time-seconds',
+        type=float,
+        default=None,
+        help='Optional matrix runtime override: boss spawn-to-wall contact time in seconds. Omit to derive from 2s base plus CF/EN/Slow Aura effects.',
+    )
+    parser.add_argument(
+        '--boss-wave-orb-boss-total-damage-pct',
+        type=float,
+        default=None,
+        help='Optional matrix runtime input: total orb damage to boss percent.',
+    )
+    parser.add_argument(
+        '--boss-wave-bridge-target-share',
+        type=float,
+        default=0.0,
+        help='Optional comparison overlay factor: share of QE eDamage directed at the boss.',
+    )
+    parser.add_argument(
+        '--boss-wave-bridge-cadence-uptime',
+        type=float,
+        default=0.0,
+        help='Optional comparison overlay factor: cadence/uptime of QE eDamage during boss contact.',
+    )
+    parser.add_argument(
+        '--boss-wave-bridge-reliability',
+        type=float,
+        default=0.0,
+        help='Optional comparison overlay factor: reliability/shock component of boss-applicable eDamage.',
+    )
+    parser.add_argument(
+        '--boss-wave-bridge-semantic-normalizer',
+        type=float,
+        default=0.0,
+        help='Optional comparison overlay factor: semantic/unit normalizer from QE eDamage to boss DPS.',
+    )
     args = parser.parse_args()
     from app.pipeline import run_stats_pipeline
     return run_stats_pipeline(args)
