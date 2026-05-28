@@ -178,8 +178,11 @@ def test_publish_derived_composites_publishes_cl_only_boss_applicable_damage_lan
     derived.publish_derived_composites(rows)
 
     assert rows['derived::edamage.uw.chain_lightning_dps'].final_value > 0.0
-    assert rows['derived::edamage.boss_applicable_dps_cl_only'].final_value == pytest.approx(
+    assert rows['derived::edamage_boss'].final_value == pytest.approx(
         rows['derived::edamage.uw.chain_lightning_dps'].final_value
+    )
+    assert rows['derived::edamage.boss_applicable_dps_cl_only'].final_value == pytest.approx(
+        rows['derived::edamage_boss'].final_value
     )
 
 

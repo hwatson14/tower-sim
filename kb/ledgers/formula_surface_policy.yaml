@@ -82,8 +82,21 @@ surfaces:
     formula_class: ep_helper_composite
     publish_policy: allow_if_resolved
     compare_policy: normal
-    rationale: Effective Paths eDMG objective surface, published by QE derived composites
-      and compared in the tournament/no-perk run context.
+    rationale: Compatibility alias for derived::edamage_ep; retained for existing
+      consumers and compared in the tournament/no-perk run context.
+  derived::edamage_ep:
+    formula_class: ep_helper_composite
+    publish_policy: allow_if_resolved
+    compare_policy: normal
+    rationale: Exact Effective Paths eDMG objective surface, published by QE derived
+      composites and compared in the tournament/no-perk run context.
+  derived::edamage_boss:
+    formula_class: simulator_support_surface
+    publish_policy: allow_if_resolved
+    compare_policy: diagnostic_only
+    rationale: TowerSim Boss Waves base damage surface; QE publishes confirmed
+      constant Chain Lightning boss DPS, and the app Boss Waves pipeline applies
+      travel-time and loadout exposure factors before simulator consumption.
   derived::edamage.base_damage_stack:
     formula_class: ep_helper_composite
     publish_policy: allow_if_resolved
@@ -100,9 +113,8 @@ surfaces:
     formula_class: simulator_support_surface
     publish_policy: allow_if_resolved
     compare_policy: diagnostic_only
-    rationale: Boss Waves fail-closed GC damage lane containing QE-published Chain
-      Lightning DPS only; full eDamage-to-boss conversion still requires explicit
-      runtime bridge factors or future source-owned targeting/cadence semantics.
+    rationale: Compatibility alias for derived::edamage_boss retained during Boss
+      Waves damage-surface migration.
   derived::edamage.uw.smart_missiles_heatup_factor:
     formula_class: ep_helper_composite
     publish_policy: allow_if_resolved

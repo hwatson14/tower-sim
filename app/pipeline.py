@@ -321,7 +321,11 @@ def _boss_wave_selected_model_requires_full_gc_bridge(
         return False
     if (
         model.startswith('cl_only_pre_contact_boss_kill')
-        and str(gc_boss_damage_source or '') == 'qe_derived_boss_applicable_dps_cl_only_fail_closed_default'
+        and str(gc_boss_damage_source or '') in {
+            'qe_derived_boss_applicable_dps_cl_only_fail_closed_default',
+            'qe_derived_edamage_boss_fail_closed_default',
+            'qe_derived_edamage_boss_runtime_exposure_model',
+        }
     ):
         return False
     return True
@@ -609,6 +613,81 @@ def _boss_wave_contact_time_seconds(
             'energy_net_hold_seconds': energy_net_hold,
         },
     )
+
+
+def _boss_wave_spotlight_coverage(*, count: object, angle_degrees: object) -> float:
+    try:
+        count_value = max(0.0, float(count or 0.0))
+    except (TypeError, ValueError):
+        return 0.0
+    return min(1.0, (count_value * angle_value) / 360.0)
+
+
+def _boss_wave_acp_active_fraction(*, contact_time_seconds: object, shockwave_interval_seconds: object) -> tuple[float, float]:
+    try:
+        contact_time = max(0.0, float(contact_time_seconds or 0.0))
+        shockwave_interval = max(0.0, float(shockwave_interval_seconds or 0.0))
+    except (TypeError, ValueError):
+        return 0.0, 0.0
+    if contact_time <= 0.0 or shockwave_interval <= 0.0:
+        return 0.0, 0.0
+    hit_probability = min(1.0, contact_time / shockwave_interval)
+    # ACP lasts 7s after a Shockwave hit; Boss Waves models this as expected uptime
+    # over the boss travel/contact window with random Shockwave phase.
+    active_fraction = min(1.0, hit_probability * min(1.0, 7.0 / contact_time))
+    return hit_probability, active_fraction
+
+
+def _boss_wave_apply_default_edamage_boss_runtime_factors(primitives: dict[str, object]) -> None:
+    source = str(primitives.get('gc_boss_damage_source') or '')
+    base_dps = max(0.0, float(primitives.get('qe_boss_applicable_cl_only_damage_per_second') or 0.0))
+    primitives['edamage_boss_base_damage_per_second'] = base_dps
+    if source != 'qe_derived_edamage_boss_fail_closed_default':
+        primitives['edamage_boss_spotlight_coverage_fraction'] = 0.0
+        primitives['edamage_boss_spotlight_exposure_fraction'] = 0.0
+        primitives['edamage_boss_spotlight_factor'] = 1.0
+        primitives['edamage_boss_om_chip_forces_spotlight'] = False
+        primitives['edamage_boss_shockwave_hit_probability'] = 0.0
+        primitives['edamage_boss_acp_active_fraction'] = 0.0
+        primitives['edamage_boss_acp_factor'] = 1.0
+        primitives['edamage_boss_runtime_factor'] = 1.0
+        primitives['edamage_boss_damage_per_second'] = float(primitives.get('gc_boss_damage_per_second') or 0.0)
+        return
+
+    spotlight_coverage = _boss_wave_spotlight_coverage(
+        count=primitives.get('spotlight_count'),
+        angle_degrees=primitives.get('spotlight_angle_degrees'),
+    )
+    om_chip_forces_spotlight = bool(primitives.get('om_chip_equipped'))
+    spotlight_exposure = 1.0 if om_chip_forces_spotlight else spotlight_coverage
+    spotlight_bonus = max(1.0, float(primitives.get('spotlight_bonus_multiplier') or 1.0))
+    spotlight_factor = 1.0 + ((spotlight_bonus - 1.0) * spotlight_exposure)
+
+    acp_bonus = max(0.0, float(primitives.get('anti_cube_portal_shockwave_damage_taken_mult_x') or 0.0))
+    acp_restricted = bool(primitives.get('dissonance_defense_run_active')) or bool(
+        float(primitives.get('edamage_defense_dissonance_shockwave_restricted') or 0.0)
+    )
+    shockwave_hit_probability, acp_active_fraction = _boss_wave_acp_active_fraction(
+        contact_time_seconds=primitives.get('boss_time_to_contact_seconds'),
+        shockwave_interval_seconds=primitives.get('tower_shockwave_interval_seconds'),
+    )
+    acp_factor = 1.0
+    if not acp_restricted and acp_bonus > 1.0:
+        acp_factor = 1.0 + ((acp_bonus - 1.0) * acp_active_fraction)
+
+    runtime_factor = spotlight_factor * acp_factor
+    final_dps = base_dps * runtime_factor
+    primitives['edamage_boss_spotlight_coverage_fraction'] = spotlight_coverage
+    primitives['edamage_boss_spotlight_exposure_fraction'] = spotlight_exposure
+    primitives['edamage_boss_spotlight_factor'] = spotlight_factor
+    primitives['edamage_boss_om_chip_forces_spotlight'] = om_chip_forces_spotlight
+    primitives['edamage_boss_shockwave_hit_probability'] = shockwave_hit_probability
+    primitives['edamage_boss_acp_active_fraction'] = 0.0 if acp_restricted else acp_active_fraction
+    primitives['edamage_boss_acp_factor'] = acp_factor
+    primitives['edamage_boss_runtime_factor'] = runtime_factor
+    primitives['edamage_boss_damage_per_second'] = final_dps
+    primitives['gc_boss_damage_per_second'] = final_dps
+    primitives['gc_boss_damage_source'] = 'qe_derived_edamage_boss_runtime_exposure_model'
 
 
 def _boss_wave_replacement_primitive_surface_ids(account_state, *, preset_name: str) -> tuple[str, ...]:
@@ -2101,6 +2180,7 @@ def _build_replacement_operator_table_and_summary(
     primitives['boss_time_to_contact_energy_net_hold_seconds'] = boss_time_to_contact_components[
         'energy_net_hold_seconds'
     ]
+    _boss_wave_apply_default_edamage_boss_runtime_factors(primitives)
     scenario = ScenarioOverlayInputs(
         scenario_key='boss_waves_replacement_product',
         tier_column=str(config['tier_column']),
@@ -2338,7 +2418,8 @@ def _resolve_boss_wave_replacement_primitives(
     from simulators.scenario import ScenarioConfig
     from simulators.timing import resolve_timing_consumer_bundle
 
-    primitive_preset_name = _boss_wave_workshop_source_preset(account_state, preset_name=preset_name)
+    primitive_profile_preset = str(config.get('loadout_profile_preset') or preset_name)
+    primitive_preset_name = _boss_wave_workshop_source_preset(account_state, preset_name=primitive_profile_preset)
     scenario_context = {
         'mode_id': str(config.get('mode_id') or 'farming'),
         'tier': int(config.get('tier_number') or 1),
@@ -2395,10 +2476,10 @@ def _resolve_boss_wave_replacement_primitives(
     )
     qe_boss_applicable_cl_only_dps = _optional_statbook_float(
         damage_statbook,
-        'derived::edamage.boss_applicable_dps_cl_only',
+        'derived::edamage_boss',
         default=chain_lightning_boss_dps,
     )
-    edamage = _optional_statbook_float(damage_statbook, 'derived::edamage', default=0.0)
+    edamage_ep = _optional_statbook_float(damage_statbook, 'derived::edamage_ep', default=0.0)
     runtime_inputs = ScenarioRuntimeInputs.from_mapping(scenario_runtime_inputs)
     explicit_boss_dps = _runtime_nonnegative_float(runtime_inputs, 'boss_applicable_damage_per_second')
     explicit_boss_damage_factor = _runtime_nonnegative_float(runtime_inputs, 'boss_applicable_damage_factor')
@@ -2407,14 +2488,14 @@ def _resolve_boss_wave_replacement_primitives(
         gc_boss_damage_per_second = float(explicit_boss_dps)
         gc_boss_damage_source = 'runtime_input_boss_applicable_damage_per_second'
     elif explicit_boss_damage_factor is not None and explicit_boss_damage_factor > 0.0:
-        gc_boss_damage_per_second = max(0.0, edamage) * float(explicit_boss_damage_factor)
-        gc_boss_damage_source = 'runtime_input_edamage_times_boss_applicable_damage_factor'
+        gc_boss_damage_per_second = max(0.0, edamage_ep) * float(explicit_boss_damage_factor)
+        gc_boss_damage_source = 'runtime_input_edamage_ep_times_boss_applicable_damage_factor'
     elif decomposed_boss_damage_factor is not None:
-        gc_boss_damage_per_second = max(0.0, edamage) * float(decomposed_boss_damage_factor)
-        gc_boss_damage_source = 'runtime_input_edamage_times_decomposed_boss_bridge'
+        gc_boss_damage_per_second = max(0.0, edamage_ep) * float(decomposed_boss_damage_factor)
+        gc_boss_damage_source = 'runtime_input_edamage_ep_times_decomposed_boss_bridge'
     else:
         gc_boss_damage_per_second = qe_boss_applicable_cl_only_dps
-        gc_boss_damage_source = 'qe_derived_boss_applicable_dps_cl_only_fail_closed_default'
+        gc_boss_damage_source = 'qe_derived_edamage_boss_fail_closed_default'
     energy_net_duration_seconds = _optional_statbook_float(
         statbook,
         'state::cards.energy_net.duration_seconds',
@@ -2429,6 +2510,31 @@ def _resolve_boss_wave_replacement_primitives(
         max(0.0, energy_net_duration_seconds) + 10.0
         if energy_net_duration_seconds > 0.0 and energy_net_mastery_multiplier > 1.0
         else 0.0
+    )
+    spotlight_bonus_multiplier = _optional_statbook_float(
+        damage_statbook,
+        'state::uw.spotlight.bonus_multiplier',
+        default=1.0,
+    )
+    spotlight_count = _optional_statbook_float(
+        damage_statbook,
+        'state::uw.spotlight.count',
+        default=0.0,
+    )
+    spotlight_angle_degrees = _optional_statbook_float(
+        damage_statbook,
+        'state::uw.spotlight.angle_degrees',
+        default=0.0,
+    )
+    anti_cube_portal_shockwave_damage_taken_mult_x = _optional_statbook_float(
+        statbook,
+        'state::module.anti_cube_portal.shockwave_damage_taken_mult_x',
+        default=0.0,
+    )
+    om_chip_equipped = _boss_wave_module_equipped(
+        account_state,
+        preset_name=primitive_preset_name,
+        module_name='Om Chip',
     )
     attack_skip_seed = _boss_wave_skip_seed_from_qe_row(
         surface_id='state::tower.enemy_attack_level_skip_pct',
@@ -2549,7 +2655,9 @@ def _resolve_boss_wave_replacement_primitives(
         'plasma_cannon_effect_pct': _required_statbook_float(statbook, 'state::cards.plasma_cannon.effect_pct'),
         'chain_lightning_boss_damage_per_second': chain_lightning_boss_dps,
         'qe_boss_applicable_cl_only_damage_per_second': qe_boss_applicable_cl_only_dps,
-        'edamage': edamage,
+        'edamage_boss_base_damage_per_second': qe_boss_applicable_cl_only_dps,
+        'edamage_ep': edamage_ep,
+        'edamage': edamage_ep,
         'boss_damage_state_mode': damage_state_mode,
         'boss_damage_perks_enabled': 1.0 if damage_perks_enabled else 0.0,
         'dissonance_attack_run_active': _optional_statbook_bool(statbook, 'support_surface::dissonance.attack_run_active'),
@@ -2567,6 +2675,11 @@ def _resolve_boss_wave_replacement_primitives(
         'energy_net_duration_seconds': energy_net_duration_seconds,
         'energy_net_mastery_multiplier': energy_net_mastery_multiplier,
         'energy_net_damage_multiplier_duration_seconds': energy_net_damage_multiplier_duration_seconds,
+        'spotlight_bonus_multiplier': spotlight_bonus_multiplier,
+        'spotlight_count': spotlight_count,
+        'spotlight_angle_degrees': spotlight_angle_degrees,
+        'om_chip_equipped': om_chip_equipped,
+        'anti_cube_portal_shockwave_damage_taken_mult_x': anti_cube_portal_shockwave_damage_taken_mult_x,
         'orbital_augment_electron_count': _optional_statbook_float(statbook, 'state::module.orbital_augment.electron_count', default=0.0),
         'primordial_collapse_bh_damage_reduction_pct': _optional_statbook_float(statbook, 'state::module.primordial_collapse.bh_damage_reduction_pct', default=0.0),
         'black_hole_duration_seconds': black_hole_duration_seconds,
@@ -2988,23 +3101,29 @@ def _boss_wave_primitive_semantics_ledger(
                 meaning=f"QE-published Chain Lightning DPS support surface resolved for Boss Waves damage state_mode={primitives.get('boss_damage_state_mode')} perks_enabled={bool(primitives.get('boss_damage_perks_enabled'))}. Boss Waves consumes the QE-owned CL-only boss-applicable lane derived from this surface when no explicit boss-applicable eDamage bridge is supplied.",
                 owner='QE publishes derived CL DPS; QE also publishes the fail-closed CL-only boss-applicable lane consumed by Boss Waves',
             ),
-            'derived::edamage.boss_applicable_dps_cl_only': _primitive_ledger_entry(
-                source='qe.publication.publish_query_surfaces(derived::edamage.boss_applicable_dps_cl_only)',
+            'derived::edamage_boss': _primitive_ledger_entry(
+                source='qe.publication.publish_query_surfaces(derived::edamage_boss)',
                 value=float(primitives.get('qe_boss_applicable_cl_only_damage_per_second') or 0.0),
-                meaning=f"QE-published fail-closed Boss Waves GC damage lane resolved for state_mode={primitives.get('boss_damage_state_mode')} perks_enabled={bool(primitives.get('boss_damage_perks_enabled'))}. This includes confirmed Chain Lightning continuous DPS only and remains below full eDamage-to-boss semantics.",
-                owner='QE owns the CL-only boss-applicable support lane; app selects explicit runtime bridges above it when provided',
+                meaning=f"QE-published TowerSim Boss Waves base damage surface resolved for state_mode={primitives.get('boss_damage_state_mode')} perks_enabled={bool(primitives.get('boss_damage_perks_enabled'))}. It supplies confirmed constant Chain Lightning boss DPS; app applies Boss Waves runtime exposure factors for travel time, Spotlight/Om Chip, and Shockwave/ACP before evaluator integration.",
+                owner='QE owns the base Boss Waves damage surface; app owns scenario/loadout runtime exposure factors and explicit bridge selection',
             ),
-            'derived::edamage': _primitive_ledger_entry(
-                source='qe.publication.publish_query_surfaces(derived::edamage)',
-                value=float(primitives.get('edamage') or 0.0),
-                meaning=f"QE-published eDamage objective surface resolved for Boss Waves damage state_mode={primitives.get('boss_damage_state_mode')} perks_enabled={bool(primitives.get('boss_damage_perks_enabled'))}. It is not converted into boss DPS unless the caller supplies a single boss_applicable_damage_factor or the complete decomposed eDamage boss-bridge factor set.",
+            'derived::edamage_ep': _primitive_ledger_entry(
+                source='qe.publication.publish_query_surfaces(derived::edamage_ep)',
+                value=float(primitives.get('edamage_ep') or primitives.get('edamage') or 0.0),
+                meaning=f"QE-published exact Effective Paths eDamage objective surface resolved for Boss Waves damage state_mode={primitives.get('boss_damage_state_mode')} perks_enabled={bool(primitives.get('boss_damage_perks_enabled'))}. It is not converted into boss DPS unless the caller supplies a single boss_applicable_damage_factor or the complete decomposed eDamage boss-bridge factor set.",
                 owner='QE publishes eDamage; scenario runtime input owns any eDamage-to-boss applicability factors until a source-owned intrinsic bridge exists',
             ),
             'state::combat.gc_boss_damage_per_second': _primitive_ledger_entry(
                 source=str(primitives.get('gc_boss_damage_source') or ''),
                 value=float(primitives.get('gc_boss_damage_per_second') or 0.0),
-                meaning='Final continuous boss damage used by the GC/pre-contact lane. Defaults to the QE-owned CL-only boss-applicable DPS lane and can be explicitly overridden, bridged from eDamage by a single scenario factor, or bridged from eDamage by the complete decomposed scenario factor set.',
-                owner='app selects explicit runtime scenario input or QE-owned fail-closed boss-applicable support surface; evaluator integrates the final continuous damage value event-by-event',
+                meaning='Final continuous boss damage used by the GC/pre-contact lane. Defaults to derived::edamage_boss multiplied by Boss Waves runtime exposure factors, and can still be explicitly overridden, bridged from derived::edamage_ep by a single scenario factor, or bridged from derived::edamage_ep by the complete decomposed scenario factor set.',
+                owner='app selects explicit runtime scenario input or QE-owned base Boss Waves damage with runtime exposure factors; evaluator integrates the final continuous damage value event-by-event',
+            ),
+            'state::combat.edamage_boss_runtime_factor': _primitive_ledger_entry(
+                source='app.pipeline._boss_wave_apply_default_edamage_boss_runtime_factors',
+                value=float(primitives.get('edamage_boss_runtime_factor') or 1.0),
+                meaning='Boss Waves default continuous-damage exposure multiplier applied to QE base edamage_boss. It combines expected Spotlight exposure, Om Chip boss focus, and ACP expected active fraction over the boss travel/contact window.',
+                owner='app assembles scenario/loadout runtime exposure; QE remains the base damage source and evaluator consumes the final continuous DPS primitive',
             ),
             'state::combat.boss_edamage_decomposed_bridge_factor': _primitive_ledger_entry(
                 source='scenario_runtime_inputs.boss_edamage_target_share * boss_edamage_cadence_uptime_factor * boss_edamage_reliability_factor * boss_edamage_semantic_normalizer',
@@ -3795,6 +3914,20 @@ def _boss_wave_wall_thorns_damage_increase_per_hit(account_state, *, preset_name
             "Boss Waves cannot derive Sharp Fortitude assist wall-thorns vulnerability without an owned assist-efficiency primitive"
         )
     return 0.0
+
+
+def _boss_wave_module_equipped(account_state, *, preset_name: str, module_name: str) -> bool:
+    module_presets = getattr(account_state, 'module_presets', {}) or {}
+    preset = module_presets.get(preset_name) or {}
+    if not isinstance(preset, dict):
+        return False
+    wanted = str(module_name).strip()
+    for selection in preset.values():
+        primary = str(getattr(selection, 'primary', '') or '').strip()
+        assist = str(getattr(selection, 'assist', '') or '').strip()
+        if wanted in {primary, assist}:
+            return True
+    return False
 
 
 def _boss_wave_timed_dr_inputs(

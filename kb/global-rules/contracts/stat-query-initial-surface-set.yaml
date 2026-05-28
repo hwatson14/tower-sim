@@ -3842,6 +3842,20 @@ families:
       debug_only: false
       scenario_scoped: false
       semantics: Published Effective Paths objective surface for derived::edamage_ep.
+    - surface_id: derived::edamage_boss
+      surface_kind: published_derived_surface
+      surface_class: surface
+      domain: derived
+      owning_families:
+      - derived_v1
+      query_resolvable_phase_1: false
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: false
+      debug_only: false
+      scenario_scoped: true
+      semantics: Published TowerSim Boss Waves base damage surface for derived::edamage_boss; QE supplies confirmed constant Chain Lightning boss DPS before app-owned scenario/loadout exposure factors.
     - surface_id: derived::edamage_ep_helper.dc_base_damage_stack
       surface_kind: published_derived_surface
       surface_class: surface

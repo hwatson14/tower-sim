@@ -1583,7 +1583,7 @@ def test_boss_wave_dissonance_run_masks_are_visible_and_feed_max_wave_matrix():
     assert defense_gc_run['diagnostics']['replacement_primitive_inputs']['values']['wall_hp'] == pytest.approx(0.0)
     assert (
         defense_gc_run['diagnostics']['replacement_primitive_inputs']['values']['gc_boss_damage_source']
-        == 'qe_derived_boss_applicable_dps_cl_only_fail_closed_default'
+        == 'qe_derived_edamage_boss_runtime_exposure_model'
     )
     assert defense_gc_run['summary']['selected_model'] == 'unified_hit_by_hit_boss_survival_under_defense_dissonance'
     assert defense_gc_run['summary']['selected_loadout_type'] == 'gc'
@@ -1694,7 +1694,7 @@ def test_boss_wave_milestone_matrix_selects_best_loadout_by_tier_and_dissonance_
     assert gc_attack_candidate['selected_model'] == 'unified_hit_by_hit_boss_survival_under_attack_dissonance'
     assert gc_attack_candidate['selected_loadout_type'] == 'gc'
     assert gc_attack_candidate['gc_pre_contact_max_wave'] == 0
-    assert gc_attack_candidate['gc_boss_damage_source'] == 'qe_derived_boss_applicable_dps_cl_only_fail_closed_default'
+    assert gc_attack_candidate['gc_boss_damage_source'] == 'qe_derived_edamage_boss_runtime_exposure_model'
     assert 'source_owned_full_gc_boss_applicable_damage_semantics' not in gc_attack_candidate['model_completion_blockers']
     assert attack_row['best_selected_max_wave'] == max(
         ehp_attack_candidate['selected_max_wave'],
@@ -1706,7 +1706,7 @@ def test_boss_wave_milestone_matrix_selects_best_loadout_by_tier_and_dissonance_
     assert attack_row['delta_vs_reference_wave'] == attack_row['best_selected_max_wave'] - 5000
     defense_row = next(row for row in matrix['rows'] if row['dissonance_run_category'] == 'defense')
     if str(defense_row['best_selected_loadout_type']) == 'gc':
-        assert defense_row['best_gc_boss_damage_source'] == 'qe_derived_boss_applicable_dps_cl_only_fail_closed_default'
+        assert defense_row['best_gc_boss_damage_source'] == 'qe_derived_edamage_boss_runtime_exposure_model'
     else:
         assert defense_row['best_gc_boss_damage_source'] is None
     ehp_defense_candidate = next(row for row in defense_row['candidate_results'] if row['loadout_policy_preset'] == 'eHP Farming')
@@ -1714,7 +1714,7 @@ def test_boss_wave_milestone_matrix_selects_best_loadout_by_tier_and_dissonance_
     assert ehp_defense_candidate['selected_max_wave'] == 0
     gc_defense_candidate = next(row for row in defense_row['candidate_results'] if row['loadout_policy_preset'] == 'GC Max Waves')
     assert gc_defense_candidate['selected_model'] == 'unified_hit_by_hit_boss_survival_under_defense_dissonance'
-    assert gc_defense_candidate['gc_boss_damage_source'] == 'qe_derived_boss_applicable_dps_cl_only_fail_closed_default'
+    assert gc_defense_candidate['gc_boss_damage_source'] == 'qe_derived_edamage_boss_runtime_exposure_model'
     assert gc_defense_candidate['selected_max_wave'] == 0
     assert 'source_owned_full_gc_boss_applicable_damage_semantics' not in gc_defense_candidate['model_completion_blockers']
     regular_row = next(row for row in matrix['rows'] if row['dissonance_run_category'] == 'none')
@@ -1987,9 +1987,18 @@ def test_boss_wave_explicit_gc_damage_bridge_enables_pre_contact_selection_witho
         dissonance_run_category='defense',
     )
     default_primitives = default_payload['diagnostics']['replacement_primitive_inputs']['values']
-    assert default_primitives['gc_boss_damage_source'] == 'qe_derived_boss_applicable_dps_cl_only_fail_closed_default'
+    assert default_primitives['gc_boss_damage_source'] == 'qe_derived_edamage_boss_runtime_exposure_model'
     assert default_primitives['qe_boss_applicable_cl_only_damage_per_second'] == pytest.approx(
         default_primitives['chain_lightning_boss_damage_per_second']
+    )
+    assert default_primitives['edamage_boss_base_damage_per_second'] == pytest.approx(
+        default_primitives['chain_lightning_boss_damage_per_second']
+    )
+    assert default_primitives['edamage_boss_spotlight_factor'] >= 1.0
+    assert default_primitives['edamage_boss_acp_factor'] == pytest.approx(1.0)
+    assert default_primitives['gc_boss_damage_per_second'] == pytest.approx(
+        default_primitives['chain_lightning_boss_damage_per_second']
+        * default_primitives['edamage_boss_runtime_factor']
     )
     assert default_payload['summary']['selected_model'] == 'unified_hit_by_hit_boss_survival_under_defense_dissonance'
     assert default_payload['summary']['gc_pre_contact_max_wave'] == 0
@@ -2010,7 +2019,7 @@ def test_boss_wave_explicit_gc_damage_bridge_enables_pre_contact_selection_witho
         dissonance_run_category='defense',
     )
     bridged_primitives = bridged_payload['diagnostics']['replacement_primitive_inputs']['values']
-    assert bridged_primitives['gc_boss_damage_source'] == 'runtime_input_edamage_times_boss_applicable_damage_factor'
+    assert bridged_primitives['gc_boss_damage_source'] == 'runtime_input_edamage_ep_times_boss_applicable_damage_factor'
     assert bridged_primitives['gc_boss_damage_per_second'] > bridged_primitives['chain_lightning_boss_damage_per_second']
     assert bridged_primitives['wall_thorns_contact_damage_pct'] == pytest.approx(0.0)
     assert bridged_payload['diagnostics']['replacement_primitive_semantics_ledger']['primitives'][
@@ -2047,7 +2056,7 @@ def test_boss_wave_explicit_gc_damage_bridge_enables_pre_contact_selection_witho
         dissonance_run_category='defense',
     )
     decomposed_primitives = decomposed_payload['diagnostics']['replacement_primitive_inputs']['values']
-    assert decomposed_primitives['gc_boss_damage_source'] == 'runtime_input_edamage_times_decomposed_boss_bridge'
+    assert decomposed_primitives['gc_boss_damage_source'] == 'runtime_input_edamage_ep_times_decomposed_boss_bridge'
     assert decomposed_primitives['boss_edamage_decomposed_bridge_factor'] == pytest.approx(0.005051405075429985)
     assert decomposed_primitives['gc_boss_damage_per_second'] == pytest.approx(
         bridged_primitives['gc_boss_damage_per_second']
@@ -2733,10 +2742,22 @@ def test_boss_wave_gc_loadout_routes_tourney_loadout_and_energy_net_cl_primitive
     primitives = payload['diagnostics']['replacement_primitive_inputs']['values']
     assert payload['diagnostics']['loadout_profile_preset'] == 'Tourney'
     assert primitives['chain_lightning_boss_damage_per_second'] > 0.0
-    assert primitives['gc_boss_damage_per_second'] == pytest.approx(primitives['chain_lightning_boss_damage_per_second'])
-    assert primitives['gc_boss_damage_source'] == 'qe_derived_boss_applicable_dps_cl_only_fail_closed_default'
+    assert primitives['gc_boss_damage_source'] == 'qe_derived_edamage_boss_runtime_exposure_model'
     assert primitives['qe_boss_applicable_cl_only_damage_per_second'] == pytest.approx(
         primitives['chain_lightning_boss_damage_per_second']
+    )
+    assert primitives['edamage_boss_base_damage_per_second'] == pytest.approx(
+        primitives['chain_lightning_boss_damage_per_second']
+    )
+    assert primitives['om_chip_equipped'] is True
+    assert primitives['edamage_boss_spotlight_exposure_fraction'] == pytest.approx(1.0)
+    assert primitives['edamage_boss_spotlight_factor'] == pytest.approx(
+        primitives['spotlight_bonus_multiplier']
+    )
+    assert primitives['edamage_boss_acp_factor'] > 1.0
+    assert primitives['gc_boss_damage_per_second'] == pytest.approx(
+        primitives['chain_lightning_boss_damage_per_second']
+        * primitives['edamage_boss_runtime_factor']
     )
     assert primitives['energy_net_duration_seconds'] == pytest.approx(4.3)
     assert primitives['energy_net_mastery_multiplier'] == pytest.approx(8.0)

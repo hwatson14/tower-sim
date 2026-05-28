@@ -534,7 +534,7 @@
       },
       "derived::dissonance.ultimate_weapons.echo_bonus_multiplier": {
         "stat_name": "derived::dissonance.ultimate_weapons.echo_bonus_multiplier",
-        "final_value": 0.7895512113929232,
+        "final_value": 1.044213166304547,
         "value_type": "multiplier",
         "source_count": 2,
         "status": "resolved",
@@ -558,7 +558,7 @@
             "stat_name": "state::labs.dissonant_echo.ultimate_weapons.level",
             "source_family": "published_surface",
             "source_name": "state::labs.dissonant_echo.ultimate_weapons.level",
-            "value": 2,
+            "value": 3,
             "value_type": "count",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
@@ -566,7 +566,7 @@
             "resolver_id": "query_derived_composites",
             "kb_mapped": true,
             "defaulted_if_missing": false,
-            "display_value": "2"
+            "display_value": "3"
           }
         ],
         "schema": {
@@ -575,11 +575,11 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_with_perks",
         "trace_mode": "full_trace",
-        "display_value": "x0.79"
+        "display_value": "x1.044"
       },
       "derived::dissonance.ultimate_weapons.echo_multiplier": {
         "stat_name": "derived::dissonance.ultimate_weapons.echo_multiplier",
-        "final_value": 0.015,
+        "final_value": 0.02,
         "value_type": "ratio",
         "source_count": 1,
         "status": "resolved",
@@ -589,7 +589,7 @@
             "stat_name": "state::labs.dissonant_echo.ultimate_weapons.level",
             "source_family": "published_surface",
             "source_name": "state::labs.dissonant_echo.ultimate_weapons.level",
-            "value": 2,
+            "value": 3,
             "value_type": "count",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
@@ -597,7 +597,7 @@
             "resolver_id": "query_derived_composites",
             "kb_mapped": true,
             "defaulted_if_missing": false,
-            "display_value": "2"
+            "display_value": "3"
           }
         ],
         "schema": {
@@ -606,11 +606,11 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_with_perks",
         "trace_mode": "full_trace",
-        "display_value": "0.015"
+        "display_value": "0.02"
       },
       "derived::dissonance.ultimate_weapons.total_multiplier": {
         "stat_name": "derived::dissonance.ultimate_weapons.total_multiplier",
-        "final_value": 4.44805394862567,
+        "final_value": 5.128805014504822,
         "value_type": "multiplier",
         "source_count": 3,
         "status": "resolved",
@@ -620,7 +620,7 @@
             "stat_name": "state::dissonance.ultimate_weapons.active_boost_multiplier",
             "source_family": "published_surface",
             "source_name": "state::dissonance.ultimate_weapons.active_boost_multiplier",
-            "value": 3.658502737232747,
+            "value": 4.084591848200275,
             "value_type": "scalar",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
@@ -628,7 +628,7 @@
             "resolver_id": "query_derived_composites",
             "kb_mapped": true,
             "defaulted_if_missing": false,
-            "display_value": "3.659"
+            "display_value": "4.085"
           },
           {
             "stat_name": "state::dissonance.ultimate_weapons.echo_source_bonus",
@@ -648,7 +648,7 @@
             "stat_name": "state::labs.dissonant_echo.ultimate_weapons.level",
             "source_family": "published_surface",
             "source_name": "state::labs.dissonant_echo.ultimate_weapons.level",
-            "value": 2,
+            "value": 3,
             "value_type": "count",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
@@ -656,7 +656,7 @@
             "resolver_id": "query_derived_composites",
             "kb_mapped": true,
             "defaulted_if_missing": false,
-            "display_value": "2"
+            "display_value": "3"
           }
         ],
         "schema": {
@@ -665,11 +665,11 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_with_perks",
         "trace_mode": "full_trace",
-        "display_value": "x4.448"
+        "display_value": "x5.129"
       },
       "derived::dissonance.utility.echo_bonus_multiplier": {
         "stat_name": "derived::dissonance.utility.echo_bonus_multiplier",
-        "final_value": 0.5166639628875831,
+        "final_value": 0.5280807271236583,
         "value_type": "multiplier",
         "source_count": 2,
         "status": "resolved",
@@ -710,7 +710,7 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_with_perks",
         "trace_mode": "full_trace",
-        "display_value": "x0.517"
+        "display_value": "x0.528"
       },
       "derived::dissonance.utility.echo_multiplier": {
         "stat_name": "derived::dissonance.utility.echo_multiplier",
@@ -745,7 +745,7 @@
       },
       "derived::dissonance.utility.total_multiplier": {
         "stat_name": "derived::dissonance.utility.total_multiplier",
-        "final_value": 3.391008308890342,
+        "final_value": 2.831586861322659,
         "value_type": "multiplier",
         "source_count": 3,
         "status": "resolved",
@@ -755,7 +755,7 @@
             "stat_name": "state::dissonance.utility.active_boost_multiplier",
             "source_family": "published_surface",
             "source_name": "state::dissonance.utility.active_boost_multiplier",
-            "value": 2.8743443460027587,
+            "value": 2.303506134199001,
             "value_type": "scalar",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
@@ -763,7 +763,7 @@
             "resolver_id": "query_derived_composites",
             "kb_mapped": true,
             "defaulted_if_missing": false,
-            "display_value": "2.874"
+            "display_value": "2.304"
           },
           {
             "stat_name": "state::dissonance.utility.echo_source_bonus",
@@ -800,11 +800,11 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_with_perks",
         "trace_mode": "full_trace",
-        "display_value": "x3.391"
+        "display_value": "x2.832"
       },
       "derived::economy.income.coins": {
         "stat_name": "derived::economy.income.coins",
-        "final_value": 312380011.971558,
+        "final_value": 269800189.3630746,
         "value_type": "per_week",
         "source_count": 1,
         "status": "resolved",
@@ -814,11 +814,11 @@
             "surface_id": "derived::economy.income.coins",
             "source_class": "published_surface",
             "source_name": "derived::eecon.base_coin_income",
-            "value": 312380011.971558,
+            "value": 269800189.3630746,
             "unit": "coins_income_proxy",
             "trust_label": "accepted_model",
             "source_alignment": "EP",
-            "display_value": "312M"
+            "display_value": "270M"
           }
         ],
         "schema": {
@@ -830,7 +830,7 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_with_perks",
         "trace_mode": "full_trace",
-        "display_value": "312M"
+        "display_value": "270M"
       },
       "derived::economy.income.gems": {
         "stat_name": "derived::economy.income.gems",
@@ -982,25 +982,25 @@
       },
       "derived::edamage": {
         "stat_name": "derived::edamage",
-        "final_value": 3.523615579895319e+26,
+        "final_value": 5.136601498409849e+26,
         "value_type": "scalar",
         "source_count": 1,
         "status": "resolved",
-        "notes": "Native eDamage objective line; currently equal to EP line",
+        "notes": "Compatibility alias for derived::edamage_ep; do not treat as an independent TowerSim-native damage model.",
         "contributors": [
           {
-            "stat_name": "state::tower.damage",
+            "stat_name": "derived::edamage_ep",
             "source_family": "published_surface",
-            "source_name": "state::tower.damage",
-            "value": 10284960055.109352,
-            "value_type": "damage",
+            "source_name": "derived::edamage_ep",
+            "value": 5.136601498409849e+26,
+            "value_type": "scalar",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
             "destination_id": "edamage",
             "resolver_id": "query_derived_composites",
             "kb_mapped": true,
             "defaulted_if_missing": false,
-            "display_value": "10.3B"
+            "display_value": "514S"
           }
         ],
         "schema": {
@@ -1009,7 +1009,7 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_with_perks",
         "trace_mode": "full_trace",
-        "display_value": "352S"
+        "display_value": "514S"
       },
       "derived::edamage.acp_factor": {
         "stat_name": "derived::edamage.acp_factor",
@@ -1106,7 +1106,7 @@
       },
       "derived::edamage.base_damage_stack": {
         "stat_name": "derived::edamage.base_damage_stack",
-        "final_value": 199294593698.26013,
+        "final_value": 223797044434.01614,
         "value_type": "scalar",
         "source_count": 1,
         "status": "resolved",
@@ -1116,7 +1116,7 @@
             "stat_name": "state::tower.damage",
             "source_family": "published_surface",
             "source_name": "state::tower.damage",
-            "value": 10284960055.109352,
+            "value": 11549453599.02898,
             "value_type": "damage",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
@@ -1124,7 +1124,7 @@
             "resolver_id": "query_derived_composites",
             "kb_mapped": true,
             "defaulted_if_missing": false,
-            "display_value": "10.3B"
+            "display_value": "11.5B"
           }
         ],
         "schema": {
@@ -1133,7 +1133,7 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_with_perks",
         "trace_mode": "full_trace",
-        "display_value": "199B"
+        "display_value": "224B"
       },
       "derived::edamage.berserker_bonus_multiplier": {
         "stat_name": "derived::edamage.berserker_bonus_multiplier",
@@ -1203,12 +1203,12 @@
         "value_type": "scalar",
         "source_count": 1,
         "status": "resolved",
-        "notes": "Boss Waves fail-closed GC damage lane: confirmed Chain Lightning continuous DPS only. This is not a full eDamage-to-boss conversion.",
+        "notes": "Compatibility alias for derived::edamage_boss during Boss Waves damage-surface migration.",
         "contributors": [
           {
-            "stat_name": "derived::edamage.uw.chain_lightning_dps",
+            "stat_name": "derived::edamage_boss",
             "source_family": "published_surface",
-            "source_name": "derived::edamage.uw.chain_lightning_dps",
+            "source_name": "derived::edamage_boss",
             "value": 66909619.77195715,
             "value_type": "scalar",
             "stage": "derived_surface_publication",
@@ -1275,7 +1275,7 @@
       },
       "derived::edamage.bullet_crit_factor": {
         "stat_name": "derived::edamage.bullet_crit_factor",
-        "final_value": 2865.130067076882,
+        "final_value": 2997.3114300601287,
         "value_type": "multiplier",
         "source_count": 2,
         "status": "resolved",
@@ -1316,7 +1316,7 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_with_perks",
         "trace_mode": "full_trace",
-        "display_value": "x2.87k"
+        "display_value": "x3k"
       },
       "derived::edamage.bullet_per_second": {
         "stat_name": "derived::edamage.bullet_per_second",
@@ -2203,7 +2203,7 @@
             "stat_name": "state::tower.crit_multiplier",
             "source_family": "published_surface",
             "source_name": "state::tower.crit_multiplier",
-            "value": 200.1538,
+            "value": 205.0356,
             "value_type": "multiplier",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
@@ -2211,7 +2211,7 @@
             "resolver_id": "query_derived_composites",
             "kb_mapped": true,
             "defaulted_if_missing": false,
-            "display_value": "x200.154"
+            "display_value": "x205.036"
           }
         ],
         "schema": {
@@ -2224,7 +2224,7 @@
       },
       "derived::edamage.uw_crit_factor": {
         "stat_name": "derived::edamage.uw_crit_factor",
-        "final_value": 2809.4354321700375,
+        "final_value": 2937.0899132161226,
         "value_type": "multiplier",
         "source_count": 1,
         "status": "resolved",
@@ -2251,11 +2251,11 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_with_perks",
         "trace_mode": "full_trace",
-        "display_value": "x2.81k"
+        "display_value": "x2.94k"
       },
       "derived::edamage.uw_dissonance_factor": {
         "stat_name": "derived::edamage.uw_dissonance_factor",
-        "final_value": 4.44805394862567,
+        "final_value": 5.128805014504822,
         "value_type": "multiplier",
         "source_count": 1,
         "status": "resolved",
@@ -2265,7 +2265,7 @@
             "stat_name": "derived::dissonance.ultimate_weapons.total_multiplier",
             "source_family": "published_surface",
             "source_name": "derived::dissonance.ultimate_weapons.total_multiplier",
-            "value": 4.44805394862567,
+            "value": 5.128805014504822,
             "value_type": "multiplier",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
@@ -2273,7 +2273,7 @@
             "resolver_id": "query_derived_composites",
             "kb_mapped": true,
             "defaulted_if_missing": false,
-            "display_value": "x4.448"
+            "display_value": "x5.129"
           }
         ],
         "schema": {
@@ -2282,11 +2282,11 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_with_perks",
         "trace_mode": "full_trace",
-        "display_value": "x4.448"
+        "display_value": "x5.129"
       },
       "derived::edamage.uw_total_damage": {
         "stat_name": "derived::edamage.uw_total_damage",
-        "final_value": 174634544954.31494,
+        "final_value": 216851190158.3828,
         "value_type": "scalar",
         "source_count": 1,
         "status": "resolved",
@@ -2313,11 +2313,42 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_with_perks",
         "trace_mode": "full_trace",
-        "display_value": "175B"
+        "display_value": "217B"
+      },
+      "derived::edamage_boss": {
+        "stat_name": "derived::edamage_boss",
+        "final_value": 66909619.77195715,
+        "value_type": "scalar",
+        "source_count": 1,
+        "status": "resolved",
+        "notes": "TowerSim Boss Waves base damage surface: confirmed constant Chain Lightning boss DPS before scenario/loadout exposure factors.",
+        "contributors": [
+          {
+            "stat_name": "derived::edamage.uw.chain_lightning_dps",
+            "source_family": "published_surface",
+            "source_name": "derived::edamage.uw.chain_lightning_dps",
+            "value": 66909619.77195715,
+            "value_type": "scalar",
+            "stage": "derived_surface_publication",
+            "destination_object_type": "derived",
+            "destination_id": "edamage_boss",
+            "resolver_id": "query_derived_composites",
+            "kb_mapped": true,
+            "defaulted_if_missing": false,
+            "display_value": "66.9M"
+          }
+        ],
+        "schema": {
+          "resolver": "query_derived_composites"
+        },
+        "bundle_id": "progression_core_stats",
+        "family_id": "progression_runtime_with_perks",
+        "trace_mode": "full_trace",
+        "display_value": "66.9M"
       },
       "derived::edamage_ep": {
         "stat_name": "derived::edamage_ep",
-        "final_value": 3.523615579895319e+26,
+        "final_value": 5.136601498409849e+26,
         "value_type": "scalar",
         "source_count": 1,
         "status": "resolved",
@@ -2327,7 +2358,7 @@
             "stat_name": "state::tower.damage",
             "source_family": "published_surface",
             "source_name": "state::tower.damage",
-            "value": 10284960055.109352,
+            "value": 11549453599.02898,
             "value_type": "damage",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
@@ -2335,7 +2366,7 @@
             "resolver_id": "query_derived_composites",
             "kb_mapped": true,
             "defaulted_if_missing": false,
-            "display_value": "10.3B"
+            "display_value": "11.5B"
           }
         ],
         "schema": {
@@ -2344,11 +2375,11 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_with_perks",
         "trace_mode": "full_trace",
-        "display_value": "352S"
+        "display_value": "514S"
       },
       "derived::edamage_ep_helper.dc_base_damage_stack": {
         "stat_name": "derived::edamage_ep_helper.dc_base_damage_stack",
-        "final_value": 199294593698.26013,
+        "final_value": 223797044434.01614,
         "value_type": "scalar",
         "source_count": 1,
         "status": "resolved",
@@ -2358,7 +2389,7 @@
             "stat_name": "state::tower.damage",
             "source_family": "published_surface",
             "source_name": "state::tower.damage",
-            "value": 10284960055.109352,
+            "value": 11549453599.02898,
             "value_type": "damage",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
@@ -2366,7 +2397,7 @@
             "resolver_id": "query_derived_composites",
             "kb_mapped": true,
             "defaulted_if_missing": false,
-            "display_value": "10.3B"
+            "display_value": "11.5B"
           }
         ],
         "schema": {
@@ -2375,11 +2406,11 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_with_perks",
         "trace_mode": "full_trace",
-        "display_value": "199B"
+        "display_value": "224B"
       },
       "derived::edamage_ep_helper.di_bullet_crit_factor": {
         "stat_name": "derived::edamage_ep_helper.di_bullet_crit_factor",
-        "final_value": 2865.130067076882,
+        "final_value": 2997.3114300601287,
         "value_type": "multiplier",
         "source_count": 1,
         "status": "resolved",
@@ -2406,7 +2437,7 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_with_perks",
         "trace_mode": "full_trace",
-        "display_value": "x2.87k"
+        "display_value": "x3k"
       },
       "derived::edamage_ep_helper.dj1_uw_crit_card_factor": {
         "stat_name": "derived::edamage_ep_helper.dj1_uw_crit_card_factor",
@@ -2441,7 +2472,7 @@
       },
       "derived::edamage_ep_helper.dj_uw_crit_factor": {
         "stat_name": "derived::edamage_ep_helper.dj_uw_crit_factor",
-        "final_value": 2809.4354321700375,
+        "final_value": 2937.0899132161226,
         "value_type": "multiplier",
         "source_count": 1,
         "status": "resolved",
@@ -2468,7 +2499,7 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_with_perks",
         "trace_mode": "full_trace",
-        "display_value": "x2.81k"
+        "display_value": "x2.94k"
       },
       "derived::edamage_ep_helper.dv_bullet_pipeline_factor": {
         "stat_name": "derived::edamage_ep_helper.dv_bullet_pipeline_factor",
@@ -2610,7 +2641,7 @@
       },
       "derived::edamage_ep_helper.ei_uw_total_damage": {
         "stat_name": "derived::edamage_ep_helper.ei_uw_total_damage",
-        "final_value": 174634544954.31494,
+        "final_value": 216851190158.3828,
         "value_type": "scalar",
         "source_count": 1,
         "status": "resolved",
@@ -2637,7 +2668,7 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_with_perks",
         "trace_mode": "full_trace",
-        "display_value": "175B"
+        "display_value": "217B"
       },
       "derived::edamage_ep_helper.el_slow_factor": {
         "stat_name": "derived::edamage_ep_helper.el_slow_factor",
@@ -2672,7 +2703,7 @@
       },
       "derived::eecon": {
         "stat_name": "derived::eecon",
-        "final_value": 413576536.3171052,
+        "final_value": 357202841.2132818,
         "value_type": "scalar",
         "source_count": 1,
         "status": "resolved",
@@ -2682,7 +2713,7 @@
             "stat_name": "state::economy.coins_per_kill_bonus",
             "source_family": "published_surface",
             "source_name": "state::economy.coins_per_kill_bonus",
-            "value": 46.93883040000001,
+            "value": 47.579110424999996,
             "value_type": "multiplier",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
@@ -2690,7 +2721,7 @@
             "resolver_id": "query_derived_composites",
             "kb_mapped": true,
             "defaulted_if_missing": false,
-            "display_value": "x46.939"
+            "display_value": "x47.579"
           }
         ],
         "schema": {
@@ -2699,11 +2730,11 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_with_perks",
         "trace_mode": "full_trace",
-        "display_value": "414M"
+        "display_value": "357M"
       },
       "derived::eecon.all_coin_bonus_core_factor": {
         "stat_name": "derived::eecon.all_coin_bonus_core_factor",
-        "final_value": 83.89954967351326,
+        "final_value": 88.82441722416527,
         "value_type": "multiplier",
         "source_count": 4,
         "status": "resolved",
@@ -2713,7 +2744,7 @@
             "stat_name": "state::economy.coin_bonus_multiplier",
             "source_family": "published_surface",
             "source_name": "state::economy.coin_bonus_multiplier",
-            "value": 2.5826253599999998,
+            "value": 2.73422436,
             "value_type": "multiplier",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
@@ -2721,7 +2752,7 @@
             "resolver_id": "query_derived_composites",
             "kb_mapped": true,
             "defaulted_if_missing": false,
-            "display_value": "x2.583"
+            "display_value": "x2.734"
           },
           {
             "stat_name": "state::economy.coins_multiplier",
@@ -2772,11 +2803,11 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_with_perks",
         "trace_mode": "full_trace",
-        "display_value": "x83.9"
+        "display_value": "x88.824"
       },
       "derived::eecon.all_coin_bonus_factor": {
         "stat_name": "derived::eecon.all_coin_bonus_factor",
-        "final_value": 3938.1467327614155,
+        "final_value": 4226.186755544831,
         "value_type": "multiplier",
         "source_count": 5,
         "status": "resolved",
@@ -2786,7 +2817,7 @@
             "stat_name": "state::economy.coins_per_kill_bonus",
             "source_family": "published_surface",
             "source_name": "state::economy.coins_per_kill_bonus",
-            "value": 46.93883040000001,
+            "value": 47.579110424999996,
             "value_type": "multiplier",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
@@ -2794,13 +2825,13 @@
             "resolver_id": "query_derived_composites",
             "kb_mapped": true,
             "defaulted_if_missing": false,
-            "display_value": "x46.939"
+            "display_value": "x47.579"
           },
           {
             "stat_name": "state::economy.coin_bonus_multiplier",
             "source_family": "published_surface",
             "source_name": "state::economy.coin_bonus_multiplier",
-            "value": 2.5826253599999998,
+            "value": 2.73422436,
             "value_type": "multiplier",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
@@ -2808,7 +2839,7 @@
             "resolver_id": "query_derived_composites",
             "kb_mapped": true,
             "defaulted_if_missing": false,
-            "display_value": "x2.583"
+            "display_value": "x2.734"
           },
           {
             "stat_name": "state::economy.coins_multiplier",
@@ -2859,11 +2890,11 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_with_perks",
         "trace_mode": "full_trace",
-        "display_value": "x3.94k"
+        "display_value": "x4.23k"
       },
       "derived::eecon.base_coin_income": {
         "stat_name": "derived::eecon.base_coin_income",
-        "final_value": 413576536.3171052,
+        "final_value": 357202841.2132818,
         "value_type": "scalar",
         "source_count": 1,
         "status": "resolved",
@@ -2873,7 +2904,7 @@
             "stat_name": "state::economy.coins_per_kill_bonus",
             "source_family": "published_surface",
             "source_name": "state::economy.coins_per_kill_bonus",
-            "value": 46.93883040000001,
+            "value": 47.579110424999996,
             "value_type": "multiplier",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
@@ -2881,7 +2912,7 @@
             "resolver_id": "query_derived_composites",
             "kb_mapped": true,
             "defaulted_if_missing": false,
-            "display_value": "x46.939"
+            "display_value": "x47.579"
           }
         ],
         "schema": {
@@ -2890,7 +2921,7 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_with_perks",
         "trace_mode": "full_trace",
-        "display_value": "414M"
+        "display_value": "357M"
       },
       "derived::eecon.base_meta_factor": {
         "stat_name": "derived::eecon.base_meta_factor",
@@ -2958,7 +2989,7 @@
       },
       "derived::eecon.cl_factor": {
         "stat_name": "derived::eecon.cl_factor",
-        "final_value": 151.07865027921497,
+        "final_value": 153.13947372013604,
         "value_type": "multiplier",
         "source_count": 0,
         "status": "resolved",
@@ -2970,7 +3001,7 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_with_perks",
         "trace_mode": "full_trace",
-        "display_value": "x151.079"
+        "display_value": "x153.139"
       },
       "derived::eecon.coin_card_factor": {
         "stat_name": "derived::eecon.coin_card_factor",
@@ -3005,7 +3036,7 @@
       },
       "derived::eecon.cpk_factor": {
         "stat_name": "derived::eecon.cpk_factor",
-        "final_value": 46.93883040000001,
+        "final_value": 47.579110424999996,
         "value_type": "multiplier",
         "source_count": 1,
         "status": "resolved",
@@ -3015,7 +3046,7 @@
             "stat_name": "state::economy.coins_per_kill_bonus",
             "source_family": "published_surface",
             "source_name": "state::economy.coins_per_kill_bonus",
-            "value": 46.93883040000001,
+            "value": 47.579110424999996,
             "value_type": "multiplier",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
@@ -3023,7 +3054,7 @@
             "resolver_id": "query_derived_composites",
             "kb_mapped": true,
             "defaulted_if_missing": false,
-            "display_value": "x46.939"
+            "display_value": "x47.579"
           }
         ],
         "schema": {
@@ -3032,7 +3063,7 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_with_perks",
         "trace_mode": "full_trace",
-        "display_value": "x46.939"
+        "display_value": "x47.579"
       },
       "derived::eecon.dw_bonus_term": {
         "stat_name": "derived::eecon.dw_bonus_term",
@@ -3228,7 +3259,7 @@
       },
       "derived::eecon.raw_factor": {
         "stat_name": "derived::eecon.raw_factor",
-        "final_value": 413576.5363171052,
+        "final_value": 357202.8412132818,
         "value_type": "scalar",
         "source_count": 1,
         "status": "resolved",
@@ -3238,7 +3269,7 @@
             "stat_name": "state::economy.coins_per_kill_bonus",
             "source_family": "published_surface",
             "source_name": "state::economy.coins_per_kill_bonus",
-            "value": 46.93883040000001,
+            "value": 47.579110424999996,
             "value_type": "multiplier",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
@@ -3246,7 +3277,7 @@
             "resolver_id": "query_derived_composites",
             "kb_mapped": true,
             "defaulted_if_missing": false,
-            "display_value": "x46.939"
+            "display_value": "x47.579"
           }
         ],
         "schema": {
@@ -3255,7 +3286,7 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_with_perks",
         "trace_mode": "full_trace",
-        "display_value": "414k"
+        "display_value": "357k"
       },
       "derived::eecon.spotlight_coin_bonus_term": {
         "stat_name": "derived::eecon.spotlight_coin_bonus_term",
@@ -3366,7 +3397,7 @@
       },
       "derived::eecon.sync_factor": {
         "stat_name": "derived::eecon.sync_factor",
-        "final_value": 318.9253018518519,
+        "final_value": 325.4339814814815,
         "value_type": "multiplier",
         "source_count": 0,
         "status": "resolved",
@@ -3378,7 +3409,7 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_with_perks",
         "trace_mode": "full_trace",
-        "display_value": "x318.925"
+        "display_value": "x325.434"
       },
       "derived::eecon.unit_scale_factor": {
         "stat_name": "derived::eecon.unit_scale_factor",
@@ -3398,7 +3429,7 @@
       },
       "derived::eecon.utility_dissonance_factor": {
         "stat_name": "derived::eecon.utility_dissonance_factor",
-        "final_value": 3.391008308890342,
+        "final_value": 2.831586861322659,
         "value_type": "multiplier",
         "source_count": 1,
         "status": "resolved",
@@ -3408,7 +3439,7 @@
             "stat_name": "derived::dissonance.utility.total_multiplier",
             "source_family": "published_surface",
             "source_name": "derived::dissonance.utility.total_multiplier",
-            "value": 3.391008308890342,
+            "value": 2.831586861322659,
             "value_type": "multiplier",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
@@ -3416,7 +3447,7 @@
             "resolver_id": "query_derived_composites",
             "kb_mapped": true,
             "defaulted_if_missing": false,
-            "display_value": "x3.391"
+            "display_value": "x2.832"
           }
         ],
         "schema": {
@@ -3425,7 +3456,7 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_with_perks",
         "trace_mode": "full_trace",
-        "display_value": "x3.391"
+        "display_value": "x2.832"
       },
       "derived::eecon.wave_factor": {
         "stat_name": "derived::eecon.wave_factor",
@@ -3445,7 +3476,7 @@
       },
       "derived::eecon_ep": {
         "stat_name": "derived::eecon_ep",
-        "final_value": 413576536.3171052,
+        "final_value": 357202841.2132818,
         "value_type": "scalar",
         "source_count": 1,
         "status": "resolved",
@@ -3455,7 +3486,7 @@
             "stat_name": "state::economy.coins_per_kill_bonus",
             "source_family": "published_surface",
             "source_name": "state::economy.coins_per_kill_bonus",
-            "value": 46.93883040000001,
+            "value": 47.579110424999996,
             "value_type": "multiplier",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
@@ -3463,7 +3494,7 @@
             "resolver_id": "query_derived_composites",
             "kb_mapped": true,
             "defaulted_if_missing": false,
-            "display_value": "x46.939"
+            "display_value": "x47.579"
           }
         ],
         "schema": {
@@ -3472,11 +3503,11 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_with_perks",
         "trace_mode": "full_trace",
-        "display_value": "414M"
+        "display_value": "357M"
       },
       "derived::eecon_ep_helper.cl_meta_stack": {
         "stat_name": "derived::eecon_ep_helper.cl_meta_stack",
-        "final_value": 151.07865027921497,
+        "final_value": 153.13947372013604,
         "value_type": "multiplier",
         "source_count": 0,
         "status": "resolved",
@@ -3488,7 +3519,7 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_with_perks",
         "trace_mode": "full_trace",
-        "display_value": "x151.079"
+        "display_value": "x153.139"
       },
       "derived::eecon_ep_helper.cm_eom_factor": {
         "stat_name": "derived::eecon_ep_helper.cm_eom_factor",
@@ -3508,7 +3539,7 @@
       },
       "derived::eecon_ep_helper.dc_sync_factor": {
         "stat_name": "derived::eecon_ep_helper.dc_sync_factor",
-        "final_value": 318.9253018518519,
+        "final_value": 325.4339814814815,
         "value_type": "multiplier",
         "source_count": 0,
         "status": "resolved",
@@ -3520,7 +3551,7 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_with_perks",
         "trace_mode": "full_trace",
-        "display_value": "x318.925"
+        "display_value": "x325.434"
       },
       "derived::eecon_ep_helper.dg_spotlight_coin_bonus_term": {
         "stat_name": "derived::eecon_ep_helper.dg_spotlight_coin_bonus_term",
@@ -3631,7 +3662,7 @@
       },
       "derived::ehp": {
         "stat_name": "derived::ehp",
-        "final_value": 8.657049169500054e+17,
+        "final_value": 1.259950229064064e+18,
         "value_type": "scalar",
         "source_count": 2,
         "status": "resolved",
@@ -3641,7 +3672,7 @@
             "stat_name": "state::tower.hp",
             "source_family": "published_surface",
             "source_name": "state::tower.hp",
-            "value": 6431026591384.203,
+            "value": 9359740588239.176,
             "value_type": "hp",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
@@ -3649,7 +3680,7 @@
             "resolver_id": "query_derived_composites",
             "kb_mapped": true,
             "defaulted_if_missing": false,
-            "display_value": "6.43T"
+            "display_value": "9.36T"
           },
           {
             "stat_name": "state::wall.hp",
@@ -3672,7 +3703,7 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_with_perks",
         "trace_mode": "full_trace",
-        "display_value": "866q"
+        "display_value": "1.26Q"
       },
       "derived::ehp.armor_assist_factor": {
         "stat_name": "derived::ehp.armor_assist_factor",
@@ -3692,7 +3723,7 @@
       },
       "derived::ehp.armor_factor": {
         "stat_name": "derived::ehp.armor_factor",
-        "final_value": 8.480849599999999,
+        "final_value": 12.343060800000002,
         "value_type": "multiplier",
         "source_count": 1,
         "status": "resolved",
@@ -3719,7 +3750,7 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_with_perks",
         "trace_mode": "full_trace",
-        "display_value": "x8.481"
+        "display_value": "x12.343"
       },
       "derived::ehp.armor_primary_factor": {
         "stat_name": "derived::ehp.armor_primary_factor",
@@ -3739,7 +3770,7 @@
       },
       "derived::ehp.base_pool": {
         "stat_name": "derived::ehp.base_pool",
-        "final_value": 6635259244500835.0,
+        "final_value": 9656981569232860.0,
         "value_type": "scalar",
         "source_count": 2,
         "status": "resolved",
@@ -3749,7 +3780,7 @@
             "stat_name": "state::tower.hp",
             "source_family": "published_surface",
             "source_name": "state::tower.hp",
-            "value": 6431026591384.203,
+            "value": 9359740588239.176,
             "value_type": "hp",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
@@ -3757,7 +3788,7 @@
             "resolver_id": "query_derived_composites",
             "kb_mapped": true,
             "defaulted_if_missing": false,
-            "display_value": "6.43T"
+            "display_value": "9.36T"
           },
           {
             "stat_name": "state::wall.hp",
@@ -3780,7 +3811,7 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_with_perks",
         "trace_mode": "full_trace",
-        "display_value": "6.64q"
+        "display_value": "9.66q"
       },
       "derived::ehp.chain_thunder_factor": {
         "stat_name": "derived::ehp.chain_thunder_factor",
@@ -4338,7 +4369,7 @@
       },
       "derived::ehp.health_factor": {
         "stat_name": "derived::ehp.health_factor",
-        "final_value": 32854714279139.945,
+        "final_value": 47816876261318.5,
         "value_type": "scalar",
         "source_count": 2,
         "status": "resolved",
@@ -4348,7 +4379,7 @@
             "stat_name": "state::tower.hp",
             "source_family": "published_surface",
             "source_name": "state::tower.hp",
-            "value": 6431026591384.203,
+            "value": 9359740588239.176,
             "value_type": "hp",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
@@ -4356,7 +4387,7 @@
             "resolver_id": "query_derived_composites",
             "kb_mapped": true,
             "defaulted_if_missing": false,
-            "display_value": "6.43T"
+            "display_value": "9.36T"
           },
           {
             "stat_name": "state::wall.hp",
@@ -4379,7 +4410,7 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_with_perks",
         "trace_mode": "full_trace",
-        "display_value": "32.9T"
+        "display_value": "47.8T"
       },
       "derived::ehp.health_lab_factor": {
         "stat_name": "derived::ehp.health_lab_factor",
@@ -4415,7 +4446,7 @@
       },
       "derived::ehp.health_raw_factor": {
         "stat_name": "derived::ehp.health_raw_factor",
-        "final_value": 3873988554064.2,
+        "final_value": 3873988554064.1987,
         "value_type": "scalar",
         "source_count": 2,
         "status": "resolved",
@@ -4425,7 +4456,7 @@
             "stat_name": "state::tower.hp",
             "source_family": "published_surface",
             "source_name": "state::tower.hp",
-            "value": 6431026591384.203,
+            "value": 9359740588239.176,
             "value_type": "hp",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
@@ -4433,7 +4464,7 @@
             "resolver_id": "query_derived_composites",
             "kb_mapped": true,
             "defaulted_if_missing": false,
-            "display_value": "6.43T"
+            "display_value": "9.36T"
           },
           {
             "stat_name": "state::wall.hp",
@@ -4588,7 +4619,7 @@
       },
       "derived::ehp.pre_defense_pool": {
         "stat_name": "derived::ehp.pre_defense_pool",
-        "final_value": 1.7314098190924362e+16,
+        "final_value": 2.519900443320554e+16,
         "value_type": "scalar",
         "source_count": 2,
         "status": "resolved",
@@ -4598,7 +4629,7 @@
             "stat_name": "state::tower.hp",
             "source_family": "published_surface",
             "source_name": "state::tower.hp",
-            "value": 6431026591384.203,
+            "value": 9359740588239.176,
             "value_type": "hp",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
@@ -4606,7 +4637,7 @@
             "resolver_id": "query_derived_composites",
             "kb_mapped": true,
             "defaulted_if_missing": false,
-            "display_value": "6.43T"
+            "display_value": "9.36T"
           },
           {
             "stat_name": "state::wall.hp",
@@ -4629,11 +4660,11 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_with_perks",
         "trace_mode": "full_trace",
-        "display_value": "17.3q"
+        "display_value": "25.2q"
       },
       "derived::ehp.pre_tradeoff_ehp": {
         "stat_name": "derived::ehp.pre_tradeoff_ehp",
-        "final_value": 8.657049169500054e+17,
+        "final_value": 1.259950229064064e+18,
         "value_type": "scalar",
         "source_count": 2,
         "status": "resolved",
@@ -4643,7 +4674,7 @@
             "stat_name": "state::tower.hp",
             "source_family": "published_surface",
             "source_name": "state::tower.hp",
-            "value": 6431026591384.203,
+            "value": 9359740588239.176,
             "value_type": "hp",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
@@ -4651,7 +4682,7 @@
             "resolver_id": "query_derived_composites",
             "kb_mapped": true,
             "defaulted_if_missing": false,
-            "display_value": "6.43T"
+            "display_value": "9.36T"
           },
           {
             "stat_name": "state::wall.hp",
@@ -4674,7 +4705,7 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_with_perks",
         "trace_mode": "full_trace",
-        "display_value": "866q"
+        "display_value": "1.26Q"
       },
       "derived::ehp.primordial_black_hole_damage_reduction_factor": {
         "stat_name": "derived::ehp.primordial_black_hole_damage_reduction_factor",
@@ -4792,7 +4823,7 @@
             "stat_name": "state::tower.hp",
             "source_family": "published_surface",
             "source_name": "state::tower.hp",
-            "value": 6431026591384.203,
+            "value": 9359740588239.176,
             "value_type": "hp",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
@@ -4800,7 +4831,7 @@
             "resolver_id": "query_derived_composites",
             "kb_mapped": true,
             "defaulted_if_missing": false,
-            "display_value": "6.43T"
+            "display_value": "9.36T"
           },
           {
             "stat_name": "state::wall.hp",
@@ -4884,7 +4915,7 @@
             "stat_name": "state::tower.hp",
             "source_family": "published_surface",
             "source_name": "state::tower.hp",
-            "value": 6431026591384.203,
+            "value": 9359740588239.176,
             "value_type": "hp",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
@@ -4892,7 +4923,7 @@
             "resolver_id": "query_derived_composites",
             "kb_mapped": true,
             "defaulted_if_missing": false,
-            "display_value": "6.43T"
+            "display_value": "9.36T"
           },
           {
             "stat_name": "state::wall.hp",
@@ -5056,7 +5087,7 @@
             "stat_name": "state::tower.hp",
             "source_family": "published_surface",
             "source_name": "state::tower.hp",
-            "value": 6431026591384.203,
+            "value": 9359740588239.176,
             "value_type": "hp",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
@@ -5064,7 +5095,7 @@
             "resolver_id": "query_derived_composites",
             "kb_mapped": true,
             "defaulted_if_missing": false,
-            "display_value": "6.43T"
+            "display_value": "9.36T"
           },
           {
             "stat_name": "state::wall.hp",
@@ -5101,7 +5132,7 @@
             "stat_name": "state::tower.hp",
             "source_family": "published_surface",
             "source_name": "state::tower.hp",
-            "value": 6431026591384.203,
+            "value": 9359740588239.176,
             "value_type": "hp",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
@@ -5109,7 +5140,7 @@
             "resolver_id": "query_derived_composites",
             "kb_mapped": true,
             "defaulted_if_missing": false,
-            "display_value": "6.43T"
+            "display_value": "9.36T"
           },
           {
             "stat_name": "state::wall.hp",
@@ -5136,7 +5167,7 @@
       },
       "derived::ehp_ep": {
         "stat_name": "derived::ehp_ep",
-        "final_value": 8.657049169500054e+17,
+        "final_value": 1.259950229064064e+18,
         "value_type": "scalar",
         "source_count": 2,
         "status": "resolved",
@@ -5146,7 +5177,7 @@
             "stat_name": "state::tower.hp",
             "source_family": "published_surface",
             "source_name": "state::tower.hp",
-            "value": 6431026591384.203,
+            "value": 9359740588239.176,
             "value_type": "hp",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
@@ -5154,7 +5185,7 @@
             "resolver_id": "query_derived_composites",
             "kb_mapped": true,
             "defaulted_if_missing": false,
-            "display_value": "6.43T"
+            "display_value": "9.36T"
           },
           {
             "stat_name": "state::wall.hp",
@@ -5177,11 +5208,11 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_with_perks",
         "trace_mode": "full_trace",
-        "display_value": "866q"
+        "display_value": "1.26Q"
       },
       "derived::ehp_ep_helper.ce_pool_factor": {
         "stat_name": "derived::ehp_ep_helper.ce_pool_factor",
-        "final_value": 32854714279139.945,
+        "final_value": 47816876261318.5,
         "value_type": "scalar",
         "source_count": 2,
         "status": "resolved",
@@ -5191,7 +5222,7 @@
             "stat_name": "state::tower.hp",
             "source_family": "published_surface",
             "source_name": "state::tower.hp",
-            "value": 6431026591384.203,
+            "value": 9359740588239.176,
             "value_type": "hp",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
@@ -5199,7 +5230,7 @@
             "resolver_id": "query_derived_composites",
             "kb_mapped": true,
             "defaulted_if_missing": false,
-            "display_value": "6.43T"
+            "display_value": "9.36T"
           },
           {
             "stat_name": "state::wall.hp",
@@ -5222,11 +5253,11 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_with_perks",
         "trace_mode": "full_trace",
-        "display_value": "32.9T"
+        "display_value": "47.8T"
       },
       "derived::ehp_ep_helper.cf_armor_factor": {
         "stat_name": "derived::ehp_ep_helper.cf_armor_factor",
-        "final_value": 8.480849599999999,
+        "final_value": 12.343060800000002,
         "value_type": "multiplier",
         "source_count": 1,
         "status": "resolved",
@@ -5253,7 +5284,7 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_with_perks",
         "trace_mode": "full_trace",
-        "display_value": "x8.481"
+        "display_value": "x12.343"
       },
       "derived::ehp_ep_helper.cg_dabs_factor": {
         "stat_name": "derived::ehp_ep_helper.cg_dabs_factor",
@@ -5329,7 +5360,7 @@
             "stat_name": "state::tower.hp",
             "source_family": "published_surface",
             "source_name": "state::tower.hp",
-            "value": 6431026591384.203,
+            "value": 9359740588239.176,
             "value_type": "hp",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
@@ -5337,7 +5368,7 @@
             "resolver_id": "query_derived_composites",
             "kb_mapped": true,
             "defaulted_if_missing": false,
-            "display_value": "6.43T"
+            "display_value": "9.36T"
           },
           {
             "stat_name": "state::wall.hp",
@@ -5374,7 +5405,7 @@
             "stat_name": "state::tower.hp",
             "source_family": "published_surface",
             "source_name": "state::tower.hp",
-            "value": 6431026591384.203,
+            "value": 9359740588239.176,
             "value_type": "hp",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
@@ -5382,7 +5413,7 @@
             "resolver_id": "query_derived_composites",
             "kb_mapped": true,
             "defaulted_if_missing": false,
-            "display_value": "6.43T"
+            "display_value": "9.36T"
           },
           {
             "stat_name": "state::wall.hp",
@@ -5889,7 +5920,7 @@
       },
       "derived::wall.hp_final": {
         "stat_name": "derived::wall.hp_final",
-        "final_value": 6093156458895026.0,
+        "final_value": 8868003110921104.0,
         "value_type": "hp",
         "source_count": 2,
         "status": "resolved",
@@ -5899,7 +5930,7 @@
             "stat_name": "derived::wall.hp_pre_fort",
             "source_family": "published_surface",
             "source_name": "derived::wall.hp_pre_fort",
-            "value": 574826081027832.6,
+            "value": 836604067068028.8,
             "value_type": "hp",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
@@ -5907,7 +5938,7 @@
             "resolver_id": "query_derived_composites",
             "kb_mapped": true,
             "defaulted_if_missing": false,
-            "display_value": "575T"
+            "display_value": "837T"
           },
           {
             "stat_name": "state::wall.fortification_multiplier",
@@ -5930,11 +5961,11 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_with_perks",
         "trace_mode": "full_trace",
-        "display_value": "6.09q"
+        "display_value": "8.87q"
       },
       "derived::wall.hp_pre_fort": {
         "stat_name": "derived::wall.hp_pre_fort",
-        "final_value": 574826081027832.6,
+        "final_value": 836604067068028.8,
         "value_type": "hp",
         "source_count": 4,
         "status": "resolved",
@@ -6003,11 +6034,11 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_with_perks",
         "trace_mode": "full_trace",
-        "display_value": "575T"
+        "display_value": "837T"
       },
       "derived::wall.regen_hp_per_second": {
         "stat_name": "derived::wall.regen_hp_per_second",
-        "final_value": 252538650320360.94,
+        "final_value": 264564300335616.22,
         "value_type": "hp_per_second",
         "source_count": 2,
         "status": "resolved",
@@ -6031,7 +6062,7 @@
             "stat_name": "state::wall.regen",
             "source_family": "published_surface",
             "source_name": "state::wall.regen",
-            "value": 525.0,
+            "value": 550.0,
             "value_type": "hp_per_second",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
@@ -6039,7 +6070,7 @@
             "resolver_id": "query_derived_composites",
             "kb_mapped": true,
             "defaulted_if_missing": false,
-            "display_value": "525"
+            "display_value": "550"
           }
         ],
         "schema": {
@@ -6048,7 +6079,7 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_with_perks",
         "trace_mode": "full_trace",
-        "display_value": "253T"
+        "display_value": "265T"
       },
       "state::bot.amplify.bonus_multiplier": {
         "stat_name": "state::bot.amplify.bonus_multiplier",
@@ -7036,7 +7067,7 @@
       },
       "state::bot.golden.duration_seconds": {
         "stat_name": "state::bot.golden.duration_seconds",
-        "final_value": 33.5,
+        "final_value": 34.5,
         "value_type": "seconds",
         "source_count": 2,
         "status": "resolved",
@@ -7064,20 +7095,20 @@
             "source_class": "labs",
             "composition_stage": "additive_pre_cap",
             "contributor_id": "lab.gold_bot_-_duration.account_state",
-            "value": 6.0,
+            "value": 7.0,
             "value_type": "scalar",
             "input_value_type": "resolved_value",
             "active": true,
             "gate_reason": null,
             "provenance_ref": "IDS::Labs",
-            "display_value": "6"
+            "display_value": "7"
           }
         ],
         "schema": null,
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_with_perks",
         "trace_mode": "full_trace",
-        "display_value": "33.5"
+        "display_value": "34.5"
       },
       "state::bot.golden.effective_range_m": {
         "stat_name": "state::bot.golden.effective_range_m",
@@ -7809,7 +7840,7 @@
             "domain": "progression",
             "source_class": "base",
             "composition_stage": "scenario_adjustment",
-            "contributor_id": "player_stuff.tier_13_attack_dissonant_boost.account_state",
+            "contributor_id": "player_stuff.tier_14_attack_dissonant_boost.account_state",
             "value": 5.0,
             "value_type": "scalar",
             "input_value_type": "multiplier",
@@ -7869,7 +7900,7 @@
             "domain": "progression",
             "source_class": "base",
             "composition_stage": "scenario_adjustment",
-            "contributor_id": "player_stuff.tier_13_attack_dissonant_pb.account_state",
+            "contributor_id": "player_stuff.tier_14_attack_dissonant_pb.account_state",
             "value": 5000.0,
             "value_type": "count",
             "input_value_type": "count",
@@ -7899,7 +7930,7 @@
             "domain": "progression",
             "source_class": "base",
             "composition_stage": "scenario_adjustment",
-            "contributor_id": "player_stuff.tier_13_defense_dissonant_boost.account_state",
+            "contributor_id": "player_stuff.tier_14_defense_dissonant_boost.account_state",
             "value": 5.0,
             "value_type": "scalar",
             "input_value_type": "multiplier",
@@ -7959,7 +7990,7 @@
             "domain": "progression",
             "source_class": "base",
             "composition_stage": "scenario_adjustment",
-            "contributor_id": "player_stuff.tier_13_defense_dissonant_pb.account_state",
+            "contributor_id": "player_stuff.tier_14_defense_dissonant_pb.account_state",
             "value": 5000.0,
             "value_type": "count",
             "input_value_type": "count",
@@ -7977,7 +8008,7 @@
       },
       "state::dissonance.ultimate_weapons.active_boost_multiplier": {
         "stat_name": "state::dissonance.ultimate_weapons.active_boost_multiplier",
-        "final_value": 3.658502737232747,
+        "final_value": 4.084591848200275,
         "value_type": "scalar",
         "source_count": 1,
         "status": "resolved",
@@ -7989,21 +8020,21 @@
             "domain": "progression",
             "source_class": "base",
             "composition_stage": "scenario_adjustment",
-            "contributor_id": "player_stuff.tier_13_ultimate_weapons_dissonant_boost.account_state",
-            "value": 3.658502737232747,
+            "contributor_id": "player_stuff.tier_14_ultimate_weapons_dissonant_boost.account_state",
+            "value": 4.084591848200275,
             "value_type": "scalar",
             "input_value_type": "multiplier",
             "active": true,
             "gate_reason": null,
             "provenance_ref": "IDS::Player & Stuff",
-            "display_value": "x3.659"
+            "display_value": "x4.085"
           }
         ],
         "schema": null,
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_with_perks",
         "trace_mode": "full_trace",
-        "display_value": "3.659"
+        "display_value": "4.085"
       },
       "state::dissonance.ultimate_weapons.echo_source_bonus": {
         "stat_name": "state::dissonance.ultimate_weapons.echo_source_bonus",
@@ -8037,7 +8068,7 @@
       },
       "state::dissonance.ultimate_weapons.pb": {
         "stat_name": "state::dissonance.ultimate_weapons.pb",
-        "final_value": 3959,
+        "final_value": 4310,
         "value_type": "count",
         "source_count": 1,
         "status": "resolved",
@@ -8049,25 +8080,25 @@
             "domain": "progression",
             "source_class": "base",
             "composition_stage": "scenario_adjustment",
-            "contributor_id": "player_stuff.tier_13_ultimate_weapons_dissonant_pb.account_state",
-            "value": 3959.0,
+            "contributor_id": "player_stuff.tier_14_ultimate_weapons_dissonant_pb.account_state",
+            "value": 4310.0,
             "value_type": "count",
             "input_value_type": "count",
             "active": true,
             "gate_reason": null,
             "provenance_ref": "IDS::Player & Stuff",
-            "display_value": "3.96k"
+            "display_value": "4.31k"
           }
         ],
         "schema": null,
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_with_perks",
         "trace_mode": "full_trace",
-        "display_value": "3.96k"
+        "display_value": "4.31k"
       },
       "state::dissonance.utility.active_boost_multiplier": {
         "stat_name": "state::dissonance.utility.active_boost_multiplier",
-        "final_value": 2.8743443460027587,
+        "final_value": 2.303506134199001,
         "value_type": "scalar",
         "source_count": 1,
         "status": "resolved",
@@ -8079,21 +8110,21 @@
             "domain": "progression",
             "source_class": "base",
             "composition_stage": "scenario_adjustment",
-            "contributor_id": "player_stuff.tier_13_utility_dissonant_boost.account_state",
-            "value": 2.8743443460027587,
+            "contributor_id": "player_stuff.tier_14_utility_dissonant_boost.account_state",
+            "value": 2.303506134199001,
             "value_type": "scalar",
             "input_value_type": "multiplier",
             "active": true,
             "gate_reason": null,
             "provenance_ref": "IDS::Player & Stuff",
-            "display_value": "x2.874"
+            "display_value": "x2.304"
           }
         ],
         "schema": null,
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_with_perks",
         "trace_mode": "full_trace",
-        "display_value": "2.874"
+        "display_value": "2.304"
       },
       "state::dissonance.utility.echo_source_bonus": {
         "stat_name": "state::dissonance.utility.echo_source_bonus",
@@ -8127,7 +8158,7 @@
       },
       "state::dissonance.utility.pb": {
         "stat_name": "state::dissonance.utility.pb",
-        "final_value": 4818,
+        "final_value": 3915,
         "value_type": "count",
         "source_count": 1,
         "status": "resolved",
@@ -8139,25 +8170,25 @@
             "domain": "progression",
             "source_class": "base",
             "composition_stage": "scenario_adjustment",
-            "contributor_id": "player_stuff.tier_13_utility_dissonant_pb.account_state",
-            "value": 4818.0,
+            "contributor_id": "player_stuff.tier_14_utility_dissonant_pb.account_state",
+            "value": 3915.0,
             "value_type": "count",
             "input_value_type": "count",
             "active": true,
             "gate_reason": null,
             "provenance_ref": "IDS::Player & Stuff",
-            "display_value": "4.82k"
+            "display_value": "3.92k"
           }
         ],
         "schema": null,
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_with_perks",
         "trace_mode": "full_trace",
-        "display_value": "4.82k"
+        "display_value": "3.92k"
       },
       "state::economy.all_coin_bonus_multiplier": {
         "stat_name": "state::economy.all_coin_bonus_multiplier",
-        "final_value": 3938.1467327614155,
+        "final_value": 4226.186755544831,
         "value_type": "multiplier",
         "source_count": 5,
         "status": "resolved",
@@ -8167,7 +8198,7 @@
             "stat_name": "state::economy.coins_per_kill_bonus",
             "source_family": "published_surface",
             "source_name": "state::economy.coins_per_kill_bonus",
-            "value": 46.93883040000001,
+            "value": 47.579110424999996,
             "value_type": "multiplier",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
@@ -8175,13 +8206,13 @@
             "resolver_id": "query_derived_composites",
             "kb_mapped": true,
             "defaulted_if_missing": false,
-            "display_value": "x46.939"
+            "display_value": "x47.579"
           },
           {
             "stat_name": "state::economy.coin_bonus_multiplier",
             "source_family": "published_surface",
             "source_name": "state::economy.coin_bonus_multiplier",
-            "value": 2.5826253599999998,
+            "value": 2.73422436,
             "value_type": "multiplier",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
@@ -8189,7 +8220,7 @@
             "resolver_id": "query_derived_composites",
             "kb_mapped": true,
             "defaulted_if_missing": false,
-            "display_value": "x2.583"
+            "display_value": "x2.734"
           },
           {
             "stat_name": "state::economy.coins_multiplier",
@@ -8240,7 +8271,7 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_with_perks",
         "trace_mode": "full_trace",
-        "display_value": "x3.94k"
+        "display_value": "x4.23k"
       },
       "state::economy.cash_kill_multiplier": {
         "stat_name": "state::economy.cash_kill_multiplier",
@@ -8439,7 +8470,7 @@
       },
       "state::economy.coin_bonus_multiplier": {
         "stat_name": "state::economy.coin_bonus_multiplier",
-        "final_value": 2.5826253599999998,
+        "final_value": 2.73422436,
         "value_type": "multiplier",
         "source_count": 3,
         "status": "resolved",
@@ -8452,13 +8483,13 @@
             "source_class": "enhancement",
             "composition_stage": "multiplicative",
             "contributor_id": "enhancement.coin_bonus_+.account_state",
-            "value": 1.37,
+            "value": 1.38,
             "value_type": "scalar",
             "input_value_type": "resolved_value",
             "active": true,
             "gate_reason": null,
             "provenance_ref": "IDS::WS+",
-            "display_value": "1.37"
+            "display_value": "1.38"
           },
           {
             "surface_id": "state::economy.coin_bonus_multiplier",
@@ -8467,13 +8498,13 @@
             "source_class": "module_main",
             "composition_stage": "additive_pre_cap",
             "contributor_id": "module__generator__coins_kill_bonus__pct@@black hole digestor@@assist",
-            "value": 1.029,
+            "value": 1.0213,
             "value_type": "scalar",
             "input_value_type": "multiplier_display",
             "active": true,
             "gate_reason": null,
             "provenance_ref": "IDS::Modules",
-            "display_value": "x1.029"
+            "display_value": "x1.021"
           },
           {
             "surface_id": "state::economy.coin_bonus_multiplier",
@@ -8482,20 +8513,20 @@
             "source_class": "module_main",
             "composition_stage": "additive_pre_cap",
             "contributor_id": "module__generator__coins_kill_bonus__pct@@singularity harness@@primary",
-            "value": 1.832,
+            "value": 1.94,
             "value_type": "scalar",
             "input_value_type": "multiplier_display",
             "active": true,
             "gate_reason": null,
             "provenance_ref": "IDS::Modules",
-            "display_value": "x1.832"
+            "display_value": "x1.94"
           }
         ],
         "schema": null,
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_with_perks",
         "trace_mode": "full_trace",
-        "display_value": "x2.583"
+        "display_value": "x2.734"
       },
       "state::economy.coins_multiplier": {
         "stat_name": "state::economy.coins_multiplier",
@@ -8544,7 +8575,7 @@
       },
       "state::economy.coins_per_kill_bonus": {
         "stat_name": "state::economy.coins_per_kill_bonus",
-        "final_value": 46.93883040000001,
+        "final_value": 47.579110424999996,
         "value_type": "multiplier",
         "source_count": 8,
         "status": "resolved",
@@ -8572,13 +8603,13 @@
             "source_class": "enhancement",
             "composition_stage": "multiplicative",
             "contributor_id": "enhancement.coin_bonus_+.account_state",
-            "value": 1.37,
+            "value": 1.38,
             "value_type": "scalar",
             "input_value_type": "resolved_value",
             "active": true,
             "gate_reason": null,
             "provenance_ref": "IDS::WS+",
-            "display_value": "1.37"
+            "display_value": "1.38"
           },
           {
             "surface_id": "state::economy.coins_per_kill_bonus",
@@ -8587,13 +8618,13 @@
             "source_class": "labs",
             "composition_stage": "additive_pre_cap",
             "contributor_id": "lab__tower__coins_kill_bonus__pct",
-            "value": 2.96,
+            "value": 2.98,
             "value_type": "scalar",
             "input_value_type": "resolved_value",
             "active": true,
             "gate_reason": null,
             "provenance_ref": "IDS::Labs",
-            "display_value": "2.96%"
+            "display_value": "2.98%"
           },
           {
             "surface_id": "state::economy.coins_per_kill_bonus",
@@ -8675,7 +8706,7 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_with_perks",
         "trace_mode": "full_trace",
-        "display_value": "x46.939"
+        "display_value": "x47.579"
       },
       "state::economy.coins_per_wave": {
         "stat_name": "state::economy.coins_per_wave",
@@ -9429,7 +9460,7 @@
       },
       "state::labs.dissonant_echo.ultimate_weapons.level": {
         "stat_name": "state::labs.dissonant_echo.ultimate_weapons.level",
-        "final_value": 2,
+        "final_value": 3,
         "value_type": "count",
         "source_count": 1,
         "status": "resolved",
@@ -9442,20 +9473,20 @@
             "source_class": "labs",
             "composition_stage": "scenario_adjustment",
             "contributor_id": "lab.dissonant_echo_-_ultimate_weapons.account_state",
-            "value": 2.0,
+            "value": 3.0,
             "value_type": "count",
             "input_value_type": "level",
             "active": true,
             "gate_reason": null,
             "provenance_ref": "IDS::Labs",
-            "display_value": "2"
+            "display_value": "3"
           }
         ],
         "schema": null,
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_with_perks",
         "trace_mode": "full_trace",
-        "display_value": "2"
+        "display_value": "3"
       },
       "state::labs.dissonant_echo.utility.level": {
         "stat_name": "state::labs.dissonant_echo.utility.level",
@@ -10074,7 +10105,7 @@
       },
       "state::tower.crit_multiplier": {
         "stat_name": "state::tower.crit_multiplier",
-        "final_value": 200.1538,
+        "final_value": 205.0356,
         "value_type": "multiplier",
         "source_count": 6,
         "status": "resolved",
@@ -10102,13 +10133,13 @@
             "source_class": "enhancement",
             "composition_stage": "multiplicative",
             "contributor_id": "enhancement.critical_factor_+.account_state",
-            "value": 1.6400000000000001,
+            "value": 1.6800000000000002,
             "value_type": "scalar",
             "input_value_type": "resolved_value",
             "active": true,
             "gate_reason": null,
             "provenance_ref": "IDS::WS+",
-            "display_value": "1.64"
+            "display_value": "1.68"
           },
           {
             "surface_id": "state::tower.crit_multiplier",
@@ -10175,11 +10206,11 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_with_perks",
         "trace_mode": "full_trace",
-        "display_value": "x200.154"
+        "display_value": "x205.036"
       },
       "state::tower.damage": {
         "stat_name": "state::tower.damage",
-        "final_value": 10284960055.109352,
+        "final_value": 11549453599.02898,
         "value_type": "damage",
         "source_count": 9,
         "status": "resolved",
@@ -10207,13 +10238,13 @@
             "source_class": "enhancement",
             "composition_stage": "multiplicative",
             "contributor_id": "enhancement.damage_+.account_state",
-            "value": 1.62,
+            "value": 1.63,
             "value_type": "scalar",
             "input_value_type": "resolved_value",
             "active": true,
             "gate_reason": null,
             "provenance_ref": "IDS::WS+",
-            "display_value": "1.62"
+            "display_value": "1.63"
           },
           {
             "surface_id": "state::tower.damage",
@@ -10222,13 +10253,13 @@
             "source_class": "labs",
             "composition_stage": "multiplicative",
             "contributor_id": "lab.damage.account_state",
-            "value": 2.58,
+            "value": 2.6,
             "value_type": "scalar",
             "input_value_type": "resolved_value",
             "active": true,
             "gate_reason": null,
             "provenance_ref": "IDS::Labs",
-            "display_value": "2.58"
+            "display_value": "2.6"
           },
           {
             "surface_id": "state::tower.damage",
@@ -10237,13 +10268,13 @@
             "source_class": "module_main",
             "composition_stage": "multiplicative",
             "contributor_id": "module__cannon__damage__pct@@amplifying strike@@primary",
-            "value": 12.059,
+            "value": 13.355,
             "value_type": "scalar",
             "input_value_type": "multiplier_display",
             "active": true,
             "gate_reason": null,
             "provenance_ref": "IDS::Modules",
-            "display_value": "x12.059"
+            "display_value": "x13.355"
           },
           {
             "surface_id": "state::tower.damage",
@@ -10325,7 +10356,7 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_with_perks",
         "trace_mode": "full_trace",
-        "display_value": "10.3B"
+        "display_value": "11.5B"
       },
       "state::tower.damage_per_meter_multiplier": {
         "stat_name": "state::tower.damage_per_meter_multiplier",
@@ -11289,7 +11320,7 @@
       },
       "state::tower.hp": {
         "stat_name": "state::tower.hp",
-        "final_value": 6431026591384.203,
+        "final_value": 9359740588239.176,
         "value_type": "hp",
         "source_count": 12,
         "status": "resolved",
@@ -11377,13 +11408,13 @@
             "source_class": "module_main",
             "composition_stage": "multiplicative",
             "contributor_id": "module__armor__health__pct@@orbital augment@@assist",
-            "value": 1.00484,
+            "value": 1.00842,
             "value_type": "scalar",
             "input_value_type": "multiplier_display",
             "active": true,
             "gate_reason": null,
             "provenance_ref": "IDS::Modules",
-            "display_value": "x1.005"
+            "display_value": "x1.008"
           },
           {
             "surface_id": "state::tower.hp",
@@ -11392,13 +11423,13 @@
             "source_class": "module_main",
             "composition_stage": "multiplicative",
             "contributor_id": "module__armor__health__pct@@sharp fortitude@@primary",
-            "value": 8.44,
+            "value": 12.24,
             "value_type": "scalar",
             "input_value_type": "multiplier_display",
             "active": true,
             "gate_reason": null,
             "provenance_ref": "IDS::Modules",
-            "display_value": "x8.44"
+            "display_value": "x12.24"
           },
           {
             "surface_id": "state::tower.hp",
@@ -11480,7 +11511,7 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_with_perks",
         "trace_mode": "full_trace",
-        "display_value": "6.43T"
+        "display_value": "9.36T"
       },
       "state::tower.knockback_chance_pct": {
         "stat_name": "state::tower.knockback_chance_pct",
@@ -12954,7 +12985,7 @@
       },
       "state::tower.supercrit_multiplier": {
         "stat_name": "state::tower.supercrit_multiplier",
-        "final_value": 41.07915,
+        "final_value": 41.99040000000001,
         "value_type": "multiplier",
         "source_count": 6,
         "status": "resolved",
@@ -12982,13 +13013,13 @@
             "source_class": "enhancement",
             "composition_stage": "multiplicative",
             "contributor_id": "enhancement.super_crit_multi_+.account_state",
-            "value": 1.6099999999999999,
+            "value": 1.62,
             "value_type": "scalar",
             "input_value_type": "resolved_value",
             "active": true,
             "gate_reason": null,
             "provenance_ref": "IDS::WS+",
-            "display_value": "1.61"
+            "display_value": "1.62"
           },
           {
             "surface_id": "state::tower.supercrit_multiplier",
@@ -12997,13 +13028,13 @@
             "source_class": "labs",
             "composition_stage": "additive_pre_cap",
             "contributor_id": "lab.super_crit_multi.account_state",
-            "value": 1.26,
+            "value": 1.28,
             "value_type": "scalar",
             "input_value_type": "resolved_value",
             "active": true,
             "gate_reason": null,
             "provenance_ref": "IDS::Labs",
-            "display_value": "1.26"
+            "display_value": "1.28"
           },
           {
             "surface_id": "state::tower.supercrit_multiplier",
@@ -13055,7 +13086,7 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_with_perks",
         "trace_mode": "full_trace",
-        "display_value": "x41.079"
+        "display_value": "x41.99"
       },
       "state::tower.thorns_damage_pct": {
         "stat_name": "state::tower.thorns_damage_pct",
@@ -13149,7 +13180,7 @@
       },
       "state::tower.ultimate_damage_multiplier": {
         "stat_name": "state::tower.ultimate_damage_multiplier",
-        "final_value": 35.352875008,
+        "final_value": 38.072399456,
         "value_type": "multiplier",
         "source_count": 4,
         "status": "resolved",
@@ -13177,13 +13208,13 @@
             "source_class": "module_main",
             "composition_stage": "additive_pre_cap",
             "contributor_id": "module__core__ultimate_weapon_damage__pct@@om chip@@assist",
-            "value": 2.1664,
+            "value": 2.2393,
             "value_type": "scalar",
             "input_value_type": "multiplier_display",
             "active": true,
             "gate_reason": null,
             "provenance_ref": "IDS::Modules",
-            "display_value": "x2.166"
+            "display_value": "x2.239"
           },
           {
             "surface_id": "state::tower.ultimate_damage_multiplier",
@@ -13192,13 +13223,13 @@
             "source_class": "module_main",
             "composition_stage": "additive_pre_cap",
             "contributor_id": "module__core__ultimate_weapon_damage__pct@@primordial collapse@@primary",
-            "value": 13.376,
+            "value": 13.936,
             "value_type": "scalar",
             "input_value_type": "multiplier_display",
             "active": true,
             "gate_reason": null,
             "provenance_ref": "IDS::Modules",
-            "display_value": "x13.376"
+            "display_value": "x13.936"
           },
           {
             "surface_id": "state::tower.ultimate_damage_multiplier",
@@ -13220,7 +13251,7 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_with_perks",
         "trace_mode": "full_trace",
-        "display_value": "x35.353"
+        "display_value": "x38.072"
       },
       "state::uw.black_hole.base_cooldown_seconds": {
         "stat_name": "state::uw.black_hole.base_cooldown_seconds",
@@ -14769,7 +14800,7 @@
       },
       "state::wall.regen": {
         "stat_name": "state::wall.regen",
-        "final_value": 525.0,
+        "final_value": 550.0,
         "value_type": "hp_per_second",
         "source_count": 2,
         "status": "resolved",
@@ -14782,13 +14813,13 @@
             "source_class": "labs",
             "composition_stage": "additive_pre_cap",
             "contributor_id": "lab__wall__regen__flat",
-            "value": 210.0,
+            "value": 220.0,
             "value_type": "scalar",
             "input_value_type": "resolved_value",
             "active": true,
             "gate_reason": null,
             "provenance_ref": "IDS::Labs",
-            "display_value": "210"
+            "display_value": "220"
           },
           {
             "surface_id": "state::wall.regen",
@@ -14810,7 +14841,7 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_with_perks",
         "trace_mode": "full_trace",
-        "display_value": "525"
+        "display_value": "550"
       },
       "state::wall.thorns_damage_pct": {
         "stat_name": "state::wall.thorns_damage_pct",
@@ -15249,7 +15280,7 @@
         "timing_farm_with_perks",
         "timing_farm_with_perks"
       ],
-      "resolved_surface_count": 389,
+      "resolved_surface_count": 390,
       "contributor_row_count": 402,
       "post_merge_qe_publication": true
     }
@@ -15789,7 +15820,7 @@
       },
       "derived::dissonance.ultimate_weapons.echo_bonus_multiplier": {
         "stat_name": "derived::dissonance.ultimate_weapons.echo_bonus_multiplier",
-        "final_value": 0.8294287524514143,
+        "final_value": 1.1059050032685525,
         "value_type": "multiplier",
         "source_count": 2,
         "status": "resolved",
@@ -15813,7 +15844,7 @@
             "stat_name": "state::labs.dissonant_echo.ultimate_weapons.level",
             "source_family": "published_surface",
             "source_name": "state::labs.dissonant_echo.ultimate_weapons.level",
-            "value": 2,
+            "value": 3,
             "value_type": "count",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
@@ -15821,7 +15852,7 @@
             "resolver_id": "query_derived_composites",
             "kb_mapped": true,
             "defaulted_if_missing": false,
-            "display_value": "2"
+            "display_value": "3"
           }
         ],
         "schema": {
@@ -15830,11 +15861,11 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
-        "display_value": "x0.829"
+        "display_value": "x1.106"
       },
       "derived::dissonance.ultimate_weapons.echo_multiplier": {
         "stat_name": "derived::dissonance.ultimate_weapons.echo_multiplier",
-        "final_value": 0.015,
+        "final_value": 0.02,
         "value_type": "ratio",
         "source_count": 1,
         "status": "resolved",
@@ -15844,7 +15875,7 @@
             "stat_name": "state::labs.dissonant_echo.ultimate_weapons.level",
             "source_family": "published_surface",
             "source_name": "state::labs.dissonant_echo.ultimate_weapons.level",
-            "value": 2,
+            "value": 3,
             "value_type": "count",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
@@ -15852,7 +15883,7 @@
             "resolver_id": "query_derived_composites",
             "kb_mapped": true,
             "defaulted_if_missing": false,
-            "display_value": "2"
+            "display_value": "3"
           }
         ],
         "schema": {
@@ -15861,11 +15892,11 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
-        "display_value": "0.015"
+        "display_value": "0.02"
       },
       "derived::dissonance.ultimate_weapons.total_multiplier": {
         "stat_name": "derived::dissonance.ultimate_weapons.total_multiplier",
-        "final_value": 1.8294287524514143,
+        "final_value": 2.1059050032685525,
         "value_type": "multiplier",
         "source_count": 3,
         "status": "resolved",
@@ -15903,7 +15934,7 @@
             "stat_name": "state::labs.dissonant_echo.ultimate_weapons.level",
             "source_family": "published_surface",
             "source_name": "state::labs.dissonant_echo.ultimate_weapons.level",
-            "value": 2,
+            "value": 3,
             "value_type": "count",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
@@ -15911,7 +15942,7 @@
             "resolver_id": "query_derived_composites",
             "kb_mapped": true,
             "defaulted_if_missing": false,
-            "display_value": "2"
+            "display_value": "3"
           }
         ],
         "schema": {
@@ -15920,7 +15951,7 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
-        "display_value": "x1.829"
+        "display_value": "x2.106"
       },
       "derived::dissonance.utility.echo_bonus_multiplier": {
         "stat_name": "derived::dissonance.utility.echo_bonus_multiplier",
@@ -16059,7 +16090,7 @@
       },
       "derived::economy.income.coins": {
         "stat_name": "derived::economy.income.coins",
-        "final_value": 8895781.632644558,
+        "final_value": 9201442.158578476,
         "value_type": "per_week",
         "source_count": 1,
         "status": "resolved",
@@ -16069,11 +16100,11 @@
             "surface_id": "derived::economy.income.coins",
             "source_class": "published_surface",
             "source_name": "derived::eecon.base_coin_income",
-            "value": 8895781.632644558,
+            "value": 9201442.158578476,
             "unit": "coins_income_proxy",
             "trust_label": "accepted_model",
             "source_alignment": "EP",
-            "display_value": "8.9M"
+            "display_value": "9.2M"
           }
         ],
         "schema": {
@@ -16085,7 +16116,7 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
-        "display_value": "8.9M"
+        "display_value": "9.2M"
       },
       "derived::economy.income.gems": {
         "stat_name": "derived::economy.income.gems",
@@ -16237,25 +16268,25 @@
       },
       "derived::edamage": {
         "stat_name": "derived::edamage",
-        "final_value": 1.4541863917265323e+32,
+        "final_value": 2.160345977385804e+32,
         "value_type": "scalar",
         "source_count": 1,
         "status": "resolved",
-        "notes": "Native eDamage objective line; currently equal to EP line",
+        "notes": "Compatibility alias for derived::edamage_ep; do not treat as an independent TowerSim-native damage model.",
         "contributors": [
           {
-            "stat_name": "state::tower.damage",
+            "stat_name": "derived::edamage_ep",
             "source_family": "published_surface",
-            "source_name": "state::tower.damage",
-            "value": 22796101940.328953,
-            "value_type": "damage",
+            "source_name": "derived::edamage_ep",
+            "value": 2.160345977385804e+32,
+            "value_type": "scalar",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
             "destination_id": "edamage",
             "resolver_id": "query_derived_composites",
             "kb_mapped": true,
             "defaulted_if_missing": false,
-            "display_value": "22.8B"
+            "display_value": "216034598S"
           }
         ],
         "schema": {
@@ -16264,7 +16295,7 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
-        "display_value": "145418639S"
+        "display_value": "216034598S"
       },
       "derived::edamage.acp_factor": {
         "stat_name": "derived::edamage.acp_factor",
@@ -16361,7 +16392,7 @@
       },
       "derived::edamage.base_damage_stack": {
         "stat_name": "derived::edamage.base_damage_stack",
-        "final_value": 20129519674974.535,
+        "final_value": 22604361340359.87,
         "value_type": "scalar",
         "source_count": 1,
         "status": "resolved",
@@ -16371,7 +16402,7 @@
             "stat_name": "state::tower.damage",
             "source_family": "published_surface",
             "source_name": "state::tower.damage",
-            "value": 22796101940.328953,
+            "value": 25598788929.44952,
             "value_type": "damage",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
@@ -16379,7 +16410,7 @@
             "resolver_id": "query_derived_composites",
             "kb_mapped": true,
             "defaulted_if_missing": false,
-            "display_value": "22.8B"
+            "display_value": "25.6B"
           }
         ],
         "schema": {
@@ -16388,7 +16419,7 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
-        "display_value": "20.1T"
+        "display_value": "22.6T"
       },
       "derived::edamage.berserker_bonus_multiplier": {
         "stat_name": "derived::edamage.berserker_bonus_multiplier",
@@ -16458,12 +16489,12 @@
         "value_type": "scalar",
         "source_count": 1,
         "status": "resolved",
-        "notes": "Boss Waves fail-closed GC damage lane: confirmed Chain Lightning continuous DPS only. This is not a full eDamage-to-boss conversion.",
+        "notes": "Compatibility alias for derived::edamage_boss during Boss Waves damage-surface migration.",
         "contributors": [
           {
-            "stat_name": "derived::edamage.uw.chain_lightning_dps",
+            "stat_name": "derived::edamage_boss",
             "source_family": "published_surface",
-            "source_name": "derived::edamage.uw.chain_lightning_dps",
+            "source_name": "derived::edamage_boss",
             "value": 98804171.37425189,
             "value_type": "scalar",
             "stage": "derived_surface_publication",
@@ -16530,7 +16561,7 @@
       },
       "derived::edamage.bullet_crit_factor": {
         "stat_name": "derived::edamage.bullet_crit_factor",
-        "final_value": 3015.8737548177696,
+        "final_value": 3155.012031642241,
         "value_type": "multiplier",
         "source_count": 2,
         "status": "resolved",
@@ -16571,7 +16602,7 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
-        "display_value": "x3.02k"
+        "display_value": "x3.16k"
       },
       "derived::edamage.bullet_per_second": {
         "stat_name": "derived::edamage.bullet_per_second",
@@ -17434,7 +17465,7 @@
       },
       "derived::edamage.uw_crit_card_factor": {
         "stat_name": "derived::edamage.uw_crit_card_factor",
-        "final_value": 6.974614,
+        "final_value": 7.121067999999999,
         "value_type": "multiplier",
         "source_count": 2,
         "status": "resolved",
@@ -17458,7 +17489,7 @@
             "stat_name": "state::tower.crit_multiplier",
             "source_family": "published_surface",
             "source_name": "state::tower.crit_multiplier",
-            "value": 200.1538,
+            "value": 205.0356,
             "value_type": "multiplier",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
@@ -17466,7 +17497,7 @@
             "resolver_id": "query_derived_composites",
             "kb_mapped": true,
             "defaulted_if_missing": false,
-            "display_value": "x200.154"
+            "display_value": "x205.036"
           }
         ],
         "schema": {
@@ -17475,11 +17506,11 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
-        "display_value": "x6.975"
+        "display_value": "x7.121"
       },
       "derived::edamage.uw_crit_factor": {
         "stat_name": "derived::edamage.uw_crit_factor",
-        "final_value": 3471.127253979927,
+        "final_value": 3629.416880873382,
         "value_type": "multiplier",
         "source_count": 1,
         "status": "resolved",
@@ -17506,11 +17537,11 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
-        "display_value": "x3.47k"
+        "display_value": "x3.63k"
       },
       "derived::edamage.uw_dissonance_factor": {
         "stat_name": "derived::edamage.uw_dissonance_factor",
-        "final_value": 1.8294287524514143,
+        "final_value": 2.1059050032685525,
         "value_type": "multiplier",
         "source_count": 1,
         "status": "resolved",
@@ -17520,7 +17551,7 @@
             "stat_name": "derived::dissonance.ultimate_weapons.total_multiplier",
             "source_family": "published_surface",
             "source_name": "derived::dissonance.ultimate_weapons.total_multiplier",
-            "value": 1.8294287524514143,
+            "value": 2.1059050032685525,
             "value_type": "multiplier",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
@@ -17528,7 +17559,7 @@
             "resolver_id": "query_derived_composites",
             "kb_mapped": true,
             "defaulted_if_missing": false,
-            "display_value": "x1.829"
+            "display_value": "x2.106"
           }
         ],
         "schema": {
@@ -17537,11 +17568,11 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
-        "display_value": "x1.829"
+        "display_value": "x2.106"
       },
       "derived::edamage.uw_total_damage": {
         "stat_name": "derived::edamage.uw_total_damage",
-        "final_value": 827800960874.2054,
+        "final_value": 1047380465860.6445,
         "value_type": "scalar",
         "source_count": 1,
         "status": "resolved",
@@ -17568,11 +17599,42 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
-        "display_value": "828B"
+        "display_value": "1.05T"
+      },
+      "derived::edamage_boss": {
+        "stat_name": "derived::edamage_boss",
+        "final_value": 98804171.37425189,
+        "value_type": "scalar",
+        "source_count": 1,
+        "status": "resolved",
+        "notes": "TowerSim Boss Waves base damage surface: confirmed constant Chain Lightning boss DPS before scenario/loadout exposure factors.",
+        "contributors": [
+          {
+            "stat_name": "derived::edamage.uw.chain_lightning_dps",
+            "source_family": "published_surface",
+            "source_name": "derived::edamage.uw.chain_lightning_dps",
+            "value": 98804171.37425189,
+            "value_type": "scalar",
+            "stage": "derived_surface_publication",
+            "destination_object_type": "derived",
+            "destination_id": "edamage_boss",
+            "resolver_id": "query_derived_composites",
+            "kb_mapped": true,
+            "defaulted_if_missing": false,
+            "display_value": "98.8M"
+          }
+        ],
+        "schema": {
+          "resolver": "query_derived_composites"
+        },
+        "bundle_id": "progression_core_stats",
+        "family_id": "progression_runtime_no_perks",
+        "trace_mode": "full_trace",
+        "display_value": "98.8M"
       },
       "derived::edamage_ep": {
         "stat_name": "derived::edamage_ep",
-        "final_value": 1.4541863917265323e+32,
+        "final_value": 2.160345977385804e+32,
         "value_type": "scalar",
         "source_count": 1,
         "status": "resolved",
@@ -17582,7 +17644,7 @@
             "stat_name": "state::tower.damage",
             "source_family": "published_surface",
             "source_name": "state::tower.damage",
-            "value": 22796101940.328953,
+            "value": 25598788929.44952,
             "value_type": "damage",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
@@ -17590,7 +17652,7 @@
             "resolver_id": "query_derived_composites",
             "kb_mapped": true,
             "defaulted_if_missing": false,
-            "display_value": "22.8B"
+            "display_value": "25.6B"
           }
         ],
         "schema": {
@@ -17599,11 +17661,11 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
-        "display_value": "145418639S"
+        "display_value": "216034598S"
       },
       "derived::edamage_ep_helper.dc_base_damage_stack": {
         "stat_name": "derived::edamage_ep_helper.dc_base_damage_stack",
-        "final_value": 20129519674974.535,
+        "final_value": 22604361340359.87,
         "value_type": "scalar",
         "source_count": 1,
         "status": "resolved",
@@ -17613,7 +17675,7 @@
             "stat_name": "state::tower.damage",
             "source_family": "published_surface",
             "source_name": "state::tower.damage",
-            "value": 22796101940.328953,
+            "value": 25598788929.44952,
             "value_type": "damage",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
@@ -17621,7 +17683,7 @@
             "resolver_id": "query_derived_composites",
             "kb_mapped": true,
             "defaulted_if_missing": false,
-            "display_value": "22.8B"
+            "display_value": "25.6B"
           }
         ],
         "schema": {
@@ -17630,11 +17692,11 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
-        "display_value": "20.1T"
+        "display_value": "22.6T"
       },
       "derived::edamage_ep_helper.di_bullet_crit_factor": {
         "stat_name": "derived::edamage_ep_helper.di_bullet_crit_factor",
-        "final_value": 3015.8737548177696,
+        "final_value": 3155.012031642241,
         "value_type": "multiplier",
         "source_count": 1,
         "status": "resolved",
@@ -17661,11 +17723,11 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
-        "display_value": "x3.02k"
+        "display_value": "x3.16k"
       },
       "derived::edamage_ep_helper.dj1_uw_crit_card_factor": {
         "stat_name": "derived::edamage_ep_helper.dj1_uw_crit_card_factor",
-        "final_value": 6.974614,
+        "final_value": 7.121067999999999,
         "value_type": "multiplier",
         "source_count": 1,
         "status": "resolved",
@@ -17692,11 +17754,11 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
-        "display_value": "x6.975"
+        "display_value": "x7.121"
       },
       "derived::edamage_ep_helper.dj_uw_crit_factor": {
         "stat_name": "derived::edamage_ep_helper.dj_uw_crit_factor",
-        "final_value": 3471.127253979927,
+        "final_value": 3629.416880873382,
         "value_type": "multiplier",
         "source_count": 1,
         "status": "resolved",
@@ -17723,7 +17785,7 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
-        "display_value": "x3.47k"
+        "display_value": "x3.63k"
       },
       "derived::edamage_ep_helper.dv_bullet_pipeline_factor": {
         "stat_name": "derived::edamage_ep_helper.dv_bullet_pipeline_factor",
@@ -17865,7 +17927,7 @@
       },
       "derived::edamage_ep_helper.ei_uw_total_damage": {
         "stat_name": "derived::edamage_ep_helper.ei_uw_total_damage",
-        "final_value": 827800960874.2054,
+        "final_value": 1047380465860.6445,
         "value_type": "scalar",
         "source_count": 1,
         "status": "resolved",
@@ -17892,7 +17954,7 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
-        "display_value": "828B"
+        "display_value": "1.05T"
       },
       "derived::edamage_ep_helper.el_slow_factor": {
         "stat_name": "derived::edamage_ep_helper.el_slow_factor",
@@ -17927,7 +17989,7 @@
       },
       "derived::eecon": {
         "stat_name": "derived::eecon",
-        "final_value": 11091898.485609408,
+        "final_value": 11473017.949274696,
         "value_type": "scalar",
         "source_count": 1,
         "status": "resolved",
@@ -17937,7 +17999,7 @@
             "stat_name": "state::economy.coins_per_kill_bonus",
             "source_family": "published_surface",
             "source_name": "state::economy.coins_per_kill_bonus",
-            "value": 10.782448000000002,
+            "value": 10.929876,
             "value_type": "multiplier",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
@@ -17945,7 +18007,7 @@
             "resolver_id": "query_derived_composites",
             "kb_mapped": true,
             "defaulted_if_missing": false,
-            "display_value": "x10.782"
+            "display_value": "x10.93"
           }
         ],
         "schema": {
@@ -17954,11 +18016,11 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
-        "display_value": "11.1M"
+        "display_value": "11.5M"
       },
       "derived::eecon.all_coin_bonus_core_factor": {
         "stat_name": "derived::eecon.all_coin_bonus_core_factor",
-        "final_value": 55.903554781703996,
+        "final_value": 59.047870675147195,
         "value_type": "multiplier",
         "source_count": 4,
         "status": "resolved",
@@ -17968,7 +18030,7 @@
             "stat_name": "state::economy.coin_bonus_multiplier",
             "source_family": "published_surface",
             "source_name": "state::economy.coin_bonus_multiplier",
-            "value": 2.4952221,
+            "value": 2.63556678,
             "value_type": "multiplier",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
@@ -17976,7 +18038,7 @@
             "resolver_id": "query_derived_composites",
             "kb_mapped": true,
             "defaulted_if_missing": false,
-            "display_value": "x2.495"
+            "display_value": "x2.636"
           },
           {
             "stat_name": "state::economy.coins_multiplier",
@@ -18027,11 +18089,11 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
-        "display_value": "x55.904"
+        "display_value": "x59.048"
       },
       "derived::eecon.all_coin_bonus_factor": {
         "stat_name": "derived::eecon.all_coin_bonus_factor",
-        "final_value": 602.7771724488748,
+        "final_value": 645.3859045433952,
         "value_type": "multiplier",
         "source_count": 5,
         "status": "resolved",
@@ -18041,7 +18103,7 @@
             "stat_name": "state::economy.coins_per_kill_bonus",
             "source_family": "published_surface",
             "source_name": "state::economy.coins_per_kill_bonus",
-            "value": 10.782448000000002,
+            "value": 10.929876,
             "value_type": "multiplier",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
@@ -18049,13 +18111,13 @@
             "resolver_id": "query_derived_composites",
             "kb_mapped": true,
             "defaulted_if_missing": false,
-            "display_value": "x10.782"
+            "display_value": "x10.93"
           },
           {
             "stat_name": "state::economy.coin_bonus_multiplier",
             "source_family": "published_surface",
             "source_name": "state::economy.coin_bonus_multiplier",
-            "value": 2.4952221,
+            "value": 2.63556678,
             "value_type": "multiplier",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
@@ -18063,7 +18125,7 @@
             "resolver_id": "query_derived_composites",
             "kb_mapped": true,
             "defaulted_if_missing": false,
-            "display_value": "x2.495"
+            "display_value": "x2.636"
           },
           {
             "stat_name": "state::economy.coins_multiplier",
@@ -18114,11 +18176,11 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
-        "display_value": "x602.777"
+        "display_value": "x645.386"
       },
       "derived::eecon.base_coin_income": {
         "stat_name": "derived::eecon.base_coin_income",
-        "final_value": 11091898.485609408,
+        "final_value": 11473017.949274696,
         "value_type": "scalar",
         "source_count": 1,
         "status": "resolved",
@@ -18128,7 +18190,7 @@
             "stat_name": "state::economy.coins_per_kill_bonus",
             "source_family": "published_surface",
             "source_name": "state::economy.coins_per_kill_bonus",
-            "value": 10.782448000000002,
+            "value": 10.929876,
             "value_type": "multiplier",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
@@ -18136,7 +18198,7 @@
             "resolver_id": "query_derived_composites",
             "kb_mapped": true,
             "defaulted_if_missing": false,
-            "display_value": "x10.782"
+            "display_value": "x10.93"
           }
         ],
         "schema": {
@@ -18145,7 +18207,7 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
-        "display_value": "11.1M"
+        "display_value": "11.5M"
       },
       "derived::eecon.base_meta_factor": {
         "stat_name": "derived::eecon.base_meta_factor",
@@ -18213,7 +18275,7 @@
       },
       "derived::eecon.cl_factor": {
         "stat_name": "derived::eecon.cl_factor",
-        "final_value": 23.6178740992,
+        "final_value": 23.9408003904,
         "value_type": "multiplier",
         "source_count": 0,
         "status": "resolved",
@@ -18225,7 +18287,7 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
-        "display_value": "x23.618"
+        "display_value": "x23.941"
       },
       "derived::eecon.coin_card_factor": {
         "stat_name": "derived::eecon.coin_card_factor",
@@ -18260,7 +18322,7 @@
       },
       "derived::eecon.cpk_factor": {
         "stat_name": "derived::eecon.cpk_factor",
-        "final_value": 10.782448000000002,
+        "final_value": 10.929876,
         "value_type": "multiplier",
         "source_count": 1,
         "status": "resolved",
@@ -18270,7 +18332,7 @@
             "stat_name": "state::economy.coins_per_kill_bonus",
             "source_family": "published_surface",
             "source_name": "state::economy.coins_per_kill_bonus",
-            "value": 10.782448000000002,
+            "value": 10.929876,
             "value_type": "multiplier",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
@@ -18278,7 +18340,7 @@
             "resolver_id": "query_derived_composites",
             "kb_mapped": true,
             "defaulted_if_missing": false,
-            "display_value": "x10.782"
+            "display_value": "x10.93"
           }
         ],
         "schema": {
@@ -18287,7 +18349,7 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
-        "display_value": "x10.782"
+        "display_value": "x10.93"
       },
       "derived::eecon.dw_bonus_term": {
         "stat_name": "derived::eecon.dw_bonus_term",
@@ -18483,7 +18545,7 @@
       },
       "derived::eecon.raw_factor": {
         "stat_name": "derived::eecon.raw_factor",
-        "final_value": 11091.898485609408,
+        "final_value": 11473.017949274696,
         "value_type": "scalar",
         "source_count": 1,
         "status": "resolved",
@@ -18493,7 +18555,7 @@
             "stat_name": "state::economy.coins_per_kill_bonus",
             "source_family": "published_surface",
             "source_name": "state::economy.coins_per_kill_bonus",
-            "value": 10.782448000000002,
+            "value": 10.929876,
             "value_type": "multiplier",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
@@ -18501,7 +18563,7 @@
             "resolver_id": "query_derived_composites",
             "kb_mapped": true,
             "defaulted_if_missing": false,
-            "display_value": "x10.782"
+            "display_value": "x10.93"
           }
         ],
         "schema": {
@@ -18510,7 +18572,7 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
-        "display_value": "11.1k"
+        "display_value": "11.5k"
       },
       "derived::eecon.spotlight_coin_bonus_term": {
         "stat_name": "derived::eecon.spotlight_coin_bonus_term",
@@ -18621,7 +18683,7 @@
       },
       "derived::eecon.sync_factor": {
         "stat_name": "derived::eecon.sync_factor",
-        "final_value": 119.38147666666669,
+        "final_value": 121.81783333333335,
         "value_type": "multiplier",
         "source_count": 0,
         "status": "resolved",
@@ -18633,7 +18695,7 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
-        "display_value": "x119.381"
+        "display_value": "x121.818"
       },
       "derived::eecon.unit_scale_factor": {
         "stat_name": "derived::eecon.unit_scale_factor",
@@ -18700,7 +18762,7 @@
       },
       "derived::eecon_ep": {
         "stat_name": "derived::eecon_ep",
-        "final_value": 11091898.485609408,
+        "final_value": 11473017.949274696,
         "value_type": "scalar",
         "source_count": 1,
         "status": "resolved",
@@ -18710,7 +18772,7 @@
             "stat_name": "state::economy.coins_per_kill_bonus",
             "source_family": "published_surface",
             "source_name": "state::economy.coins_per_kill_bonus",
-            "value": 10.782448000000002,
+            "value": 10.929876,
             "value_type": "multiplier",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
@@ -18718,7 +18780,7 @@
             "resolver_id": "query_derived_composites",
             "kb_mapped": true,
             "defaulted_if_missing": false,
-            "display_value": "x10.782"
+            "display_value": "x10.93"
           }
         ],
         "schema": {
@@ -18727,11 +18789,11 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
-        "display_value": "11.1M"
+        "display_value": "11.5M"
       },
       "derived::eecon_ep_helper.cl_meta_stack": {
         "stat_name": "derived::eecon_ep_helper.cl_meta_stack",
-        "final_value": 23.6178740992,
+        "final_value": 23.9408003904,
         "value_type": "multiplier",
         "source_count": 0,
         "status": "resolved",
@@ -18743,7 +18805,7 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
-        "display_value": "x23.618"
+        "display_value": "x23.941"
       },
       "derived::eecon_ep_helper.cm_eom_factor": {
         "stat_name": "derived::eecon_ep_helper.cm_eom_factor",
@@ -18763,7 +18825,7 @@
       },
       "derived::eecon_ep_helper.dc_sync_factor": {
         "stat_name": "derived::eecon_ep_helper.dc_sync_factor",
-        "final_value": 119.38147666666669,
+        "final_value": 121.81783333333335,
         "value_type": "multiplier",
         "source_count": 0,
         "status": "resolved",
@@ -18775,7 +18837,7 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
-        "display_value": "x119.381"
+        "display_value": "x121.818"
       },
       "derived::eecon_ep_helper.dg_spotlight_coin_bonus_term": {
         "stat_name": "derived::eecon_ep_helper.dg_spotlight_coin_bonus_term",
@@ -18886,7 +18948,7 @@
       },
       "derived::ehp": {
         "stat_name": "derived::ehp",
-        "final_value": 1.649444593313928e+17,
+        "final_value": 2.4072235135562355e+17,
         "value_type": "scalar",
         "source_count": 2,
         "status": "resolved",
@@ -18896,7 +18958,7 @@
             "stat_name": "state::tower.hp",
             "source_family": "published_surface",
             "source_name": "state::tower.hp",
-            "value": 22947995755590.953,
+            "value": 33490640410913.547,
             "value_type": "hp",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
@@ -18904,7 +18966,7 @@
             "resolver_id": "query_derived_composites",
             "kb_mapped": true,
             "defaulted_if_missing": false,
-            "display_value": "22.9T"
+            "display_value": "33.5T"
           },
           {
             "stat_name": "state::wall.hp",
@@ -18927,7 +18989,7 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
-        "display_value": "165q"
+        "display_value": "241q"
       },
       "derived::ehp.armor_assist_factor": {
         "stat_name": "derived::ehp.armor_assist_factor",
@@ -18947,7 +19009,7 @@
       },
       "derived::ehp.armor_factor": {
         "stat_name": "derived::ehp.armor_factor",
-        "final_value": 9.0787294,
+        "final_value": 13.249630380000001,
         "value_type": "multiplier",
         "source_count": 1,
         "status": "resolved",
@@ -18974,7 +19036,7 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
-        "display_value": "x9.079"
+        "display_value": "x13.25"
       },
       "derived::ehp.armor_primary_factor": {
         "stat_name": "derived::ehp.armor_primary_factor",
@@ -18994,7 +19056,7 @@
       },
       "derived::ehp.base_pool": {
         "stat_name": "derived::ehp.base_pool",
-        "final_value": 1847377861589175.2,
+        "final_value": 2696090252260560.5,
         "value_type": "scalar",
         "source_count": 2,
         "status": "resolved",
@@ -19004,7 +19066,7 @@
             "stat_name": "state::tower.hp",
             "source_family": "published_surface",
             "source_name": "state::tower.hp",
-            "value": 22947995755590.953,
+            "value": 33490640410913.547,
             "value_type": "hp",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
@@ -19012,7 +19074,7 @@
             "resolver_id": "query_derived_composites",
             "kb_mapped": true,
             "defaulted_if_missing": false,
-            "display_value": "22.9T"
+            "display_value": "33.5T"
           },
           {
             "stat_name": "state::wall.hp",
@@ -19035,7 +19097,7 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
-        "display_value": "1.85q"
+        "display_value": "2.7q"
       },
       "derived::ehp.chain_thunder_factor": {
         "stat_name": "derived::ehp.chain_thunder_factor",
@@ -19593,7 +19655,7 @@
       },
       "derived::ehp.health_factor": {
         "stat_name": "derived::ehp.health_factor",
-        "final_value": 26362249411346.996,
+        "final_value": 38473452098453.36,
         "value_type": "scalar",
         "source_count": 2,
         "status": "resolved",
@@ -19603,7 +19665,7 @@
             "stat_name": "state::tower.hp",
             "source_family": "published_surface",
             "source_name": "state::tower.hp",
-            "value": 22947995755590.953,
+            "value": 33490640410913.547,
             "value_type": "hp",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
@@ -19611,7 +19673,7 @@
             "resolver_id": "query_derived_composites",
             "kb_mapped": true,
             "defaulted_if_missing": false,
-            "display_value": "22.9T"
+            "display_value": "33.5T"
           },
           {
             "stat_name": "state::wall.hp",
@@ -19634,7 +19696,7 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
-        "display_value": "26.4T"
+        "display_value": "38.5T"
       },
       "derived::ehp.health_lab_factor": {
         "stat_name": "derived::ehp.health_lab_factor",
@@ -19670,7 +19732,7 @@
       },
       "derived::ehp.health_raw_factor": {
         "stat_name": "derived::ehp.health_raw_factor",
-        "final_value": 2903737764377.799,
+        "final_value": 2903737764377.7983,
         "value_type": "scalar",
         "source_count": 2,
         "status": "resolved",
@@ -19680,7 +19742,7 @@
             "stat_name": "state::tower.hp",
             "source_family": "published_surface",
             "source_name": "state::tower.hp",
-            "value": 22947995755590.953,
+            "value": 33490640410913.547,
             "value_type": "hp",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
@@ -19688,7 +19750,7 @@
             "resolver_id": "query_derived_composites",
             "kb_mapped": true,
             "defaulted_if_missing": false,
-            "display_value": "22.9T"
+            "display_value": "33.5T"
           },
           {
             "stat_name": "state::wall.hp",
@@ -19843,7 +19905,7 @@
       },
       "derived::ehp.pre_defense_pool": {
         "stat_name": "derived::ehp.pre_defense_pool",
-        "final_value": 3298889038552098.5,
+        "final_value": 4814446879036715.0,
         "value_type": "scalar",
         "source_count": 2,
         "status": "resolved",
@@ -19853,7 +19915,7 @@
             "stat_name": "state::tower.hp",
             "source_family": "published_surface",
             "source_name": "state::tower.hp",
-            "value": 22947995755590.953,
+            "value": 33490640410913.547,
             "value_type": "hp",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
@@ -19861,7 +19923,7 @@
             "resolver_id": "query_derived_composites",
             "kb_mapped": true,
             "defaulted_if_missing": false,
-            "display_value": "22.9T"
+            "display_value": "33.5T"
           },
           {
             "stat_name": "state::wall.hp",
@@ -19884,11 +19946,11 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
-        "display_value": "3.3q"
+        "display_value": "4.81q"
       },
       "derived::ehp.pre_tradeoff_ehp": {
         "stat_name": "derived::ehp.pre_tradeoff_ehp",
-        "final_value": 1.649444593313928e+17,
+        "final_value": 2.4072235135562355e+17,
         "value_type": "scalar",
         "source_count": 2,
         "status": "resolved",
@@ -19898,7 +19960,7 @@
             "stat_name": "state::tower.hp",
             "source_family": "published_surface",
             "source_name": "state::tower.hp",
-            "value": 22947995755590.953,
+            "value": 33490640410913.547,
             "value_type": "hp",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
@@ -19906,7 +19968,7 @@
             "resolver_id": "query_derived_composites",
             "kb_mapped": true,
             "defaulted_if_missing": false,
-            "display_value": "22.9T"
+            "display_value": "33.5T"
           },
           {
             "stat_name": "state::wall.hp",
@@ -19929,7 +19991,7 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
-        "display_value": "165q"
+        "display_value": "241q"
       },
       "derived::ehp.primordial_black_hole_damage_reduction_factor": {
         "stat_name": "derived::ehp.primordial_black_hole_damage_reduction_factor",
@@ -20047,7 +20109,7 @@
             "stat_name": "state::tower.hp",
             "source_family": "published_surface",
             "source_name": "state::tower.hp",
-            "value": 22947995755590.953,
+            "value": 33490640410913.547,
             "value_type": "hp",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
@@ -20055,7 +20117,7 @@
             "resolver_id": "query_derived_composites",
             "kb_mapped": true,
             "defaulted_if_missing": false,
-            "display_value": "22.9T"
+            "display_value": "33.5T"
           },
           {
             "stat_name": "state::wall.hp",
@@ -20139,7 +20201,7 @@
             "stat_name": "state::tower.hp",
             "source_family": "published_surface",
             "source_name": "state::tower.hp",
-            "value": 22947995755590.953,
+            "value": 33490640410913.547,
             "value_type": "hp",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
@@ -20147,7 +20209,7 @@
             "resolver_id": "query_derived_composites",
             "kb_mapped": true,
             "defaulted_if_missing": false,
-            "display_value": "22.9T"
+            "display_value": "33.5T"
           },
           {
             "stat_name": "state::wall.hp",
@@ -20311,7 +20373,7 @@
             "stat_name": "state::tower.hp",
             "source_family": "published_surface",
             "source_name": "state::tower.hp",
-            "value": 22947995755590.953,
+            "value": 33490640410913.547,
             "value_type": "hp",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
@@ -20319,7 +20381,7 @@
             "resolver_id": "query_derived_composites",
             "kb_mapped": true,
             "defaulted_if_missing": false,
-            "display_value": "22.9T"
+            "display_value": "33.5T"
           },
           {
             "stat_name": "state::wall.hp",
@@ -20356,7 +20418,7 @@
             "stat_name": "state::tower.hp",
             "source_family": "published_surface",
             "source_name": "state::tower.hp",
-            "value": 22947995755590.953,
+            "value": 33490640410913.547,
             "value_type": "hp",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
@@ -20364,7 +20426,7 @@
             "resolver_id": "query_derived_composites",
             "kb_mapped": true,
             "defaulted_if_missing": false,
-            "display_value": "22.9T"
+            "display_value": "33.5T"
           },
           {
             "stat_name": "state::wall.hp",
@@ -20391,7 +20453,7 @@
       },
       "derived::ehp_ep": {
         "stat_name": "derived::ehp_ep",
-        "final_value": 1.649444593313928e+17,
+        "final_value": 2.4072235135562355e+17,
         "value_type": "scalar",
         "source_count": 2,
         "status": "resolved",
@@ -20401,7 +20463,7 @@
             "stat_name": "state::tower.hp",
             "source_family": "published_surface",
             "source_name": "state::tower.hp",
-            "value": 22947995755590.953,
+            "value": 33490640410913.547,
             "value_type": "hp",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
@@ -20409,7 +20471,7 @@
             "resolver_id": "query_derived_composites",
             "kb_mapped": true,
             "defaulted_if_missing": false,
-            "display_value": "22.9T"
+            "display_value": "33.5T"
           },
           {
             "stat_name": "state::wall.hp",
@@ -20432,11 +20494,11 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
-        "display_value": "165q"
+        "display_value": "241q"
       },
       "derived::ehp_ep_helper.ce_pool_factor": {
         "stat_name": "derived::ehp_ep_helper.ce_pool_factor",
-        "final_value": 26362249411346.996,
+        "final_value": 38473452098453.36,
         "value_type": "scalar",
         "source_count": 2,
         "status": "resolved",
@@ -20446,7 +20508,7 @@
             "stat_name": "state::tower.hp",
             "source_family": "published_surface",
             "source_name": "state::tower.hp",
-            "value": 22947995755590.953,
+            "value": 33490640410913.547,
             "value_type": "hp",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
@@ -20454,7 +20516,7 @@
             "resolver_id": "query_derived_composites",
             "kb_mapped": true,
             "defaulted_if_missing": false,
-            "display_value": "22.9T"
+            "display_value": "33.5T"
           },
           {
             "stat_name": "state::wall.hp",
@@ -20477,11 +20539,11 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
-        "display_value": "26.4T"
+        "display_value": "38.5T"
       },
       "derived::ehp_ep_helper.cf_armor_factor": {
         "stat_name": "derived::ehp_ep_helper.cf_armor_factor",
-        "final_value": 9.0787294,
+        "final_value": 13.249630380000001,
         "value_type": "multiplier",
         "source_count": 1,
         "status": "resolved",
@@ -20508,7 +20570,7 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
-        "display_value": "x9.079"
+        "display_value": "x13.25"
       },
       "derived::ehp_ep_helper.cg_dabs_factor": {
         "stat_name": "derived::ehp_ep_helper.cg_dabs_factor",
@@ -20584,7 +20646,7 @@
             "stat_name": "state::tower.hp",
             "source_family": "published_surface",
             "source_name": "state::tower.hp",
-            "value": 22947995755590.953,
+            "value": 33490640410913.547,
             "value_type": "hp",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
@@ -20592,7 +20654,7 @@
             "resolver_id": "query_derived_composites",
             "kb_mapped": true,
             "defaulted_if_missing": false,
-            "display_value": "22.9T"
+            "display_value": "33.5T"
           },
           {
             "stat_name": "state::wall.hp",
@@ -20629,7 +20691,7 @@
             "stat_name": "state::tower.hp",
             "source_family": "published_surface",
             "source_name": "state::tower.hp",
-            "value": 22947995755590.953,
+            "value": 33490640410913.547,
             "value_type": "hp",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
@@ -20637,7 +20699,7 @@
             "resolver_id": "query_derived_composites",
             "kb_mapped": true,
             "defaulted_if_missing": false,
-            "display_value": "22.9T"
+            "display_value": "33.5T"
           },
           {
             "stat_name": "state::wall.hp",
@@ -21144,7 +21206,7 @@
       },
       "derived::wall.hp_final": {
         "stat_name": "derived::wall.hp_final",
-        "final_value": 1412400746301950.0,
+        "final_value": 2061278292636080.5,
         "value_type": "hp",
         "source_count": 2,
         "status": "resolved",
@@ -21154,7 +21216,7 @@
             "stat_name": "derived::wall.hp_pre_fort",
             "source_family": "published_surface",
             "source_name": "derived::wall.hp_pre_fort",
-            "value": 133245353424712.27,
+            "value": 194460216286422.7,
             "value_type": "hp",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
@@ -21162,7 +21224,7 @@
             "resolver_id": "query_derived_composites",
             "kb_mapped": true,
             "defaulted_if_missing": false,
-            "display_value": "133T"
+            "display_value": "194T"
           },
           {
             "stat_name": "state::wall.fortification_multiplier",
@@ -21185,11 +21247,11 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
-        "display_value": "1.41q"
+        "display_value": "2.06q"
       },
       "derived::wall.hp_pre_fort": {
         "stat_name": "derived::wall.hp_pre_fort",
-        "final_value": 133245353424712.27,
+        "final_value": 194460216286422.7,
         "value_type": "hp",
         "source_count": 4,
         "status": "resolved",
@@ -21258,11 +21320,11 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
-        "display_value": "133T"
+        "display_value": "194T"
       },
       "derived::wall.regen_hp_per_second": {
         "stat_name": "derived::wall.regen_hp_per_second",
-        "final_value": 501228581178.1041,
+        "final_value": 525096608853.25195,
         "value_type": "hp_per_second",
         "source_count": 2,
         "status": "resolved",
@@ -21286,7 +21348,7 @@
             "stat_name": "state::wall.regen",
             "source_family": "published_surface",
             "source_name": "state::wall.regen",
-            "value": 210.0,
+            "value": 220.0,
             "value_type": "hp_per_second",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
@@ -21294,7 +21356,7 @@
             "resolver_id": "query_derived_composites",
             "kb_mapped": true,
             "defaulted_if_missing": false,
-            "display_value": "210"
+            "display_value": "220"
           }
         ],
         "schema": {
@@ -21303,7 +21365,7 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
-        "display_value": "501B"
+        "display_value": "525B"
       },
       "state::bot.amplify.bonus_multiplier": {
         "stat_name": "state::bot.amplify.bonus_multiplier",
@@ -22276,7 +22338,7 @@
       },
       "state::bot.golden.duration_seconds": {
         "stat_name": "state::bot.golden.duration_seconds",
-        "final_value": 33.5,
+        "final_value": 34.5,
         "value_type": "seconds",
         "source_count": 2,
         "status": "resolved",
@@ -22304,20 +22366,20 @@
             "source_class": "labs",
             "composition_stage": "additive_pre_cap",
             "contributor_id": "lab.gold_bot_-_duration.account_state",
-            "value": 6.0,
+            "value": 7.0,
             "value_type": "scalar",
             "input_value_type": "resolved_value",
             "active": true,
             "gate_reason": null,
             "provenance_ref": "IDS::Labs",
-            "display_value": "6"
+            "display_value": "7"
           }
         ],
         "schema": null,
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
-        "display_value": "33.5"
+        "display_value": "34.5"
       },
       "state::bot.golden.effective_range_m": {
         "stat_name": "state::bot.golden.effective_range_m",
@@ -22977,33 +23039,33 @@
       },
       "state::cards.wave_accelerator.spawn_rate_acceleration": {
         "stat_name": "state::cards.wave_accelerator.spawn_rate_acceleration",
-        "final_value": 54.0,
-        "value_type": "unknown",
+        "final_value": null,
+        "value_type": "scalar",
         "source_count": 1,
-        "status": "resolved",
+        "status": "gated_off",
         "notes": "Resolved through run_stats bounded query bundle.",
         "contributors": [
           {
             "surface_id": "state::cards.wave_accelerator.spawn_rate_acceleration",
             "surface_class": "environment",
             "domain": "cards",
-            "source_class": "cards",
-            "composition_stage": "scenario_adjustment",
-            "contributor_id": "card.wave_accelerator.loadout_resolved",
-            "value": 54.0,
+            "source_class": "base",
+            "composition_stage": "gate_enable_disable",
+            "contributor_id": "query_placeholder::state::cards.wave_accelerator.spawn_rate_acceleration",
+            "value": false,
             "value_type": "scalar",
-            "input_value_type": "resolved_value",
-            "active": true,
-            "gate_reason": null,
-            "provenance_ref": "IDS::Cards",
-            "display_value": "54"
+            "input_value_type": "scalar",
+            "active": false,
+            "gate_reason": "surface_absent_from_bound_inputs",
+            "provenance_ref": "engine.family_baseline_materializer.placeholder",
+            "display_value": "false"
           }
         ],
         "schema": null,
         "bundle_id": "timing_wave_duration",
         "family_id": "timing_tournament_no_perks",
         "trace_mode": "full_trace",
-        "display_value": "54"
+        "display_value": null
       },
       "state::cards.wave_skip.chance_pct": {
         "stat_name": "state::cards.wave_skip.chance_pct",
@@ -23397,7 +23459,7 @@
       },
       "state::economy.all_coin_bonus_multiplier": {
         "stat_name": "state::economy.all_coin_bonus_multiplier",
-        "final_value": 602.7771724488748,
+        "final_value": 645.3859045433952,
         "value_type": "multiplier",
         "source_count": 5,
         "status": "resolved",
@@ -23407,7 +23469,7 @@
             "stat_name": "state::economy.coins_per_kill_bonus",
             "source_family": "published_surface",
             "source_name": "state::economy.coins_per_kill_bonus",
-            "value": 10.782448000000002,
+            "value": 10.929876,
             "value_type": "multiplier",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
@@ -23415,13 +23477,13 @@
             "resolver_id": "query_derived_composites",
             "kb_mapped": true,
             "defaulted_if_missing": false,
-            "display_value": "x10.782"
+            "display_value": "x10.93"
           },
           {
             "stat_name": "state::economy.coin_bonus_multiplier",
             "source_family": "published_surface",
             "source_name": "state::economy.coin_bonus_multiplier",
-            "value": 2.4952221,
+            "value": 2.63556678,
             "value_type": "multiplier",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
@@ -23429,7 +23491,7 @@
             "resolver_id": "query_derived_composites",
             "kb_mapped": true,
             "defaulted_if_missing": false,
-            "display_value": "x2.495"
+            "display_value": "x2.636"
           },
           {
             "stat_name": "state::economy.coins_multiplier",
@@ -23480,7 +23542,7 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
-        "display_value": "x602.777"
+        "display_value": "x645.386"
       },
       "state::economy.cash_kill_multiplier": {
         "stat_name": "state::economy.cash_kill_multiplier",
@@ -23649,7 +23711,7 @@
       },
       "state::economy.coin_bonus_multiplier": {
         "stat_name": "state::economy.coin_bonus_multiplier",
-        "final_value": 2.4952221,
+        "final_value": 2.63556678,
         "value_type": "multiplier",
         "source_count": 3,
         "status": "resolved",
@@ -23662,13 +23724,13 @@
             "source_class": "enhancement",
             "composition_stage": "multiplicative",
             "contributor_id": "enhancement.coin_bonus_+.account_state",
-            "value": 1.37,
+            "value": 1.38,
             "value_type": "scalar",
             "input_value_type": "resolved_value",
             "active": true,
             "gate_reason": null,
             "provenance_ref": "IDS::WS+",
-            "display_value": "1.37"
+            "display_value": "1.38"
           },
           {
             "surface_id": "state::economy.coin_bonus_multiplier",
@@ -23677,13 +23739,13 @@
             "source_class": "module_main",
             "composition_stage": "additive_pre_cap",
             "contributor_id": "module__generator__coins_kill_bonus__pct@@galaxy compressor@@assist",
-            "value": 1.029,
+            "value": 1.0213,
             "value_type": "scalar",
             "input_value_type": "multiplier_display",
             "active": true,
             "gate_reason": null,
             "provenance_ref": "IDS::Modules",
-            "display_value": "x1.029"
+            "display_value": "x1.021"
           },
           {
             "surface_id": "state::economy.coin_bonus_multiplier",
@@ -23692,20 +23754,20 @@
             "source_class": "module_main",
             "composition_stage": "additive_pre_cap",
             "contributor_id": "module__generator__coins_kill_bonus__pct@@project funding@@primary",
-            "value": 1.77,
+            "value": 1.87,
             "value_type": "scalar",
             "input_value_type": "multiplier_display",
             "active": true,
             "gate_reason": null,
             "provenance_ref": "IDS::Modules",
-            "display_value": "x1.77"
+            "display_value": "x1.87"
           }
         ],
         "schema": null,
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
-        "display_value": "x2.495"
+        "display_value": "x2.636"
       },
       "state::economy.coins_multiplier": {
         "stat_name": "state::economy.coins_multiplier",
@@ -23739,7 +23801,7 @@
       },
       "state::economy.coins_per_kill_bonus": {
         "stat_name": "state::economy.coins_per_kill_bonus",
-        "final_value": 10.782448000000002,
+        "final_value": 10.929876,
         "value_type": "multiplier",
         "source_count": 5,
         "status": "resolved",
@@ -23767,13 +23829,13 @@
             "source_class": "enhancement",
             "composition_stage": "multiplicative",
             "contributor_id": "enhancement.coin_bonus_+.account_state",
-            "value": 1.37,
+            "value": 1.38,
             "value_type": "scalar",
             "input_value_type": "resolved_value",
             "active": true,
             "gate_reason": null,
             "provenance_ref": "IDS::WS+",
-            "display_value": "1.37"
+            "display_value": "1.38"
           },
           {
             "surface_id": "state::economy.coins_per_kill_bonus",
@@ -23782,13 +23844,13 @@
             "source_class": "labs",
             "composition_stage": "additive_pre_cap",
             "contributor_id": "lab__tower__coins_kill_bonus__pct",
-            "value": 2.96,
+            "value": 2.98,
             "value_type": "scalar",
             "input_value_type": "resolved_value",
             "active": true,
             "gate_reason": null,
             "provenance_ref": "IDS::Labs",
-            "display_value": "2.96%"
+            "display_value": "2.98%"
           },
           {
             "surface_id": "state::economy.coins_per_kill_bonus",
@@ -23825,7 +23887,7 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
-        "display_value": "x10.782"
+        "display_value": "x10.93"
       },
       "state::economy.coins_per_wave": {
         "stat_name": "state::economy.coins_per_wave",
@@ -24579,7 +24641,7 @@
       },
       "state::labs.dissonant_echo.ultimate_weapons.level": {
         "stat_name": "state::labs.dissonant_echo.ultimate_weapons.level",
-        "final_value": 2,
+        "final_value": 3,
         "value_type": "count",
         "source_count": 1,
         "status": "resolved",
@@ -24592,20 +24654,20 @@
             "source_class": "labs",
             "composition_stage": "scenario_adjustment",
             "contributor_id": "lab.dissonant_echo_-_ultimate_weapons.account_state",
-            "value": 2.0,
+            "value": 3.0,
             "value_type": "count",
             "input_value_type": "level",
             "active": true,
             "gate_reason": null,
             "provenance_ref": "IDS::Labs",
-            "display_value": "2"
+            "display_value": "3"
           }
         ],
         "schema": null,
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
-        "display_value": "2"
+        "display_value": "3"
       },
       "state::labs.dissonant_echo.utility.level": {
         "stat_name": "state::labs.dissonant_echo.utility.level",
@@ -25224,7 +25286,7 @@
       },
       "state::tower.crit_multiplier": {
         "stat_name": "state::tower.crit_multiplier",
-        "final_value": 200.1538,
+        "final_value": 205.0356,
         "value_type": "multiplier",
         "source_count": 6,
         "status": "resolved",
@@ -25252,13 +25314,13 @@
             "source_class": "enhancement",
             "composition_stage": "multiplicative",
             "contributor_id": "enhancement.critical_factor_+.account_state",
-            "value": 1.6400000000000001,
+            "value": 1.6800000000000002,
             "value_type": "scalar",
             "input_value_type": "resolved_value",
             "active": true,
             "gate_reason": null,
             "provenance_ref": "IDS::WS+",
-            "display_value": "1.64"
+            "display_value": "1.68"
           },
           {
             "surface_id": "state::tower.crit_multiplier",
@@ -25325,11 +25387,11 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
-        "display_value": "x200.154"
+        "display_value": "x205.036"
       },
       "state::tower.damage": {
         "stat_name": "state::tower.damage",
-        "final_value": 22796101940.328953,
+        "final_value": 25598788929.44952,
         "value_type": "damage",
         "source_count": 7,
         "status": "resolved",
@@ -25372,13 +25434,13 @@
             "source_class": "enhancement",
             "composition_stage": "multiplicative",
             "contributor_id": "enhancement.damage_+.account_state",
-            "value": 1.62,
+            "value": 1.63,
             "value_type": "scalar",
             "input_value_type": "resolved_value",
             "active": true,
             "gate_reason": null,
             "provenance_ref": "IDS::WS+",
-            "display_value": "1.62"
+            "display_value": "1.63"
           },
           {
             "surface_id": "state::tower.damage",
@@ -25387,13 +25449,13 @@
             "source_class": "labs",
             "composition_stage": "multiplicative",
             "contributor_id": "lab.damage.account_state",
-            "value": 2.58,
+            "value": 2.6,
             "value_type": "scalar",
             "input_value_type": "resolved_value",
             "active": true,
             "gate_reason": null,
             "provenance_ref": "IDS::Labs",
-            "display_value": "2.58"
+            "display_value": "2.6"
           },
           {
             "surface_id": "state::tower.damage",
@@ -25402,13 +25464,13 @@
             "source_class": "module_main",
             "composition_stage": "multiplicative",
             "contributor_id": "module__cannon__damage__pct@@amplifying strike@@primary",
-            "value": 12.059,
+            "value": 13.355,
             "value_type": "scalar",
             "input_value_type": "multiplier_display",
             "active": true,
             "gate_reason": null,
             "provenance_ref": "IDS::Modules",
-            "display_value": "x12.059"
+            "display_value": "x13.355"
           },
           {
             "surface_id": "state::tower.damage",
@@ -25445,7 +25507,7 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
-        "display_value": "22.8B"
+        "display_value": "25.6B"
       },
       "state::tower.damage_per_meter_multiplier": {
         "stat_name": "state::tower.damage_per_meter_multiplier",
@@ -26289,7 +26351,7 @@
       },
       "state::tower.hp": {
         "stat_name": "state::tower.hp",
-        "final_value": 22947995755590.953,
+        "final_value": 33490640410913.547,
         "value_type": "hp",
         "source_count": 9,
         "status": "resolved",
@@ -26377,13 +26439,13 @@
             "source_class": "module_main",
             "composition_stage": "multiplicative",
             "contributor_id": "module__armor__health__pct@@anti cube portal@@primary",
-            "value": 9.035,
+            "value": 13.139,
             "value_type": "scalar",
             "input_value_type": "multiplier_display",
             "active": true,
             "gate_reason": null,
             "provenance_ref": "IDS::Modules",
-            "display_value": "x9.035"
+            "display_value": "x13.139"
           },
           {
             "surface_id": "state::tower.hp",
@@ -26392,13 +26454,13 @@
             "source_class": "module_main",
             "composition_stage": "multiplicative",
             "contributor_id": "module__armor__health__pct@@orbital augment@@assist",
-            "value": 1.00484,
+            "value": 1.00842,
             "value_type": "scalar",
             "input_value_type": "multiplier_display",
             "active": true,
             "gate_reason": null,
             "provenance_ref": "IDS::Modules",
-            "display_value": "x1.005"
+            "display_value": "x1.008"
           },
           {
             "surface_id": "state::tower.hp",
@@ -26435,7 +26497,7 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
-        "display_value": "22.9T"
+        "display_value": "33.5T"
       },
       "state::tower.knockback_chance_pct": {
         "stat_name": "state::tower.knockback_chance_pct",
@@ -27819,7 +27881,7 @@
       },
       "state::tower.supercrit_multiplier": {
         "stat_name": "state::tower.supercrit_multiplier",
-        "final_value": 41.07915,
+        "final_value": 41.99040000000001,
         "value_type": "multiplier",
         "source_count": 6,
         "status": "resolved",
@@ -27847,13 +27909,13 @@
             "source_class": "enhancement",
             "composition_stage": "multiplicative",
             "contributor_id": "enhancement.super_crit_multi_+.account_state",
-            "value": 1.6099999999999999,
+            "value": 1.62,
             "value_type": "scalar",
             "input_value_type": "resolved_value",
             "active": true,
             "gate_reason": null,
             "provenance_ref": "IDS::WS+",
-            "display_value": "1.61"
+            "display_value": "1.62"
           },
           {
             "surface_id": "state::tower.supercrit_multiplier",
@@ -27862,13 +27924,13 @@
             "source_class": "labs",
             "composition_stage": "additive_pre_cap",
             "contributor_id": "lab.super_crit_multi.account_state",
-            "value": 1.26,
+            "value": 1.28,
             "value_type": "scalar",
             "input_value_type": "resolved_value",
             "active": true,
             "gate_reason": null,
             "provenance_ref": "IDS::Labs",
-            "display_value": "1.26"
+            "display_value": "1.28"
           },
           {
             "surface_id": "state::tower.supercrit_multiplier",
@@ -27920,7 +27982,7 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
-        "display_value": "x41.079"
+        "display_value": "x41.99"
       },
       "state::tower.thorns_damage_pct": {
         "stat_name": "state::tower.thorns_damage_pct",
@@ -27999,7 +28061,7 @@
       },
       "state::tower.ultimate_damage_multiplier": {
         "stat_name": "state::tower.ultimate_damage_multiplier",
-        "final_value": 31.848246399999997,
+        "final_value": 34.2859223,
         "value_type": "multiplier",
         "source_count": 4,
         "status": "resolved",
@@ -28027,13 +28089,13 @@
             "source_class": "module_main",
             "composition_stage": "additive_pre_cap",
             "contributor_id": "module__core__ultimate_weapon_damage__pct@@dimension core@@primary",
-            "value": 12.05,
+            "value": 12.55,
             "value_type": "scalar",
             "input_value_type": "multiplier_display",
             "active": true,
             "gate_reason": null,
             "provenance_ref": "IDS::Modules",
-            "display_value": "x12.05"
+            "display_value": "x12.55"
           },
           {
             "surface_id": "state::tower.ultimate_damage_multiplier",
@@ -28042,13 +28104,13 @@
             "source_class": "module_main",
             "composition_stage": "additive_pre_cap",
             "contributor_id": "module__core__ultimate_weapon_damage__pct@@om chip@@assist",
-            "value": 2.1664,
+            "value": 2.2393,
             "value_type": "scalar",
             "input_value_type": "multiplier_display",
             "active": true,
             "gate_reason": null,
             "provenance_ref": "IDS::Modules",
-            "display_value": "x2.166"
+            "display_value": "x2.239"
           },
           {
             "surface_id": "state::tower.ultimate_damage_multiplier",
@@ -28070,7 +28132,7 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
-        "display_value": "x31.848"
+        "display_value": "x34.286"
       },
       "state::uw.black_hole.base_cooldown_seconds": {
         "stat_name": "state::uw.black_hole.base_cooldown_seconds",
@@ -29529,7 +29591,7 @@
       },
       "state::wall.regen": {
         "stat_name": "state::wall.regen",
-        "final_value": 210.0,
+        "final_value": 220.0,
         "value_type": "hp_per_second",
         "source_count": 1,
         "status": "resolved",
@@ -29542,20 +29604,20 @@
             "source_class": "labs",
             "composition_stage": "additive_pre_cap",
             "contributor_id": "lab__wall__regen__flat",
-            "value": 210.0,
+            "value": 220.0,
             "value_type": "scalar",
             "input_value_type": "resolved_value",
             "active": true,
             "gate_reason": null,
             "provenance_ref": "IDS::Labs",
-            "display_value": "210"
+            "display_value": "220"
           }
         ],
         "schema": null,
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
-        "display_value": "210"
+        "display_value": "220"
       },
       "state::wall.thorns_damage_pct": {
         "stat_name": "state::wall.thorns_damage_pct",
@@ -29954,7 +30016,7 @@
       },
       "support_surface::timing.wave_duration_seconds_effective": {
         "stat_name": "support_surface::timing.wave_duration_seconds_effective",
-        "final_value": 14.03,
+        "final_value": 30.5,
         "value_type": "seconds",
         "source_count": 1,
         "status": "resolved",
@@ -29967,20 +30029,20 @@
             "source_class": "scenario_rules",
             "composition_stage": "additive_pre_cap",
             "contributor_id": "timing.wave_duration_seconds_effective",
-            "value": 14.03,
+            "value": 30.5,
             "value_type": "seconds",
             "input_value_type": "seconds",
             "active": true,
             "gate_reason": null,
             "provenance_ref": "engine.timing_engine.compute_timing_surfaces",
-            "display_value": "14.03"
+            "display_value": "30.5"
           }
         ],
         "schema": null,
         "bundle_id": "timing_wave_duration",
         "family_id": "timing_tournament_no_perks",
         "trace_mode": "full_trace",
-        "display_value": "14.03"
+        "display_value": "30.5"
       }
     },
     "diagnostics": {
@@ -29994,7 +30056,7 @@
         "timing_tournament_no_perks",
         "timing_tournament_no_perks"
       ],
-      "resolved_surface_count": 389,
+      "resolved_surface_count": 390,
       "contributor_row_count": 368,
       "post_merge_qe_publication": true
     }

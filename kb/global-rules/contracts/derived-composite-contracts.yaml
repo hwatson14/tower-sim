@@ -196,15 +196,28 @@ derived_composites:
   - derived::edamage_ep_helper.dv_bullet_pipeline_factor
   - derived::edamage_ep_helper.ei_uw_total_damage
   - derived::edamage_ep_helper.el_slow_factor
-- surface_id: derived::edamage
+- surface_id: derived::edamage_boss
   owner: Query Engine publication
   trust_label: Accepted model
-  source_alignment: Native objective line (currently equal to EP line)
+  source_alignment: TowerSim Boss Waves damage surface
   source_lineage:
-  - formula-library.yaml:eDamage
+  - derived::edamage.uw.chain_lightning_dps
   contributor_trace_required: true
   known_gaps:
-  - derived aggregate, not final simulator-grade damage truth
+  - QE surface is base confirmed Chain Lightning continuous boss DPS only
+  - app Boss Waves pipeline applies scenario/loadout exposure factors for travel time, Spotlight/Om Chip, Energy Net mastery timing, and Shockwave/ACP
+  - broader non-CL eDamage-to-boss conversion still requires explicit runtime bridge factors
+  support_surface_ids:
+  - derived::edamage.uw.chain_lightning_dps
+- surface_id: derived::edamage
+  owner: Query Engine publication
+  trust_label: Compatibility alias
+  source_alignment: Compatibility alias for derived::edamage_ep
+  source_lineage:
+  - derived::edamage_ep
+  contributor_trace_required: true
+  known_gaps:
+  - retained for existing consumers; do not treat as independent TowerSim-native damage truth
   support_surface_ids:
   - derived::edamage.acp_factor
   - derived::edamage.base_damage_stack
