@@ -53,6 +53,7 @@ _COMPATIBILITY_SURFACE_ID_ALIASES = {
     legacy_mechanic_surface_id('dissonance.utility.echo_source_bonus'): 'state::dissonance.utility.echo_source_bonus',
     legacy_mechanic_surface_id('dissonance.ultimate_weapons.echo_source_bonus'): 'state::dissonance.ultimate_weapons.echo_source_bonus',
     legacy_mechanic_surface_id('cards.damage.mastery_effect'): 'state::cards.damage.mastery_effect',
+    legacy_mechanic_surface_id('cards.slow_aura.mastery_effect'): 'state::cards.slow_aura.mastery_effect',
     legacy_mechanic_surface_id('cards.ultimate_crit.chance_pct'): 'state::cards.ultimate_crit.chance_pct',
     legacy_mechanic_surface_id('cards.plasma_cannon.effect_pct'): 'state::cards.plasma_cannon.effect_pct',
     legacy_mechanic_surface_id('module.anti_cube_portal.shockwave_damage_taken_mult_x'): 'state::module.anti_cube_portal.shockwave_damage_taken_mult_x',

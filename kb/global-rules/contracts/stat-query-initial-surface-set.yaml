@@ -1275,6 +1275,23 @@ families:
       scenario_scoped: true
       semantics: Slow Aura base-card enemy speed reduction routed from the active
         card loadout and consumed by Boss Waves contact-time derivation.
+    - surface_id: state::cards.slow_aura.mastery_effect
+      surface_kind: runtime_mechanic_surface
+      surface_class: surface
+      domain: cards
+      owning_families:
+      - progression_start_of_run
+      - progression_runtime_no_perks
+      - progression_runtime_with_perks
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: false
+      debug_only: true
+      scenario_scoped: true
+      semantics: Slow Aura Mastery attack-interval multiplier routed from IDS labs
+        and consumed by Boss Waves boss-hit interval derivation.
     - surface_id: state::cards.ultimate_crit.chance_pct
       surface_kind: runtime_mechanic_surface
       surface_class: surface
@@ -3145,6 +3162,7 @@ families:
       - state::cards.energy_net.duration_seconds
       - state::cards.energy_net.mastery_effect
       - state::cards.slow_aura.enemy_speed_pct
+      - state::cards.slow_aura.mastery_effect
       - state::module.orbital_augment.electron_count
       - state::module.black_hole_digestor.extra_coin_kill_bonus_per_free_upgrade_pct
       - state::module.primordial_collapse.bh_damage_reduction_pct
@@ -3855,7 +3873,7 @@ families:
       publish_default: false
       debug_only: false
       scenario_scoped: true
-      semantics: Published TowerSim Boss Waves base damage surface for derived::edamage_boss; QE supplies confirmed constant Chain Lightning boss DPS before app-owned scenario/loadout exposure factors.
+      semantics: Published TowerSim Boss Waves diagnostic/fallback base damage surface for derived::edamage_boss; QE supplies confirmed constant Chain Lightning boss DPS while app Boss Waves default damage starts from derived::edamage_ep with boss-specific exposure replacements.
     - surface_id: derived::edamage_ep_helper.dc_base_damage_stack
       surface_kind: published_derived_surface
       surface_class: surface

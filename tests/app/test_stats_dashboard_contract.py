@@ -397,7 +397,7 @@ def test_stats_dashboard_primary_modules_panel_publishes_grouped_summary_rows():
     assert by_key[('', 'Assist %')]['armor'] == '1%'
     assert by_key[('Primary', 'Module')]['generator'] == 'Singularity Harness'
     assert by_key[('Assist', 'Module')]['cannon'] == '—'
-    assert by_key[('Current', 'Multiplier')]['core'] == 'x13.38'
+    assert by_key[('Current', 'Multiplier')]['core'] == 'x13.66'
     assert by_key[('Recon', 'Recon')]['generator'] == 'green'
 
 
@@ -3338,7 +3338,7 @@ def test_stats_dashboard_primary_modules_panel_publishes_grouped_summary_rows():
     assert by_key[('', 'Assist %')]['armor'] == '1%'
     assert by_key[('Primary', 'Module')]['generator'] == 'Singularity Harness'
     assert by_key[('Assist', 'Module')]['cannon'] == '—'
-    assert by_key[('Current', 'Multiplier')]['core'] == 'x13.38'
+    assert by_key[('Current', 'Multiplier')]['core'] == 'x13.66'
     assert ('Recon', 'Recon') not in by_key
 
 

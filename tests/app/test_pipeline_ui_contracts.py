@@ -350,26 +350,26 @@ def test_pipeline_tier_scoped_dissonance_reconciles_t14_ep_panels(tmp_path):
     rows = json.loads((out_dir / 'run_stats_query_rows_max_progression.json').read_text(encoding='utf-8'))['Farming']['rows']
 
     assert rows['derived::dissonance.defense.total_multiplier']['final_value'] == pytest.approx(5.108782215759483)
-    assert rows['derived::ehp.health_factor']['final_value'] == pytest.approx(32.854714279139945e12)
+    assert rows['derived::ehp.health_factor']['final_value'] == pytest.approx(47.8168762613185e12)
     assert rows['state::uw.chain_lightning.max_enemy_damage_reduction_pct']['final_value'] == pytest.approx(36.0)
     assert rows['derived::ehp.chain_thunder_factor']['final_value'] == pytest.approx(1.5625)
-    assert rows['derived::ehp']['final_value'] == pytest.approx(865.7049169500054e15)
+    assert rows['derived::ehp']['final_value'] == pytest.approx(1.259950229064064e18)
     assert rows['state::tower.regen']['final_value'] == pytest.approx(48.10260006102113e12)
     assert rows['state::wall.fortification_multiplier']['final_value'] == pytest.approx(10.6)
-    assert rows['derived::wall.hp_pre_fort']['final_value'] == pytest.approx(574.8260810278326e12)
-    assert rows['derived::wall.hp_final']['final_value'] == pytest.approx(6.093156458895026e15)
-    assert rows['derived::wall.regen_hp_per_second']['final_value'] == pytest.approx(252.53865032036094e12)
+    assert rows['derived::wall.hp_pre_fort']['final_value'] == pytest.approx(836.6040670680288e12)
+    assert rows['derived::wall.hp_final']['final_value'] == pytest.approx(8.868003110921104e15)
+    assert rows['derived::wall.regen_hp_per_second']['final_value'] == pytest.approx(264.5643003356162e12)
     assert rows['state::tower.defense_absolute']['status'] == 'resolved'
     assert rows['derived::ehp.dabs_perk_factor']['final_value'] == pytest.approx(1.0)
     assert rows['state::tower.defense_absolute']['final_value'] == pytest.approx(148.07576034428293e6)
-    assert rows['state::economy.coins_per_kill_bonus']['final_value'] == pytest.approx(46.93883040000001)
-    assert rows['state::economy.all_coin_bonus_multiplier']['final_value'] == pytest.approx(3938.1467327614155)
+    assert rows['state::economy.coins_per_kill_bonus']['final_value'] == pytest.approx(47.579110424999996)
+    assert rows['state::economy.all_coin_bonus_multiplier']['final_value'] == pytest.approx(4226.186755544831)
     assert rows['state::cards.wave_skip.chance_pct']['final_value'] == pytest.approx(19.0)
     assert rows['derived::eecon.freeup_factor']['final_value'] == pytest.approx(1.0133964984534831)
     assert rows['derived::eecon.wave_factor']['final_value'] == pytest.approx(1.3064513895292529)
     assert rows['derived::eecon.utility_dissonance_factor']['final_value'] > 1.0
     assert rows['derived::eecon.unit_scale_factor']['final_value'] == pytest.approx(1000.0)
-    assert rows['derived::eecon']['final_value'] == pytest.approx(345347984.939048)
+    assert rows['derived::eecon']['final_value'] == pytest.approx(360083509.28758234)
 
 
 def test_pipeline_cards_payload_publishes_selected_rows_by_preset(canonical_pipeline_artifacts):
@@ -446,6 +446,13 @@ def test_boss_waves_render_uses_published_summary_and_execution_contract() -> No
     assert "boss_payload.get('rows') or []" not in boss_block
     assert "st.error(str(exc))" in boss_block
     assert "payload_summary = dict(boss_payload.get('summary') or {})" in boss_block
+    assert "primitive_inputs = dict(payload_diagnostics.get('replacement_primitive_inputs') or {})" in boss_block
+    assert "Boss damage source:" in boss_block
+    assert "payload_diagnostics.get('model_certification') or {}" in boss_block
+    assert "payload_diagnostics.get('contact_time_contract') or {}" in boss_block
+    assert "payload_diagnostics.get('replacement_model') or {}" in boss_block
+    assert "'replacement_primitive_inputs': primitive_inputs" in boss_block
+    assert "payload_diagnostics.get('replacement_primitive_semantics_ledger') or {}" in boss_block
     assert "visible wall regen contribution" in boss_block
 
     helper_start = text.index("def _build_boss_wave_operator_frame(frame: pd.DataFrame) -> pd.DataFrame:")
@@ -454,6 +461,8 @@ def test_boss_waves_render_uses_published_summary_and_execution_contract() -> No
     assert "'Wall Regen'" in helper_block
     assert "'Regen Gain'" in helper_block
     assert "'TTK (s)'" in helper_block
+    assert "'Cont Dmg %'" in helper_block
+    assert "'Hit Interval (s)'" in helper_block
     assert "payload_diagnostics = dict(boss_payload.get('diagnostics') or {})" in boss_block
     assert "payload_download = dict(boss_payload.get('download') or {})" in boss_block
     assert "diagnostics['context_status'] not in {'resolved', 'complete'}" in boss_block

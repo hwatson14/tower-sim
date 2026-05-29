@@ -2051,13 +2051,28 @@ def _load_ep_oracle(ep_path: Path):
     if not ep_path.exists():
         return {}
     df = pd.read_csv(ep_path, header=None)
+    column_names: dict[str, int] = {}
+    for _, row in df.iterrows():
+        normalized = {
+            str(cell).strip().lower(): idx
+            for idx, cell in enumerate(row)
+            if str(cell).strip()
+        }
+        if {'suite', 'key', 'label', 'value'} <= set(normalized):
+            column_names = normalized
+            break
+    suite_idx = column_names.get('suite', 0)
+    key_idx = column_names.get('key', 1)
+    label_idx = column_names.get('label', 2)
+    value_idx = column_names.get('value', 3)
+    source_idx = column_names.get('source_tab', column_names.get('import', 4))
     out = {}
     for _, row in df.iterrows():
-        if len(row) < 4:
+        if len(row) <= max(key_idx, label_idx, value_idx):
             continue
-        key = str(row.iloc[1]).strip() if len(row) > 1 else ''
-        label = str(row.iloc[2]).strip()
-        value_raw = row.iloc[3] if len(row) > 3 else None
+        key = str(row.iloc[key_idx]).strip() if len(row) > key_idx else ''
+        label = str(row.iloc[label_idx]).strip()
+        value_raw = row.iloc[value_idx] if len(row) > value_idx else None
         destination = EP_KEY_TO_DESTINATION.get(key) or EP_LABEL_TO_DESTINATION.get(label)
         if destination is None:
             continue
@@ -2066,8 +2081,8 @@ def _load_ep_oracle(ep_path: Path):
             out[destination] = {
                 'label': label,
                 'ep_export_key': key,
-                'ep_export_suite': str(row.iloc[0]).strip() if len(row) > 0 else '',
-                'ep_export_source_tab': str(row.iloc[4]).strip() if len(row) > 4 else '',
+                'ep_export_suite': str(row.iloc[suite_idx]).strip() if len(row) > suite_idx else '',
+                'ep_export_source_tab': str(row.iloc[source_idx]).strip() if len(row) > source_idx else '',
                 'ep_value_raw': value_raw,
                 'ep_value_parsed': parsed,
                 'ep_value_type': kind,

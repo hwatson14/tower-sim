@@ -68,7 +68,7 @@ latest_local_verification:
       non_comparable: 4
       stage_scope_mismatch: 22
       true_formula_mismatch: 0
-    note: Expanded EP export now compares 52 owned destinations. Bounce Shot Chance workshop projection follows the row-verified 68.0% KB max, EP health_raw maps to the QE raw-health helper before the Armor-slot module health multiplier, EP compare context carries real Tourney/Farming card and module metadata, eDamage helper locals for Smart Missiles heatup, Poison Swamp Death Creep, ILM Charged Mines, and Chrono Field+ now map to QE-published helper surfaces, and remaining EP differences are documented as unexported workbook slider/module/user-guess assumptions. The remaining unmapped EP export rows are planner-only score/equivalent/ratio rows plus avg_time_boost, which still has no owned QE surface.
+    note: Current machine-facing EP export compares 49 owned destinations with zero true formula mismatches. Bounce Shot Chance workshop projection follows the row-verified 68.0% KB max, EP health_raw maps to the QE raw-health helper before the Armor-slot module health multiplier, EP compare context carries real Tourney/Farming card and module metadata, eDamage helper locals for Smart Missiles heatup, Poison Swamp Death Creep, ILM Charged Mines, and Chrono Field+ now map to QE-published helper surfaces, and remaining EP differences are documented as unexported workbook slider/module/user-guess assumptions.
   max_wave_excel_alignment:
     result: targeted_repair_plus_assumption_split_plus_gc_loadout_mechanics
     commands:
@@ -202,8 +202,8 @@ latest_local_verification:
       selected max-wave calculation remains the same unified hit-by-hit lane used
       by every eHP/GC/farming loadout. Defense now keeps offense available, but no
       longer receives a hidden derived::edamage boss-DPS shortcut. Default boss
-      damage remains the same CL-only fail-closed primitive lane unless an
-      explicit runtime eDamage bridge factor is supplied.
+      damage now uses the QE `derived::edamage_ep` boss-exposure replacement
+      model unless an explicit runtime eDamage bridge factor is supplied.
       The latest audit also neutralized Shockwave/Anti-Cube Portal eDamage leakage under Defense
       Dissonance through a QE support surface, separated post-failure table truncation
       from result completeness, and exposed the existing tier-scoped stat request
@@ -263,8 +263,9 @@ latest_local_verification:
       policy-specific lane split. Attack Dissonance now applies offensive workshop
       restrictions before the unified hit-by-hit lane is selected. Defense
       Dissonance preserves offensive primitives, but uses the same default boss
-      DPS lane as regular/utility runs: QE-published CL-only damage unless an
-      explicit runtime eDamage bridge factor is supplied for comparison work. The
+      DPS lane as regular/utility runs: QE `derived::edamage_ep` with Boss Waves
+      exposure replacement unless an explicit runtime eDamage bridge factor is
+      supplied for comparison work. The
       older Defense-only derived::edamage default was removed because it created a
       policy difference instead of a Dissonance restriction difference; targeted
       app tests passed after the correction.
@@ -385,24 +386,26 @@ remaining_max_wave_completion:
       owner_path: qe/query_derived_composites.py + simulators/evaluator_kernel.py
       work: >
         Current GC comparison can use explicit eDamage bridge factors. The
-        Regular/Utility/non-Defense fail-closed default is a QE-owned
-        derived::edamage.boss_applicable_dps_cl_only support surface rather than
-        an app-local reinterpretation of the Chain Lightning EP helper. Selected
+        Regular/Utility/non-Defense default starts from QE-owned
+        derived::edamage_ep and replaces EP Spotlight, ACP, and slow/exposure
+        terms with Boss Waves runtime exposure terms. The CL-only
+        derived::edamage.boss_applicable_dps_cl_only support surface remains
+        diagnostic/fallback context rather than the default damage lane. Selected
         eHP hit-by-hit rows do not carry the GC blocker because their chosen
         boss-contact result does not consume an explicit workbook bridge. Defense
         Dissonance is not a separate GC policy lane: because selected max wave is
         unified hit-by-hit for every eHP/GC/farming loadout, Defense rows use the
-        same CL-only fail-closed default boss damage unless an explicit runtime
+        same EP boss-exposure replacement default unless an explicit runtime
         bridge factor is supplied for comparison.
       acceptance:
         - default GC milestone/disco rows do not require workbook bridge factors to be meaningful
         - Attack and Ultimate Weapon Dissonant Runs prove disabled offense/UW damage cannot leak through GC selection
       closure_note: >
-        Targeted closure: QE now publishes the CL-only boss-applicable DPS
-        lane consumed by Boss Waves, diagnostics expose that lane separately
-        from raw derived::edamage.uw.chain_lightning_dps, and Ultimate Weapon
-        Dissonance masks the CL-only primitive. The non-Defense default remains
-        intentionally below full eDamage-to-boss semantics. When a caller
+        Targeted closure: QE now publishes exact EP eDamage plus a CL-only
+        boss-applicable diagnostic/fallback lane. Boss Waves defaults to EP
+        eDamage with boss-specific exposure replacement, diagnostics expose the
+        CL lane separately from raw derived::edamage.uw.chain_lightning_dps, and
+        Ultimate Weapon Dissonance masks the CL primitive. When a caller
         supplies explicit boss_applicable_damage_per_second,
         boss_applicable_damage_factor, or the full decomposed bridge factor set,
         model_certification marks that GC bridge blocker as closed by runtime
@@ -495,8 +498,9 @@ remaining_max_wave_completion:
         - .venv\Scripts\python.exe -m app.run_stats --include-boss-wave-milestone-matrix completes and writes current artifacts
         - Streamlit Boss Waves shows the all-tier matrix, assumptions, status, and diagnostics without app-local truth
       closure_note: >
-        Recertification is current as of 2026-05-25: full pytest passed
-        524 tests after the matrix performance and certification repair,
+        Recertification is current as of 2026-05-29: full pytest passed
+        529 tests after the EP boss-exposure replacement and Slow Aura
+        Mastery repair,
         `app.run_stats --include-boss-wave-milestone-matrix
         --boss-wave-contact-time-seconds 10
         --boss-wave-orb-boss-total-damage-pct 6` completed,
@@ -504,8 +508,8 @@ remaining_max_wave_completion:
         tracked generated artifact in the output contract, and run_stats timing
         now separates `boss_wave_milestone_matrix_build_ms` from
         `write_outputs_ms`. The latest local matrix run with explicit
-        contact/orb runtime inputs reported roughly 55.9s matrix build time,
-        20.9ms matrix write time, and 286.3ms output artifact write time.
+        contact/orb runtime inputs completed and regenerated the committed
+        outputs under the current model.
         Selected matrix rows and the matrix-level selected-row certification
         have no model-completion blockers while the payload remains honestly
         labeled as a partial boss-contact model. A Streamlit AppTest harness pass now exercises the Boss

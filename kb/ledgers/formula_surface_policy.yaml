@@ -94,9 +94,11 @@ surfaces:
     formula_class: simulator_support_surface
     publish_policy: allow_if_resolved
     compare_policy: diagnostic_only
-    rationale: TowerSim Boss Waves base damage surface; QE publishes confirmed
-      constant Chain Lightning boss DPS, and the app Boss Waves pipeline applies
-      travel-time and loadout exposure factors before simulator consumption.
+    rationale: TowerSim Boss Waves diagnostic/fallback base damage surface; QE
+      publishes confirmed constant Chain Lightning boss DPS, while the app Boss
+      Waves default path starts from derived::edamage_ep and replaces EP exposure
+      factors with boss-specific travel/loadout exposure factors before simulator
+      consumption.
   derived::edamage.base_damage_stack:
     formula_class: ep_helper_composite
     publish_policy: allow_if_resolved

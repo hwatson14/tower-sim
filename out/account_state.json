@@ -1201,7 +1201,7 @@
       "Preset 3",
       "Preset 4",
       "Preset 5",
-      "18.3 q"
+      "20.14 q"
     ],
     "rows": [
       [
@@ -1216,9 +1216,9 @@
       ],
       [
         "Damage +",
-        "1.63",
-        "63",
-        "63",
+        "1.6600000000000001",
+        "66",
+        "66",
         "",
         "",
         "",
@@ -1236,9 +1236,9 @@
       ],
       [
         "Critical Factor +",
-        "1.6800000000000002",
-        "68",
-        "68",
+        "1.72",
+        "72",
+        "72",
         "",
         "",
         "",
@@ -1256,9 +1256,9 @@
       ],
       [
         "Super Crit Multi +",
-        "1.62",
-        "62",
-        "62",
+        "1.6600000000000001",
+        "66",
+        "66",
         "",
         "",
         "",
@@ -1266,9 +1266,9 @@
       ],
       [
         "Attack Speed +",
-        "1.16",
-        "16",
-        "16",
+        "1.17",
+        "17",
+        "17",
         "",
         "",
         "",
@@ -1399,10 +1399,10 @@
   "workshop_enhancement_tracks": {
     "Damage +": {
       "name": "Damage +",
-      "current_multiplier": 1.63,
+      "current_multiplier": 1.6600000000000001,
       "preset_levels": {
-        "Farming": 63,
-        "Tourney": 63,
+        "Farming": 66,
+        "Tourney": 66,
         "Milestone": null,
         "Preset 4": null,
         "Preset 5": null
@@ -1425,10 +1425,10 @@
     },
     "Critical Factor +": {
       "name": "Critical Factor +",
-      "current_multiplier": 1.6800000000000002,
+      "current_multiplier": 1.72,
       "preset_levels": {
-        "Farming": 68,
-        "Tourney": 68,
+        "Farming": 72,
+        "Tourney": 72,
         "Milestone": null,
         "Preset 4": null,
         "Preset 5": null
@@ -1451,10 +1451,10 @@
     },
     "Super Crit Multi +": {
       "name": "Super Crit Multi +",
-      "current_multiplier": 1.62,
+      "current_multiplier": 1.6600000000000001,
       "preset_levels": {
-        "Farming": 62,
-        "Tourney": 62,
+        "Farming": 66,
+        "Tourney": 66,
         "Milestone": null,
         "Preset 4": null,
         "Preset 5": null
@@ -1464,10 +1464,10 @@
     },
     "Attack Speed +": {
       "name": "Attack Speed +",
-      "current_multiplier": 1.16,
+      "current_multiplier": 1.17,
       "preset_levels": {
-        "Farming": 16,
-        "Tourney": 16,
+        "Farming": 17,
+        "Tourney": 17,
         "Milestone": null,
         "Preset 4": null,
         "Preset 5": null
@@ -2735,12 +2735,12 @@
     "Tier 16": 3578,
     "Tier 17": 2010,
     "Tier 18": 1140,
-    "Tier 19": 269,
-    "Tier 20": 0,
+    "Tier 19": 303,
+    "Tier 20": 73,
     "Tier 21": 0
   },
-  "highest_tier_unlocked_number": 19,
-  "highest_tier_unlocked_label": "Tier 19",
+  "highest_tier_unlocked_number": 20,
+  "highest_tier_unlocked_label": "Tier 20",
   "theme_song_coin_multiplier": 1.682,
   "cards_inventory": {
     "Damage": {
@@ -3004,7 +3004,7 @@
     "core": {
       "slot_type": "core",
       "assist_unlocked": true,
-      "assist_level": 144,
+      "assist_level": 149,
       "rarity_cap": "Epic",
       "multiplier_cap": 0.15,
       "substat_cap": 0.15
@@ -3605,8 +3605,8 @@
       "name": "Multiverse Nexus",
       "slot_type": "core",
       "rarity": "Ancestral 2*",
-      "level": 166,
-      "stat": "13.474",
+      "level": 165,
+      "stat": "13.204",
       "substats": [
         {
           "name": "Golden Tower - Bonus",
@@ -3649,8 +3649,8 @@
       "name": "Dimension Core",
       "slot_type": "core",
       "rarity": "Ancestral",
-      "level": 166,
-      "stat": "12.55",
+      "level": 165,
+      "stat": "12.3",
       "substats": [
         {
           "name": "Spotlight - Angle",
@@ -3688,16 +3688,16 @@
       "name": "Harmony Conductor",
       "slot_type": "core",
       "rarity": "Ancestral 5*",
-      "level": 166,
-      "stat": "14.86",
+      "level": 165,
+      "stat": "14.56",
       "substats": []
     },
     "Om Chip": {
       "name": "Om Chip",
       "slot_type": "core",
       "rarity": "Ancestral 2*",
-      "level": 166,
-      "stat": "13.474",
+      "level": 165,
+      "stat": "13.204",
       "substats": [
         {
           "name": "Spotlight - Angle",
@@ -3725,16 +3725,16 @@
       "name": "Magnetic Hook",
       "slot_type": "core",
       "rarity": "Ancestral 3*",
-      "level": 166,
-      "stat": "13.936",
+      "level": 165,
+      "stat": "13.656",
       "substats": []
     },
     "Primordial Collapse": {
       "name": "Primordial Collapse",
       "slot_type": "core",
       "rarity": "Ancestral 3*",
-      "level": 166,
-      "stat": "13.936",
+      "level": 165,
+      "stat": "13.656",
       "substats": [
         {
           "name": "Black Hole - Duration",
@@ -3755,6 +3755,16 @@
           "name": "Spotlight - Angle",
           "value": "+15?",
           "raw_token": "15"
+        },
+        {
+          "name": "Spotlight - Bonus",
+          "value": "+2.5x",
+          "raw_token": "2.5"
+        },
+        {
+          "name": "Death Wave - Quantity",
+          "value": "+1",
+          "raw_token": "1"
         }
       ]
     }
@@ -5890,7 +5900,7 @@
         "Preset 3",
         "Preset 4",
         "Preset 5",
-        "18.3 q"
+        "20.14 q"
       ],
       [
         "",
@@ -5904,9 +5914,9 @@
       ],
       [
         "Damage +",
-        "1.63",
-        "63",
-        "63",
+        "1.6600000000000001",
+        "66",
+        "66",
         "",
         "",
         "",
@@ -5924,9 +5934,9 @@
       ],
       [
         "Critical Factor +",
-        "1.6800000000000002",
-        "68",
-        "68",
+        "1.72",
+        "72",
+        "72",
         "",
         "",
         "",
@@ -5944,9 +5954,9 @@
       ],
       [
         "Super Crit Multi +",
-        "1.62",
-        "62",
-        "62",
+        "1.6600000000000001",
+        "66",
+        "66",
         "",
         "",
         "",
@@ -5954,9 +5964,9 @@
       ],
       [
         "Attack Speed +",
-        "1.16",
-        "16",
-        "16",
+        "1.17",
+        "17",
+        "17",
         "",
         "",
         "",
@@ -7549,7 +7559,7 @@
         "",
         "Assist Slot",
         "true",
-        "144",
+        "149",
         ""
       ],
       [
@@ -7926,8 +7936,8 @@
         "",
         "",
         "Ancestral 2*",
-        "166",
-        "13.474",
+        "165",
+        "13.204",
         ""
       ],
       [
@@ -8136,8 +8146,8 @@
         "",
         "",
         "Ancestral",
-        "166",
-        "12.55",
+        "165",
+        "12.3",
         ""
       ],
       [
@@ -8325,8 +8335,8 @@
         "",
         "",
         "Ancestral 5*",
-        "166",
-        "14.86",
+        "165",
+        "14.56",
         ""
       ],
       [
@@ -8514,8 +8524,8 @@
         "",
         "",
         "Ancestral 2*",
-        "166",
-        "13.474",
+        "165",
+        "13.204",
         ""
       ],
       [
@@ -8703,8 +8713,8 @@
         "",
         "",
         "Ancestral 3*",
-        "166",
-        "13.936",
+        "165",
+        "13.656",
         ""
       ],
       [
@@ -8892,8 +8902,8 @@
         "",
         "",
         "Ancestral 3*",
-        "166",
-        "13.936",
+        "165",
+        "13.656",
         ""
       ],
       [
@@ -8996,10 +9006,10 @@
         "",
         "",
         "",
-        "",
-        "",
-        "",
-        ""
+        "Spotlight - Bonus",
+        "Rare",
+        "+2.5x",
+        "2.5"
       ],
       [
         "Critical Chance",
@@ -9017,10 +9027,10 @@
         "",
         "",
         "",
-        "",
-        "",
-        "",
-        ""
+        "Death Wave - Quantity",
+        "Legendary",
+        "+1",
+        "1"
       ],
       [
         "Any Other",
@@ -9580,19 +9590,19 @@
       ],
       [
         "Tier 19",
-        "269",
+        "303",
         "0",
         "0",
         "0",
         "0",
-        "false",
+        "true",
         "",
         "",
         ""
       ],
       [
         "Tier 20",
-        "0",
+        "73",
         "0",
         "0",
         "0",

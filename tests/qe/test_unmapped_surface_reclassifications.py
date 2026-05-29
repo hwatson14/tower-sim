@@ -629,7 +629,7 @@ def test_materialized_lab_values_replace_level_pending_for_sanctioned_formula_la
         'Second Wind Blast': ('mechanic_param', 'lab.second_wind_blast_pct', 100.0),
         'Recharge Second Wind': ('mechanic_param', 'lab.recharge_second_wind_waves', 400.0),
         'Recharge Demon Mode': ('mechanic_param', 'lab.recharge_demon_mode_waves', 750.0),
-        'Recharge Nuke': ('mechanic_param', 'lab.recharge_nuke_waves', 1250.0),
+        'Recharge Nuke': ('mechanic_param', 'lab.recharge_nuke_waves', 1000.0),
         'Energy Shield Extra Hit': ('mechanic_param', 'energy_shield_charge_count', 2.0),
     }
 
@@ -950,9 +950,32 @@ def test_progression_family_publishes_ultimate_crit_surface_and_uw_helper_factor
 
     assert card_row.final_value == pytest.approx(3.0)
     assert card_row.status == 'resolved'
-    assert factor_row.final_value == pytest.approx(6.974614)
+    assert factor_row.final_value == pytest.approx(7.267522)
     assert factor_row.status == 'resolved'
     assert any(c['stat_name'] == 'state::cards.ultimate_crit.chance_pct' for c in factor_row.contributors)
+
+
+def test_progression_family_publishes_slow_aura_mastery_surface() -> None:
+    state = _base_account_state()
+    assert 'Slow Aura' in state.cards_inventory
+    mutated = replace(
+        state,
+        card_presets={**state.card_presets, state.default_preset: ['Slow Aura']},
+    )
+
+    planner = QEResolutionPlanner()
+    statbook = planner.resolve_declared_family_statbook(
+        mutated,
+        family_id='progression_start_of_run',
+        requested_surface_ids=('state::cards.slow_aura.mastery_effect',),
+        preset_name=mutated.default_preset,
+        state_mode='start_of_run',
+        notes='boss_waves_slow_aura_mastery_probe',
+    )
+    row = statbook.rows['state::cards.slow_aura.mastery_effect']
+
+    assert row.final_value == pytest.approx(1.05)
+    assert row.status == 'resolved'
 
 
 def test_black_hole_uw_tracks_publish_progression_ehp_support_surfaces() -> None:

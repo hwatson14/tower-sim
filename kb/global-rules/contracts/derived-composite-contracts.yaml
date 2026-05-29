@@ -204,9 +204,9 @@ derived_composites:
   - derived::edamage.uw.chain_lightning_dps
   contributor_trace_required: true
   known_gaps:
-  - QE surface is base confirmed Chain Lightning continuous boss DPS only
-  - app Boss Waves pipeline applies scenario/loadout exposure factors for travel time, Spotlight/Om Chip, Energy Net mastery timing, and Shockwave/ACP
-  - broader non-CL eDamage-to-boss conversion still requires explicit runtime bridge factors
+  - QE surface is diagnostic/fallback confirmed Chain Lightning continuous boss DPS only
+  - app Boss Waves default damage starts from derived::edamage_ep and replaces EP Spotlight, ACP, and slow/exposure terms with boss-specific travel/loadout exposure factors
+  - EP eDamage remains an aggregate damage objective; exact boss targeting/cadence semantics still require explicit runtime bridge factors or future source-owned modeling
   support_surface_ids:
   - derived::edamage.uw.chain_lightning_dps
 - surface_id: derived::edamage

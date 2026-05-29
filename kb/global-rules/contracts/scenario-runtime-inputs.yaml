@@ -173,7 +173,7 @@ fields:
     min: 0.0
     ownership_class: scenario_runtime_input
     owned_by: manual_or_explicit_runtime_input
-    rationale: Explicit multiplier from QE-published eDamage into boss-applicable DPS for spreadsheet comparison or caller-owned scenario analysis; omitted by default so GC remains fail-closed rather than calibrated silently.
+    rationale: Explicit multiplier from QE-published eDamage into caller-owned boss-applicable DPS for spreadsheet comparison or scenario analysis; omitted by default because Boss Waves now uses the owned EP-to-boss exposure replacement path rather than a hidden workbook calibration.
   boss_edamage_target_share:
     aliases:
       - boss_edamage_target_share

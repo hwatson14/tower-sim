@@ -88,7 +88,7 @@ operator_table_fields:
     normalization: numeric_display_compact
     required_for: [table]
     cutover_behavior: switch_now
-    semantic_note: Replacement Tower DPS defaults to the QE-owned Chain Lightning continuous boss DPS lane. QE eDamage can feed this lane only through explicit runtime bridge inputs: either a single boss_applicable_damage_factor or the complete decomposed target-share/cadence/reliability/semantic-normalizer factor set.
+    semantic_note: Replacement Tower DPS defaults to QE derived::edamage_ep with EP Spotlight, ACP, and slow/exposure terms replaced by Boss Waves runtime exposure terms. The QE-owned Chain Lightning continuous boss DPS lane remains diagnostic/fallback context, and explicit runtime bridge inputs can still override the default when a caller owns boss-applicable DPS semantics.
   - product_field: Wall HP
     consumer_input: wall_hp
     legacy_source: legacy rows.wall_pool_hp_used

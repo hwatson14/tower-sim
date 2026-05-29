@@ -322,6 +322,9 @@ card_target_surface_to_destination:
   cards.slow_aura.enemy_speed_pct:
   - runtime_mechanic_param
   - cards.slow_aura.enemy_speed_pct
+  cards.slow_aura.mastery_effect:
+  - runtime_mechanic_param
+  - cards.slow_aura.mastery_effect
   cards.death_ray.duration_seconds:
   - runtime_mechanic_param
   - cards.death_ray.duration_seconds

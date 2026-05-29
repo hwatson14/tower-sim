@@ -30,7 +30,7 @@ def test_v28_module_snapshot_publishes_selected_substat_rows() -> None:
         row for row in rows
         if row.source_family == 'module_substat'
     ]
-    assert len(module_rows) == 35
+    assert len(module_rows) == 37
     assert any(row.source_name == 'Amplifying Strike' and row.stat_name == 'Critical Factor' for row in module_rows)
 
 

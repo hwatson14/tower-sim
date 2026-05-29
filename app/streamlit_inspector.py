@@ -189,10 +189,12 @@ def _build_boss_wave_operator_frame(frame: pd.DataFrame) -> pd.DataFrame:
             'PC Dmg %': _series('boss_plasma_cannon_damage_to_boss_pct').map(_boss_wave_percent_text),
             'Orb Dmg %': _series('boss_orb_damage_to_boss_pct').map(_boss_wave_percent_text),
             'Electron Dmg %': _series('boss_electron_damage_to_boss_pct').map(_boss_wave_percent_text),
+            'Cont Dmg %': _series('boss_continuous_damage_to_boss_pct').map(_boss_wave_percent_text),
             'Wall Thorns Dmg %': _series('boss_wall_thorns_damage_to_boss_pct').map(_boss_wave_percent_text),
             'Expected Wall Thorns Dmg %': _series('boss_expected_wall_thorns_damage_from_hits_pct').map(_boss_wave_percent_text),
             'Wall Thorns Kill (s)': _series('boss_wall_thorns_contact_kill_seconds').map(_boss_wave_seconds_text),
             'Time to Contact (s)': _series('boss_time_to_contact_seconds').map(_boss_wave_seconds_text),
+            'Hit Interval (s)': _series('boss_hit_interval_seconds').map(_boss_wave_seconds_text),
             'Boss Hits': _series('boss_hits_taken'),
             'Hits to Player': _series('boss_hits_to_player'),
             'Wall Thorns Hits': _series('boss_wall_thorns_hits'),
@@ -1868,6 +1870,9 @@ def _render_boss_waves(request: PipelineRunRequest, *, perk_policy_override: dic
     display_frame = _build_boss_wave_operator_frame(frame)
     payload_summary = dict(boss_payload.get('summary') or {})
     payload_diagnostics = dict(boss_payload.get('diagnostics') or {})
+    primitive_inputs = dict(payload_diagnostics.get('replacement_primitive_inputs') or {})
+    primitive_values = dict(primitive_inputs.get('values') or {})
+    boss_damage_source = primitive_values.get('gc_boss_damage_source') or 'unknown'
     payload_download = dict(boss_payload.get('download') or {})
     diagnostics = {
         'preset_name': payload_diagnostics.get('preset_name') or preset_name,
@@ -2040,7 +2045,9 @@ def _render_boss_waves(request: PipelineRunRequest, *, perk_policy_override: dic
         "Enemy skips: "
         f"`{contract.get('enemy_skip_mode') or 'unknown'}`. "
         "Tower damage basis: "
-        f"`{contract.get('tower_damage_mode') or payload_diagnostics.get('tower_damage_mode') or 'unknown'}`."
+        f"`{contract.get('tower_damage_mode') or payload_diagnostics.get('tower_damage_mode') or 'unknown'}`. "
+        "Boss damage source: "
+        f"`{boss_damage_source}`."
     )
     st.caption(
         "Model bounds: "
@@ -2069,11 +2076,19 @@ def _render_boss_waves(request: PipelineRunRequest, *, perk_policy_override: dic
     with st.expander('Boss-wave raw rows (debug)'):
         st.dataframe(frame, width='stretch', hide_index=True)
     with st.expander('Boss-wave diagnostics'):
-        st.json(diagnostics)
+        st.json({
+            'summary': diagnostics,
+            'model_certification': payload_diagnostics.get('model_certification') or {},
+            'contact_time_contract': payload_diagnostics.get('contact_time_contract') or {},
+            'source_selection': payload_diagnostics.get('source_selection') or {},
+            'replacement_model': payload_diagnostics.get('replacement_model') or {},
+        })
     with st.expander('Boss-wave execution details'):
         st.json({
             'contract': boss_payload.get('contract') or {},
             'runtime_inputs_used': diagnostics['scenario_runtime_inputs'],
+            'replacement_primitive_inputs': primitive_inputs,
+            'replacement_primitive_semantics_ledger': payload_diagnostics.get('replacement_primitive_semantics_ledger') or {},
             'execution_counts': {
                 'qe_resolution_count': diagnostics['qe_resolution_count'],
                 'timing_recompute_count': diagnostics['timing_recompute_count'],

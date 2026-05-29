@@ -776,6 +776,14 @@ nodes:
     verification_status: verified
     blocker_reason: ''
     notes: Slow Aura card source for Boss Waves contact-time enemy speed reduction.
+  - node_id: source_input::lab:Slow Aura Mastery
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: verified
+    blocker_reason: ''
+    notes: Slow Aura Mastery lab source for Boss Waves boss-hit interval timing.
   - node_id: state::cards.slow_aura.enemy_speed_pct
     node_kind: surface
     family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
@@ -784,6 +792,14 @@ nodes:
     verification_status: verified
     blocker_reason: ''
     notes: Slow Aura base-card enemy speed reduction consumed by Boss Waves contact-time derivation.
+  - node_id: state::cards.slow_aura.mastery_effect
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: debug_only
+    verification_status: verified
+    blocker_reason: ''
+    notes: Slow Aura Mastery attack-interval multiplier consumed by Boss Waves boss-hit interval derivation.
   - node_id: source_input::card:Ultimate Crit
     node_kind: source_input
     family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
@@ -3372,6 +3388,13 @@ edges:
     publication_relevance: support_only
     verification_status: verified
     notes: Slow Aura equipped state and card level govern the Boss Waves contact-time speed surface.
+  - upstream_node_id: source_input::lab:Slow Aura Mastery
+    downstream_node_id: state::cards.slow_aura.mastery_effect
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [lab_level_change]
+    publication_relevance: support_only
+    verification_status: verified
+    notes: Slow Aura Mastery lab level governs the Boss Waves boss-hit interval surface.
   - upstream_node_id: source_input::card:Ultimate Crit
     downstream_node_id: state::cards.ultimate_crit.chance_pct
     invalidation_semantics: recompute_downstream
