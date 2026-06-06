@@ -138,8 +138,61 @@ def test_streamlit_perks_tab_consumes_pipeline_preview_not_local_generator():
     assert 'First perk choice' in source
     assert 'Priority order' in source
     assert 'Generated perks' in source
+    assert 'Policy preset' in source
+    assert 'Policy strategy' in source
+    assert 'Policy generation' in source
+    assert 'Generator owner' in source
+    assert 'Resolved priority order' in source
+    assert 'Resolved banned perks' in source
+    assert 'Generated perk pick counts' in source
+    assert 'Generated goal-benefit matrix' in source
+    assert "preview.get('context')" in source
+    assert "diagnostics.get('taken_counts')" in source
+    assert "perk_goal_benefit_matrix" in source
+    assert "_arrow_safe_frame(pd.DataFrame(rows), columns=('value', 'picks', 'max value'))" in source
     assert 'generate_timeline_from_policy' not in source
     assert 'PerkTimelinePolicy' not in source
+
+
+def test_streamlit_perks_table_does_not_fallback_to_active_preset_for_tourney():
+    from app.streamlit_inspector import _perk_display_preset
+
+    account_state = {
+        'active_perk_preset': 'ProjectedMaxPolicy_AllExceptManualBans',
+        'perk_presets': {
+            'ProjectedMaxPolicy_AllExceptManualBans': [{'perk_id': 'PERK_X1_15_DAMAGE', 'picks': 1}],
+            'Farming': [{'perk_id': 'PERK_X1_15_DAMAGE', 'picks': 1}],
+        },
+    }
+
+    assert _perk_display_preset(account_state, selected_preset='Tourney') is None
+    assert _perk_display_preset(account_state, selected_preset='Farming') == 'Farming'
+    assert (
+        _perk_display_preset(account_state, selected_preset='Milestone')
+        == 'ProjectedMaxPolicy_AllExceptManualBans'
+    )
+
+
+def test_streamlit_sidebar_tourney_gc_max_waves_run_click_is_perk_guarded(tmp_path):
+    streamlit_testing = pytest.importorskip("streamlit.testing.v1")
+
+    out_dir = tmp_path / 'streamlit_tourney_run'
+    app_test = streamlit_testing.AppTest.from_file(str(ROOT / 'app' / 'streamlit_inspector.py'))
+    app_test.run(timeout=240)
+    app_test.sidebar.text_input[1].set_value(str(out_dir))
+    app_test.sidebar.selectbox[0].set_value('Tourney')
+    app_test.sidebar.selectbox[1].set_value('GC Max Waves')
+    app_test.sidebar.button[0].click()
+    app_test.run(timeout=240)
+
+    assert not app_test.exception
+    diagnostics = json.loads((out_dir / 'diagnostics.json').read_text(encoding='utf-8'))
+    assert diagnostics['default_preset'] == 'Tourney'
+    assert diagnostics['perk_support']['perk_policy_preset'] == 'GC Max Waves'
+    assert diagnostics['perk_support']['perk_materialization'] is False
+    assert diagnostics['perk_support']['active_perk_preset'] is None
+    assert diagnostics['state_matrix']['start_of_run']['perks_enabled'] is False
+    assert diagnostics['state_matrix']['max_progression']['perks_enabled'] is False
 
 
 def test_pipeline_writes_input_dashboard_contract(tmp_path, monkeypatch):
@@ -311,7 +364,7 @@ def test_pipeline_run_stats_query_rows_publish_qe_derived_wall_semantics(canonic
     assert start_farming['support_surface::ehp.black_hole_duration_seconds']['final_value'] == pytest.approx(32.0)
     assert start_farming['support_surface::ehp.black_hole_cooldown_seconds']['final_value'] == pytest.approx(50.0)
     assert start_farming['support_surface::ehp.health_relic_pct']['final_value'] == pytest.approx(0.53)
-    assert start_farming['support_surface::ehp.dabs_relic_pct']['final_value'] == pytest.approx(0.3)
+    assert start_farming['support_surface::ehp.dabs_relic_pct']['final_value'] == pytest.approx(0.28)
     assert start_farming['support_surface::ehp.def_pct_relic_pct']['final_value'] == pytest.approx(0.04)
     assert start_farming['support_surface::eecon.adstarter_theme_relic_factor']['final_value'] == pytest.approx(1.48)
     assert start_farming['support_surface::eecon.freeup_attack_relic_pct']['final_value'] == pytest.approx(0.06)
@@ -328,7 +381,7 @@ def test_pipeline_run_stats_query_rows_publish_qe_derived_wall_semantics(canonic
     assert start_farming['derived::ehp.primordial_black_hole_uptime']['final_value'] == pytest.approx(32.0 / 82.0)
     assert start_farming['derived::ehp.primordial_black_hole_damage_reduction_factor']['final_value'] == pytest.approx(1.4539007092198584)
     assert start_farming['derived::ehp.health_relic_factor']['final_value'] == pytest.approx(1.53)
-    assert start_farming['derived::ehp.dabs_relic_factor']['final_value'] == pytest.approx(1.3)
+    assert start_farming['derived::ehp.dabs_relic_factor']['final_value'] == pytest.approx(1.28)
     assert start_farming['derived::ehp.def_pct_relic_term']['final_value'] == pytest.approx(0.04)
     assert start_farming['derived::eecon.base_meta_factor']['final_value'] == pytest.approx(1.48)
 
@@ -350,26 +403,26 @@ def test_pipeline_tier_scoped_dissonance_reconciles_t14_ep_panels(tmp_path):
     rows = json.loads((out_dir / 'run_stats_query_rows_max_progression.json').read_text(encoding='utf-8'))['Farming']['rows']
 
     assert rows['derived::dissonance.defense.total_multiplier']['final_value'] == pytest.approx(5.108782215759483)
-    assert rows['derived::ehp.health_factor']['final_value'] == pytest.approx(47.8168762613185e12)
+    assert rows['derived::ehp.health_factor']['final_value'] == pytest.approx(35.041126786450645e12)
     assert rows['state::uw.chain_lightning.max_enemy_damage_reduction_pct']['final_value'] == pytest.approx(36.0)
     assert rows['derived::ehp.chain_thunder_factor']['final_value'] == pytest.approx(1.5625)
-    assert rows['derived::ehp']['final_value'] == pytest.approx(1.259950229064064e18)
+    assert rows['derived::ehp']['final_value'] == pytest.approx(9.233157676196639e17)
     assert rows['state::tower.regen']['final_value'] == pytest.approx(48.10260006102113e12)
     assert rows['state::wall.fortification_multiplier']['final_value'] == pytest.approx(10.6)
-    assert rows['derived::wall.hp_pre_fort']['final_value'] == pytest.approx(836.6040670680288e12)
-    assert rows['derived::wall.hp_final']['final_value'] == pytest.approx(8.868003110921104e15)
+    assert rows['derived::wall.hp_pre_fort']['final_value'] == pytest.approx(613.0795542557406e12)
+    assert rows['derived::wall.hp_final']['final_value'] == pytest.approx(6.49864327511085e15)
     assert rows['derived::wall.regen_hp_per_second']['final_value'] == pytest.approx(264.5643003356162e12)
     assert rows['state::tower.defense_absolute']['status'] == 'resolved'
     assert rows['derived::ehp.dabs_perk_factor']['final_value'] == pytest.approx(1.0)
-    assert rows['state::tower.defense_absolute']['final_value'] == pytest.approx(148.07576034428293e6)
+    assert rows['state::tower.defense_absolute']['final_value'] == pytest.approx(145.79767172360164e6)
     assert rows['state::economy.coins_per_kill_bonus']['final_value'] == pytest.approx(47.579110424999996)
-    assert rows['state::economy.all_coin_bonus_multiplier']['final_value'] == pytest.approx(4226.186755544831)
+    assert rows['state::economy.all_coin_bonus_multiplier']['final_value'] == pytest.approx(4004.029388729429)
     assert rows['state::cards.wave_skip.chance_pct']['final_value'] == pytest.approx(19.0)
     assert rows['derived::eecon.freeup_factor']['final_value'] == pytest.approx(1.0133964984534831)
     assert rows['derived::eecon.wave_factor']['final_value'] == pytest.approx(1.3064513895292529)
     assert rows['derived::eecon.utility_dissonance_factor']['final_value'] > 1.0
     assert rows['derived::eecon.unit_scale_factor']['final_value'] == pytest.approx(1000.0)
-    assert rows['derived::eecon']['final_value'] == pytest.approx(360083509.28758234)
+    assert rows['derived::eecon']['final_value'] == pytest.approx(368485457.8376259)
 
 
 def test_pipeline_cards_payload_publishes_selected_rows_by_preset(canonical_pipeline_artifacts):
@@ -494,6 +547,16 @@ def test_inputs_dashboard_production_render_avoids_native_streamlit_tables() -> 
     assert 'st.table(' not in production_block
     assert 'st.dataframe(' not in production_block
     assert 'st.data_editor(' not in production_block
+
+
+def test_input_lineage_debug_table_uses_arrow_safe_display_frame() -> None:
+    text = (ROOT / 'app' / 'streamlit_inspector.py').read_text(encoding='utf-8')
+    start = text.index("st.subheader('Input lineage')")
+    end = text.index("\ndef _require_boss_wave_payload_rows", start)
+    lineage_block = text[start:end]
+
+    assert "input_lineage_rows_frame(" in lineage_block
+    assert "_arrow_safe_frame(lineage_frame, columns=('source_value', 'resolved_value'))" in lineage_block
 
 
 def test_inputs_dashboard_cards_panel_uses_published_rows_without_account_state_mutation() -> None:

@@ -198,6 +198,7 @@ BOSS_WAVE_REPLACEMENT_PRIMITIVE_SURFACE_IDS: tuple[str, ...] = (
 )
 BOSS_WAVE_OPTIONAL_PRIMITIVE_SURFACE_IDS: tuple[str, ...] = (
     'state::cards.slow_aura.enemy_speed_pct',
+    'state::cards.slow_aura.mastery_effect',
 )
 BOSS_WAVE_PERK_POLICY_PRESETS: tuple[str, ...] = (
     'eHP Max Waves',
@@ -325,6 +326,7 @@ def _boss_wave_selected_model_requires_full_gc_bridge(
             'qe_derived_boss_applicable_dps_cl_only_fail_closed_default',
             'qe_derived_edamage_boss_fail_closed_default',
             'qe_derived_edamage_boss_runtime_exposure_model',
+            'qe_derived_edamage_ep_boss_exposure_model',
         }
     ):
         return False
@@ -618,6 +620,7 @@ def _boss_wave_contact_time_seconds(
 def _boss_wave_spotlight_coverage(*, count: object, angle_degrees: object) -> float:
     try:
         count_value = max(0.0, float(count or 0.0))
+        angle_value = max(0.0, float(angle_degrees or 0.0))
     except (TypeError, ValueError):
         return 0.0
     return min(1.0, (count_value * angle_value) / 360.0)
@@ -638,11 +641,85 @@ def _boss_wave_acp_active_fraction(*, contact_time_seconds: object, shockwave_in
     return hit_probability, active_fraction
 
 
+def _positive_factor(value: object, *, default: float = 1.0) -> float:
+    try:
+        factor = float(value or 0.0)
+    except (TypeError, ValueError):
+        return default
+    return factor if factor > 0.0 else default
+
+
+def _boss_wave_hit_interval_seconds(
+    runtime_inputs: ScenarioRuntimeInputs,
+    *,
+    scenario_surfaces: Mapping[str, object],
+    primitives: Mapping[str, object],
+) -> tuple[float, str, dict[str, float]]:
+    explicit_hit_interval = getattr(runtime_inputs, 'boss_hit_interval_seconds')
+    if explicit_hit_interval is not None:
+        return (
+            max(0.0, float(explicit_hit_interval)),
+            'runtime_input_boss_hit_interval_seconds',
+            {
+                'scenario_base_seconds': float(scenario_surfaces.get('boss_hit_interval_seconds') or 2.0),
+                'slow_aura_mastery_attack_interval_multiplier': 1.0,
+            },
+        )
+    scenario_base = max(0.0, float(scenario_surfaces.get('boss_hit_interval_seconds') or 2.0))
+    slow_aura_mastery_multiplier = _positive_factor(
+        primitives.get('slow_aura_mastery_attack_interval_multiplier'),
+        default=1.0,
+    )
+    return (
+        scenario_base * slow_aura_mastery_multiplier,
+        'scenario_boss_hit_interval_plus_slow_aura_mastery',
+        {
+            'scenario_base_seconds': scenario_base,
+            'slow_aura_mastery_attack_interval_multiplier': slow_aura_mastery_multiplier,
+        },
+    )
+
+
+def _boss_wave_apply_pre_contact_damage_window_diagnostics(primitives: dict[str, object]) -> None:
+    damage_per_second = max(0.0, float(primitives.get('gc_boss_damage_per_second') or 0.0))
+    contact_seconds = max(0.0, float(primitives.get('boss_time_to_contact_seconds') or 0.0))
+    base_contact_seconds = max(0.0, float(primitives.get('boss_time_to_contact_base_seconds') or 0.0))
+    energy_net_hold_seconds = max(0.0, float(primitives.get('boss_time_to_contact_energy_net_hold_seconds') or 0.0))
+    movement_seconds = max(0.0, contact_seconds - energy_net_hold_seconds)
+    energy_net_multiplier = _positive_factor(primitives.get('energy_net_mastery_multiplier'))
+    energy_net_multiplier_window = max(
+        0.0,
+        float(primitives.get('energy_net_damage_multiplier_duration_seconds') or 0.0),
+    )
+    boosted_seconds = min(contact_seconds, energy_net_multiplier_window) if energy_net_multiplier > 1.0 else 0.0
+    base_window_damage = damage_per_second * contact_seconds
+    energy_net_incremental_damage = damage_per_second * max(0.0, energy_net_multiplier - 1.0) * boosted_seconds
+    primitives['edamage_boss_contact_time_exposure_factor'] = (
+        contact_seconds / base_contact_seconds if base_contact_seconds > 0.0 else 1.0
+    )
+    primitives['edamage_boss_movement_time_exposure_factor'] = (
+        movement_seconds / base_contact_seconds if base_contact_seconds > 0.0 else 1.0
+    )
+    primitives['edamage_boss_pre_contact_base_window_damage'] = base_window_damage
+    primitives['edamage_boss_pre_contact_energy_net_boosted_seconds'] = boosted_seconds
+    primitives['edamage_boss_pre_contact_energy_net_incremental_damage'] = energy_net_incremental_damage
+    primitives['edamage_boss_pre_contact_timed_window_damage'] = (
+        base_window_damage + energy_net_incremental_damage
+    )
+
+
 def _boss_wave_apply_default_edamage_boss_runtime_factors(primitives: dict[str, object]) -> None:
     source = str(primitives.get('gc_boss_damage_source') or '')
-    base_dps = max(0.0, float(primitives.get('qe_boss_applicable_cl_only_damage_per_second') or 0.0))
+    ep_damage = max(0.0, float(primitives.get('edamage_ep') or 0.0))
+    cl_base_dps = max(0.0, float(primitives.get('qe_boss_applicable_cl_only_damage_per_second') or 0.0))
+    base_dps = ep_damage if ep_damage > 0.0 else cl_base_dps
     primitives['edamage_boss_base_damage_per_second'] = base_dps
+    primitives['edamage_boss_base_ep_damage'] = ep_damage
+    primitives['edamage_boss_base_cl_damage_per_second'] = cl_base_dps
     if source != 'qe_derived_edamage_boss_fail_closed_default':
+        primitives['edamage_boss_ep_spotlight_factor'] = 1.0
+        primitives['edamage_boss_ep_acp_factor'] = 1.0
+        primitives['edamage_boss_ep_slow_factor'] = 1.0
         primitives['edamage_boss_spotlight_coverage_fraction'] = 0.0
         primitives['edamage_boss_spotlight_exposure_fraction'] = 0.0
         primitives['edamage_boss_spotlight_factor'] = 1.0
@@ -652,7 +729,12 @@ def _boss_wave_apply_default_edamage_boss_runtime_factors(primitives: dict[str, 
         primitives['edamage_boss_acp_factor'] = 1.0
         primitives['edamage_boss_runtime_factor'] = 1.0
         primitives['edamage_boss_damage_per_second'] = float(primitives.get('gc_boss_damage_per_second') or 0.0)
+        _boss_wave_apply_pre_contact_damage_window_diagnostics(primitives)
         return
+
+    ep_spotlight_factor = _positive_factor(primitives.get('ep_edamage_spotlight_factor'))
+    ep_acp_factor = _positive_factor(primitives.get('ep_edamage_acp_factor'))
+    ep_slow_factor = _positive_factor(primitives.get('ep_edamage_slow_factor'))
 
     spotlight_coverage = _boss_wave_spotlight_coverage(
         count=primitives.get('spotlight_count'),
@@ -675,8 +757,11 @@ def _boss_wave_apply_default_edamage_boss_runtime_factors(primitives: dict[str, 
     if not acp_restricted and acp_bonus > 1.0:
         acp_factor = 1.0 + ((acp_bonus - 1.0) * acp_active_fraction)
 
-    runtime_factor = spotlight_factor * acp_factor
+    runtime_factor = (spotlight_factor / ep_spotlight_factor) * (acp_factor / ep_acp_factor) / ep_slow_factor
     final_dps = base_dps * runtime_factor
+    primitives['edamage_boss_ep_spotlight_factor'] = ep_spotlight_factor
+    primitives['edamage_boss_ep_acp_factor'] = ep_acp_factor
+    primitives['edamage_boss_ep_slow_factor'] = ep_slow_factor
     primitives['edamage_boss_spotlight_coverage_fraction'] = spotlight_coverage
     primitives['edamage_boss_spotlight_exposure_fraction'] = spotlight_exposure
     primitives['edamage_boss_spotlight_factor'] = spotlight_factor
@@ -687,7 +772,8 @@ def _boss_wave_apply_default_edamage_boss_runtime_factors(primitives: dict[str, 
     primitives['edamage_boss_runtime_factor'] = runtime_factor
     primitives['edamage_boss_damage_per_second'] = final_dps
     primitives['gc_boss_damage_per_second'] = final_dps
-    primitives['gc_boss_damage_source'] = 'qe_derived_edamage_boss_runtime_exposure_model'
+    primitives['gc_boss_damage_source'] = 'qe_derived_edamage_ep_boss_exposure_model'
+    _boss_wave_apply_pre_contact_damage_window_diagnostics(primitives)
 
 
 def _boss_wave_replacement_primitive_surface_ids(account_state, *, preset_name: str) -> tuple[str, ...]:
@@ -2167,6 +2253,11 @@ def _build_replacement_operator_table_and_summary(
     boss_time_to_contact_seconds, boss_time_to_contact_source, boss_time_to_contact_components = (
         _boss_wave_contact_time_seconds(runtime_inputs, primitives=primitives)
     )
+    boss_hit_interval_seconds, boss_hit_interval_source, boss_hit_interval_components = _boss_wave_hit_interval_seconds(
+        runtime_inputs,
+        scenario_surfaces=scenario_surfaces,
+        primitives=primitives,
+    )
     primitives['boss_time_to_contact_seconds'] = boss_time_to_contact_seconds
     primitives['boss_time_to_contact_source'] = boss_time_to_contact_source
     primitives['boss_time_to_contact_base_seconds'] = boss_time_to_contact_components['base_seconds']
@@ -2179,6 +2270,12 @@ def _build_replacement_operator_table_and_summary(
     ]
     primitives['boss_time_to_contact_energy_net_hold_seconds'] = boss_time_to_contact_components[
         'energy_net_hold_seconds'
+    ]
+    primitives['boss_hit_interval_seconds'] = boss_hit_interval_seconds
+    primitives['boss_hit_interval_source'] = boss_hit_interval_source
+    primitives['boss_hit_interval_scenario_base_seconds'] = boss_hit_interval_components['scenario_base_seconds']
+    primitives['boss_hit_interval_slow_aura_mastery_multiplier'] = boss_hit_interval_components[
+        'slow_aura_mastery_attack_interval_multiplier'
     ]
     _boss_wave_apply_default_edamage_boss_runtime_factors(primitives)
     scenario = ScenarioOverlayInputs(
@@ -2215,11 +2312,7 @@ def _build_replacement_operator_table_and_summary(
         ),
         electron_hit_count=getattr(runtime_inputs, 'electron_hit_count'),
         boss_time_to_contact_seconds=boss_time_to_contact_seconds,
-        boss_hit_interval_seconds=(
-            float(getattr(runtime_inputs, 'boss_hit_interval_seconds'))
-            if getattr(runtime_inputs, 'boss_hit_interval_seconds') is not None
-            else float(scenario_surfaces.get('boss_hit_interval_seconds') or 2.0)
-        ),
+        boss_hit_interval_seconds=boss_hit_interval_seconds,
         max_ttk_seconds=600.0,
         plasma_cannon_resistance_multiplier=float(scenario_surfaces.get('bc_plasma_cannon_resistance') or 1.0),
         orb_resistance_multiplier=float(scenario_surfaces.get('bc_orb_resistance') or 1.0),
@@ -2480,6 +2573,21 @@ def _resolve_boss_wave_replacement_primitives(
         default=chain_lightning_boss_dps,
     )
     edamage_ep = _optional_statbook_float(damage_statbook, 'derived::edamage_ep', default=0.0)
+    ep_edamage_spotlight_factor = _optional_statbook_float(
+        damage_statbook,
+        'derived::edamage.spotlight_factor',
+        default=1.0,
+    )
+    ep_edamage_acp_factor = _optional_statbook_float(
+        damage_statbook,
+        'derived::edamage.acp_factor',
+        default=1.0,
+    )
+    ep_edamage_slow_factor = _optional_statbook_float(
+        damage_statbook,
+        'derived::edamage.slow_factor',
+        default=1.0,
+    )
     runtime_inputs = ScenarioRuntimeInputs.from_mapping(scenario_runtime_inputs)
     explicit_boss_dps = _runtime_nonnegative_float(runtime_inputs, 'boss_applicable_damage_per_second')
     explicit_boss_damage_factor = _runtime_nonnegative_float(runtime_inputs, 'boss_applicable_damage_factor')
@@ -2656,8 +2764,12 @@ def _resolve_boss_wave_replacement_primitives(
         'chain_lightning_boss_damage_per_second': chain_lightning_boss_dps,
         'qe_boss_applicable_cl_only_damage_per_second': qe_boss_applicable_cl_only_dps,
         'edamage_boss_base_damage_per_second': qe_boss_applicable_cl_only_dps,
+        'edamage_boss_base_cl_damage_per_second': qe_boss_applicable_cl_only_dps,
         'edamage_ep': edamage_ep,
         'edamage': edamage_ep,
+        'ep_edamage_spotlight_factor': ep_edamage_spotlight_factor,
+        'ep_edamage_acp_factor': ep_edamage_acp_factor,
+        'ep_edamage_slow_factor': ep_edamage_slow_factor,
         'boss_damage_state_mode': damage_state_mode,
         'boss_damage_perks_enabled': 1.0 if damage_perks_enabled else 0.0,
         'dissonance_attack_run_active': _optional_statbook_bool(statbook, 'support_surface::dissonance.attack_run_active'),
@@ -2689,6 +2801,7 @@ def _resolve_boss_wave_replacement_primitives(
         'chrono_field_damage_reduction_pct': _required_statbook_float(statbook, 'state::uw.chrono_field.damage_reduction_pct'),
         'chrono_field_slow_pct': _required_statbook_float(statbook, 'state::uw.chrono_field.slow_pct'),
         'slow_aura_enemy_speed_pct': _optional_statbook_float(statbook, 'state::cards.slow_aura.enemy_speed_pct', default=0.0),
+        'slow_aura_mastery_attack_interval_multiplier': _optional_statbook_float(statbook, 'state::cards.slow_aura.mastery_effect', default=1.0),
         'flame_bot_owned': _optional_statbook_bool(statbook, 'state::bot.flame.owned', default=False),
         'flame_bot_damage_reduction_pct': _optional_statbook_float(statbook, 'state::bot.flame.damage_reduction_pct', default=0.0),
         'flame_bot_cooldown_seconds': _optional_statbook_float(statbook, 'state::bot.flame.cooldown_seconds', default=0.0),
@@ -3098,32 +3211,38 @@ def _boss_wave_primitive_semantics_ledger(
             'derived::edamage.uw.chain_lightning_dps': _primitive_ledger_entry(
                 source='qe.publication.publish_query_surfaces(derived::edamage.uw.chain_lightning_dps)',
                 value=float(primitives.get('chain_lightning_boss_damage_per_second') or 0.0),
-                meaning=f"QE-published Chain Lightning DPS support surface resolved for Boss Waves damage state_mode={primitives.get('boss_damage_state_mode')} perks_enabled={bool(primitives.get('boss_damage_perks_enabled'))}. Boss Waves consumes the QE-owned CL-only boss-applicable lane derived from this surface when no explicit boss-applicable eDamage bridge is supplied.",
-                owner='QE publishes derived CL DPS; QE also publishes the fail-closed CL-only boss-applicable lane consumed by Boss Waves',
+                meaning=f"QE-published Chain Lightning DPS support surface resolved for Boss Waves damage state_mode={primitives.get('boss_damage_state_mode')} perks_enabled={bool(primitives.get('boss_damage_perks_enabled'))}. Boss Waves keeps this as a diagnostic and fallback lane while the default boss damage path starts from derived::edamage_ep.",
+                owner='QE publishes derived CL DPS; app consumes it as diagnostic/fallback context for Boss Waves',
             ),
             'derived::edamage_boss': _primitive_ledger_entry(
                 source='qe.publication.publish_query_surfaces(derived::edamage_boss)',
                 value=float(primitives.get('qe_boss_applicable_cl_only_damage_per_second') or 0.0),
-                meaning=f"QE-published TowerSim Boss Waves base damage surface resolved for state_mode={primitives.get('boss_damage_state_mode')} perks_enabled={bool(primitives.get('boss_damage_perks_enabled'))}. It supplies confirmed constant Chain Lightning boss DPS; app applies Boss Waves runtime exposure factors for travel time, Spotlight/Om Chip, and Shockwave/ACP before evaluator integration.",
-                owner='QE owns the base Boss Waves damage surface; app owns scenario/loadout runtime exposure factors and explicit bridge selection',
+                meaning=f"QE-published TowerSim Boss Waves legacy base damage surface resolved for state_mode={primitives.get('boss_damage_state_mode')} perks_enabled={bool(primitives.get('boss_damage_perks_enabled'))}. It supplies confirmed constant Chain Lightning boss DPS for diagnostics and fallback; the default Boss Waves lane now starts from derived::edamage_ep and replaces EP exposure factors with boss-specific exposure factors.",
+                owner='QE owns the CL diagnostic/fallback Boss Waves damage surface; app owns scenario/loadout runtime exposure factors and explicit bridge selection',
             ),
             'derived::edamage_ep': _primitive_ledger_entry(
                 source='qe.publication.publish_query_surfaces(derived::edamage_ep)',
                 value=float(primitives.get('edamage_ep') or primitives.get('edamage') or 0.0),
-                meaning=f"QE-published exact Effective Paths eDamage objective surface resolved for Boss Waves damage state_mode={primitives.get('boss_damage_state_mode')} perks_enabled={bool(primitives.get('boss_damage_perks_enabled'))}. It is not converted into boss DPS unless the caller supplies a single boss_applicable_damage_factor or the complete decomposed eDamage boss-bridge factor set.",
-                owner='QE publishes eDamage; scenario runtime input owns any eDamage-to-boss applicability factors until a source-owned intrinsic bridge exists',
+                meaning=f"QE-published exact Effective Paths eDamage objective surface resolved for Boss Waves damage state_mode={primitives.get('boss_damage_state_mode')} perks_enabled={bool(primitives.get('boss_damage_perks_enabled'))}. The Boss Waves default starts from this EP objective and replaces EP exposure terms with boss-specific runtime exposure terms; explicit runtime bridge inputs can still override the default when a caller owns boss-applicable DPS semantics.",
+                owner='QE publishes eDamage; app owns Boss Waves exposure replacement and explicit runtime bridge selection',
             ),
             'state::combat.gc_boss_damage_per_second': _primitive_ledger_entry(
                 source=str(primitives.get('gc_boss_damage_source') or ''),
                 value=float(primitives.get('gc_boss_damage_per_second') or 0.0),
-                meaning='Final continuous boss damage used by the GC/pre-contact lane. Defaults to derived::edamage_boss multiplied by Boss Waves runtime exposure factors, and can still be explicitly overridden, bridged from derived::edamage_ep by a single scenario factor, or bridged from derived::edamage_ep by the complete decomposed scenario factor set.',
-                owner='app selects explicit runtime scenario input or QE-owned base Boss Waves damage with runtime exposure factors; evaluator integrates the final continuous damage value event-by-event',
+                meaning='Final continuous boss damage used by the GC/pre-contact lane. Defaults to derived::edamage_ep with EP Spotlight, ACP, and slow/exposure factors replaced by Boss Waves runtime equivalents; it can still be explicitly overridden or bridged from derived::edamage_ep by caller-owned factors.',
+                owner='app selects explicit runtime scenario input or QE-owned eDamage with Boss Waves exposure replacements; evaluator integrates the final continuous damage value event-by-event',
             ),
             'state::combat.edamage_boss_runtime_factor': _primitive_ledger_entry(
                 source='app.pipeline._boss_wave_apply_default_edamage_boss_runtime_factors',
                 value=float(primitives.get('edamage_boss_runtime_factor') or 1.0),
-                meaning='Boss Waves default continuous-damage exposure multiplier applied to QE base edamage_boss. It combines expected Spotlight exposure, Om Chip boss focus, and ACP expected active fraction over the boss travel/contact window.',
-                owner='app assembles scenario/loadout runtime exposure; QE remains the base damage source and evaluator consumes the final continuous DPS primitive',
+                meaning='Boss Waves default replacement multiplier applied to QE derived::edamage_ep. It removes EP Spotlight, ACP, and slow/exposure factors, then applies Boss Waves Spotlight/Om Chip and travel-window ACP factors. EN mastery remains a separate timed TTK multiplier.',
+                owner='app assembles scenario/loadout runtime exposure replacements; QE remains the base eDamage source and evaluator consumes the final continuous damage primitive',
+            ),
+            'state::combat.edamage_boss_pre_contact_timed_window_damage': _primitive_ledger_entry(
+                source='app.pipeline._boss_wave_apply_pre_contact_damage_window_diagnostics',
+                value=float(primitives.get('edamage_boss_pre_contact_timed_window_damage') or 0.0),
+                meaning='Diagnostic total continuous boss damage available before contact from final boss DPS over boss travel/contact time, with Energy Net mastery applied only for its timed window. CF and Slow Aura contribute through contact time rather than as a DPS multiplier.',
+                owner='app publishes diagnostic budget; evaluator remains the authoritative TTK integrator',
             ),
             'state::combat.boss_edamage_decomposed_bridge_factor': _primitive_ledger_entry(
                 source='scenario_runtime_inputs.boss_edamage_target_share * boss_edamage_cadence_uptime_factor * boss_edamage_reliability_factor * boss_edamage_semantic_normalizer',
@@ -3142,6 +3261,12 @@ def _boss_wave_primitive_semantics_ledger(
                 value=float(primitives.get('energy_net_mastery_multiplier') or 1.0),
                 meaning='QE-published Energy Net mastery boss damage multiplier. The app applies it only for Energy Net duration plus the mastery 10s after-window.',
                 owner='QE publishes card mastery effect; app assembles generic continuous-damage multiplier primitive; evaluator consumes it without card-specific branching',
+            ),
+            'state::cards.slow_aura.mastery_effect': _primitive_ledger_entry(
+                source='qe.routing.resolve_checkpoint_surfaces(state::cards.slow_aura.mastery_effect)',
+                value=float(primitives.get('slow_aura_mastery_attack_interval_multiplier') or 1.0),
+                meaning='QE-published Slow Aura mastery effect. Boss Waves applies it to the boss hit interval after contact, not to pre-contact movement speed.',
+                owner='QE publishes card mastery effect; app assembles boss hit interval primitive; evaluator consumes the final interval',
             ),
             'state::module.orbital_augment.electron_count': _primitive_ledger_entry(
                 source='qe.routing.resolve_checkpoint_surfaces(state::module.orbital_augment.electron_count)',
@@ -3729,7 +3854,7 @@ def _build_replacement_diagnostics(
             'summary_lane_id': 'avg',
             'field_map_artifact': str(BOSS_WAVE_FIELD_MAP_PATH.relative_to(ROOT)),
             'intentional_semantic_differences': {
-                'boss_ttk': 'replacement uses v21 boss-event kill sources plus QE-owned Chain Lightning continuous boss DPS; generic projectile DPS remains excluded until KB/QE-owned',
+                'boss_ttk': 'replacement uses v21 boss-event kill sources plus QE-owned EP eDamage with Boss Waves exposure replacement; QE-owned Chain Lightning boss DPS remains diagnostic/fallback context',
             },
         },
         'replacement_primitive_inputs': {
@@ -4151,7 +4276,10 @@ def _merge_scenario_publication_rows(
     manual_advisory_inputs: dict,
 ) -> None:
     scenario_config = _run_stats_scenario_config(account_state, preset_name=preset_name)
-    timing_family_id = _run_stats_timing_family_id(preset_name=preset_name, perks_enabled=perks_enabled)
+    scenario_perks_enabled = bool(perks_enabled)
+    if scenario_config.mode_id == 'tournament':
+        scenario_perks_enabled = False
+    timing_family_id = _run_stats_timing_family_id(preset_name=preset_name, perks_enabled=scenario_perks_enabled)
     farming_hours_per_day = _manual_input_numeric_value(
         manual_advisory_inputs,
         'module.farming.hours_per_day',
@@ -4165,7 +4293,7 @@ def _merge_scenario_publication_rows(
         preset_name=preset_name,
         scenario_config=scenario_config,
         state_mode=state_mode,
-        perks_enabled=perks_enabled,
+        perks_enabled=scenario_perks_enabled,
         farming_hours_per_day=farming_hours_per_day,
     )
 def _elapsed_ms(start: float) -> float:
@@ -4211,6 +4339,22 @@ def _sanitized_configured_perk_presets(account_state, canonical_output_preset: s
 def _sanitized_active_perk_preset(account_state, canonical_output_preset: str) -> str | None:
     return sanitize_preset_name_for_canonical_output(
         getattr(account_state, 'active_perk_preset', None),
+        namespace_class=getattr(account_state, 'perk_preset_namespace_class', 'canonical'),
+        fallback_preset_name=canonical_output_preset,
+    )
+
+
+def _effective_perk_preset_for_publication(
+    account_state,
+    *,
+    perk_preset_name: str | None,
+    perks_enabled: bool,
+    canonical_output_preset: str,
+) -> str | None:
+    if not perks_enabled or perk_preset_name is None:
+        return None
+    return sanitize_preset_name_for_canonical_output(
+        perk_preset_name,
         namespace_class=getattr(account_state, 'perk_preset_namespace_class', 'canonical'),
         fallback_preset_name=canonical_output_preset,
     )
@@ -5425,6 +5569,7 @@ class RunStatsSession:
         max_books_by_preset = {}
         state_query_plans = {'start_of_run': {}, 'max_progression': {}}
         pipeline_timings = {'presets': {}}
+        perk_application_by_preset = {}
         primary_stats_stat_inputs_payload = None
 
         for preset_name in preset_names:
@@ -5443,6 +5588,16 @@ class RunStatsSession:
                 perk_mode=args.perk_mode,
                 state_mode='max_progression',
             )
+            perk_application_by_preset[preset_name] = {
+                'start_of_run': {
+                    'perk_preset_name': start_perk_preset_name,
+                    'perks_enabled': start_perks_enabled,
+                },
+                'max_progression': {
+                    'perk_preset_name': max_perk_preset_name,
+                    'perks_enabled': max_perks_enabled,
+                },
+            }
 
             for state_mode, perk_preset_name, perks_enabled in (
                 ('start_of_run', start_perk_preset_name, start_perks_enabled),
@@ -5654,6 +5809,8 @@ class RunStatsSession:
             preset_diagnostics[preset_name] = {
                 'start_of_run': {
                     'query_backend': 'bounded_qe_bundle',
+                    'perk_preset_name': start_perk_preset_name,
+                    'perks_enabled': start_perks_enabled,
                     'statbook_row_count': len(start_statbook_dict.get('rows', {})),
                     'bundle_ids': start_statbook_dict.get('diagnostics', {}).get('bundle_ids', []),
                     'family_ids': start_statbook_dict.get('diagnostics', {}).get('family_ids', []),
@@ -5663,6 +5820,8 @@ class RunStatsSession:
                 },
                 'max_progression': {
                     'query_backend': 'bounded_qe_bundle',
+                    'perk_preset_name': max_perk_preset_name,
+                    'perks_enabled': max_perks_enabled,
                     'statbook_row_count': len(max_statbook_dict.get('rows', {})),
                     'bundle_ids': max_statbook_dict.get('diagnostics', {}).get('bundle_ids', []),
                     'family_ids': max_statbook_dict.get('diagnostics', {}).get('family_ids', []),
@@ -5676,6 +5835,11 @@ class RunStatsSession:
             max_books_by_preset[preset_name] = max_statbook_dict
             pipeline_timings['presets'][preset_name] = preset_state_timings
 
+        any_perks_materialized = any(
+            bool(state_payload.get('perks_enabled'))
+            for preset_payload in perk_application_by_preset.values()
+            for state_payload in preset_payload.values()
+        )
         diagnostics = {
             'pipeline_kind': 'stats',
             'query_backend': 'bounded_qe_bundle',
@@ -5694,7 +5858,9 @@ class RunStatsSession:
                 'perk_mode': args.perk_mode,
                 'requested_perk_policy_preset': requested_perk_policy_preset,
                 'perk_policy_preset': resolved_perk_policy_preset,
-                'perk_materialization': args.perk_mode != 'none' and args.perk_state != 'off',
+                'perk_materialization': any_perks_materialized,
+                'perk_materialization_scope': 'any_preset_state',
+                'perk_application_by_preset': perk_application_by_preset,
             },
             'qe_shared_runtime_context': self.qe_shared_runtime_context.to_dict(),
             'session': {
@@ -6006,16 +6172,17 @@ def run_analysis_pipeline(args) -> int:
                 surface_id for surface_id in supplemental_timing_surface_ids if surface_id not in statbook.rows
             )
             if missing_timing_surface_ids:
+                timing_perks_enabled = perks_enabled_local and scenario_config.mode_id != 'tournament'
                 timing_response = resolve_checkpoint_surfaces(
                     state,
                     requested_surface_ids=missing_timing_surface_ids,
                     preset_name=preset_name,
                     family_id=_run_stats_timing_family_id(
                         preset_name=preset_name,
-                        perks_enabled=perks_enabled_local,
+                        perks_enabled=timing_perks_enabled,
                     ),
                     state_mode=state_mode,
-                    perks_enabled=perks_enabled_local,
+                    perks_enabled=timing_perks_enabled,
                     scenario_context=_run_stats_scenario_context(scenario_config),
                     trace_mode='contributors',
                 )
@@ -6088,11 +6255,18 @@ def run_analysis_pipeline(args) -> int:
     _annotate_compare_row_payloads_by_preset(compare_rows_by_preset)
     _annotate_compare_row_payloads_by_preset(compare_publishable_rows_by_preset)
 
-    perks_enabled = _perks_enabled_for_state(account_state.active_perk_preset, args.perk_state)
+    perk_preset_name, perks_enabled = _run_stats_perk_state(
+        account_state,
+        preset_name=args.preset,
+        perk_state=args.perk_state,
+        perk_mode=args.perk_mode,
+        state_mode=args.state_mode,
+    )
     main_snapshot = qe_planner.resolve_report_snapshot(
         account_state,
         preset_name=args.preset,
         state_mode=args.state_mode,
+        perk_preset_name=perk_preset_name,
         perks_enabled=perks_enabled,
         scenario_context=_run_stats_scenario_context(
             _run_stats_scenario_config(
@@ -6127,11 +6301,19 @@ def run_analysis_pipeline(args) -> int:
 
     state_matrix = {}
     for state_mode in SUPPORTED_STATE_MODES:
+        matrix_perk_preset_name, matrix_perks_enabled = _run_stats_perk_state(
+            account_state,
+            preset_name=args.preset,
+            perk_state=args.perk_state,
+            perk_mode=args.perk_mode,
+            state_mode=state_mode,
+        )
         matrix_snapshot = qe_planner.resolve_report_snapshot(
             account_state,
             preset_name=args.preset,
             state_mode=state_mode,
-            perks_enabled=perks_enabled,
+            perk_preset_name=matrix_perk_preset_name,
+            perks_enabled=matrix_perks_enabled,
             scenario_context=_run_stats_scenario_context(
                 _run_stats_scenario_config(
                     account_state,
@@ -6148,7 +6330,7 @@ def run_analysis_pipeline(args) -> int:
             stat_inputs=matrix_inputs,
             preset_name=args.preset,
             state_mode=state_mode,
-            perks_enabled=perks_enabled,
+            perks_enabled=matrix_perks_enabled,
             manual_advisory_inputs=_input_bundle.manual_advisory_inputs,
         )
         publish_query_surfaces(
@@ -6163,6 +6345,8 @@ def run_analysis_pipeline(args) -> int:
             'mapped_input_count': sum(1 for r in matrix_inputs if r.destination_id),
             'resolved_stat_count': matrix_statbook.get('diagnostics', {}).get('resolved_stat_count', 0),
             'partially_resolved_stat_count': matrix_statbook.get('diagnostics', {}).get('partially_resolved_stat_count', 0),
+            'perk_preset_name': matrix_perk_preset_name,
+            'perks_enabled': matrix_perks_enabled,
         }
 
     _ep_kwargs = dict(
@@ -6296,10 +6480,22 @@ def run_analysis_pipeline(args) -> int:
         active_perk_preset='__audit_all_perks__',
     )
     all_perk_rows = [row for row in compile_stat_inputs(audit_state, preset_name=account_state.default_preset, state_mode='start_of_run') if row.source_family == 'perk']
-    contributor_stat_inputs_by_preset = {
-        preset_name: compile_stat_inputs(account_state, preset_name=preset_name, state_mode=args.state_mode, perks_enabled=True)
-        for preset_name in ("Farming", "Tourney")
-    }
+    contributor_stat_inputs_by_preset = {}
+    for preset_name in ("Farming", "Tourney"):
+        contributor_perk_preset_name, contributor_perks_enabled = _run_stats_perk_state(
+            account_state,
+            preset_name=preset_name,
+            perk_state=args.perk_state,
+            perk_mode=args.perk_mode,
+            state_mode=args.state_mode,
+        )
+        contributor_stat_inputs_by_preset[preset_name] = compile_stat_inputs(
+            account_state,
+            preset_name=preset_name,
+            state_mode=args.state_mode,
+            perk_preset_name=contributor_perk_preset_name,
+            perks_enabled=contributor_perks_enabled,
+        )
 
     audits = _build_publish_gate_audits(
         stat_inputs, statbook_publishable_dict, ep_compare_publishable, formula_ledger
@@ -6315,6 +6511,12 @@ def run_analysis_pipeline(args) -> int:
     line_verification = _ensure_line_verification_authoritative_verdict_fields(line_verification)
     survivor_closure_report = _build_survivor_closure_report(ep_compare_publishable, line_verification)
     verification_counter = Counter(v['verification_status'] for v in line_verification.values())
+    effective_perk_preset_name = _effective_perk_preset_for_publication(
+        account_state,
+        perk_preset_name=perk_preset_name,
+        perks_enabled=perks_enabled,
+        canonical_output_preset=args.preset,
+    )
 
     diagnostics = {
         'section_names': list(ids_raw.raw_sections.keys()),
@@ -6359,7 +6561,8 @@ def run_analysis_pipeline(args) -> int:
                 'perk_stat_input_support': True,
                 'perk_resolver_support': True,
                 'perk_account_state_support': True,
-                'active_perk_preset': _sanitized_active_perk_preset(account_state, args.preset),
+                'active_perk_preset': effective_perk_preset_name,
+                'configured_active_perk_preset': _sanitized_active_perk_preset(account_state, args.preset),
                 'state_mode': args.state_mode,
             },
             'notes': [
@@ -6486,7 +6689,13 @@ def run_analysis_pipeline(args) -> int:
             projected_ep_compare_publishable if args.state_mode != 'max_progression' else ep_compare_publishable
         ),
         'tradeoff_routing_audit': _build_tradeoff_routing_audit(
-            compile_stat_inputs(account_state, preset_name=args.preset, state_mode=args.state_mode, perks_enabled=perks_enabled),
+            compile_stat_inputs(
+                account_state,
+                preset_name=args.preset,
+                state_mode=args.state_mode,
+                perk_preset_name=perk_preset_name,
+                perks_enabled=perks_enabled,
+            ),
             perk_entities,
             TRADE_OFF_BENEFIT_EFFECT_INDEXES,
             {str(item).strip() for item in (perk_config or {}).get('banned_perk_ids', []) if str(item).strip()},
@@ -6876,7 +7085,13 @@ def resolve_fast_checkpoint(request: FastCheckpointRequest) -> FastCheckpointRes
         perk_policy_preset=request.perk_policy_preset,
         diag_output_dir=None,
     )
-    perks_enabled = _perks_enabled_for_state(account_state.active_perk_preset, request.perk_state)
+    perk_preset_name, perks_enabled = _run_stats_perk_state(
+        account_state,
+        preset_name=request.preset,
+        perk_state=request.perk_state,
+        perk_mode=request.perk_mode,
+        state_mode=request.state_mode,
+    )
     checkpoint_resolution = SimulatorSnapshotResolver().resolve_checkpoint(
         account_state=account_state,
         checkpoint_state=SimulatorCheckpointState(),
@@ -6885,7 +7100,7 @@ def resolve_fast_checkpoint(request: FastCheckpointRequest) -> FastCheckpointRes
         state_mode=request.state_mode,
         card_preset_name=account_state.active_card_preset,
         module_preset_name=account_state.active_module_preset,
-        perk_preset_name=account_state.active_perk_preset,
+        perk_preset_name=perk_preset_name,
         perks_enabled=perks_enabled,
     )
     response = resolve_checkpoint_surfaces(
@@ -6895,7 +7110,7 @@ def resolve_fast_checkpoint(request: FastCheckpointRequest) -> FastCheckpointRes
         state_mode=request.state_mode,
         card_preset_name=account_state.active_card_preset,
         module_preset_name=account_state.active_module_preset,
-        perk_preset_name=account_state.active_perk_preset,
+        perk_preset_name=perk_preset_name,
         perks_enabled=perks_enabled,
         trace_mode='full_trace',
     )
@@ -6909,6 +7124,8 @@ def resolve_fast_checkpoint(request: FastCheckpointRequest) -> FastCheckpointRes
             'state_mode': request.state_mode,
             'preset': request.preset,
             'perk_state': request.perk_state,
+            'perk_preset_name': perk_preset_name,
+            'perks_enabled': perks_enabled,
         },
     )
     statbook_dict = statbook.to_dict()
@@ -6916,7 +7133,11 @@ def resolve_fast_checkpoint(request: FastCheckpointRequest) -> FastCheckpointRes
     return FastCheckpointResult(
         request=request,
         statbook=statbook_dict,
-        diagnostics=dict(checkpoint_resolution.diagnostics),
+        diagnostics={
+            **dict(checkpoint_resolution.diagnostics),
+            'perk_preset_name': perk_preset_name,
+            'perks_enabled': perks_enabled,
+        },
     )
 
 

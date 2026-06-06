@@ -83,8 +83,8 @@ def canonical_pipeline_artifacts(tmp_path_factory: pytest.TempPathFactory) -> di
 
 def test_run_stats_start_of_run_forces_perks_off() -> None:
     account_state = SimpleNamespace(
-        perk_presets={'Farming': {}},
-        active_perk_preset='Farming',
+        perk_presets={'Farming': {}, 'GC Max Waves': {}},
+        active_perk_preset='GC Max Waves',
     )
     preset_name, perks_enabled = _run_stats_perk_state(
         account_state,
@@ -95,6 +95,57 @@ def test_run_stats_start_of_run_forces_perks_off() -> None:
     )
     assert preset_name is None
     assert perks_enabled is False
+
+    preset_name, perks_enabled = _run_stats_perk_state(
+        account_state,
+        preset_name='Tourney',
+        perk_state='on',
+        perk_mode='max_progression_policy',
+        state_mode='max_progression',
+    )
+    assert preset_name is None
+    assert perks_enabled is False
+
+
+def test_tourney_gc_max_waves_policy_publishes_timing_without_perks(tmp_path: Path) -> None:
+    out_dir = tmp_path / 'out'
+    result = execute_pipeline(
+        PipelineRunRequest(
+            ids=IDS_PATH,
+            out=out_dir,
+            preset='Tourney',
+            perk_mode='max_progression_policy',
+            perk_state='auto',
+            perk_policy_preset='GC Max Waves',
+        )
+    )
+
+    assert result.exit_code == 0
+    diagnostics = json.loads((out_dir / 'diagnostics.json').read_text(encoding='utf-8'))
+    assert diagnostics['default_preset'] == 'Tourney'
+    assert diagnostics['perk_policy_preset'] == 'GC Max Waves'
+    assert diagnostics['perk_support']['perk_materialization'] is False
+    assert diagnostics['perk_support']['active_perk_preset'] is None
+    assert diagnostics['perk_support']['configured_active_perk_preset'] == 'Tourney'
+    assert diagnostics['state_matrix']['start_of_run']['perks_enabled'] is False
+    assert diagnostics['state_matrix']['max_progression']['perks_enabled'] is False
+
+
+def test_tourney_fast_checkpoint_policy_uses_scenario_perk_guard() -> None:
+    result = resolve_fast_checkpoint(
+        FastCheckpointRequest(
+            ids=IDS_PATH,
+            preset='Tourney',
+            state_mode='max_progression',
+            perk_mode='max_progression_policy',
+            perk_state='auto',
+            perk_policy_preset='GC Max Waves',
+            requested_surface_ids=('state::tower.damage',),
+        )
+    )
+
+    assert result.diagnostics['perks_enabled'] is False
+    assert result.diagnostics['perk_preset_name'] is None
 
 
 def test_load_ep_oracle_applies_key_level_ambiguity_overrides(tmp_path: Path) -> None:
@@ -3440,8 +3491,17 @@ def test_run_stats_diagnostics_contains_write_outputs_ms(run_stats_single_execut
     assert 'write_outputs_ms' in timings, "diagnostics.json must contain write_outputs_ms from final write"
     assert isinstance(timings['write_outputs_ms'], (int, float)), "write_outputs_ms must be numeric"
     assert diag.get('perk_policy_preset') == 'eHP Farming'
-    assert diag.get('perk_support', {}).get('perk_policy_preset') == 'eHP Farming'
-    assert diag.get('perk_support', {}).get('requested_perk_policy_preset') is None
+    perk_support = diag.get('perk_support', {})
+    assert perk_support.get('perk_policy_preset') == 'eHP Farming'
+    assert perk_support.get('requested_perk_policy_preset') is None
+    assert perk_support.get('perk_materialization') is True
+    assert perk_support.get('perk_materialization_scope') == 'any_preset_state'
+    perk_application = perk_support.get('perk_application_by_preset') or {}
+    assert perk_application['Farming']['start_of_run']['perks_enabled'] is False
+    assert perk_application['Farming']['max_progression']['perks_enabled'] is True
+    assert perk_application['Tourney']['start_of_run']['perks_enabled'] is False
+    assert perk_application['Tourney']['max_progression']['perks_enabled'] is False
+    assert diag['presets']['Tourney']['max_progression']['perks_enabled'] is False
 
 
 def test_run_stats_matrix_generation_timing_is_separate_from_write_timing(monkeypatch, tmp_path):

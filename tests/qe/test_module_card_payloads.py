@@ -37,7 +37,9 @@ def test_module_card_payloads_use_qe_unlock_schedule_for_eight_slots():
     armor_assist_slots = payload['presets']['Farming']['armor']['assist']['effect_slots']
     assert len(armor_assist_slots) == 8
     assert armor_assist_slots[0]['state'] == 'populated'
-    assert armor_assist_slots[3]['state'] == 'locked'
+    assert armor_assist_slots[3]['state'] == 'populated'
+    assert armor_assist_slots[5]['unlock_level'] == 161
+    assert armor_assist_slots[5]['state'] == 'locked'
 
 
 def test_module_card_payloads_primary_card_uses_selected_core_module_level_and_cap():

@@ -476,6 +476,15 @@ def _perk_rows_from_qe(stat_inputs_payload: object, *, selected_preset: str) -> 
     return perk_rows
 
 
+def _perk_display_preset(account_state: dict, *, selected_preset: str) -> str | None:
+    if selected_preset == 'Tourney':
+        return None
+    perk_presets = account_state.get('perk_presets') or {}
+    if selected_preset in perk_presets:
+        return selected_preset
+    return str(account_state.get('active_perk_preset') or selected_preset)
+
+
 def _perk_lab_bonus_summary(stat_inputs_payload: object) -> tuple[float | None, float | None]:
     if not isinstance(stat_inputs_payload, list):
         return None, None
@@ -727,18 +736,19 @@ def _render_perks_table(
 ) -> None:
     st.subheader('Perks')
     perk_rows = _perk_entity_map()
-    qe_perk_rows = _perk_rows_from_qe(stat_inputs_payload, selected_preset=selected_preset)
-    if not qe_perk_rows:
-        fallback_preset = account_state.get('active_perk_preset') or selected_preset
-        qe_perk_rows = _perk_rows_from_qe(stat_inputs_payload, selected_preset=fallback_preset)
+    display_preset = _perk_display_preset(account_state, selected_preset=selected_preset)
+    qe_perk_rows = (
+        _perk_rows_from_qe(stat_inputs_payload, selected_preset=display_preset)
+        if display_preset is not None
+        else {}
+    )
     standard_bonus, tradeoff_bonus = _perk_lab_bonus_summary(stat_inputs_payload)
     cols = st.columns(2)
     cols[0].metric('Standard Perk Bonus lab', f'{standard_bonus:g}%' if standard_bonus is not None else 'n/a')
     cols[1].metric('Trade-off Perk Bonus lab', f'{tradeoff_bonus:g}%' if tradeoff_bonus is not None else 'n/a')
-    preset_for_rows = selected_preset if (account_state.get('perk_presets') or {}).get(selected_preset) is not None else (account_state.get('active_perk_preset') or selected_preset)
     selections = {
         row.get('perk_id'): int(row.get('picks') or 0)
-        for row in ((account_state.get('perk_presets') or {}).get(preset_for_rows) or [])
+        for row in ((account_state.get('perk_presets') or {}).get(display_preset or '') or [])
     }
     banned_ids = _manual_banned_perks(ids_path, manual_inputs_path)
     rows = []
@@ -771,7 +781,11 @@ def _render_perks_table(
                 'max value': ' | '.join(max_values),
             }
         )
-    st.dataframe(pd.DataFrame(rows), width='stretch', hide_index=True)
+    st.dataframe(
+        _arrow_safe_frame(pd.DataFrame(rows), columns=('value', 'picks', 'max value')),
+        width='stretch',
+        hide_index=True,
+    )
 
 
 def _render_perk_policy_tab(request: PipelineRunRequest) -> dict[str, object]:
@@ -826,6 +840,7 @@ def _render_perk_policy_tab(request: PipelineRunRequest) -> dict[str, object]:
     preview = build_perk_timeline_preview(request, perk_policy_override=override)
     validation = dict(preview.get('validation') or {})
     diagnostics = dict(preview.get('diagnostics') or {})
+    context = dict(preview.get('context') or {})
 
     if validation.get('errors'):
         st.error('Perk policy is invalid: ' + '; '.join(str(item) for item in validation.get('errors') or []))
@@ -848,10 +863,51 @@ def _render_perk_policy_tab(request: PipelineRunRequest) -> dict[str, object]:
     save_cols[1].caption('default manual input file' if request.manual_inputs is None else str(request.manual_inputs))
 
     summary_cols = st.columns(4)
-    summary_cols[0].metric('Generated perks', int(diagnostics.get('generated_rows') or 0))
-    summary_cols[1].metric('Final perk wave', int(diagnostics.get('final_wave') or 0))
-    summary_cols[2].metric('PWR stacks', int(diagnostics.get('pwr_stacks') or 0))
-    summary_cols[3].metric('Pool remaining', int(diagnostics.get('pool_remaining') or 0))
+    summary_cols[0].metric('Policy preset', preview.get('policy_preset') or 'default')
+    summary_cols[1].metric('Generated perks', int(diagnostics.get('generated_rows') or 0))
+    summary_cols[2].metric('Final perk wave', int(diagnostics.get('final_wave') or 0))
+    summary_cols[3].metric('PWR stacks', int(diagnostics.get('pwr_stacks') or 0))
+    source_cols = st.columns(4)
+    source_cols[0].metric('Policy strategy', context.get('policy_strategy') or 'manual')
+    source_cols[1].metric('Policy generation', 'goal matrix' if context.get('policy_generated_from_goal_matrix') else 'explicit')
+    source_cols[2].metric('Pool remaining', int(diagnostics.get('pool_remaining') or 0))
+    source_cols[3].metric('Generator owner', str(preview.get('generator_owner') or 'unknown').split('.')[-1])
+
+    priority_rows = [
+        {'rank': index, 'perk': perk_name}
+        for index, perk_name in enumerate(resolved.get('priority_order') or (), start=1)
+    ]
+    banned_rows = [
+        {'slot': index, 'perk': perk_name}
+        for index, perk_name in enumerate(resolved.get('banned_perks') or (), start=1)
+    ]
+    policy_cols = st.columns(2)
+    with policy_cols[0]:
+        st.caption('Resolved priority order')
+        st.dataframe(pd.DataFrame(priority_rows), width='stretch', hide_index=True)
+    with policy_cols[1]:
+        st.caption('Resolved banned perks')
+        st.dataframe(pd.DataFrame(banned_rows), width='stretch', hide_index=True)
+
+    taken_counts = diagnostics.get('taken_counts') or {}
+    if taken_counts:
+        st.caption('Generated perk pick counts')
+        st.dataframe(
+            pd.DataFrame(
+                [
+                    {'perk': perk_name, 'picks': picks}
+                    for perk_name, picks in sorted(taken_counts.items())
+                ]
+            ),
+            width='stretch',
+            hide_index=True,
+        )
+
+    generated_context = dict(context.get('generated_policy_context') or {})
+    benefit_matrix = list(generated_context.get('perk_goal_benefit_matrix') or [])
+    if benefit_matrix:
+        with st.expander('Generated goal-benefit matrix', expanded=False):
+            st.dataframe(pd.DataFrame(benefit_matrix), width='stretch', hide_index=True)
 
     exclusions = diagnostics.get('uw_locked_perks_excluded') or {}
     if exclusions:
@@ -1784,7 +1840,11 @@ def _render_inputs(active_artifacts, active_out_dir: Path) -> None:
             account_state_payload=account_state_payload if isinstance(account_state_payload, dict) else None,
         )
         if not lineage_frame.empty:
-            st.dataframe(lineage_frame, width='stretch', hide_index=True)
+            st.dataframe(
+                _arrow_safe_frame(lineage_frame, columns=('source_value', 'resolved_value')),
+                width='stretch',
+                hide_index=True,
+            )
         else:
             st.info('No lineage rows available for this snapshot.')
 

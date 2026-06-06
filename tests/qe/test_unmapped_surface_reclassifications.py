@@ -1273,7 +1273,7 @@ def test_progression_family_publishes_relic_support_surfaces_for_derived_consume
 
     assert statbook.rows['support_surface::ehp.health_relic_pct'].final_value == pytest.approx(0.53)
     assert statbook.rows['support_surface::ehp.health_relic_pct'].status == 'resolved'
-    assert statbook.rows['support_surface::ehp.dabs_relic_pct'].final_value == pytest.approx(0.3)
+    assert statbook.rows['support_surface::ehp.dabs_relic_pct'].final_value == pytest.approx(0.28)
     assert statbook.rows['support_surface::ehp.def_pct_relic_pct'].final_value == pytest.approx(0.04)
     assert statbook.rows['support_surface::eecon.adstarter_theme_relic_factor'].final_value == pytest.approx(1.48)
     assert statbook.rows['support_surface::eecon.freeup_attack_relic_pct'].final_value == pytest.approx(0.06)

@@ -2,14 +2,42 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from types import SimpleNamespace
 
 from app.publication import _build_input_dashboard_payload, _build_stats_dashboard_payload
-from input.loader import load_inputs
-from input.runtime_state import build_runtime_state
 from qe.query_module_policy import build_module_card_payloads
 from qe.workshop_stat_rows import build_workshop_reconciliation_row, _strict_reconciliation_audit
 
 ROOT = Path(__file__).resolve().parents[2]
+
+
+def _namespace_tree(value):
+    if isinstance(value, dict):
+        return SimpleNamespace(**{str(key): _namespace_tree(item) for key, item in value.items()})
+    if isinstance(value, list):
+        return [_namespace_tree(item) for item in value]
+    return value
+
+
+def _module_card_payloads_from_account_state_payload(account_state: dict) -> dict:
+    account_state_view = SimpleNamespace(
+        module_presets={
+            preset: {
+                slot: _namespace_tree(selection)
+                for slot, selection in (slot_map or {}).items()
+            }
+            for preset, slot_map in (account_state.get('module_presets') or {}).items()
+        },
+        module_system_state={
+            slot: _namespace_tree(slot_state)
+            for slot, slot_state in (account_state.get('module_system_state') or {}).items()
+        },
+        modules_inventory={
+            name: _namespace_tree(module)
+            for name, module in (account_state.get('modules_inventory') or {}).items()
+        },
+    )
+    return build_module_card_payloads(account_state_view)
 
 
 def test_stats_dashboard_contract_and_panel_types():
@@ -329,7 +357,7 @@ def test_stats_dashboard_live_guardian_scout_rows_publish_cumulative_bits_and_gr
     assert scout_rows['Range Bonus']['start_of_run_value'] == 'x2'
     assert scout_rows['Range Bonus']['reconciliation_status'] == 'green'
     totals_rows = {row.get('name'): row for row in (sections['Totals'].get('rows') or [])}
-    assert totals_rows['Total']['bits_spent'] == '558'
+    assert totals_rows['Total']['bits_spent'] == '692'
 
 
 def test_stats_dashboard_primary_bot_operator_table_uses_start_of_run_only_surface():
@@ -372,9 +400,7 @@ def test_stats_dashboard_primary_modules_panel_publishes_grouped_summary_rows():
     input_dashboard = _build_input_dashboard_payload(account_state, {}, module_card_payloads={})
     query_rows_start = json.loads((ROOT / 'out' / 'run_stats_query_rows_start_of_run.json').read_text(encoding='utf-8'))
     query_rows_max = json.loads((ROOT / 'out' / 'run_stats_query_rows_max_progression.json').read_text(encoding='utf-8'))
-    bundle = load_inputs(ids_path=ROOT / 'input' / 'imports' / 'ids.csv')
-    live_account_state = build_runtime_state(bundle.ids_raw, loadout_config=bundle.loadout_config, perk_config=bundle.perk_config)
-    module_card_payloads = build_module_card_payloads(live_account_state)
+    module_card_payloads = _module_card_payloads_from_account_state_payload(account_state)
     payload = _build_stats_dashboard_payload(
         account_state_payload=account_state,
         diagnostics={},
@@ -397,7 +423,7 @@ def test_stats_dashboard_primary_modules_panel_publishes_grouped_summary_rows():
     assert by_key[('', 'Assist %')]['armor'] == '1%'
     assert by_key[('Primary', 'Module')]['generator'] == 'Singularity Harness'
     assert by_key[('Assist', 'Module')]['cannon'] == '—'
-    assert by_key[('Current', 'Multiplier')]['core'] == 'x13.66'
+    assert by_key[('Current', 'Multiplier')]['core'] == 'x12.54'
     assert by_key[('Recon', 'Recon')]['generator'] == 'green'
 
 
@@ -3307,7 +3333,7 @@ def test_stats_dashboard_primary_bot_operator_table_uses_start_of_run_only_surfa
     assert golden_rows['Range']['start_of_run_value'] == '69m'
     assert golden_rows['Range']['module_effects'] == '+ 15'
     assert golden_rows['Range']['reconciliation_status'] == 'green'
-    assert totals_rows['Total']['medals_spent'] == '1900'
+    assert totals_rows['Total']['medals_spent'] == '1940'
 
 
 def test_stats_dashboard_primary_modules_panel_publishes_grouped_summary_rows():
@@ -3315,9 +3341,7 @@ def test_stats_dashboard_primary_modules_panel_publishes_grouped_summary_rows():
     input_dashboard = _build_input_dashboard_payload(account_state, {}, module_card_payloads={})
     query_rows_start = json.loads((ROOT / 'out' / 'run_stats_query_rows_start_of_run.json').read_text(encoding='utf-8'))
     query_rows_max = json.loads((ROOT / 'out' / 'run_stats_query_rows_max_progression.json').read_text(encoding='utf-8'))
-    bundle = load_inputs(ids_path=ROOT / 'input' / 'imports' / 'ids.csv')
-    live_account_state = build_runtime_state(bundle.ids_raw, loadout_config=bundle.loadout_config, perk_config=bundle.perk_config)
-    module_card_payloads = build_module_card_payloads(live_account_state)
+    module_card_payloads = _module_card_payloads_from_account_state_payload(account_state)
     payload = _build_stats_dashboard_payload(
         account_state_payload=account_state,
         diagnostics={},
@@ -3338,7 +3362,7 @@ def test_stats_dashboard_primary_modules_panel_publishes_grouped_summary_rows():
     assert by_key[('', 'Assist %')]['armor'] == '1%'
     assert by_key[('Primary', 'Module')]['generator'] == 'Singularity Harness'
     assert by_key[('Assist', 'Module')]['cannon'] == '—'
-    assert by_key[('Current', 'Multiplier')]['core'] == 'x13.66'
+    assert by_key[('Current', 'Multiplier')]['core'] == 'x12.54'
     assert ('Recon', 'Recon') not in by_key
 
 

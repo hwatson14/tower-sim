@@ -2026,13 +2026,13 @@
     }
   },
   "relics": {
-    "Event Relics": 123.0,
+    "Event Relics": 121.0,
     "Guild Relics": 15.0,
     "Other Relics": 23.0,
-    "Total Relics": 161.0,
+    "Total Relics": 159.0,
     "Lab Speed": 0.395,
     "Bot Range": 9.0,
-    "Damage": 0.59,
+    "Damage": 0.57,
     "Ultimate Damage": 0.22000000000000003,
     "Attack Speed": 0.07,
     "Crit Chance": 0.07,
@@ -2044,7 +2044,7 @@
     "Health": 0.5299999999999999,
     "Health Regen": 0.25,
     "Defense %": 0.04,
-    "Defense Absolute": 0.30000000000000004,
+    "Defense Absolute": 0.28,
     "Thorns": 0.11000000000000001,
     "Knockback Force": 0.26,
     "Orb Speed": 0.17,
@@ -2152,7 +2152,7 @@
     "Golden Bot": {
       "Duration": 15,
       "Cooldown": 3,
-      "Bonus": 25,
+      "Bonus": 26,
       "Range": 20
     },
     "Amplify Bot": {
@@ -2161,15 +2161,14 @@
       "Bonus": 0,
       "Range": 0
     },
-    "Bot +": {
-      "Echoing shot": 0,
-      "Maximum Power": 0
-    },
     "Bot Bot": {
       "Duration": 0,
       "Cooldown": 0,
       "Bonus": 0,
       "Range": 0
+    },
+    "Bot +": {
+      "Maximum Power": 0
     }
   },
   "bot_upgrade_tracks": {
@@ -2228,8 +2227,8 @@
       {
         "bot_name": "Bot +",
         "track_name": "Echoing shot",
-        "level": 0,
-        "resolved_value": 3.0,
+        "level": null,
+        "resolved_value": null,
         "resolved_unit": null
       },
       {
@@ -2288,8 +2287,8 @@
       {
         "bot_name": "Golden Bot",
         "track_name": "Bonus",
-        "level": 25,
-        "resolved_value": 7.000000000000004,
+        "level": 26,
+        "resolved_value": 7.200000000000005,
         "resolved_unit": "x"
       },
       {
@@ -2466,8 +2465,8 @@
         "Fetch",
         "",
         "Cooldown",
-        "88",
-        "32 | 88.0s | Cost 64 ? | Next 66 ?",
+        "86",
+        "34 | 86.0s | Cost 68 ? | Next 70 ?",
         "",
         "",
         "",
@@ -2477,8 +2476,8 @@
         "",
         "",
         "Find Chance",
-        "0.3700000000000002",
-        "27 | 37% | Cost 150 ? | Next 155 ?",
+        "0.39000000000000024",
+        "29 | 39% | Cost 160 ? | Next 165 ?",
         "",
         "",
         "",
@@ -2488,8 +2487,8 @@
         "true",
         "Unlocked",
         "Double Find Chance",
-        "0.10999999999999999",
-        "09 | 11% | Cost 50 ? | Next 55 ?",
+        "0.12999999999999998",
+        "11 | 13% | Cost 60 ? | Next 65 ?",
         "",
         "",
         "",
@@ -2510,8 +2509,8 @@
         "",
         "",
         "Duration",
-        "24",
-        "19 | 24s| Cost 195 ? | Next 205 ?",
+        "35",
+        "30 | 35s| Cost 305 ? | Maxed",
         "",
         "",
         "",
@@ -2637,22 +2636,22 @@
       {
         "guardian_name": "Fetch",
         "track_name": "Cooldown",
-        "level": 32,
-        "resolved_value": 88.0,
+        "level": 34,
+        "resolved_value": 86.0,
         "resolved_unit": "s"
       },
       {
         "guardian_name": "Fetch",
         "track_name": "Find Chance",
-        "level": 27,
-        "resolved_value": 0.3700000000000002,
+        "level": 29,
+        "resolved_value": 0.39000000000000024,
         "resolved_unit": "%"
       },
       {
         "guardian_name": "Fetch",
         "track_name": "Double Find Chance",
-        "level": 9,
-        "resolved_value": 0.10999999999999999,
+        "level": 11,
+        "resolved_value": 0.12999999999999998,
         "resolved_unit": "%"
       }
     ],
@@ -2667,8 +2666,8 @@
       {
         "guardian_name": "Summon",
         "track_name": "Duration",
-        "level": 19,
-        "resolved_value": 24.0,
+        "level": 30,
+        "resolved_value": 35.0,
         "resolved_unit": "s"
       },
       {
@@ -2741,7 +2740,7 @@
   },
   "highest_tier_unlocked_number": 20,
   "highest_tier_unlocked_label": "Tier 20",
-  "theme_song_coin_multiplier": 1.682,
+  "theme_song_coin_multiplier": 1.6179999999999999,
   "cards_inventory": {
     "Damage": {
       "name": "Damage",
@@ -2884,7 +2883,7 @@
     "Second Wind": {
       "name": "Second Wind",
       "level": 7,
-      "mastery_unlocked": false,
+      "mastery_unlocked": true,
       "mastery_lab_level": 0
     },
     "Demon Mode": {
@@ -2988,7 +2987,7 @@
     "armor": {
       "slot_type": "armor",
       "assist_unlocked": true,
-      "assist_level": 75,
+      "assist_level": 155,
       "rarity_cap": "Epic",
       "multiplier_cap": 0.01,
       "substat_cap": 0.1
@@ -2996,7 +2995,7 @@
     "generator": {
       "slot_type": "generator",
       "assist_unlocked": true,
-      "assist_level": 82,
+      "assist_level": 134,
       "rarity_cap": "Epic",
       "multiplier_cap": 0.1,
       "substat_cap": 0.1
@@ -3004,7 +3003,7 @@
     "core": {
       "slot_type": "core",
       "assist_unlocked": true,
-      "assist_level": 149,
+      "assist_level": 155,
       "rarity_cap": "Epic",
       "multiplier_cap": 0.15,
       "substat_cap": 0.15
@@ -3244,8 +3243,8 @@
       "name": "Anti-Cube Portal",
       "slot_type": "armor",
       "rarity": "Ancestral 2*",
-      "level": 180,
-      "stat": "13.139",
+      "level": 161,
+      "stat": "9.035",
       "substats": [
         {
           "name": "Orbs",
@@ -3291,8 +3290,8 @@
       "name": "Space Displacer",
       "slot_type": "armor",
       "rarity": "Ancestral 3*",
-      "level": 180,
-      "stat": "13.589",
+      "level": 161,
+      "stat": "9.333",
       "substats": []
     },
     "Wormhole Redirector": {
@@ -3323,8 +3322,8 @@
       "name": "Sharp Fortitude",
       "slot_type": "armor",
       "rarity": "Ancestral",
-      "level": 180,
-      "stat": "12.24",
+      "level": 161,
+      "stat": "8.44",
       "substats": [
         {
           "name": "Health Regen",
@@ -3362,8 +3361,8 @@
       "name": "Orbital Augment",
       "slot_type": "armor",
       "rarity": "Ancestral 2*",
-      "level": 180,
-      "stat": "13.139",
+      "level": 161,
+      "stat": "9.035",
       "substats": [
         {
           "name": "Defense %",
@@ -3459,8 +3458,8 @@
       "name": "Singularity Harness",
       "slot_type": "generator",
       "rarity": "Ancestral 2*",
-      "level": 180,
-      "stat": "1.94",
+      "level": 173,
+      "stat": "1.864",
       "substats": [
         {
           "name": "Free Utility Upgrade",
@@ -3498,8 +3497,8 @@
       "name": "Pulsar Harvester",
       "slot_type": "generator",
       "rarity": "Ancestral 3*",
-      "level": 180,
-      "stat": "1.974",
+      "level": 173,
+      "stat": "1.896",
       "substats": [
         {
           "name": "Free Utility Upgrade",
@@ -3537,8 +3536,8 @@
       "name": "Project Funding",
       "slot_type": "generator",
       "rarity": "Ancestral",
-      "level": 180,
-      "stat": "1.87",
+      "level": 173,
+      "stat": "1.8",
       "substats": [
         {
           "name": "Enemy Health Level Skip",
@@ -3576,8 +3575,8 @@
       "name": "Restorative Bonus",
       "slot_type": "generator",
       "rarity": "Ancestral 1*",
-      "level": 180,
-      "stat": "1.905",
+      "level": 173,
+      "stat": "1.832",
       "substats": [
         {
           "name": "Enemy Health Level Skip",
@@ -3605,8 +3604,8 @@
       "name": "Multiverse Nexus",
       "slot_type": "core",
       "rarity": "Ancestral 2*",
-      "level": 165,
-      "stat": "13.204",
+      "level": 161,
+      "stat": "12.124",
       "substats": [
         {
           "name": "Golden Tower - Bonus",
@@ -3649,8 +3648,8 @@
       "name": "Dimension Core",
       "slot_type": "core",
       "rarity": "Ancestral",
-      "level": 165,
-      "stat": "12.3",
+      "level": 161,
+      "stat": "11.3",
       "substats": [
         {
           "name": "Spotlight - Angle",
@@ -3688,16 +3687,16 @@
       "name": "Harmony Conductor",
       "slot_type": "core",
       "rarity": "Ancestral 5*",
-      "level": 165,
-      "stat": "14.56",
+      "level": 161,
+      "stat": "13.36",
       "substats": []
     },
     "Om Chip": {
       "name": "Om Chip",
       "slot_type": "core",
       "rarity": "Ancestral 2*",
-      "level": 165,
-      "stat": "13.204",
+      "level": 161,
+      "stat": "12.124",
       "substats": [
         {
           "name": "Spotlight - Angle",
@@ -3725,16 +3724,16 @@
       "name": "Magnetic Hook",
       "slot_type": "core",
       "rarity": "Ancestral 3*",
-      "level": 165,
-      "stat": "13.656",
+      "level": 161,
+      "stat": "12.536",
       "substats": []
     },
     "Primordial Collapse": {
       "name": "Primordial Collapse",
       "slot_type": "core",
       "rarity": "Ancestral 3*",
-      "level": 165,
-      "stat": "13.656",
+      "level": 161,
+      "stat": "12.536",
       "substats": [
         {
           "name": "Black Hole - Duration",
@@ -6617,7 +6616,7 @@
       [
         "Second Wind",
         "7",
-        "false",
+        "true",
         "",
         "",
         "",
@@ -6699,11 +6698,11 @@
       [
         "Relics",
         "Owned",
-        "v3.0.1"
+        "v3.1.5"
       ],
       [
         "Event Relics",
-        "123",
+        "121",
         ""
       ],
       [
@@ -6718,7 +6717,7 @@
       ],
       [
         "Total Relics",
-        "161",
+        "159",
         ""
       ],
       [
@@ -6748,7 +6747,7 @@
       ],
       [
         "Damage",
-        "0.59",
+        "0.57",
         ""
       ],
       [
@@ -6813,7 +6812,7 @@
       ],
       [
         "Defense Absolute",
-        "0.30000000000000004",
+        "0.28",
         ""
       ],
       [
@@ -6886,7 +6885,7 @@
       [
         "Keys spent",
         "0",
-        "v3.0"
+        "v3.1.1"
       ],
       [
         "Total Bonuses",
@@ -7380,12 +7379,12 @@
         "",
         "",
         "Bonus",
-        "7.000000000000004",
-        "25 | x7.0 | Cost 1060 ? | Next 1100 ?",
+        "7.200000000000005",
+        "26 | x7.2 | Cost 1100 ? | Next 1140 ?",
         "",
-        "25 | x7.0 | Cost 1060 ? | Next 1100 ?",
+        "26 | x7.2 | Cost 1100 ? | Next 1140 ?",
         "",
-        "25 | x7.0 | Cost 1060 ? | Next 1100 ?",
+        "26 | x7.2 | Cost 1100 ? | Next 1140 ?",
         ""
       ],
       [
@@ -7464,12 +7463,12 @@
         "Bot +",
         "",
         "Echoing shot",
-        "3",
-        "00 | 3 | Cost 0 ? | Next 100 ?",
+        "Locked",
+        "Lo |?Locked",
         "",
-        "00 | 3 | Cost 0 ? | Next 100 ?",
+        "Lo |?Locked",
         "",
-        "00 | 3 | Cost 0 ? | Next 100 ?",
+        "Lo |?Locked",
         ""
       ],
       [
@@ -7501,11 +7500,11 @@
         "",
         "Bonus",
         "1.05",
-        "00 | x1.1 | Cost 0 ? | Next 100 ?",
+        "00 | x1.05 | Cost 0 ? | Next 100 ?",
         "",
-        "00 | x1.1 | Cost 0 ? | Next 100 ?",
+        "00 | x1.05 | Cost 0 ? | Next 100 ?",
         "",
-        "00 | x1.1 | Cost 0 ? | Next 100 ?",
+        "00 | x1.05 | Cost 0 ? | Next 100 ?",
         ""
       ],
       [
@@ -7535,9 +7534,9 @@
     ],
     "Themes & Songs": [
       [
-        "1.682",
+        "1.6179999999999999",
         "",
-        "v3.0.1"
+        "v3.0.4"
       ]
     ],
     "Modules": [
@@ -7549,17 +7548,17 @@
         "",
         "Assist Slot",
         "true",
-        "75",
+        "155",
         "",
         "",
         "Assist Slot",
         "true",
-        "82",
+        "134",
         "",
         "",
         "Assist Slot",
         "true",
-        "149",
+        "155",
         ""
       ],
       [
@@ -7836,44 +7835,86 @@
         ""
       ],
       [
-        "Placeholder 4th preset",
+        "Preset 4",
         "",
         "",
         "",
         "",
-        "Placeholder 4th preset",
+        "Preset 4",
         "",
         "",
         "",
         "",
-        "Placeholder 4th preset",
+        "Preset 4",
         "",
         "",
         "",
         "",
-        "Placeholder 4th preset",
+        "Preset 4",
         "",
         "",
         ""
       ],
       [
-        "Placeholder 5th preset",
+        "",
+        "Any Other",
         "",
         "",
         "",
         "",
-        "Placeholder 5th preset",
+        "Any Other",
         "",
         "",
         "",
         "",
-        "Placeholder 5th preset",
+        "Any Other",
         "",
         "",
         "",
         "",
-        "Placeholder 5th preset",
+        "Any Other",
         "",
+        ""
+      ],
+      [
+        "Preset 5",
+        "",
+        "",
+        "",
+        "",
+        "Preset 5",
+        "",
+        "",
+        "",
+        "",
+        "Preset 5",
+        "",
+        "",
+        "",
+        "",
+        "Preset 5",
+        "",
+        "",
+        ""
+      ],
+      [
+        "",
+        "Any Other",
+        "",
+        "",
+        "",
+        "",
+        "Any Other",
+        "",
+        "",
+        "",
+        "",
+        "Any Other",
+        "",
+        "",
+        "",
+        "",
+        "Any Other",
         "",
         ""
       ],
@@ -7926,8 +7967,8 @@
         "",
         "",
         "Ancestral 2*",
-        "180",
-        "13.139",
+        "161",
+        "9.035",
         "",
         "",
         "Mythic+",
@@ -7936,8 +7977,8 @@
         "",
         "",
         "Ancestral 2*",
-        "165",
-        "13.204",
+        "161",
+        "12.124",
         ""
       ],
       [
@@ -8146,8 +8187,8 @@
         "",
         "",
         "Ancestral",
-        "165",
-        "12.3",
+        "161",
+        "11.3",
         ""
       ],
       [
@@ -8325,18 +8366,18 @@
         "",
         "",
         "Ancestral 3*",
-        "180",
-        "13.589",
+        "161",
+        "9.333",
         "",
         "",
         "Ancestral 2*",
-        "180",
-        "1.94",
+        "173",
+        "1.864",
         "",
         "",
         "Ancestral 5*",
-        "165",
-        "14.56",
+        "161",
+        "13.36",
         ""
       ],
       [
@@ -8519,13 +8560,13 @@
         "",
         "",
         "Ancestral 3*",
-        "180",
-        "1.974",
+        "173",
+        "1.896",
         "",
         "",
         "Ancestral 2*",
-        "165",
-        "13.204",
+        "161",
+        "12.124",
         ""
       ],
       [
@@ -8703,18 +8744,18 @@
         "",
         "",
         "Ancestral",
-        "180",
-        "12.24",
+        "161",
+        "8.44",
         "",
         "",
         "Ancestral",
-        "180",
-        "1.87",
+        "173",
+        "1.8",
         "",
         "",
         "Ancestral 3*",
-        "165",
-        "13.656",
+        "161",
+        "12.536",
         ""
       ],
       [
@@ -8892,18 +8933,18 @@
         "",
         "",
         "Ancestral 2*",
-        "180",
-        "13.139",
+        "161",
+        "9.035",
         "",
         "",
         "Ancestral 1*",
-        "180",
-        "1.905",
+        "173",
+        "1.832",
         "",
         "",
         "Ancestral 3*",
-        "165",
-        "13.656",
+        "161",
+        "12.536",
         ""
       ],
       [
@@ -9263,8 +9304,8 @@
         "Fetch",
         "",
         "Cooldown",
-        "88",
-        "32 | 88.0s | Cost 64 ? | Next 66 ?",
+        "86",
+        "34 | 86.0s | Cost 68 ? | Next 70 ?",
         "",
         "",
         "",
@@ -9274,8 +9315,8 @@
         "",
         "",
         "Find Chance",
-        "0.3700000000000002",
-        "27 | 37% | Cost 150 ? | Next 155 ?",
+        "0.39000000000000024",
+        "29 | 39% | Cost 160 ? | Next 165 ?",
         "",
         "",
         "",
@@ -9285,8 +9326,8 @@
         "true",
         "Unlocked",
         "Double Find Chance",
-        "0.10999999999999999",
-        "09 | 11% | Cost 50 ? | Next 55 ?",
+        "0.12999999999999998",
+        "11 | 13% | Cost 60 ? | Next 65 ?",
         "",
         "",
         "",
@@ -9307,8 +9348,8 @@
         "",
         "",
         "Duration",
-        "24",
-        "19 | 24s| Cost 195 ? | Next 205 ?",
+        "35",
+        "30 | 35s| Cost 305 ? | Maxed",
         "",
         "",
         "",
