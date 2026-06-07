@@ -62,6 +62,28 @@ def test_fail_unknown_sections__accepts_v28_ref_placeholders_in_shifted_trailing
     _fail_unknown_sections(rows)
 
 
+def test_fail_unknown_sections__accepts_named_module_preset_headers() -> None:
+    rows = _base_rows()
+    modules_col = next(spec.header_col for spec in SECTION_SPECS if spec.name == "Modules")
+    rows[0][modules_col + 3] = "Farming"
+    rows[0][modules_col + 4] = "Tourney"
+    rows[0][modules_col + 5] = "Testing"
+    rows[0][modules_col + 6] = "Preset 4"
+    rows[0][modules_col + 7] = "Preset 5"
+
+    _fail_unknown_sections(rows)
+
+
+def test_fail_unknown_sections__accepts_trailing_perks_preset_helper_header() -> None:
+    rows = _base_rows()
+    rows[0].extend([""] * 24)
+    rows[1].extend([""] * 24)
+    rows[0][96] = "Perks Preset"
+    rows[1][96] = "Farming"
+
+    _fail_unknown_sections(rows)
+
+
 def test_parse_ids_accepts_current_v28_import_shifted_header_layout() -> None:
     parsed = parse_ids(ROOT / "input" / "imports" / "ids.csv")
 

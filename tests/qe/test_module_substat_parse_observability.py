@@ -30,8 +30,10 @@ def test_v28_module_snapshot_publishes_selected_substat_rows() -> None:
         row for row in rows
         if row.source_family == 'module_substat'
     ]
-    assert len(module_rows) == 37
+    assert len(module_rows) == 39
     assert any(row.source_name == 'Amplifying Strike' and row.stat_name == 'Critical Factor' for row in module_rows)
+    assert any(row.source_name == 'Primordial Collapse' and row.stat_name == 'Death Wave - Quantity' for row in module_rows)
+    assert any(row.source_name == 'Om Chip' and row.stat_name == 'Spotlight - Bonus' for row in module_rows)
 
 
 def test_v28_selected_assist_modules_emit_scaled_assist_rows() -> None:

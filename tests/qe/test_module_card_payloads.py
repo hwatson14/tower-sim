@@ -50,7 +50,7 @@ def test_module_card_payloads_primary_card_uses_selected_core_module_level_and_c
 
     assert core_primary['module_name'] == 'Primordial Collapse'
     assert core_primary['displayed_level'] == expected_level
-    assert core_primary['displayed_level_cap'] == 260
-    assert core_primary['level_text'] == f'Lv. {expected_level} / 260'
+    assert core_primary['displayed_level_cap'] == 280
+    assert core_primary['level_text'] == f'Lv. {expected_level} / 280'
     assert core_primary['main_value_text'].startswith('x')
     assert core_primary['unique_text']['value_text'] == '80%'

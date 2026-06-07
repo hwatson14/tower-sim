@@ -133,14 +133,14 @@ def test_streamlit_perks_tab_consumes_pipeline_preview_not_local_generator():
     assert "'Perks'" in source
     assert 'build_perk_timeline_preview' in source
     assert 'save_perk_policy_override' in source
-    assert 'Save perk policy' in source
+    assert 'Save perk plan' in source
     assert 'Banned perks' in source
     assert 'First perk choice' in source
     assert 'Priority order' in source
     assert 'Generated perks' in source
-    assert 'Policy preset' in source
-    assert 'Policy strategy' in source
-    assert 'Policy generation' in source
+    assert 'Perk plan' in source
+    assert 'Plan strategy' in source
+    assert 'Plan generation' in source
     assert 'Generator owner' in source
     assert 'Resolved priority order' in source
     assert 'Resolved banned perks' in source
@@ -186,6 +186,7 @@ def test_streamlit_sidebar_tourney_gc_max_waves_run_click_is_perk_guarded(tmp_pa
     app_test.run(timeout=240)
 
     assert not app_test.exception
+    assert not app_test.error
     diagnostics = json.loads((out_dir / 'diagnostics.json').read_text(encoding='utf-8'))
     assert diagnostics['default_preset'] == 'Tourney'
     assert diagnostics['perk_support']['perk_policy_preset'] == 'GC Max Waves'
@@ -193,6 +194,159 @@ def test_streamlit_sidebar_tourney_gc_max_waves_run_click_is_perk_guarded(tmp_pa
     assert diagnostics['perk_support']['active_perk_preset'] is None
     assert diagnostics['state_matrix']['start_of_run']['perks_enabled'] is False
     assert diagnostics['state_matrix']['max_progression']['perks_enabled'] is False
+
+
+def test_streamlit_sidebar_milestone_run_publishes_optimizer_unavailable(tmp_path):
+    streamlit_testing = pytest.importorskip("streamlit.testing.v1")
+
+    out_dir = tmp_path / 'streamlit_milestone_run'
+    app_test = streamlit_testing.AppTest.from_file(str(ROOT / 'app' / 'streamlit_inspector.py'))
+    app_test.run(timeout=240)
+    app_test.sidebar.text_input[1].set_value(str(out_dir))
+    app_test.sidebar.selectbox[0].set_value('Milestone')
+    app_test.sidebar.selectbox[1].set_value('eHP Max Waves')
+    app_test.sidebar.button[0].click()
+    app_test.run(timeout=240)
+
+    assert not app_test.exception
+    assert not app_test.error
+    diagnostics = json.loads((out_dir / 'diagnostics.json').read_text(encoding='utf-8'))
+    optimizer_scores = json.loads((out_dir / 'optimizer_scores.json').read_text(encoding='utf-8'))
+    assert diagnostics['default_preset'] == 'Milestone'
+    assert diagnostics['optimizer_scores']['status'] == 'unavailable'
+    assert diagnostics['optimizer_scores']['reason'] == 'missing_governed_surface'
+    assert optimizer_scores['meta']['status'] == 'unavailable'
+    assert optimizer_scores['meta']['local_canonical_formula_fallback'] is False
+
+
+def test_streamlit_sidebar_gc_farming_plan_runs_without_errors(tmp_path):
+    streamlit_testing = pytest.importorskip("streamlit.testing.v1")
+
+    out_dir = tmp_path / 'streamlit_gc_farming_run'
+    app_test = streamlit_testing.AppTest.from_file(str(ROOT / 'app' / 'streamlit_inspector.py'))
+    app_test.run(timeout=240)
+    app_test.sidebar.text_input[1].set_value(str(out_dir))
+    app_test.sidebar.selectbox[0].set_value('Farming')
+    app_test.sidebar.selectbox[1].set_value('GC Farming')
+    app_test.sidebar.button[0].click()
+    app_test.run(timeout=240)
+
+    assert not app_test.exception
+    assert not app_test.error
+    diagnostics = json.loads((out_dir / 'diagnostics.json').read_text(encoding='utf-8'))
+    assert diagnostics['default_preset'] == 'Farming'
+    assert diagnostics['perk_support']['perk_policy_preset'] == 'GC Farming'
+
+
+def test_streamlit_register_snapshot_replaces_stale_label_for_reused_output_dir(monkeypatch, tmp_path):
+    from app import streamlit_inspector as inspector
+
+    out_dir = tmp_path / 'streamlit_reused_out'
+    stale_label = inspector.snapshot_label(
+        preset='Farming',
+        state_mode='start_of_run',
+        perk_state='auto',
+        out_dir=out_dir,
+    )
+    session_state = {
+        'snapshot_dirs': {stale_label: str(out_dir)},
+        'active_out_dir': str(out_dir),
+    }
+    monkeypatch.setattr(inspector.st, 'session_state', session_state)
+
+    inspector._register_snapshot(out_dir, preset='Tourney', state_mode='start_of_run', perk_state='auto')
+
+    labels = list(session_state['snapshot_dirs'])
+    assert stale_label not in labels
+    assert len(labels) == 1
+    assert labels[0].startswith('Tourney | start_of_run | perks auto |')
+    assert session_state['snapshot_dirs'][labels[0]] == str(out_dir)
+
+
+def test_streamlit_main_action_buttons_complete_without_errors(tmp_path):
+    streamlit_testing = pytest.importorskip("streamlit.testing.v1")
+
+    def _click_main_button(app_test, label: str):
+        matches = [button for button in app_test.button if button.label == label]
+        assert len(matches) == 1
+        matches[0].click()
+        app_test.run(timeout=300)
+
+    app_test = streamlit_testing.AppTest.from_file(str(ROOT / 'app' / 'streamlit_inspector.py'))
+    app_test.run(timeout=240)
+    _click_main_button(app_test, 'Resolve selected stats via fast checkpoint')
+    assert not app_test.exception
+    assert not app_test.error
+
+    app_test = streamlit_testing.AppTest.from_file(str(ROOT / 'app' / 'streamlit_inspector.py'))
+    app_test.run(timeout=240)
+    _click_main_button(app_test, 'Build all-tier milestone matrix')
+    assert not app_test.exception
+    assert not app_test.error
+
+    manual_inputs_override = tmp_path / 'manual_inputs.streamlit-save.yaml'
+    manual_inputs_override.write_text((ROOT / 'input' / 'manual_inputs.yaml').read_text(encoding='utf-8'), encoding='utf-8')
+    app_test = streamlit_testing.AppTest.from_file(str(ROOT / 'app' / 'streamlit_inspector.py'))
+    app_test.run(timeout=240)
+    app_test.sidebar.text_input[2].set_value(str(manual_inputs_override))
+    app_test.run(timeout=240)
+    _click_main_button(app_test, 'Save perk plan')
+    assert not app_test.exception
+    assert not app_test.error
+    assert manual_inputs_override.exists()
+
+
+def test_streamlit_sidebar_run_failures_are_contained(tmp_path):
+    streamlit_testing = pytest.importorskip("streamlit.testing.v1")
+
+    app_test = streamlit_testing.AppTest.from_file(str(ROOT / 'app' / 'streamlit_inspector.py'))
+    app_test.run(timeout=240)
+    app_test.sidebar.text_input[0].set_value(str(tmp_path / 'missing_ids.csv'))
+    app_test.sidebar.text_input[1].set_value(str(tmp_path / 'bad_run_out'))
+    app_test.sidebar.button[0].click()
+    app_test.run(timeout=240)
+
+    assert not app_test.exception
+    assert any('Run current request failed:' in str(error.value) for error in app_test.error)
+
+
+def test_streamlit_sidebar_verification_failures_are_contained(tmp_path):
+    streamlit_testing = pytest.importorskip("streamlit.testing.v1")
+
+    app_test = streamlit_testing.AppTest.from_file(str(ROOT / 'app' / 'streamlit_inspector.py'))
+    app_test.run(timeout=240)
+    app_test.sidebar.text_input[0].set_value(str(tmp_path / 'missing_ids.csv'))
+    app_test.sidebar.text_input[1].set_value(str(tmp_path / 'bad_verification_out'))
+    app_test.sidebar.button[1].click()
+    app_test.run(timeout=240)
+
+    assert not app_test.exception
+    assert any('Build default verification set failed:' in str(error.value) for error in app_test.error)
+
+
+def test_streamlit_default_verification_snapshots_can_be_selected(tmp_path):
+    streamlit_testing = pytest.importorskip("streamlit.testing.v1")
+
+    app_test = streamlit_testing.AppTest.from_file(str(ROOT / 'app' / 'streamlit_inspector.py'))
+    app_test.run(timeout=240)
+    app_test.sidebar.text_input[1].set_value(str(tmp_path / 'verification_base'))
+    app_test.sidebar.button[1].click()
+    app_test.run(timeout=360)
+
+    assert not app_test.exception
+    assert not app_test.error
+    snapshot_options = list(app_test.sidebar.selectbox[2].options)
+    assert {
+        'Farming | start_of_run | perks auto | farming_start_of_run',
+        'Farming | max_progression | perks auto | farming_max_progression',
+        'Tourney | start_of_run | perks off | tourney_start_of_run',
+        'Tourney | max_progression | perks off | tourney_max_progression',
+    }.issubset(set(snapshot_options))
+    for option in snapshot_options:
+        app_test.sidebar.selectbox[2].set_value(option)
+        app_test.run(timeout=240)
+        assert not app_test.exception
+        assert not app_test.error
 
 
 def test_pipeline_writes_input_dashboard_contract(tmp_path, monkeypatch):
@@ -403,26 +557,26 @@ def test_pipeline_tier_scoped_dissonance_reconciles_t14_ep_panels(tmp_path):
     rows = json.loads((out_dir / 'run_stats_query_rows_max_progression.json').read_text(encoding='utf-8'))['Farming']['rows']
 
     assert rows['derived::dissonance.defense.total_multiplier']['final_value'] == pytest.approx(5.108782215759483)
-    assert rows['derived::ehp.health_factor']['final_value'] == pytest.approx(35.041126786450645e12)
+    assert rows['derived::ehp.health_factor']['final_value'] == pytest.approx(36.59960603862851e12)
     assert rows['state::uw.chain_lightning.max_enemy_damage_reduction_pct']['final_value'] == pytest.approx(36.0)
     assert rows['derived::ehp.chain_thunder_factor']['final_value'] == pytest.approx(1.5625)
-    assert rows['derived::ehp']['final_value'] == pytest.approx(9.233157676196639e17)
-    assert rows['state::tower.regen']['final_value'] == pytest.approx(48.10260006102113e12)
+    assert rows['derived::ehp']['final_value'] == pytest.approx(9.643808984430024e17)
+    assert rows['state::tower.regen']['final_value'] == pytest.approx(49.04271602312577e12)
     assert rows['state::wall.fortification_multiplier']['final_value'] == pytest.approx(10.6)
-    assert rows['derived::wall.hp_pre_fort']['final_value'] == pytest.approx(613.0795542557406e12)
-    assert rows['derived::wall.hp_final']['final_value'] == pytest.approx(6.49864327511085e15)
-    assert rows['derived::wall.regen_hp_per_second']['final_value'] == pytest.approx(264.5643003356162e12)
+    assert rows['derived::wall.hp_pre_fort']['final_value'] == pytest.approx(640.3467072518445e12)
+    assert rows['derived::wall.hp_final']['final_value'] == pytest.approx(6.787675096869551e15)
+    assert rows['derived::wall.regen_hp_per_second']['final_value'] == pytest.approx(269.73493812719175e12)
     assert rows['state::tower.defense_absolute']['status'] == 'resolved'
     assert rows['derived::ehp.dabs_perk_factor']['final_value'] == pytest.approx(1.0)
     assert rows['state::tower.defense_absolute']['final_value'] == pytest.approx(145.79767172360164e6)
     assert rows['state::economy.coins_per_kill_bonus']['final_value'] == pytest.approx(47.579110424999996)
-    assert rows['state::economy.all_coin_bonus_multiplier']['final_value'] == pytest.approx(4004.029388729429)
+    assert rows['state::economy.all_coin_bonus_multiplier']['final_value'] == pytest.approx(4263.356223791169)
     assert rows['state::cards.wave_skip.chance_pct']['final_value'] == pytest.approx(19.0)
     assert rows['derived::eecon.freeup_factor']['final_value'] == pytest.approx(1.0133964984534831)
     assert rows['derived::eecon.wave_factor']['final_value'] == pytest.approx(1.3064513895292529)
     assert rows['derived::eecon.utility_dissonance_factor']['final_value'] > 1.0
     assert rows['derived::eecon.unit_scale_factor']['final_value'] == pytest.approx(1000.0)
-    assert rows['derived::eecon']['final_value'] == pytest.approx(368485457.8376259)
+    assert rows['derived::eecon']['final_value'] == pytest.approx(384569187.9191381)
 
 
 def test_pipeline_cards_payload_publishes_selected_rows_by_preset(canonical_pipeline_artifacts):

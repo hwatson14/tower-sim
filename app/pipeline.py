@@ -6106,6 +6106,7 @@ def run_analysis_pipeline(args) -> int:
     from qe.query_routing import compiler_routing_indexes
     from input.state_types import PerkSelection
     from dataclasses import replace
+    from evaluators.scorer import MissingGovernedSurfaceError
     from evaluators.scorer import compute_optimizer_scores
 
     _manual_inputs_path = getattr(args, 'manual_inputs', None)
@@ -6759,7 +6760,27 @@ def run_analysis_pipeline(args) -> int:
     audit_surface_manifest = _build_audit_surface_manifest(account_state, args.preset)
     artifact_contract_manifest = _build_artifact_contract_manifest(account_state, args.preset, stat_inputs, statbook_dict)
     family_completeness_matrix = _build_family_completeness_matrix(account_state, stat_inputs)
-    optimizer_scores = compute_optimizer_scores(statbook_dict)
+    try:
+        optimizer_scores = compute_optimizer_scores(statbook_dict)
+        diagnostics['optimizer_scores'] = {
+            'status': 'resolved',
+            'missing_surface_policy': 'fail_closed',
+            'local_canonical_formula_fallback': False,
+        }
+    except MissingGovernedSurfaceError as exc:
+        optimizer_scores = {
+            'objectives': {},
+            'meta': {
+                'version': 'v4',
+                'status': 'unavailable',
+                'reason': 'missing_governed_surface',
+                'message': str(exc),
+                'requires': 'derived::ehp, derived::edamage, and derived::eecon must already be published by Query Engine surfaces',
+                'missing_surface_policy': 'fail_closed',
+                'local_canonical_formula_fallback': False,
+            },
+        }
+        diagnostics['optimizer_scores'] = dict(optimizer_scores['meta'])
     boss_wave_milestone_matrix_payload = None
     if bool(getattr(args, 'include_boss_wave_milestone_matrix', False)):
         matrix_request = PipelineRunRequest(

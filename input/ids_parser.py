@@ -52,13 +52,22 @@ _SECTION_ORDER = [spec.name for spec in SECTION_SPECS]
 
 
 IDS_HEADER_ALLOWLIST = {
-    "exact": {"?", "Cards Presets"},
+    "exact": {"?", "Cards Presets", "Perks Preset"},
     "prefixes": ("http",),
 }
 
 IDS_HEADER_ERROR_PLACEHOLDERS = {"#REF!"}
 
 _IDS_VERSION_TOKEN_RE = re.compile(r"^v\d+(\.\d+)*$")
+_IDS_PRESET_HEADER_NAMES = {
+    "Tourney",
+    "Farming",
+    "Milestone",
+    "Testing",
+    "Placeholder 4th preset",
+    "Placeholder 5th preset",
+}
+_IDS_PRESET_HEADER_RE = re.compile(r"^Preset\s+\d+$")
 
 
 def _read_csv_rows(path: Path) -> List[List[str]]:
@@ -115,6 +124,7 @@ def _fail_unknown_sections(rows: List[List[str]]) -> None:
     known = {spec.name for spec in specs}
     known_header_width = max(spec.end_col for spec in specs) + 1
     cards_spec = next(spec for spec in specs if spec.name == "Cards")
+    modules_spec = next(spec for spec in specs if spec.name == "Modules")
     for idx, cell in enumerate(header):
         value = cell.strip()
         if value == "" or value in known:
@@ -130,6 +140,10 @@ def _fail_unknown_sections(rows: List[List[str]]) -> None:
         row_values = rows[1] if len(rows) > 1 else []
         offending = row_values[idx] if idx < len(row_values) else ""
         if cards_spec.start_col <= idx <= cards_spec.end_col and value.isdigit() and offending.strip().startswith("Preset"):
+            continue
+        if modules_spec.start_col <= idx <= modules_spec.end_col and (
+            value in _IDS_PRESET_HEADER_NAMES or _IDS_PRESET_HEADER_RE.fullmatch(value)
+        ):
             continue
         raise ValueError(
             "Unknown section header in _IDS.csv: "

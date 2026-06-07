@@ -550,17 +550,34 @@ def _init_state() -> None:
 
 def _register_snapshot(out_dir: Path, *, preset: str, state_mode: str, perk_state: str) -> None:
     label = snapshot_label(preset=preset, state_mode=state_mode, perk_state=perk_state, out_dir=out_dir)
+    snapshot_dirs = st.session_state['snapshot_dirs']
+    for existing_label, existing_path in list(snapshot_dirs.items()):
+        if Path(existing_path) == out_dir and existing_label != label:
+            del snapshot_dirs[existing_label]
     st.session_state['snapshot_dirs'][label] = str(out_dir)
     st.session_state['active_out_dir'] = str(out_dir)
 
 
+def _render_action_failure(action_name: str, exc: Exception) -> None:
+    st.error(f'{action_name} failed: {exc}')
+
+
 def _run_request(request: PipelineRunRequest) -> None:
-    result = execute_pipeline(request)
+    try:
+        result = execute_pipeline(request)
+    except Exception as exc:
+        _render_action_failure('Run current request', exc)
+        return
     _register_snapshot(result.out_dir, preset=request.preset, state_mode=request.state_mode, perk_state=request.perk_state)
 
 
 def _run_default_verification_set(base_request: PipelineRunRequest) -> None:
-    for result in build_verification_snapshot_set(base_request):
+    try:
+        results = build_verification_snapshot_set(base_request)
+    except Exception as exc:
+        _render_action_failure('Build default verification set', exc)
+        return
+    for result in results:
         _register_snapshot(
             result.out_dir,
             preset=result.request.preset,
@@ -575,8 +592,8 @@ def _sidebar() -> PipelineRunRequest:
     out_dir = Path(st.sidebar.text_input('Output dir', value=st.session_state['active_out_dir']))
     manual_inputs_raw = st.sidebar.text_input('Manual inputs override', value='')
     manual_inputs = Path(manual_inputs_raw) if manual_inputs_raw.strip() else None
-    preset = st.sidebar.selectbox('Preset', options=['Farming', 'Tourney', 'Milestone'], index=0)
-    perk_policy_preset = st.sidebar.selectbox('Perk policy', options=list(BOSS_WAVE_PERK_POLICY_PRESETS), index=1)
+    preset = st.sidebar.selectbox('Loadout', options=['Farming', 'Tourney', 'Milestone'], index=0)
+    perk_policy_preset = st.sidebar.selectbox('Perk plan', options=list(BOSS_WAVE_PERK_POLICY_PRESETS), index=1)
     include_slow_audits = st.sidebar.checkbox('Include slow audits', value=False)
     request = PipelineRunRequest(
         ids=ids_path,
@@ -791,10 +808,14 @@ def _render_perks_table(
 def _render_perk_policy_tab(request: PipelineRunRequest) -> dict[str, object]:
     st.subheader('Perk Timeline Policy')
     initial_override = st.session_state.get('boss_wave_perk_policy_override')
-    preview = build_perk_timeline_preview(
-        request,
-        perk_policy_override=initial_override if isinstance(initial_override, dict) else None,
-    )
+    try:
+        preview = build_perk_timeline_preview(
+            request,
+            perk_policy_override=initial_override if isinstance(initial_override, dict) else None,
+        )
+    except Exception as exc:
+        _render_action_failure('Perk plan preview', exc)
+        return {}
     resolved = dict(preview.get('resolved_policy') or {})
     validation = dict(preview.get('validation') or {})
     all_perks = list(preview.get('all_perks') or [])
@@ -843,13 +864,13 @@ def _render_perk_policy_tab(request: PipelineRunRequest) -> dict[str, object]:
     context = dict(preview.get('context') or {})
 
     if validation.get('errors'):
-        st.error('Perk policy is invalid: ' + '; '.join(str(item) for item in validation.get('errors') or []))
+        st.error('Perk plan is invalid: ' + '; '.join(str(item) for item in validation.get('errors') or []))
     for warning in validation.get('warnings') or []:
         st.warning(str(warning))
 
     save_cols = st.columns((1, 3))
     save_disabled = not bool(validation.get('ok'))
-    if save_cols[0].button('Save perk policy', disabled=save_disabled):
+    if save_cols[0].button('Save perk plan', disabled=save_disabled):
         try:
             save_result = save_perk_policy_override(request, perk_policy_override=override)
         except ValueError as exc:
@@ -863,13 +884,13 @@ def _render_perk_policy_tab(request: PipelineRunRequest) -> dict[str, object]:
     save_cols[1].caption('default manual input file' if request.manual_inputs is None else str(request.manual_inputs))
 
     summary_cols = st.columns(4)
-    summary_cols[0].metric('Policy preset', preview.get('policy_preset') or 'default')
+    summary_cols[0].metric('Perk plan', preview.get('policy_preset') or 'default')
     summary_cols[1].metric('Generated perks', int(diagnostics.get('generated_rows') or 0))
     summary_cols[2].metric('Final perk wave', int(diagnostics.get('final_wave') or 0))
     summary_cols[3].metric('PWR stacks', int(diagnostics.get('pwr_stacks') or 0))
     source_cols = st.columns(4)
-    source_cols[0].metric('Policy strategy', context.get('policy_strategy') or 'manual')
-    source_cols[1].metric('Policy generation', 'goal matrix' if context.get('policy_generated_from_goal_matrix') else 'explicit')
+    source_cols[0].metric('Plan strategy', context.get('policy_strategy') or 'manual')
+    source_cols[1].metric('Plan generation', 'goal matrix' if context.get('policy_generated_from_goal_matrix') else 'explicit')
     source_cols[2].metric('Pool remaining', int(diagnostics.get('pool_remaining') or 0))
     source_cols[3].metric('Generator owner', str(preview.get('generator_owner') or 'unknown').split('.')[-1])
 
@@ -1293,7 +1314,7 @@ def _render_stats_debug_tools(active_artifacts, comparison_artifacts: list[tuple
         | set((active_artifacts.get('run_stats_query_rows_max_progression.json', {}) or {}).keys())
     )
     active_preset = request.preset if request.preset in available_presets else (available_presets[0] if available_presets else request.preset)
-    preset = st.selectbox('Preset', options=available_presets or [active_preset], index=(available_presets.index(active_preset) if active_preset in available_presets else 0))
+    preset = st.selectbox('Loadout', options=available_presets or [active_preset], index=(available_presets.index(active_preset) if active_preset in available_presets else 0))
     view_mode = st.radio(
         'Artifact view',
         options=[
@@ -1735,7 +1756,7 @@ def _render_inputs(active_artifacts, active_out_dir: Path) -> None:
         preset_options = list(dashboard.get('preset_options') or ['Farming'])
         default_preset = str(dashboard.get('selected_preset') or preset_options[0])
         selected_preset = st.selectbox(
-            'Preset',
+            'Loadout',
             options=preset_options,
             index=preset_options.index(default_preset) if default_preset in preset_options else 0,
             key='input_dashboard_preset_selector',
@@ -1861,7 +1882,7 @@ def _require_boss_wave_payload_rows(boss_payload: dict, field_name: str) -> list
 def _render_boss_waves(request: PipelineRunRequest, *, perk_policy_override: dict[str, object] | None = None) -> None:
     st.subheader('Boss Waves')
     control_cols = st.columns(4)
-    preset_name = control_cols[0].selectbox('Boss preset', options=['Farming', 'Tourney', 'Milestone'], index=['Farming', 'Tourney', 'Milestone'].index(request.preset) if request.preset in {'Farming', 'Tourney', 'Milestone'} else 0)
+    preset_name = control_cols[0].selectbox('Boss loadout', options=['Farming', 'Tourney', 'Milestone'], index=['Farming', 'Tourney', 'Milestone'].index(request.preset) if request.preset in {'Farming', 'Tourney', 'Milestone'} else 0)
     tier_number = control_cols[1].number_input('Tier', min_value=1, max_value=21, value=14, step=1)
     end_wave = control_cols[2].number_input('End wave', min_value=10, value=10000, step=10)
     boss_wave_step = control_cols[3].number_input('Checkpoint every N bosses', min_value=1, max_value=1000, value=1, step=1)
@@ -1914,7 +1935,7 @@ def _render_boss_waves(request: PipelineRunRequest, *, perk_policy_override: dic
             perk_policy_override=perk_policy_override,
             include_dissonance_run_matrix=True,
         )
-    except ValueError as exc:
+    except Exception as exc:
         st.error(str(exc))
         return
     try:
@@ -1982,7 +2003,7 @@ def _render_boss_waves(request: PipelineRunRequest, *, perk_policy_override: dic
     summary_cols[0].metric('Rows', diagnostics['row_count'])
     summary_cols[1].metric('Selected wave', diagnostics['selected_max_wave'])
     summary_cols[2].metric('Tier', diagnostics['tier_column'])
-    summary_cols[3].metric('Preset', diagnostics['preset_name'])
+    summary_cols[3].metric('Loadout', diagnostics['preset_name'])
     summary_cols_2 = st.columns(4)
     summary_cols_2[0].metric('First failed wave', diagnostics['first_failed_wave'] or '—')
     summary_cols_2[1].metric('Boss cadence', diagnostics['actual_boss_interval_waves'] or '—')
@@ -2120,7 +2141,7 @@ def _render_boss_waves(request: PipelineRunRequest, *, perk_policy_override: dic
         'time uses the sanctioned runtime damage proxy rather than a static max-progression shortcut.'
     )
     if diagnostics['context_status'] not in {'resolved', 'complete'}:
-        st.error(diagnostics['context_error_message'] or 'Boss Waves cannot resolve the required scenario context for this request.')
+        st.warning(diagnostics['context_error_message'] or 'Boss Waves cannot resolve the required scenario context for this request.')
     st.info(
         'Boss Waves is a bounded runtime estimate. The main table shows the operator-facing survival view; '
         'the raw simulator/debug row dump remains available below.'
