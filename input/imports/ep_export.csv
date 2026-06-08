@@ -73,12 +73,12 @@ ehp,wall_fortification_multiplier,Wall fortification multiplier,multiplier,x,185
 ehp,improved_tradeoff_perks_multiplier,Improved trade-off perks multiplier,multiplier,x,2.2222222222222223,eHP,,
 ehp,chrono_field_reduction_multiplier,Chrono Field reduction multiplier,multiplier,x,1.25,eHP,,
 ehp,chain_thunder_multiplier,Chain Thunder multiplier,multiplier,x,1.0169491525423728,eHP,,
-ehp,health_regen_raw,Health regen raw,parsed_raw,hp/sec,188720000000000,eHP,,
+ehp,health_regen_raw,Health regen raw,parsed_raw,hp/sec,192330000000000,eHP,,
 ehp,wall_health_raw,Wall health raw,parsed_raw,hp,657090000000000,eHP,,
 ehp,wall_fortification_raw,Wall fortification raw,parsed_raw,hp,6970000000000000,eHP,,
-ehp,wall_regen_raw_per_sec,Wall regen per sec raw,raw,hp/sec,1037940041913434,eRegen,,
+ehp,wall_regen_raw_per_sec,Wall regen per sec raw,raw,hp/sec,1057836656135417,eRegen,,
 ,,,,,,,,
-eecon,cpk_average_raw,Average CpK raw,raw,coins/kill,1646854700.1032379,eEcon,,
+eecon,cpk_average_raw,Average CpK raw,raw,coins/kill,1790951785.7184794,eEcon,,
 eecon,coins_per_kill_bonus,Coins per kill bonus,bonus,x,47.937737925,eEcon,,
 eecon,free_attack_upgrade,Free attack upgrade,chance,ratio,1.1998935,eEcon,,
 eecon,free_defense_upgrade,Free defense upgrade,chance,ratio,1.13609925,eEcon,,
@@ -137,7 +137,7 @@ ehp,ehp_guess_enemies_attacking_together,eHP enemies attacking together,guess,co
 ehp,ehp_guess_cl_dmg_pct_total,eHP CL damage percent of total,guess,ratio,0.01,eHP,active,Direct eHP modelling assumption for CL contribution.
 ehp,ehp_guess_ignore_target_levels,eHP ignore target levels,guess,boolean,false,eHP,active,EP source-state flag; affects interpretation of target-level values.
 ehp,ehp_guess_cards_enabled,eHP cards enabled,guess,boolean,true,eHP,active,Direct card-state assumption for eHP calculations.
-ehp,ehp_guess_compare_masteries_at,eHP compare masteries at,guess,level,4.333333333333333,eHP,optional,"Mastery comparison helper; useful for optimiser context, not base tower state."
+ehp,ehp_guess_compare_masteries_at,eHP compare masteries at,guess,level,4.5,eHP,optional,"Mastery comparison helper; useful for optimiser context, not base tower state."
 ehp,ehp_perk_health_quantity,eHP health perk quantity,guess,count,5,eHP,active,Perk assumption quantity.
 ehp,ehp_perk_health_value,eHP health perk value,guess,multiplier,2.5,eHP,active,Perk assumption value.
 ehp,ehp_perk_health_active,eHP health perk active,guess,boolean,true,eHP,active,Perk active flag.
@@ -169,7 +169,7 @@ eecon,eecon_guess_enemies_killed_per_second_gt_plus,eEcon enemies killed per sec
 eecon,eecon_guess_boss_spawns_every_waves,eEcon boss spawns every waves,guess,waves,9,eEcon,active,Run mechanics assumption.
 eecon,eecon_guess_extra_orb_pct_enemies_tagged,eEcon extra orb percent enemies tagged,guess,ratio,0.9,eEcon,active,Direct econ assumption for extra-orb tagging.
 eecon,eecon_guess_cards_enabled,eEcon cards enabled,guess,boolean,true,eEcon,active,Direct card-state assumption for eEcon calculations.
-eecon,eecon_guess_compare_masteries_at,eEcon compare masteries at,guess,level,4.333333333333333,eEcon,optional,"Mastery comparison helper; useful for optimiser context, not base tower state."
+eecon,eecon_guess_compare_masteries_at,eEcon compare masteries at,guess,level,4.5,eEcon,optional,"Mastery comparison helper; useful for optimiser context, not base tower state."
 ,,,,,,,,
 uw,uw_death_wave_damage,Death Wave final damage,uw_stat,damage,63,eDamage,active,Final UW stat from EP.
 uw,uw_death_wave_quantity,Death Wave final quantity,uw_stat,count,3,eDamage,active,Final UW stat from EP.
