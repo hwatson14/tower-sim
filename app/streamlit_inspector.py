@@ -24,6 +24,7 @@ import json
 import html
 import importlib
 import importlib.util
+import time
 from dataclasses import replace
 from functools import lru_cache
 from pathlib import Path
@@ -89,6 +90,7 @@ from app.pipeline import (
     FastCheckpointRequest,
     PipelineRunRequest,
     build_boss_wave_payload,
+    build_boss_wave_milestone_matrix,
     build_perk_timeline_preview,
     build_verification_snapshot_set,
     compute_perk_max_effect_displays,
@@ -254,6 +256,7 @@ def _boss_wave_assumption_frame(
         {'group': 'Run', 'assumption': 'Free upgrades', 'value': contract.get('free_upgrade_mode'), 'source': 'payload contract'},
         {'group': 'Run', 'assumption': 'Enemy skips', 'value': contract.get('enemy_skip_mode'), 'source': 'payload contract'},
         {'group': 'Run', 'assumption': 'Checkpoint cadence', 'value': diagnostics.get('checkpoint_every_bosses'), 'source': 'payload diagnostics'},
+        {'group': 'Run', 'assumption': 'Tournament wave source', 'value': diagnostics.get('tournament_wave_source'), 'source': 'payload diagnostics'},
         {'group': 'Contact', 'assumption': 'Boss time to contact', 'value': contact_contract.get('value'), 'source': contact_contract.get('source')},
         {'group': 'Contact', 'assumption': 'Base travel time', 'value': contact_contract.get('base_seconds'), 'source': 'contact-time contract'},
         {'group': 'Contact', 'assumption': 'Chrono Field slow', 'value': contact_contract.get('chrono_field_average_slow_fraction'), 'source': 'contact-time contract'},
@@ -293,6 +296,24 @@ def _boss_wave_runtime_inputs_frame(diagnostics: dict[str, object]) -> pd.DataFr
         for key, value in sorted(runtime_inputs.items())
     ]
     return pd.DataFrame(rows)
+
+
+def _boss_wave_preset_matrix_frame(matrix_payload: dict[str, object]) -> pd.DataFrame:
+    rows: list[dict[str, object]] = []
+    for matrix_row in matrix_payload.get('rows') or []:
+        row = {
+            'Tier': matrix_row.get('tier_column') or f"Tier {matrix_row.get('tier')}",
+            'Reference': matrix_row.get('reference_wave') or '',
+            'Best': matrix_row.get('best_display') or '',
+            'Delta': matrix_row.get('delta_vs_reference_wave') if matrix_row.get('delta_vs_reference_wave') is not None else '',
+        }
+        for candidate in matrix_row.get('candidate_results') or []:
+            preset = str(candidate.get('loadout_policy_preset') or '').strip()
+            if preset:
+                row[preset] = candidate.get('selected_max_wave') or 0
+        rows.append(row)
+    columns = ['Tier', *BOSS_WAVE_PERK_POLICY_PRESETS, 'Best', 'Reference', 'Delta']
+    return _arrow_safe_frame(pd.DataFrame(rows), columns=columns)
 
 
 def _slug_text(value: str) -> str:
@@ -2020,6 +2041,9 @@ def _render_boss_waves(request: PipelineRunRequest) -> None:
     boss_wave_step = control_cols[4].number_input('Checkpoint cadence (bosses)', min_value=1, max_value=1000, value=1, step=1)
     scenario_request = replace(request, preset=preset_name, perk_policy_preset=perk_policy_preset)
     stop_on_failure = True
+    tournament_wave_override = 0
+    if preset_name == 'Tourney':
+        tournament_wave_override = st.number_input('Legends tournament wave', min_value=1, value=100, step=10)
 
     with st.expander('Combat assumptions', expanded=False):
         runtime_cols = st.columns(6)
@@ -2049,7 +2073,19 @@ def _render_boss_waves(request: PipelineRunRequest) -> None:
         **({'boss_edamage_reliability_factor': boss_edamage_reliability_factor} if boss_edamage_reliability_factor > 0.0 else {}),
         **({'boss_edamage_semantic_normalizer': boss_edamage_semantic_normalizer} if boss_edamage_semantic_normalizer > 0.0 else {}),
     }
+    scenario_runtime_inputs = {
+        'orb_boss_total_damage_pct': orb_boss_total_damage_pct,
+        **({'electron_total_damage_pct': electron_total_damage_pct} if electron_total_damage_pct > 0.0 else {}),
+        **({'flame_bot_boss_hit_chance_pct': flame_bot_boss_hit_chance_pct} if flame_bot_boss_hit_chance_pct > 0.0 else {}),
+        **({'flame_bot_damage_reduction_pct': flame_bot_damage_reduction_pct} if flame_bot_damage_reduction_pct > 0.0 else {}),
+        **({'boss_applicable_damage_factor': boss_applicable_damage_factor} if boss_applicable_damage_factor > 0.0 else {}),
+        **decomposed_bridge_inputs,
+        **({'boss_time_to_contact_seconds': boss_time_to_contact_seconds} if boss_time_to_contact_seconds > 0.0 else {}),
+        **({'tournament_wave': int(tournament_wave_override)} if preset_name == 'Tourney' and int(tournament_wave_override) > 0 else {}),
+        'death_wave_health_max_wave': death_wave_health_max_wave,
+    }
     try:
+        boss_calc_start = time.perf_counter()
         boss_payload = build_boss_wave_payload(
             scenario_request,
             preset_name=preset_name,
@@ -2057,17 +2093,9 @@ def _render_boss_waves(request: PipelineRunRequest) -> None:
             end_wave=int(end_wave),
             boss_wave_step=int(boss_wave_step),
             stop_on_failure=stop_on_failure,
-            scenario_runtime_inputs={
-                'orb_boss_total_damage_pct': orb_boss_total_damage_pct,
-                **({'electron_total_damage_pct': electron_total_damage_pct} if electron_total_damage_pct > 0.0 else {}),
-                **({'flame_bot_boss_hit_chance_pct': flame_bot_boss_hit_chance_pct} if flame_bot_boss_hit_chance_pct > 0.0 else {}),
-                **({'flame_bot_damage_reduction_pct': flame_bot_damage_reduction_pct} if flame_bot_damage_reduction_pct > 0.0 else {}),
-                **({'boss_applicable_damage_factor': boss_applicable_damage_factor} if boss_applicable_damage_factor > 0.0 else {}),
-                **decomposed_bridge_inputs,
-                **({'boss_time_to_contact_seconds': boss_time_to_contact_seconds} if boss_time_to_contact_seconds > 0.0 else {}),
-                'death_wave_health_max_wave': death_wave_health_max_wave,
-            },
+            scenario_runtime_inputs=scenario_runtime_inputs,
         )
+        boss_calc_elapsed = time.perf_counter() - boss_calc_start
     except Exception as exc:
         st.error(str(exc))
         return
@@ -2095,6 +2123,7 @@ def _render_boss_waves(request: PipelineRunRequest) -> None:
         'tier_column': payload_diagnostics.get('tier_column'),
         'league': payload_diagnostics.get('league'),
         'tournament_wave': payload_diagnostics.get('tournament_wave'),
+        'tournament_wave_source': payload_diagnostics.get('tournament_wave_source'),
         'perks_enabled': bool(payload_diagnostics.get('perks_enabled')),
         'context_status': payload_diagnostics.get('context_status') or 'resolved',
         'context_error': payload_diagnostics.get('context_error'),
@@ -2133,7 +2162,7 @@ def _render_boss_waves(request: PipelineRunRequest) -> None:
     }
 
     st.metric('Max Boss Wave', diagnostics['selected_max_wave'])
-    st.caption(f"Result uses `{diagnostics['selected_model']}`.")
+    st.caption(f"Result uses `{diagnostics['selected_model']}`. Calculated in `{boss_calc_elapsed:.2f}s`.")
     st.caption(
         f"`{diagnostics['preset_name']}` loadout; `{perk_policy_preset}` perk plan; "
         f"`{diagnostics['tier_column']}`; boss cadence `{diagnostics['actual_boss_interval_waves'] or '—'}` waves; "
@@ -2188,6 +2217,45 @@ def _render_boss_waves(request: PipelineRunRequest) -> None:
         mime='text/csv',
         width='stretch',
     )
+    with st.expander('All-tier preset matrix'):
+        st.caption('Runs the four Boss Waves perk presets across all tiers using the same assumptions as this tab.')
+        matrix_cols = st.columns(2)
+        matrix_end_wave = matrix_cols[0].number_input(
+            'Matrix end wave',
+            min_value=100,
+            value=max(30000, int(end_wave)),
+            step=1000,
+        )
+        matrix_boss_wave_step = matrix_cols[1].number_input(
+            'Matrix checkpoint cadence (bosses)',
+            min_value=1,
+            max_value=1000,
+            value=max(10, int(boss_wave_step)),
+            step=1,
+        )
+        if st.button('Build all-tier 4-preset matrix'):
+            matrix_start = time.perf_counter()
+            matrix_payload = build_boss_wave_milestone_matrix(
+                scenario_request,
+                tiers=tuple(range(1, 22)),
+                end_wave=int(matrix_end_wave),
+                boss_wave_step=max(1, int(matrix_boss_wave_step)),
+                stop_on_failure=True,
+                scenario_runtime_inputs=scenario_runtime_inputs,
+                loadout_policy_presets=BOSS_WAVE_PERK_POLICY_PRESETS,
+                dissonance_run_categories=('none',),
+            )
+            matrix_elapsed = time.perf_counter() - matrix_start
+            matrix_rows = matrix_payload.get('rows') or []
+            candidate_count = sum(len(row.get('candidate_results') or []) for row in matrix_rows)
+            if candidate_count:
+                st.caption(
+                    f"Calculated `{candidate_count}` preset/tier candidates in `{matrix_elapsed:.2f}s` "
+                    f"(`{matrix_elapsed / candidate_count:.2f}s` each)."
+                )
+            else:
+                st.caption(f"Calculated in `{matrix_elapsed:.2f}s`.")
+            st.dataframe(_boss_wave_preset_matrix_frame(matrix_payload), width='stretch', hide_index=True)
     with st.expander('Model assumptions'):
         st.dataframe(
             _boss_wave_assumption_frame(

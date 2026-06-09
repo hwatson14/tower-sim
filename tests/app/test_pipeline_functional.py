@@ -2464,10 +2464,24 @@ def test_boss_wave_perk_state_is_owned_by_scenario_not_request():
     assert farming['perk_mode_source'] == 'scenario_policy_tournament_none_other_runtime_timeline'
     assert farming['perk_state_source'] == 'scenario_policy_tournament_off_other_runs_on'
     assert tournament['mode_id'] == 'tournament'
+    assert tournament['tournament_wave'] == 100
+    assert tournament['tournament_wave_source'] == 'IDS::Player & Stuff'
     assert tournament['perks_enabled'] is False
     assert tournament['perk_state'] == 'off'
     assert tournament['perk_mode'] == 'none'
     assert tournament['perk_timeline_mode'] == 'disabled_by_tournament_scenario'
+
+    tournament_override = _resolve_boss_wave_run_context(
+        account_state,
+        preset_name='Tourney',
+        tier_number=14,
+        checkpoint_every_bosses=1,
+        tournament_wave_override=250,
+    )
+    assert tournament_override['mode_id'] == 'tournament'
+    assert tournament_override['league'] == 'Legends'
+    assert tournament_override['tournament_wave'] == 250
+    assert tournament_override['tournament_wave_source'] == 'runtime_override'
 
 
 def test_boss_wave_milestone_uses_default_workshop_levels_when_preset_lane_is_blank():
@@ -3083,10 +3097,47 @@ def test_build_boss_wave_payload_tourney_fails_closed_without_tournament_wave(mo
     assert (payload.get('rows') or []) == []
     assert diagnostics['context_status'] == 'error'
     assert diagnostics['context_error'] == 'missing_tournament_wave'
+    assert diagnostics['tournament_wave_source'] == 'IDS::Player & Stuff'
     assert diagnostics['perk_mode'] == 'none'
     assert 'requires a resolved tournament wave' in str(diagnostics['context_error_message'] or '').lower()
     assert diagnostics['model_certification']['model_requirement_applicability']['gc_boss_applicable_damage_semantics'] is False
     assert 'source_owned_full_gc_boss_applicable_damage_semantics' not in diagnostics['model_certification']['model_completion_blockers']
+
+
+def test_build_boss_wave_payload_tourney_accepts_runtime_tournament_wave_override():
+    from app.models import PipelineRunRequest
+    from app.pipeline import build_boss_wave_payload
+
+    request = PipelineRunRequest(
+        ids=IDS_PATH,
+        out=ROOT / 'out',
+        preset='Tourney',
+        perk_mode='none',
+        perk_state='off',
+    )
+    payload = build_boss_wave_payload(
+        request,
+        preset_name='Tourney',
+        tier_number=14,
+        end_wave=100,
+        boss_wave_step=1,
+        stop_on_failure=True,
+        scenario_runtime_inputs={
+            'tournament_wave': 100,
+            'orb_boss_total_damage_pct': 6.0,
+            'death_wave_health_max_wave': 1000,
+        },
+    )
+
+    diagnostics = payload.get('diagnostics') or {}
+    summary = payload.get('summary') or {}
+    assert diagnostics['context_status'] == 'complete'
+    assert diagnostics['league'] == 'Legends'
+    assert diagnostics['tournament_wave'] == 100
+    assert diagnostics['tournament_wave_source'] == 'runtime_override'
+    assert diagnostics['perks_enabled'] is False
+    assert summary['status'] == 'complete'
+    assert summary['selected_max_wave'] > 0
 
 
 @pytest.mark.live

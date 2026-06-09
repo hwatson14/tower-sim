@@ -196,6 +196,8 @@ def test_streamlit_boss_waves_operator_surface_renders_cleanly():
     number_input_labels = _streamlit_labels(app_test.number_input)
     assert 'End wave' in number_input_labels
     assert 'Checkpoint cadence (bosses)' in number_input_labels
+    assert 'Matrix end wave' in number_input_labels
+    assert 'Matrix checkpoint cadence (bosses)' in number_input_labels
 
     toggle_labels = _streamlit_labels(app_test.toggle)
     assert 'Override boss damage calibration' in toggle_labels
@@ -205,6 +207,7 @@ def test_streamlit_boss_waves_operator_surface_renders_cleanly():
     expander_labels = _streamlit_labels(app_test.expander)
     for label in (
         'Combat assumptions',
+        'All-tier preset matrix',
         'Model assumptions',
         'Advanced boss-wave evidence',
     ):
@@ -224,6 +227,7 @@ def test_streamlit_boss_waves_operator_surface_renders_cleanly():
     assert 'Boss checkpoints' in caption_values
     assert 'Runtime inputs' in caption_values
     assert any('Result uses' in value for value in caption_values)
+    assert 'Build all-tier 4-preset matrix' in _streamlit_labels(app_test.button)
 
 
 def test_streamlit_boss_waves_manual_damage_calibration_is_intentional():
@@ -250,6 +254,21 @@ def test_streamlit_boss_waves_manual_damage_calibration_is_intentional():
         'Boss semantic normalizer',
     ):
         assert label in number_input_labels
+
+
+def test_streamlit_boss_waves_tourney_exposes_legends_wave_override():
+    streamlit_testing = pytest.importorskip("streamlit.testing.v1")
+
+    app_test = streamlit_testing.AppTest.from_file(str(ROOT / 'app' / 'streamlit_inspector.py'))
+    app_test.run(timeout=240)
+
+    assert 'Legends tournament wave' not in _streamlit_labels(app_test.number_input)
+    _streamlit_widget_by_label(app_test.selectbox, 'Boss loadout').set_value('Tourney')
+    app_test.run(timeout=240)
+
+    assert not app_test.exception
+    assert not app_test.error
+    assert 'Legends tournament wave' in _streamlit_labels(app_test.number_input)
 
 
 def test_streamlit_run_controls_are_tab_scoped_not_sidebar_global():
@@ -768,12 +787,23 @@ def test_boss_waves_render_uses_published_summary_and_execution_contract() -> No
     assert "'boss_edamage_reliability_factor': boss_edamage_reliability_factor" in boss_block
     assert "'boss_edamage_semantic_normalizer': boss_edamage_semantic_normalizer" in boss_block
     assert "decomposed_bridge_inputs" in boss_block
-    assert "build_boss_wave_milestone_matrix" not in boss_block
+    assert "build_boss_wave_milestone_matrix(" in boss_block
+    assert "Build all-tier 4-preset matrix" in boss_block
+    assert "All-tier preset matrix" in boss_block
+    assert "Matrix end wave" in boss_block
+    assert "Matrix checkpoint cadence (bosses)" in boss_block
+    assert "value=max(30000, int(end_wave))" in boss_block
+    assert "value=max(10, int(boss_wave_step))" in boss_block
     assert "Build all-tier milestone matrix" not in boss_block
     assert "All-tier milestone matrix" not in boss_block
+    assert "_boss_wave_preset_matrix_frame(matrix_payload)" in boss_block
+    assert "candidate_count = sum(len(row.get('candidate_results') or []) for row in matrix_rows)" in boss_block
     assert "include_dissonance_run_matrix" not in boss_block
     assert "Dissonance comparison" not in boss_block
     assert "dissonance_run_matrix" not in boss_block
+    assert "'tournament_wave': int(tournament_wave_override)" in boss_block
+    assert "Legends tournament wave" in boss_block
+    assert "boss_calc_elapsed" in boss_block
     assert "display_frame = _build_boss_wave_operator_frame(frame)" in boss_block
     assert "_require_boss_wave_payload_rows(boss_payload, 'operator_rows')" in boss_block
     assert "_require_boss_wave_payload_rows(boss_payload, 'download_rows')" in boss_block

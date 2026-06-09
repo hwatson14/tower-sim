@@ -800,12 +800,22 @@ def _extract_optional_wave_number(raw_value) -> int | None:
     return value if value > 0 else None
 
 
+def _extract_runtime_wave_number(raw_value) -> int | None:
+    if raw_value in (None, ''):
+        return None
+    if isinstance(raw_value, (int, float)):
+        value = int(raw_value)
+        return value if value > 0 else None
+    return _extract_optional_wave_number(raw_value)
+
+
 def _resolve_boss_wave_run_context(
     account_state,
     *,
     preset_name: str,
     tier_number: int,
     checkpoint_every_bosses: int,
+    tournament_wave_override: int | None = None,
 ) -> dict[str, object]:
     from simulators.scenario import ScenarioConfig, compute_scenario_surfaces
 
@@ -819,9 +829,14 @@ def _resolve_boss_wave_run_context(
             or account_state.player_meta.get('League')
         )
         tournament_wave = (
+            int(tournament_wave_override)
+            if tournament_wave_override is not None and int(tournament_wave_override) > 0
+            else None
+        ) or (
             _extract_optional_wave_number(account_state.player_meta.get('Tournament Wave'))
             or _extract_optional_wave_number(account_state.player_meta.get('Tourney Wave'))
         )
+        tournament_wave_source = 'runtime_override' if tournament_wave_override is not None and int(tournament_wave_override) > 0 else 'IDS::Player & Stuff'
         if not league:
             return {
                 'resolved': False,
@@ -841,6 +856,7 @@ def _resolve_boss_wave_run_context(
                 'tier_number': int(tier_number),
                 'tier_column': f'Tier {int(tier_number)}',
                 'league': league,
+                'tournament_wave_source': tournament_wave_source,
                 'checkpoint_every_bosses': max(1, int(checkpoint_every_bosses)),
                 'context_error': 'missing_tournament_wave',
                 'context_error_message': 'Boss Waves Tourney mode requires a resolved tournament wave. This repo baseline does not ship that context for the active account snapshot.',
@@ -867,6 +883,7 @@ def _resolve_boss_wave_run_context(
         'tier_column': f'Tier {int(tier_number)}',
         'league': scenario_config.league,
         'tournament_wave': int(scenario_config.tournament_wave or 0) or None,
+        'tournament_wave_source': 'runtime_override' if mode_id == 'tournament' and tournament_wave_override is not None and int(tournament_wave_override) > 0 else 'IDS::Player & Stuff',
         'perks_enabled': perks_enabled,
         'perk_state': scenario_perk_state,
         'perk_mode': scenario_perk_mode,
@@ -1063,6 +1080,7 @@ def build_boss_wave_payload(
         preset_name=preset_name,
         tier_number=int(tier_number),
         checkpoint_every_bosses=int(boss_wave_step),
+        tournament_wave_override=_extract_runtime_wave_number(scenario_runtime_inputs.get('tournament_wave')),
     )
     if bool(resolved_context.get('resolved')):
         resolved_context.update(perk_request)
@@ -1156,6 +1174,7 @@ def build_boss_wave_payload(
                 'tier_column': resolved_context.get('tier_column'),
                 'league': resolved_context.get('league'),
                 'tournament_wave': resolved_context.get('tournament_wave'),
+                'tournament_wave_source': resolved_context.get('tournament_wave_source'),
                 'perks_enabled': False,
                 'model_scope': 'boss_contact_survivability',
                 'not_full_max_wave_model': True,
@@ -1217,6 +1236,7 @@ def build_boss_wave_payload(
         'tier_column': str(resolved_context.get('tier_column') or f'Tier {int(tier_number)}'),
         'league': resolved_context.get('league'),
         'tournament_wave': int(resolved_context.get('tournament_wave') or 0),
+        'tournament_wave_source': resolved_context.get('tournament_wave_source'),
         'start_wave': int(resolved_context.get('requested_start_wave') or 1),
         'end_wave': int(end_wave),
         'boss_interval_waves': int(resolved_context.get('actual_boss_interval_waves') or 10),
@@ -3718,6 +3738,7 @@ def _build_replacement_diagnostics(
         'tier_column': config['tier_column'],
         'league': config.get('league'),
         'tournament_wave': int(config.get('tournament_wave') or 0) or None,
+        'tournament_wave_source': config.get('tournament_wave_source'),
         'perks_enabled': bool(config['perks_enabled']),
         'perk_mode': str(config.get('perk_mode') or ''),
         'perk_state': str(config.get('perk_state') or ''),
