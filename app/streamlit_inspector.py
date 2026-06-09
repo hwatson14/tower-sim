@@ -1,5 +1,5 @@
 """
-Streamlit inspector contract freeze (T0).
+Streamlit operational console contract freeze (T0).
 
 Dependency policy:
 - `streamlit` is optional for non-UI runtime paths.
@@ -10,10 +10,10 @@ Import policy:
 - Forbidden direct imports: engine.*, root run_stats, and archived transitional roots.
 
 Artifact policy:
-- Inspector consumes pipeline/QE/input runtime artifacts as a read-only UI.
+- The console consumes pipeline/QE/input runtime artifacts as a read-only UI.
 
 UI policy:
-- Boss Waves is interactive in the inspector tab UI.
+- Boss Waves is interactive in the console tab UI.
 
 Legacy policy:
 - Legacy standalone start/max statbook artifacts are permanently removed.
@@ -24,6 +24,7 @@ import json
 import html
 import importlib
 import importlib.util
+from dataclasses import replace
 from functools import lru_cache
 from pathlib import Path
 import sys
@@ -88,14 +89,12 @@ from app.pipeline import (
     FastCheckpointRequest,
     PipelineRunRequest,
     build_boss_wave_payload,
-    build_boss_wave_milestone_matrix,
     build_perk_timeline_preview,
     build_verification_snapshot_set,
     compute_perk_max_effect_displays,
     execute_pipeline,
     load_streamlit_reference_data,
     resolve_fast_checkpoint,
-    save_perk_policy_override,
 )
 from qe.contracts import normalize_surface_id_to_contract
 
@@ -183,9 +182,9 @@ def _build_boss_wave_operator_frame(frame: pd.DataFrame) -> pd.DataFrame:
             'Wall HP': wall_hp.map(_boss_wave_compact_text),
             'Wall Regen': _series('wall_regen').map(_boss_wave_compact_text),
             'Regen Gain': _series('wall_regen_gained_hp').map(_boss_wave_compact_text),
-            'DR Used': _series('effective_damage_reduction_pct').map(_boss_wave_percent_text),
-            'TTK (s)': _series('boss_ttk_seconds').map(_boss_wave_seconds_text),
-            'GC Kill': _series('boss_killed_before_contact').map(lambda value: 'Yes' if bool(value) else 'No'),
+            'Damage Reduction': _series('effective_damage_reduction_pct').map(_boss_wave_percent_text),
+            'Boss Kill Time': _series('boss_ttk_seconds').map(_boss_wave_seconds_text),
+            'Killed Before Contact': _series('boss_killed_before_contact').map(lambda value: 'Yes' if bool(value) else 'No'),
             'PC Dmg %': _series('boss_plasma_cannon_damage_to_boss_pct').map(_boss_wave_percent_text),
             'Orb Dmg %': _series('boss_orb_damage_to_boss_pct').map(_boss_wave_percent_text),
             'Electron Dmg %': _series('boss_electron_damage_to_boss_pct').map(_boss_wave_percent_text),
@@ -193,19 +192,107 @@ def _build_boss_wave_operator_frame(frame: pd.DataFrame) -> pd.DataFrame:
             'Wall Thorns Dmg %': _series('boss_wall_thorns_damage_to_boss_pct').map(_boss_wave_percent_text),
             'Expected Wall Thorns Dmg %': _series('boss_expected_wall_thorns_damage_from_hits_pct').map(_boss_wave_percent_text),
             'Wall Thorns Kill (s)': _series('boss_wall_thorns_contact_kill_seconds').map(_boss_wave_seconds_text),
-            'Time to Contact (s)': _series('boss_time_to_contact_seconds').map(_boss_wave_seconds_text),
+            'Contact Time': _series('boss_time_to_contact_seconds').map(_boss_wave_seconds_text),
             'Hit Interval (s)': _series('boss_hit_interval_seconds').map(_boss_wave_seconds_text),
             'Boss Hits': _series('boss_hits_taken'),
             'Hits to Player': _series('boss_hits_to_player'),
             'Wall Thorns Hits': _series('boss_wall_thorns_hits'),
             'Damage Taken': _series('boss_total_damage_taken').map(_boss_wave_compact_text),
-            'Margin': _series('boss_survival_margin_hp').map(_boss_wave_signed_compact_text),
+            'Survival Margin': _series('boss_survival_margin_hp').map(_boss_wave_signed_compact_text),
             'Envelope Regen': _series('contact_envelope_wall_regen_gained_hp').map(_boss_wave_compact_text),
             'Envelope Margin': _series('contact_envelope_survival_margin_hp').map(_boss_wave_signed_compact_text),
             'Envelope Survives': _series('contact_envelope_survives_boss').map(lambda value: 'Yes' if bool(value) else 'No'),
             'Survives': _series('survives_boss').map(lambda value: 'Yes' if bool(value) else 'No'),
         }
     )
+
+
+def _focus_boss_wave_display_frame(frame: pd.DataFrame, *, max_boss_wave: int, max_rows: int = 12) -> pd.DataFrame:
+    if frame.empty or 'Wave' not in frame.columns or len(frame) <= max_rows:
+        return frame.copy()
+    focused = frame.copy()
+    wave_values = pd.to_numeric(focused['Wave'], errors='coerce')
+    if max_boss_wave <= 0 or wave_values.isna().all():
+        return focused.tail(max_rows).copy()
+    distance = (wave_values - float(max_boss_wave)).abs()
+    indexes = distance.nsmallest(max_rows).index
+    return focused.loc[sorted(indexes)].copy()
+
+
+def _boss_wave_assumption_text(value: object) -> str:
+    if value is None:
+        return 'n/a'
+    if isinstance(value, bool):
+        return 'yes' if value else 'no'
+    if isinstance(value, float):
+        return f'{value:g}'
+    if isinstance(value, (list, tuple, set)):
+        return ', '.join(str(item) for item in value) or 'n/a'
+    if isinstance(value, dict):
+        return json.dumps(value, sort_keys=True, default=str)
+    text = str(value).strip()
+    return text or 'n/a'
+
+
+def _boss_wave_assumption_frame(
+    *,
+    diagnostics: dict[str, object],
+    contract: dict[str, object],
+    payload_diagnostics: dict[str, object],
+    primitive_values: dict[str, object],
+    boss_damage_source: str,
+) -> pd.DataFrame:
+    certification = dict(payload_diagnostics.get('model_certification') or {})
+    contact_contract = dict((payload_diagnostics.get('contact_time_contract') or {}).get('boss_time_to_contact_seconds') or {})
+    replacement_model = dict(payload_diagnostics.get('replacement_model') or {})
+    rows = [
+        {'group': 'Result', 'assumption': 'Selected model', 'value': diagnostics.get('selected_model'), 'source': 'payload summary'},
+        {'group': 'Result', 'assumption': 'Certification status', 'value': certification.get('model_certification_status'), 'source': 'model certification'},
+        {'group': 'Result', 'assumption': 'Certified full max-wave model', 'value': certification.get('certified_full_max_wave_model'), 'source': 'model certification'},
+        {'group': 'Run', 'assumption': 'Start state', 'value': contract.get('start_state_basis') or diagnostics.get('state_mode'), 'source': 'payload contract'},
+        {'group': 'Run', 'assumption': 'Perk timeline', 'value': contract.get('perk_timeline_mode'), 'source': 'payload contract'},
+        {'group': 'Run', 'assumption': 'Free upgrades', 'value': contract.get('free_upgrade_mode'), 'source': 'payload contract'},
+        {'group': 'Run', 'assumption': 'Enemy skips', 'value': contract.get('enemy_skip_mode'), 'source': 'payload contract'},
+        {'group': 'Run', 'assumption': 'Checkpoint cadence', 'value': diagnostics.get('checkpoint_every_bosses'), 'source': 'payload diagnostics'},
+        {'group': 'Contact', 'assumption': 'Boss time to contact', 'value': contact_contract.get('value'), 'source': contact_contract.get('source')},
+        {'group': 'Contact', 'assumption': 'Base travel time', 'value': contact_contract.get('base_seconds'), 'source': 'contact-time contract'},
+        {'group': 'Contact', 'assumption': 'Chrono Field slow', 'value': contact_contract.get('chrono_field_average_slow_fraction'), 'source': 'contact-time contract'},
+        {'group': 'Contact', 'assumption': 'Slow Aura slow', 'value': contact_contract.get('slow_aura_fraction'), 'source': 'contact-time contract'},
+        {'group': 'Contact', 'assumption': 'Energy Net hold', 'value': contact_contract.get('energy_net_hold_seconds'), 'source': 'contact-time contract'},
+        {'group': 'Damage', 'assumption': 'Boss damage source', 'value': boss_damage_source, 'source': 'replacement primitives'},
+        {'group': 'Damage', 'assumption': 'Final boss DPS', 'value': primitive_values.get('gc_boss_damage_per_second'), 'source': 'replacement primitives'},
+        {'group': 'Damage', 'assumption': 'EP eDamage base', 'value': primitive_values.get('edamage_ep'), 'source': 'QE derived::edamage_ep'},
+        {'group': 'Damage', 'assumption': 'Chain Lightning DPS', 'value': primitive_values.get('chain_lightning_boss_damage_per_second'), 'source': 'QE CL DPS diagnostic'},
+        {'group': 'Damage', 'assumption': 'Boss runtime factor', 'value': primitive_values.get('edamage_boss_runtime_factor'), 'source': 'Boss Waves exposure replacement'},
+        {'group': 'Damage', 'assumption': 'Spotlight exposure', 'value': primitive_values.get('edamage_boss_spotlight_exposure_fraction'), 'source': 'Boss Waves exposure replacement'},
+        {'group': 'Damage', 'assumption': 'Spotlight factor', 'value': primitive_values.get('edamage_boss_spotlight_factor'), 'source': 'Boss Waves exposure replacement'},
+        {'group': 'Damage', 'assumption': 'Om Chip forces Spotlight', 'value': primitive_values.get('edamage_boss_om_chip_forces_spotlight'), 'source': 'Boss Waves exposure replacement'},
+        {'group': 'Damage', 'assumption': 'Shockwave hit probability', 'value': primitive_values.get('edamage_boss_shockwave_hit_probability'), 'source': 'Boss Waves exposure replacement'},
+        {'group': 'Damage', 'assumption': 'ACP active fraction', 'value': primitive_values.get('edamage_boss_acp_active_fraction'), 'source': 'Boss Waves exposure replacement'},
+        {'group': 'Damage', 'assumption': 'ACP factor', 'value': primitive_values.get('edamage_boss_acp_factor'), 'source': 'Boss Waves exposure replacement'},
+        {'group': 'Damage', 'assumption': 'EN mastery multiplier', 'value': primitive_values.get('energy_net_mastery_multiplier'), 'source': 'combat primitives'},
+        {'group': 'Damage', 'assumption': 'EN boosted seconds', 'value': primitive_values.get('edamage_boss_pre_contact_energy_net_boosted_seconds'), 'source': 'combat primitives'},
+        {'group': 'Model', 'assumption': 'Boss kill sources', 'value': replacement_model.get('boss_kill_sources'), 'source': 'replacement model'},
+        {'group': 'Model', 'assumption': 'Contact resolution sources', 'value': replacement_model.get('contact_resolution_sources'), 'source': 'replacement model'},
+        {'group': 'Model', 'assumption': 'Survival model', 'value': replacement_model.get('boss_survival_model'), 'source': 'replacement model'},
+    ]
+    frame = pd.DataFrame(rows)
+    if frame.empty:
+        return frame
+    for column in ('value', 'source'):
+        frame[column] = frame[column].map(_boss_wave_assumption_text)
+    return frame
+
+
+def _boss_wave_runtime_inputs_frame(diagnostics: dict[str, object]) -> pd.DataFrame:
+    runtime_inputs = dict(diagnostics.get('scenario_runtime_inputs') or {})
+    if not runtime_inputs:
+        return pd.DataFrame(columns=['input', 'value'])
+    rows = [
+        {'input': key, 'value': _boss_wave_assumption_text(value)}
+        for key, value in sorted(runtime_inputs.items())
+    ]
+    return pd.DataFrame(rows)
 
 
 def _slug_text(value: str) -> str:
@@ -562,21 +649,22 @@ def _render_action_failure(action_name: str, exc: Exception) -> None:
     st.error(f'{action_name} failed: {exc}')
 
 
-def _run_request(request: PipelineRunRequest) -> None:
+def _run_request(request: PipelineRunRequest, *, action_name: str = 'Run snapshot') -> bool:
     try:
         result = execute_pipeline(request)
     except Exception as exc:
-        _render_action_failure('Run current request', exc)
-        return
+        _render_action_failure(action_name, exc)
+        return False
     _register_snapshot(result.out_dir, preset=request.preset, state_mode=request.state_mode, perk_state=request.perk_state)
+    return True
 
 
-def _run_default_verification_set(base_request: PipelineRunRequest) -> None:
+def _run_default_verification_set(base_request: PipelineRunRequest) -> bool:
     try:
         results = build_verification_snapshot_set(base_request)
     except Exception as exc:
         _render_action_failure('Build default verification set', exc)
-        return
+        return False
     for result in results:
         _register_snapshot(
             result.out_dir,
@@ -584,39 +672,167 @@ def _run_default_verification_set(base_request: PipelineRunRequest) -> None:
             state_mode=result.request.state_mode,
             perk_state=result.request.perk_state,
         )
+    return True
 
 
-def _sidebar() -> PipelineRunRequest:
-    st.sidebar.header('Run Controls')
-    ids_path = Path(st.sidebar.text_input('IDS path', value=str(DEFAULT_IDS)))
-    out_dir = Path(st.sidebar.text_input('Output dir', value=st.session_state['active_out_dir']))
-    manual_inputs_raw = st.sidebar.text_input('Manual inputs override', value='')
-    manual_inputs = Path(manual_inputs_raw) if manual_inputs_raw.strip() else None
-    preset = st.sidebar.selectbox('Loadout', options=['Farming', 'Tourney', 'Milestone'], index=0)
-    perk_policy_preset = st.sidebar.selectbox('Perk plan', options=list(BOSS_WAVE_PERK_POLICY_PRESETS), index=1)
-    include_slow_audits = st.sidebar.checkbox('Include slow audits', value=False)
-    request = PipelineRunRequest(
-        ids=ids_path,
-        out=out_dir,
-        preset=preset,
-        state_mode='start_of_run',
-        manual_inputs=manual_inputs,
-        perk_mode='max_progression_policy',
-        include_slow_audits=include_slow_audits,
-        perk_state='auto',
-        perk_policy_preset=perk_policy_preset,
+def _artifact_path(value: object, *, default: Path) -> Path:
+    if value is None:
+        return default
+    raw = str(value).strip()
+    if not raw or raw.lower() in {'none', 'null'}:
+        return default
+    path = Path(raw)
+    return path if path.is_absolute() else ROOT / path
+
+
+def _request_from_active_snapshot(active_out_dir: Path, active_artifacts: dict[str, object]) -> PipelineRunRequest:
+    diagnostics = dict(active_artifacts.get('diagnostics.json') or {})
+    trace_request = dict((active_artifacts.get('pipeline_trace.json') or {}).get('request') or {})
+    perk_support = dict(diagnostics.get('perk_support') or {})
+    return PipelineRunRequest(
+        ids=_artifact_path(trace_request.get('ids'), default=DEFAULT_IDS),
+        out=active_out_dir,
+        preset=str(diagnostics.get('default_preset') or trace_request.get('preset') or 'Farming'),
+        state_mode=str(diagnostics.get('state_mode') or trace_request.get('state_mode') or 'start_of_run'),
+        manual_inputs=(
+            None
+            if trace_request.get('manual_inputs') in {None, '', 'None', 'none'}
+            else _artifact_path(trace_request.get('manual_inputs'), default=ROOT / 'input' / ('manual_inputs' + '.yaml'))
+        ),
+        perk_mode=str(trace_request.get('perk_mode') or 'max_progression_policy'),
+        include_slow_audits=bool(trace_request.get('include_slow_audits') or False),
+        perk_state=str(perk_support.get('perk_state') or trace_request.get('perk_state') or 'auto'),
+        perk_policy_preset=(
+            str(perk_support.get('perk_policy_preset') or trace_request.get('perk_policy_preset'))
+            if (perk_support.get('perk_policy_preset') or trace_request.get('perk_policy_preset'))
+            else None
+        ),
     )
-    if st.sidebar.button('Run current request', width='stretch'):
-        _run_request(request)
-    if st.sidebar.button('Build default verification set', width='stretch'):
-        _run_default_verification_set(request)
+
+
+def _snapshot_sidebar() -> None:
+    st.sidebar.header('Snapshots')
     snapshot_labels = list(st.session_state['snapshot_dirs'].keys())
-    selected_label = st.sidebar.selectbox('Active snapshot', options=snapshot_labels, index=max(0, snapshot_labels.index(next((label for label, path in st.session_state['snapshot_dirs'].items() if path == st.session_state['active_out_dir']), snapshot_labels[0]))))
+    active_label = next(
+        (label for label, path in st.session_state['snapshot_dirs'].items() if path == st.session_state['active_out_dir']),
+        snapshot_labels[0],
+    )
+    selected_label = st.sidebar.selectbox(
+        'Active snapshot',
+        options=snapshot_labels,
+        index=max(0, snapshot_labels.index(active_label)),
+    )
     st.session_state['active_out_dir'] = st.session_state['snapshot_dirs'][selected_label]
-    return request
+    st.sidebar.caption('Tabs use this snapshot as their artifact source. New runs and verification snapshots are launched from Pipeline and Checks.')
 
 
-def _render_pipeline(trace_payload: dict, diagnostics: dict) -> None:
+def _render_pipeline_run_controls(default_request: PipelineRunRequest) -> None:
+    with st.expander('Run a new snapshot', expanded=False):
+        path_cols = st.columns(3)
+        ids_path = Path(path_cols[0].text_input('Run IDS path', value=str(default_request.ids), key='pipeline_ids_path'))
+        out_dir = Path(path_cols[1].text_input('Run output dir', value=str(default_request.out), key='pipeline_out_dir'))
+        manual_inputs_raw = path_cols[2].text_input(
+            'Run manual inputs override',
+            value='' if default_request.manual_inputs is None else str(default_request.manual_inputs),
+            key='pipeline_manual_inputs',
+        )
+        manual_inputs = Path(manual_inputs_raw) if manual_inputs_raw.strip() else None
+        config_cols = st.columns(4)
+        preset_options = ['Farming', 'Tourney', 'Milestone']
+        preset = config_cols[0].selectbox(
+            'Run loadout',
+            options=preset_options,
+            index=preset_options.index(default_request.preset) if default_request.preset in preset_options else 0,
+            key='pipeline_loadout',
+        )
+        state_options = ['start_of_run', 'max_progression']
+        state_mode = config_cols[1].selectbox(
+            'State mode',
+            options=state_options,
+            index=0,
+            key='pipeline_state_mode',
+        )
+        perk_policy_preset = config_cols[2].selectbox(
+            'Run perk plan',
+            options=list(BOSS_WAVE_PERK_POLICY_PRESETS),
+            index=(
+                list(BOSS_WAVE_PERK_POLICY_PRESETS).index(default_request.perk_policy_preset)
+                if default_request.perk_policy_preset in BOSS_WAVE_PERK_POLICY_PRESETS
+                else 1
+            ),
+            key='pipeline_perk_plan',
+        )
+        include_slow_audits = config_cols[3].checkbox(
+            'Run slow audits',
+            value=bool(default_request.include_slow_audits),
+            key='pipeline_include_slow_audits',
+        )
+        if st.button('Run snapshot', width='stretch'):
+            did_run = _run_request(
+                PipelineRunRequest(
+                    ids=ids_path,
+                    out=out_dir,
+                    preset=preset,
+                    state_mode=state_mode,
+                    manual_inputs=manual_inputs,
+                    perk_mode='max_progression_policy',
+                    include_slow_audits=include_slow_audits,
+                    perk_state='auto',
+                    perk_policy_preset=perk_policy_preset,
+                ),
+                action_name='Run snapshot',
+            )
+            if did_run:
+                st.rerun()
+
+
+def _render_verification_snapshot_controls(default_request: PipelineRunRequest) -> None:
+    with st.expander('Build verification snapshots', expanded=False):
+        path_cols = st.columns(3)
+        ids_path = Path(path_cols[0].text_input('Verification IDS path', value=str(default_request.ids), key='verification_ids_path'))
+        out_dir = Path(path_cols[1].text_input('Verification output dir', value=str(default_request.out), key='verification_out_dir'))
+        manual_inputs_raw = path_cols[2].text_input(
+            'Verification manual inputs override',
+            value='' if default_request.manual_inputs is None else str(default_request.manual_inputs),
+            key='verification_manual_inputs',
+        )
+        manual_inputs = Path(manual_inputs_raw) if manual_inputs_raw.strip() else None
+        config_cols = st.columns(2)
+        perk_policy_preset = config_cols[0].selectbox(
+            'Verification perk plan',
+            options=list(BOSS_WAVE_PERK_POLICY_PRESETS),
+            index=(
+                list(BOSS_WAVE_PERK_POLICY_PRESETS).index(default_request.perk_policy_preset)
+                if default_request.perk_policy_preset in BOSS_WAVE_PERK_POLICY_PRESETS
+                else 1
+            ),
+            key='verification_perk_plan',
+        )
+        include_slow_audits = config_cols[1].checkbox(
+            'Verification slow audits',
+            value=bool(default_request.include_slow_audits),
+            key='verification_include_slow_audits',
+        )
+        if st.button('Build default verification set', width='stretch'):
+            did_build = _run_default_verification_set(
+                PipelineRunRequest(
+                    ids=ids_path,
+                    out=out_dir,
+                    preset=default_request.preset,
+                    state_mode=default_request.state_mode,
+                    manual_inputs=manual_inputs,
+                    perk_mode='max_progression_policy',
+                    include_slow_audits=include_slow_audits,
+                    perk_state='auto',
+                    perk_policy_preset=perk_policy_preset,
+                )
+            )
+            if did_build:
+                st.rerun()
+
+
+def _render_pipeline(trace_payload: dict, diagnostics: dict, request: PipelineRunRequest) -> None:
+    _render_pipeline_run_controls(request)
     execution = trace_payload.get('execution_path') or {}
     cols = st.columns(6)
     cols[0].metric('Recompute mode', _friendly_recompute_mode(execution.get('recompute_mode')))
@@ -632,53 +848,55 @@ def _render_pipeline(trace_payload: dict, diagnostics: dict) -> None:
             'You are still seeing the real artifacts and outputs, but the cache/bundle branch fields are structural placeholders on this path.'
         )
 
-    with st.expander('Execution Path', expanded=True):
-        st.json(execution)
-
-    stage_df = pipeline_stages_frame(trace_payload)
-    if not stage_df.empty:
-        st.subheader('Stages')
-        st.dataframe(stage_df, width='stretch', hide_index=True)
-        for stage in trace_payload.get('stages') or []:
-            title = f"{stage.get('title', stage.get('stage_id'))} - {stage.get('owner_module', '')}"
-            with st.expander(title):
-                st.write(f"`{stage.get('entry_function', '')}`")
-                st.json(stage)
-
-    st.subheader('Cache')
-    st.json(
-        {
-            'cache_fingerprint': execution.get('cache_fingerprint'),
-            'cache_validation': execution.get('cache_validation'),
-            'mutated_workshop_keys': ((execution.get('incremental_plan') or {}).get('mutated_source_nodes')),
-            'reused_cached_reference_statbook': execution.get('cache_status') == 'hit',
-        }
-    )
-
-    st.subheader('Incremental Plan')
-    st.json(execution.get('incremental_plan') or {})
-
-    st.subheader('Runtime Consumers')
-    st.json(
-        {
-            'runtime_consumers': execution.get('runtime_consumers') or [],
-            'runtime_publication': execution.get('runtime_publication'),
-        }
-    )
-
-    with st.expander('Advanced raw details'):
-        st.code(
-            '\n'.join(
-                [
-                    'simulators.progression.ProgressionRecalcBridge.recompute',
-                    'simulators.incremental_recalc_runtime.IncrementalRecalcRuntime.plan_consumer_bundle',
-                    'simulators.incremental_cache_validator.IncrementalCacheValidator.validate',
-                    'simulators.incremental_overlay_publisher.IncrementalOverlayPublisher.publish',
-                    'simulators.incremental_parity_harness.IncrementalParityHarness.compare',
-                ]
-            )
+    with st.expander('Pipeline evidence', expanded=False):
+        execution_tab, stages_tab, cache_tab, runtime_tab, advanced_tab = st.tabs(
+            ['Execution', 'Stages', 'Cache', 'Runtime', 'Advanced']
         )
-        st.json(diagnostics.get('pipeline_incremental_summary') or {})
+        with execution_tab:
+            st.json(execution)
+        with stages_tab:
+            stage_df = pipeline_stages_frame(trace_payload)
+            if stage_df.empty:
+                st.info('No pipeline stages were published for this snapshot.')
+            else:
+                st.dataframe(stage_df, width='stretch', hide_index=True)
+                for stage in trace_payload.get('stages') or []:
+                    title = f"{stage.get('title', stage.get('stage_id'))} - {stage.get('owner_module', '')}"
+                    with st.expander(title):
+                        st.write(f"`{stage.get('entry_function', '')}`")
+                        st.json(stage)
+        with cache_tab:
+            st.json(
+                {
+                    'cache_fingerprint': execution.get('cache_fingerprint'),
+                    'cache_validation': execution.get('cache_validation'),
+                    'mutated_workshop_keys': ((execution.get('incremental_plan') or {}).get('mutated_source_nodes')),
+                    'reused_cached_reference_statbook': execution.get('cache_status') == 'hit',
+                    'incremental_plan': execution.get('incremental_plan') or {},
+                }
+            )
+        with runtime_tab:
+            st.json(
+                {
+                    'runtime_consumers': execution.get('runtime_consumers') or [],
+                    'runtime_publication': execution.get('runtime_publication'),
+                }
+            )
+        with advanced_tab:
+            st.caption('Active snapshot request defaults')
+            st.code(json.dumps(request.__dict__, indent=2, default=str))
+            st.code(
+                '\n'.join(
+                    [
+                        'simulators.progression.ProgressionRecalcBridge.recompute',
+                        'simulators.incremental_recalc_runtime.IncrementalRecalcRuntime.plan_consumer_bundle',
+                        'simulators.incremental_cache_validator.IncrementalCacheValidator.validate',
+                        'simulators.incremental_overlay_publisher.IncrementalOverlayPublisher.publish',
+                        'simulators.incremental_parity_harness.IncrementalParityHarness.compare',
+                    ]
+                )
+            )
+            st.json(diagnostics.get('pipeline_incremental_summary') or {})
 
 
 def _render_cards_matrix(account_state: dict, *, selected_preset: str) -> None:
@@ -805,166 +1023,69 @@ def _render_perks_table(
     )
 
 
-def _render_perk_policy_tab(request: PipelineRunRequest) -> dict[str, object]:
+def _render_perk_policy_tab(request: PipelineRunRequest) -> None:
     st.subheader('Perk Timeline Policy')
-    initial_override = st.session_state.get('boss_wave_perk_policy_override')
-    try:
-        preview = build_perk_timeline_preview(
-            request,
-            perk_policy_override=initial_override if isinstance(initial_override, dict) else None,
-        )
-    except Exception as exc:
-        _render_action_failure('Perk plan preview', exc)
-        return {}
-    resolved = dict(preview.get('resolved_policy') or {})
-    validation = dict(preview.get('validation') or {})
-    all_perks = list(preview.get('all_perks') or [])
-    eligible_perks = list(preview.get('eligible_perks') or all_perks)
-
-    lab_cols = st.columns(5)
-    lab_cols[0].metric('Waves Required lab', int(resolved.get('waves_required_lab') or 0))
-    lab_cols[1].metric('Perk choices', int(resolved.get('perk_option_quantity') or 0) + 2)
-    lab_cols[2].metric('Ban slots used', f"{int(validation.get('ban_perks_used') or 0)} / {int(validation.get('ban_perks_capacity') or 0)}")
-    lab_cols[3].metric('SPB', f"{float(resolved.get('standard_perk_bonus') or 0.0) * 100:g}%")
-    lab_cols[4].metric('First choice lab', 'unlocked' if validation.get('first_perk_choice_unlocked') else 'locked')
-
-    control_cols = st.columns(2)
-    seed = control_cols[0].number_input('Perk RNG seed', min_value=0, value=int(resolved.get('seed') or 42), step=1)
-    target_wave = control_cols[1].number_input('Perk preview target wave', min_value=1, value=int(resolved.get('target_wave') or 50000), step=100)
-
-    banned = st.multiselect(
-        'Banned perks',
-        options=all_perks,
-        default=[name for name in resolved.get('banned_perks', []) if name in all_perks],
-    )
-    first_options = [''] + eligible_perks
-    first_value = str(resolved.get('first_perk_choice') or '')
-    first_choice = st.selectbox(
-        'First perk choice',
-        options=first_options,
-        index=first_options.index(first_value) if first_value in first_options else 0,
-        disabled=not bool(validation.get('first_perk_choice_unlocked')),
-    )
-    priority = st.multiselect(
-        'Priority order',
-        options=eligible_perks,
-        default=[name for name in resolved.get('priority_order', []) if name in eligible_perks],
-    )
-    override = {
-        'seed': int(seed),
-        'target_wave': int(target_wave),
-        'banned_perks': list(banned),
-        'first_perk_choice': str(first_choice or ''),
-        'priority_order': list(priority),
-    }
-    st.session_state['boss_wave_perk_policy_override'] = override
-    preview = build_perk_timeline_preview(request, perk_policy_override=override)
-    validation = dict(preview.get('validation') or {})
-    diagnostics = dict(preview.get('diagnostics') or {})
-    context = dict(preview.get('context') or {})
-
-    if validation.get('errors'):
-        st.error('Perk plan is invalid: ' + '; '.join(str(item) for item in validation.get('errors') or []))
-    for warning in validation.get('warnings') or []:
-        st.warning(str(warning))
-
-    save_cols = st.columns((1, 3))
-    save_disabled = not bool(validation.get('ok'))
-    if save_cols[0].button('Save perk plan', disabled=save_disabled):
-        try:
-            save_result = save_perk_policy_override(request, perk_policy_override=override)
-        except ValueError as exc:
-            st.error(str(exc))
-        else:
-            st.session_state['boss_wave_perk_policy_override'] = {}
-            st.success(f"Saved to {save_result.get('manual_inputs_path')}")
-            preview = build_perk_timeline_preview(request)
+    columns = st.columns(len(BOSS_WAVE_PERK_POLICY_PRESETS))
+    previews: dict[str, dict[str, object]] = {}
+    for column, policy_preset in zip(columns, BOSS_WAVE_PERK_POLICY_PRESETS):
+        policy_request = replace(request, perk_policy_preset=policy_preset)
+        with column:
+            st.markdown(f"**{policy_preset}**")
+            try:
+                preview = build_perk_timeline_preview(policy_request)
+            except Exception as exc:
+                st.error(f'Perk plan preview failed: {exc}')
+                continue
+            previews[policy_preset] = preview
+            resolved = dict(preview.get('resolved_policy') or {})
             validation = dict(preview.get('validation') or {})
             diagnostics = dict(preview.get('diagnostics') or {})
-    save_cols[1].caption('default manual input file' if request.manual_inputs is None else str(request.manual_inputs))
+            if validation.get('errors'):
+                st.error('Perk plan is invalid: ' + '; '.join(str(item) for item in validation.get('errors') or []))
+            for warning in validation.get('warnings') or []:
+                st.warning(str(warning))
+            metric_cols = st.columns(2)
+            metric_cols[0].metric('Generated', int(diagnostics.get('generated_rows') or 0))
+            metric_cols[1].metric('Final wave', int(diagnostics.get('final_wave') or 0))
 
-    summary_cols = st.columns(4)
-    summary_cols[0].metric('Perk plan', preview.get('policy_preset') or 'default')
-    summary_cols[1].metric('Generated perks', int(diagnostics.get('generated_rows') or 0))
-    summary_cols[2].metric('Final perk wave', int(diagnostics.get('final_wave') or 0))
-    summary_cols[3].metric('PWR stacks', int(diagnostics.get('pwr_stacks') or 0))
-    source_cols = st.columns(4)
-    source_cols[0].metric('Plan strategy', context.get('policy_strategy') or 'manual')
-    source_cols[1].metric('Plan generation', 'goal matrix' if context.get('policy_generated_from_goal_matrix') else 'explicit')
-    source_cols[2].metric('Pool remaining', int(diagnostics.get('pool_remaining') or 0))
-    source_cols[3].metric('Generator owner', str(preview.get('generator_owner') or 'unknown').split('.')[-1])
+            priority_rows = [
+                {'rank': index, 'perk': perk_name}
+                for index, perk_name in enumerate(resolved.get('priority_order') or (), start=1)
+            ]
+            st.caption('Priority order')
+            st.dataframe(pd.DataFrame(priority_rows), width='stretch', hide_index=True)
 
-    priority_rows = [
-        {'rank': index, 'perk': perk_name}
-        for index, perk_name in enumerate(resolved.get('priority_order') or (), start=1)
-    ]
-    banned_rows = [
-        {'slot': index, 'perk': perk_name}
-        for index, perk_name in enumerate(resolved.get('banned_perks') or (), start=1)
-    ]
-    policy_cols = st.columns(2)
-    with policy_cols[0]:
-        st.caption('Resolved priority order')
-        st.dataframe(pd.DataFrame(priority_rows), width='stretch', hide_index=True)
-    with policy_cols[1]:
-        st.caption('Resolved banned perks')
-        st.dataframe(pd.DataFrame(banned_rows), width='stretch', hide_index=True)
+            banned_rows = [
+                {'slot': index, 'perk': perk_name}
+                for index, perk_name in enumerate(resolved.get('banned_perks') or (), start=1)
+            ]
+            st.caption('Bans')
+            st.dataframe(pd.DataFrame(banned_rows), width='stretch', hide_index=True)
 
-    taken_counts = diagnostics.get('taken_counts') or {}
-    if taken_counts:
-        st.caption('Generated perk pick counts')
-        st.dataframe(
-            pd.DataFrame(
-                [
-                    {'perk': perk_name, 'picks': picks}
-                    for perk_name, picks in sorted(taken_counts.items())
-                ]
-            ),
-            width='stretch',
-            hide_index=True,
-        )
+            timeline_rows = [
+                {
+                    'wave': row.get('wave'),
+                    'perk': row.get('perk_taken'),
+                    'qty': row.get('quantity'),
+                }
+                for row in (preview.get('timeline') or ())
+            ]
+            st.caption('Taken by wave')
+            st.dataframe(pd.DataFrame(timeline_rows), width='stretch', hide_index=True)
 
-    generated_context = dict(context.get('generated_policy_context') or {})
-    benefit_matrix = list(generated_context.get('perk_goal_benefit_matrix') or [])
-    if benefit_matrix:
-        with st.expander('Generated goal-benefit matrix', expanded=False):
-            st.dataframe(pd.DataFrame(benefit_matrix), width='stretch', hide_index=True)
-
-    exclusions = diagnostics.get('uw_locked_perks_excluded') or {}
-    if exclusions:
-        st.caption('UW-locked perks excluded by KB eligibility')
-        st.dataframe(
-            pd.DataFrame(
-                [{'perk': perk_name, 'requires UW': required_uw} for perk_name, required_uw in sorted(exclusions.items())]
-            ),
-            width='stretch',
-            hide_index=True,
-        )
-
-    timeline_rows = []
-    for index, row in enumerate(preview.get('timeline') or (), start=1):
-        timeline_rows.append(
-            {
-                'pick': index,
-                'wave': row.get('wave'),
-                'perk': row.get('perk_taken'),
-                'quantity': row.get('quantity'),
-                'pwr stacks': row.get('pwr_stacks_after'),
-                'effect': row.get('effect'),
-                'offered': ', '.join(str(item) for item in (row.get('offered') or [])),
-            }
-        )
-    st.dataframe(pd.DataFrame(timeline_rows), width='stretch', hide_index=True)
     with st.expander('Resolved perk policy diagnostics', expanded=False):
         st.json(
             {
-                'resolved_policy': preview.get('resolved_policy'),
-                'validation': preview.get('validation'),
-                'diagnostics': preview.get('diagnostics'),
-                'generator_owner': preview.get('generator_owner'),
+                policy_preset: {
+                    'resolved_policy': preview.get('resolved_policy'),
+                    'validation': preview.get('validation'),
+                    'diagnostics': preview.get('diagnostics'),
+                    'generator_owner': preview.get('generator_owner'),
+                }
+                for policy_preset, preview in previews.items()
             }
         )
-    return override
+    return None
 
 
 def _uw_track_stat_suffix(track_name: object) -> tuple[str, ...]:
@@ -1670,19 +1791,20 @@ def _render_stats(active_artifacts, comparison_artifacts: list[tuple[str, object
         if dashboard.get('upstream_gaps'):
             st.warning('Upstream publication gaps detected')
             st.json(dashboard.get('upstream_gaps'))
-        with st.expander('Dashboard artifact debug (stats_dashboard.json)', expanded=False):
+        with st.expander('Advanced stats artifact (stats_dashboard.json)', expanded=False):
             st.json(dashboard)
     else:
-        st.info('stats_dashboard.json missing; showing legacy debug views only.')
+        st.info('stats_dashboard.json missing; showing fallback stats views only.')
 
-    with st.expander('Stats debug and verification', expanded=False):
+    with st.expander('Stats evidence and verification', expanded=False):
         try:
             _render_stats_debug_tools(active_artifacts, comparison_artifacts, request)
         except Exception as exc:
-            st.warning(f'Stats debug tools unavailable for this snapshot: {exc}')
+            st.warning(f'Stats evidence tools unavailable for this snapshot: {exc}')
 
 
-def _render_checks(active_artifacts) -> None:
+def _render_checks(active_artifacts, request: PipelineRunRequest) -> None:
+    _render_verification_snapshot_controls(request)
     diagnostics = active_artifacts.get('diagnostics.json', {})
     st.subheader('Needs Attention')
     compare_df = compare_rows_frame(active_artifacts.get('ep_oracle_compare.json', {}))
@@ -1828,12 +1950,12 @@ def _render_inputs(active_artifacts, active_out_dir: Path) -> None:
         if dashboard.get('upstream_gaps'):
             st.warning('Upstream publication gaps detected')
             st.json(dashboard.get('upstream_gaps'))
-        with st.expander('Dashboard artifact debug (input_dashboard.json)', expanded=False):
+        with st.expander('Advanced input artifact (input_dashboard.json)', expanded=False):
             st.json(dashboard)
     else:
-        st.info('input_dashboard.json missing; showing legacy debug views only.')
+        st.info('input_dashboard.json missing; showing fallback input views only.')
 
-    with st.expander('Legacy input debug views', expanded=False):
+    with st.expander('Input lineage and artifact evidence', expanded=False):
         diagnostics = active_artifacts.get('diagnostics.json', {})
         account_state_payload = active_artifacts.get('account_state.json') or {}
         st.json(
@@ -1847,7 +1969,7 @@ def _render_inputs(active_artifacts, active_out_dir: Path) -> None:
                 'pipeline_compare_policy': diagnostics.get('compare_situation_policy', {}),
             }
         )
-        st.subheader('Raw artifacts')
+        st.subheader('Artifact summary')
         st.json(
             {
                 'account_state_keys': sorted(account_state_payload.keys()) if isinstance(account_state_payload, dict) else [],
@@ -1879,16 +2001,27 @@ def _require_boss_wave_payload_rows(boss_payload: dict, field_name: str) -> list
     return rows
 
 
-def _render_boss_waves(request: PipelineRunRequest, *, perk_policy_override: dict[str, object] | None = None) -> None:
+def _render_boss_waves(request: PipelineRunRequest) -> None:
     st.subheader('Boss Waves')
-    control_cols = st.columns(4)
+    control_cols = st.columns(5)
     preset_name = control_cols[0].selectbox('Boss loadout', options=['Farming', 'Tourney', 'Milestone'], index=['Farming', 'Tourney', 'Milestone'].index(request.preset) if request.preset in {'Farming', 'Tourney', 'Milestone'} else 0)
-    tier_number = control_cols[1].number_input('Tier', min_value=1, max_value=21, value=14, step=1)
-    end_wave = control_cols[2].number_input('End wave', min_value=10, value=10000, step=10)
-    boss_wave_step = control_cols[3].number_input('Checkpoint every N bosses', min_value=1, max_value=1000, value=1, step=1)
-    stop_on_failure = st.toggle('Stop on first failed boss', value=True)
+    perk_policy_preset = control_cols[1].selectbox(
+        'Perk plan',
+        options=list(BOSS_WAVE_PERK_POLICY_PRESETS),
+        index=(
+            list(BOSS_WAVE_PERK_POLICY_PRESETS).index(request.perk_policy_preset)
+            if request.perk_policy_preset in BOSS_WAVE_PERK_POLICY_PRESETS
+            else 1
+        ),
+        key='boss_waves_perk_plan',
+    )
+    tier_number = control_cols[2].number_input('Tier', min_value=1, max_value=21, value=14, step=1)
+    end_wave = control_cols[3].number_input('End wave', min_value=10, value=10000, step=10)
+    boss_wave_step = control_cols[4].number_input('Checkpoint cadence (bosses)', min_value=1, max_value=1000, value=1, step=1)
+    scenario_request = replace(request, preset=preset_name, perk_policy_preset=perk_policy_preset)
+    stop_on_failure = True
 
-    with st.expander('Manual combat assumptions', expanded=False):
+    with st.expander('Combat assumptions', expanded=False):
         runtime_cols = st.columns(6)
         orb_boss_total_damage_pct = runtime_cols[0].number_input('Orb damage to boss (total %)', min_value=0.0, max_value=100.0, value=6.0, step=0.1)
         electron_total_damage_pct = runtime_cols[1].number_input('Electron damage override (total %)', min_value=0.0, max_value=100.0, value=0.0, step=0.1)
@@ -1896,32 +2029,34 @@ def _render_boss_waves(request: PipelineRunRequest, *, perk_policy_override: dic
         flame_bot_damage_reduction_pct = runtime_cols[3].number_input('Flame Bot DR override (%)', min_value=0.0, max_value=100.0, value=0.0, step=1.0)
         boss_time_to_contact_seconds = runtime_cols[4].number_input('Boss time to contact override (s)', min_value=0.0, max_value=120.0, value=0.0, step=0.1)
         death_wave_health_max_wave = runtime_cols[5].number_input('Death Wave maxed wave', min_value=1, value=1000, step=10)
-        gc_cols = st.columns(2)
-        boss_applicable_damage_factor = gc_cols[0].number_input('Boss eDamage applicability factor', min_value=0.0, value=0.0, step=0.0001, format='%.6f')
-        bridge_cols = st.columns(4)
-        boss_edamage_target_share = bridge_cols[0].number_input('Boss target share', min_value=0.0, value=0.0, step=0.0001, format='%.6f')
-        boss_edamage_cadence_uptime_factor = bridge_cols[1].number_input('Boss cadence uptime', min_value=0.0, value=0.0, step=0.0001, format='%.6f')
-        boss_edamage_reliability_factor = bridge_cols[2].number_input('Boss reliability', min_value=0.0, value=0.0, step=0.0001, format='%.6f')
-        boss_edamage_semantic_normalizer = bridge_cols[3].number_input('Boss semantic normalizer', min_value=0.0, value=0.0, step=0.0001, format='%.6f')
+        use_manual_damage_calibration = st.toggle('Override boss damage calibration', value=False)
+        boss_applicable_damage_factor = 0.0
+        boss_edamage_target_share = 0.0
+        boss_edamage_cadence_uptime_factor = 0.0
+        boss_edamage_reliability_factor = 0.0
+        boss_edamage_semantic_normalizer = 0.0
+        if use_manual_damage_calibration:
+            gc_cols = st.columns(2)
+            boss_applicable_damage_factor = gc_cols[0].number_input('Boss eDamage applicability factor', min_value=0.0, value=0.0, step=0.0001, format='%.6f')
+            bridge_cols = st.columns(4)
+            boss_edamage_target_share = bridge_cols[0].number_input('Boss target share', min_value=0.0, value=0.0, step=0.0001, format='%.6f')
+            boss_edamage_cadence_uptime_factor = bridge_cols[1].number_input('Boss cadence uptime', min_value=0.0, value=0.0, step=0.0001, format='%.6f')
+            boss_edamage_reliability_factor = bridge_cols[2].number_input('Boss reliability', min_value=0.0, value=0.0, step=0.0001, format='%.6f')
+            boss_edamage_semantic_normalizer = bridge_cols[3].number_input('Boss semantic normalizer', min_value=0.0, value=0.0, step=0.0001, format='%.6f')
     decomposed_bridge_inputs = {
         **({'boss_edamage_target_share': boss_edamage_target_share} if boss_edamage_target_share > 0.0 else {}),
         **({'boss_edamage_cadence_uptime_factor': boss_edamage_cadence_uptime_factor} if boss_edamage_cadence_uptime_factor > 0.0 else {}),
         **({'boss_edamage_reliability_factor': boss_edamage_reliability_factor} if boss_edamage_reliability_factor > 0.0 else {}),
         **({'boss_edamage_semantic_normalizer': boss_edamage_semantic_normalizer} if boss_edamage_semantic_normalizer > 0.0 else {}),
     }
-    bridge_comparison_inputs = {
-        **({'boss_applicable_damage_factor': boss_applicable_damage_factor} if boss_applicable_damage_factor > 0.0 else {}),
-        **decomposed_bridge_inputs,
-    }
-
     try:
         boss_payload = build_boss_wave_payload(
-            request,
+            scenario_request,
             preset_name=preset_name,
             tier_number=int(tier_number),
             end_wave=int(end_wave),
             boss_wave_step=int(boss_wave_step),
-            stop_on_failure=bool(stop_on_failure),
+            stop_on_failure=stop_on_failure,
             scenario_runtime_inputs={
                 'orb_boss_total_damage_pct': orb_boss_total_damage_pct,
                 **({'electron_total_damage_pct': electron_total_damage_pct} if electron_total_damage_pct > 0.0 else {}),
@@ -1932,8 +2067,6 @@ def _render_boss_waves(request: PipelineRunRequest, *, perk_policy_override: dic
                 **({'boss_time_to_contact_seconds': boss_time_to_contact_seconds} if boss_time_to_contact_seconds > 0.0 else {}),
                 'death_wave_health_max_wave': death_wave_health_max_wave,
             },
-            perk_policy_override=perk_policy_override,
-            include_dissonance_run_matrix=True,
         )
     except Exception as exc:
         st.error(str(exc))
@@ -1999,107 +2132,16 @@ def _render_boss_waves(request: PipelineRunRequest, *, perk_policy_override: dic
         'milestone_alignment': dict(payload_diagnostics.get('milestone_alignment') or {}),
     }
 
-    summary_cols = st.columns(4)
-    summary_cols[0].metric('Rows', diagnostics['row_count'])
-    summary_cols[1].metric('Selected wave', diagnostics['selected_max_wave'])
-    summary_cols[2].metric('Tier', diagnostics['tier_column'])
-    summary_cols[3].metric('Loadout', diagnostics['preset_name'])
-    summary_cols_2 = st.columns(4)
-    summary_cols_2[0].metric('First failed wave', diagnostics['first_failed_wave'] or '—')
-    summary_cols_2[1].metric('Boss cadence', diagnostics['actual_boss_interval_waves'] or '—')
-    summary_cols_2[2].metric('Execution mode', diagnostics['execution_mode'] or '—')
-    summary_cols_2[3].metric('Row/result agreement', 'Yes' if diagnostics['result_consistent_with_rows'] else 'No')
+    st.metric('Max Boss Wave', diagnostics['selected_max_wave'])
+    st.caption(f"Result uses `{diagnostics['selected_model']}`.")
     st.caption(
-        f"Selected model `{diagnostics['selected_model']}`; "
-        f"GC pre-contact wave `{diagnostics['gc_pre_contact_max_wave']}` "
-        f"(first failed `{diagnostics['gc_pre_contact_first_failed_wave'] or 'none'}`); "
-        f"Fast contact-envelope wave `{diagnostics['contact_envelope_max_wave']}` "
-        f"(first failed `{diagnostics['contact_envelope_first_failed_wave'] or 'none'}`); "
-        f"hit-by-hit first failed `{diagnostics['first_failed_wave'] or 'none'}`."
+        f"`{diagnostics['preset_name']}` loadout; `{perk_policy_preset}` perk plan; "
+        f"`{diagnostics['tier_column']}`; boss cadence `{diagnostics['actual_boss_interval_waves'] or '—'}` waves; "
+        f"perks `{'on' if diagnostics['perks_enabled'] else 'off'}`; "
+        f"damage source `{boss_damage_source}`."
     )
-    dissonance_matrix = boss_payload.get('dissonance_run_matrix') or []
-    if dissonance_matrix:
-        matrix_frame = pd.DataFrame(dissonance_matrix)
-        display_columns = [
-            'label',
-            'selected_max_wave',
-            'selected_first_failed_wave',
-            'hit_by_hit_max_wave',
-            'contact_envelope_max_wave',
-            'gc_pre_contact_max_wave',
-            'status',
-        ]
-        available_columns = [column for column in display_columns if column in matrix_frame.columns]
-        st.dataframe(matrix_frame[available_columns], width='stretch', hide_index=True)
-        st.caption('Dissonant Run rows apply the v28 category restriction masks before the same Boss Waves run-plan table is evaluated.')
-    if st.button('Build all-tier milestone matrix'):
-        milestone_matrix = build_boss_wave_milestone_matrix(
-            request,
-            end_wave=int(end_wave),
-            boss_wave_step=int(boss_wave_step),
-            stop_on_failure=bool(stop_on_failure),
-            scenario_runtime_inputs={
-                'orb_boss_total_damage_pct': orb_boss_total_damage_pct,
-                **({'electron_total_damage_pct': electron_total_damage_pct} if electron_total_damage_pct > 0.0 else {}),
-                **({'flame_bot_boss_hit_chance_pct': flame_bot_boss_hit_chance_pct} if flame_bot_boss_hit_chance_pct > 0.0 else {}),
-                **({'flame_bot_damage_reduction_pct': flame_bot_damage_reduction_pct} if flame_bot_damage_reduction_pct > 0.0 else {}),
-                **({'boss_time_to_contact_seconds': boss_time_to_contact_seconds} if boss_time_to_contact_seconds > 0.0 else {}),
-                'death_wave_health_max_wave': death_wave_health_max_wave,
-            },
-            comparison_scenario_runtime_inputs=bridge_comparison_inputs or None,
-            comparison_label='bridge_assumptions',
-        )
-        milestone_frame = pd.DataFrame(milestone_matrix.get('wide_rows') or [])
-        display_columns = [
-            'tier_column',
-            'milestone_reference_wave',
-            'regular_display',
-            'regular_reference_wave',
-            'regular_delta_vs_reference_wave',
-            'attack_display',
-            'attack_reference_wave',
-            'attack_delta_vs_reference_wave',
-            'defense_display',
-            'defense_reference_wave',
-            'defense_delta_vs_reference_wave',
-            'utility_display',
-            'utility_reference_wave',
-            'utility_delta_vs_reference_wave',
-            'ultimate_weapons_display',
-            'ultimate_weapons_reference_wave',
-            'ultimate_weapons_delta_vs_reference_wave',
-            'regular_status',
-            'attack_status',
-            'defense_status',
-            'utility_status',
-            'ultimate_weapons_status',
-        ]
-        st.dataframe(milestone_frame[[column for column in display_columns if column in milestone_frame.columns]], width='stretch', hide_index=True)
-        comparison_payload = dict(milestone_matrix.get('comparison') or {})
-        comparison_rows = comparison_payload.get('wide_rows') or []
-        if comparison_rows:
-            comparison_frame = pd.DataFrame(comparison_rows)
-            comparison_columns = [
-                'tier_column',
-                'milestone_reference_wave',
-                'regular_default_display',
-                'regular_comparison_display',
-                'regular_delta_wave',
-                'attack_default_display',
-                'attack_comparison_display',
-                'attack_delta_wave',
-                'defense_default_display',
-                'defense_comparison_display',
-                'defense_delta_wave',
-                'utility_default_display',
-                'utility_comparison_display',
-                'utility_delta_wave',
-                'ultimate_weapons_default_display',
-                'ultimate_weapons_comparison_display',
-                'ultimate_weapons_delta_wave',
-            ]
-            st.dataframe(comparison_frame[[column for column in comparison_columns if column in comparison_frame.columns]], width='stretch', hide_index=True)
-        st.caption('Each cell prefers complete milestone-mode candidates, then the highest selected wave across the four named loadout presets.')
+    if diagnostics['selected_max_wave'] >= int(end_wave):
+        st.info('Max Boss Wave reached the requested end wave. Increase End wave to search farther.')
     milestone_alignment = diagnostics['milestone_alignment']
     milestone_reference = milestone_alignment.get('reference_wave')
     if milestone_reference:
@@ -2108,45 +2150,37 @@ def _render_boss_waves(request: PipelineRunRequest, *, perk_policy_override: dic
             f"solver delta `{milestone_alignment.get('delta_waves')}` waves."
         )
     contract = dict(boss_payload.get('contract') or {})
-    st.caption(
-        "Start state: "
-        f"`{contract.get('start_state_basis') or diagnostics['state_mode']}`. "
-        "Perks evolve: "
-        f"`{contract.get('perk_timeline_mode') or 'unknown'}`. "
-        "Perks enabled: "
-        f"`{'yes' if diagnostics['perks_enabled'] else 'no'}`. "
-        "Free upgrades evolve: "
-        f"`{contract.get('free_upgrade_mode') or 'unknown'}`. "
-        "Actual boss cadence: "
-        f"`every {diagnostics['actual_boss_interval_waves'] or '—'} waves`. "
-        "Checkpoint sampling: "
-        f"`every {diagnostics['checkpoint_every_bosses'] or '—'} boss(es)`. "
-        "Wave progression: "
-        f"`{contract.get('wave_progression_mode') or 'unknown'}`. "
-        "Enemy skips: "
-        f"`{contract.get('enemy_skip_mode') or 'unknown'}`. "
-        "Tower damage basis: "
-        f"`{contract.get('tower_damage_mode') or payload_diagnostics.get('tower_damage_mode') or 'unknown'}`. "
-        "Boss damage source: "
-        f"`{boss_damage_source}`."
-    )
-    st.caption(
-        "Model bounds: "
-        f"`{contract.get('survivability_semantics') or 'bounded_runtime_assumption_model'}`. "
-        "The operator table reflects the actual DR/contact assumptions used by the current run, including visible wall regen contribution."
-    )
-    st.caption(
-        'Rows are sampled every N bosses on top of the resolved scenario boss cadence. Free upgrades and enemy level '
-        'skips are accumulated across the intervening waves using the interval-start resolved values, while boss kill '
-        'time uses the sanctioned runtime damage proxy rather than a static max-progression shortcut.'
-    )
     if diagnostics['context_status'] not in {'resolved', 'complete'}:
         st.warning(diagnostics['context_error_message'] or 'Boss Waves cannot resolve the required scenario context for this request.')
-    st.info(
-        'Boss Waves is a bounded runtime estimate. The main table shows the operator-facing survival view; '
-        'the raw simulator/debug row dump remains available below.'
+    primary_columns = [
+        'Result',
+        'Wave',
+        'Boss HP',
+        'Boss Atk',
+        'Tower DPS',
+        'Wall HP',
+        'Wall Regen',
+        'Damage Reduction',
+        'Boss Kill Time',
+        'Contact Time',
+        'Boss Hits',
+        'Damage Taken',
+        'Survival Margin',
+        'Killed Before Contact',
+    ]
+    table_frame = display_frame.copy()
+    if not table_frame.empty and 'Wave' in table_frame.columns:
+        max_wave = diagnostics['selected_max_wave']
+        table_frame['Result'] = pd.to_numeric(table_frame['Wave'], errors='coerce').map(
+            lambda wave: 'max' if pd.notna(wave) and int(wave) == max_wave else ''
+        )
+    show_all_checkpoints = st.toggle('Show all checkpoints', value=False)
+    visible_frame = table_frame if show_all_checkpoints else _focus_boss_wave_display_frame(
+        table_frame,
+        max_boss_wave=diagnostics['selected_max_wave'],
     )
-    st.dataframe(display_frame, width='stretch', hide_index=True)
+    st.caption('Boss checkpoints')
+    st.dataframe(visible_frame[[column for column in primary_columns if column in visible_frame.columns]], width='stretch', hide_index=True)
     st.download_button(
         'Download boss-wave CSV',
         data=download_frame.to_csv(index=False).encode('utf-8'),
@@ -2154,42 +2188,67 @@ def _render_boss_waves(request: PipelineRunRequest, *, perk_policy_override: dic
         mime='text/csv',
         width='stretch',
     )
-    with st.expander('Boss-wave raw rows (debug)'):
-        st.dataframe(frame, width='stretch', hide_index=True)
-    with st.expander('Boss-wave diagnostics'):
-        st.json({
-            'summary': diagnostics,
-            'model_certification': payload_diagnostics.get('model_certification') or {},
-            'contact_time_contract': payload_diagnostics.get('contact_time_contract') or {},
-            'source_selection': payload_diagnostics.get('source_selection') or {},
-            'replacement_model': payload_diagnostics.get('replacement_model') or {},
-        })
-    with st.expander('Boss-wave execution details'):
-        st.json({
-            'contract': boss_payload.get('contract') or {},
-            'runtime_inputs_used': diagnostics['scenario_runtime_inputs'],
-            'replacement_primitive_inputs': primitive_inputs,
-            'replacement_primitive_semantics_ledger': payload_diagnostics.get('replacement_primitive_semantics_ledger') or {},
-            'execution_counts': {
-                'qe_resolution_count': diagnostics['qe_resolution_count'],
-                'timing_recompute_count': diagnostics['timing_recompute_count'],
-                'snapshot_reuse_count': diagnostics['snapshot_reuse_count'],
-                'qe_dirty_reresolve_count': diagnostics['qe_dirty_reresolve_count'],
-                'delta_fallback_count': diagnostics['delta_fallback_count'],
-            },
-            'terminal_display_wave': diagnostics['terminal_display_wave'],
-            'survives_through_end': diagnostics['survives_through_end'],
-        })
+    with st.expander('Model assumptions'):
+        st.dataframe(
+            _boss_wave_assumption_frame(
+                diagnostics=diagnostics,
+                contract=contract,
+                payload_diagnostics=payload_diagnostics,
+                primitive_values=primitive_values,
+                boss_damage_source=boss_damage_source,
+            ),
+            width='stretch',
+            hide_index=True,
+        )
+        runtime_frame = _boss_wave_runtime_inputs_frame(diagnostics)
+        if not runtime_frame.empty:
+            st.caption('Runtime inputs')
+            st.dataframe(runtime_frame, width='stretch', hide_index=True)
+        st.caption(
+            "Boss Waves is a bounded runtime estimate. The checkpoint table reflects the DR/contact assumptions used by the current run, "
+            "including visible wall regen contribution."
+        )
+    with st.expander('Advanced boss-wave evidence'):
+        evidence_tabs = st.tabs(['Full Table', 'Diagnostics', 'Raw Rows', 'Execution'])
+        with evidence_tabs[0]:
+            st.dataframe(display_frame, width='stretch', hide_index=True)
+        with evidence_tabs[1]:
+            st.json({
+                'summary': diagnostics,
+                'model_certification': payload_diagnostics.get('model_certification') or {},
+                'contact_time_contract': payload_diagnostics.get('contact_time_contract') or {},
+                'source_selection': payload_diagnostics.get('source_selection') or {},
+                'replacement_model': payload_diagnostics.get('replacement_model') or {},
+            })
+        with evidence_tabs[2]:
+            st.dataframe(frame, width='stretch', hide_index=True)
+        with evidence_tabs[3]:
+            st.json({
+                'contract': boss_payload.get('contract') or {},
+                'runtime_inputs_used': diagnostics['scenario_runtime_inputs'],
+                'replacement_primitive_inputs': primitive_inputs,
+                'replacement_primitive_semantics_ledger': payload_diagnostics.get('replacement_primitive_semantics_ledger') or {},
+                'execution_counts': {
+                    'qe_resolution_count': diagnostics['qe_resolution_count'],
+                    'timing_recompute_count': diagnostics['timing_recompute_count'],
+                    'snapshot_reuse_count': diagnostics['snapshot_reuse_count'],
+                    'qe_dirty_reresolve_count': diagnostics['qe_dirty_reresolve_count'],
+                    'delta_fallback_count': diagnostics['delta_fallback_count'],
+                },
+                'terminal_display_wave': diagnostics['terminal_display_wave'],
+                'survives_through_end': diagnostics['survives_through_end'],
+            })
 
 
 def main() -> None:
-    st.set_page_config(page_title='TowerSim Incremental Inspector', layout='wide')
-    st.title('TowerSim Incremental Inspector')
-    st.caption('Pipeline execution understanding, cache visibility, and stat verification workbench.')
+    st.set_page_config(page_title='TowerSim Operations Console', layout='wide')
+    st.title('TowerSim Operations Console')
+    st.caption('Canonical stats, perk plans, and max-wave runs from sanctioned pipeline artifacts.')
     _init_state()
-    request = _sidebar()
+    _snapshot_sidebar()
     active_out_dir = Path(st.session_state['active_out_dir'])
     active_artifacts = load_artifacts(active_out_dir)
+    request = _request_from_active_snapshot(active_out_dir, active_artifacts)
     comparison_artifacts = [
         (label, load_artifacts(Path(path)))
         for label, path in st.session_state['snapshot_dirs'].items()
@@ -2204,16 +2263,13 @@ def main() -> None:
     with stats_tab:
         _render_stats(active_artifacts, comparison_artifacts, request)
     with perks_tab:
-        perk_policy_override = _render_perk_policy_tab(request)
+        _render_perk_policy_tab(request)
     with boss_waves_tab:
-        _render_boss_waves(request, perk_policy_override=perk_policy_override)
+        _render_boss_waves(request)
     with pipeline_tab:
-        _render_pipeline(active_artifacts.get('pipeline_trace.json', {}), active_artifacts.get('diagnostics.json', {}))
+        _render_pipeline(active_artifacts.get('pipeline_trace.json', {}), active_artifacts.get('diagnostics.json', {}), request)
     with checks_tab:
-        _render_checks(active_artifacts)
-
-    with st.expander('Current request'):
-        st.code(json.dumps(request.__dict__, indent=2, default=str))
+        _render_checks(active_artifacts, request)
 
 
 if __name__ == '__main__':

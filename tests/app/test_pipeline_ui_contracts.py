@@ -100,9 +100,37 @@ def test_trace_artifact_is_listed_in_generated_files(start_of_run_pipeline_resul
     assert 'pipeline_trace.json' in generated
 
 
+def _streamlit_widget_by_label(widgets, label: str):
+    matches = [widget for widget in widgets if getattr(widget, 'label', None) == label]
+    assert len(matches) == 1, f"expected one {label!r} widget, found {len(matches)}"
+    return matches[0]
+
+
+def _set_streamlit_text_input(app_test, label: str, value: str) -> None:
+    _streamlit_widget_by_label(app_test.text_input, label).set_value(value)
+
+
+def _set_streamlit_selectbox(app_test, label: str, value: str) -> None:
+    _streamlit_widget_by_label(app_test.selectbox, label).set_value(value)
+
+
+def _click_streamlit_button(app_test, label: str) -> None:
+    _streamlit_widget_by_label(app_test.button, label).click()
+
+
+def _streamlit_labels(widgets) -> list[str]:
+    return [str(getattr(widget, 'label', '')) for widget in widgets]
+
+
+def _streamlit_values(widgets) -> list[str]:
+    return [str(getattr(widget, 'value', '')) for widget in widgets]
+
+
 def test_streamlit_boss_waves_exposes_only_wired_manual_runtime_inputs():
     source = (ROOT / 'app' / 'streamlit_inspector.py').read_text(encoding='utf-8')
-    assert 'Manual combat assumptions' in source
+    assert 'Combat assumptions' in source
+    assert 'Override boss damage calibration' in source
+    assert 'Advanced damage calibration' not in source
     assert "number_input('End wave', min_value=10, value=10000, step=10)" in source
     assert "number_input('Flame Bot boss hit chance (%)', min_value=0.0, max_value=100.0, value=50.0, step=1.0)" in source
     for label in (
@@ -132,26 +160,144 @@ def test_streamlit_perks_tab_consumes_pipeline_preview_not_local_generator():
     source = (ROOT / 'app' / 'streamlit_inspector.py').read_text(encoding='utf-8')
     assert "'Perks'" in source
     assert 'build_perk_timeline_preview' in source
-    assert 'save_perk_policy_override' in source
-    assert 'Save perk plan' in source
-    assert 'Banned perks' in source
-    assert 'First perk choice' in source
+    assert 'for column, policy_preset in zip(columns, BOSS_WAVE_PERK_POLICY_PRESETS)' in source
+    assert 'replace(request, perk_policy_preset=policy_preset)' in source
     assert 'Priority order' in source
-    assert 'Generated perks' in source
+    assert 'Bans' in source
+    assert 'Taken by wave' in source
     assert 'Perk plan' in source
-    assert 'Plan strategy' in source
-    assert 'Plan generation' in source
-    assert 'Generator owner' in source
-    assert 'Resolved priority order' in source
-    assert 'Resolved banned perks' in source
-    assert 'Generated perk pick counts' in source
-    assert 'Generated goal-benefit matrix' in source
-    assert "preview.get('context')" in source
-    assert "diagnostics.get('taken_counts')" in source
-    assert "perk_goal_benefit_matrix" in source
+    assert 'Final wave' in source
     assert "_arrow_safe_frame(pd.DataFrame(rows), columns=('value', 'picks', 'max value'))" in source
     assert 'generate_timeline_from_policy' not in source
     assert 'PerkTimelinePolicy' not in source
+
+
+def test_streamlit_boss_waves_operator_surface_renders_cleanly():
+    streamlit_testing = pytest.importorskip("streamlit.testing.v1")
+
+    app_test = streamlit_testing.AppTest.from_file(str(ROOT / 'app' / 'streamlit_inspector.py'))
+    app_test.run(timeout=240)
+
+    assert not app_test.exception
+    assert not app_test.error
+
+    assert _streamlit_values(app_test.title) == ['TowerSim Operations Console']
+    assert 'Canonical stats, perk plans, and max-wave runs from sanctioned pipeline artifacts.' in _streamlit_values(app_test.caption)
+
+    metric_labels = _streamlit_labels(app_test.metric)
+    assert metric_labels.count('Max Boss Wave') == 1
+    for stale_label in ('Rows', 'Selected wave', 'First failed wave', 'Perk plan', 'Tier', 'Loadout'):
+        assert stale_label not in metric_labels
+
+    selectbox_labels = _streamlit_labels(app_test.selectbox)
+    assert 'Boss loadout' in selectbox_labels
+    assert 'Perk plan' in selectbox_labels
+
+    number_input_labels = _streamlit_labels(app_test.number_input)
+    assert 'End wave' in number_input_labels
+    assert 'Checkpoint cadence (bosses)' in number_input_labels
+
+    toggle_labels = _streamlit_labels(app_test.toggle)
+    assert 'Override boss damage calibration' in toggle_labels
+    assert 'Show all checkpoints' in toggle_labels
+    assert 'Stop on first failed boss' not in toggle_labels
+
+    expander_labels = _streamlit_labels(app_test.expander)
+    for label in (
+        'Combat assumptions',
+        'Model assumptions',
+        'Advanced boss-wave evidence',
+    ):
+        assert label in expander_labels
+    assert 'Advanced run settings' not in expander_labels
+    assert 'Advanced damage calibration' not in expander_labels
+    for stale_label in (
+        'Dissonance comparison',
+        'Full boss-wave table',
+        'Boss-wave diagnostics',
+        'Boss-wave raw rows (debug)',
+        'Boss-wave execution details',
+    ):
+        assert stale_label not in expander_labels
+
+    caption_values = _streamlit_values(app_test.caption)
+    assert 'Boss checkpoints' in caption_values
+    assert 'Runtime inputs' in caption_values
+    assert any('Result uses' in value for value in caption_values)
+
+
+def test_streamlit_boss_waves_manual_damage_calibration_is_intentional():
+    streamlit_testing = pytest.importorskip("streamlit.testing.v1")
+
+    app_test = streamlit_testing.AppTest.from_file(str(ROOT / 'app' / 'streamlit_inspector.py'))
+    app_test.run(timeout=240)
+
+    assert not app_test.exception
+    assert not app_test.error
+    assert 'Boss eDamage applicability factor' not in _streamlit_labels(app_test.number_input)
+
+    _streamlit_widget_by_label(app_test.toggle, 'Override boss damage calibration').set_value(True)
+    app_test.run(timeout=240)
+
+    assert not app_test.exception
+    assert not app_test.error
+    number_input_labels = _streamlit_labels(app_test.number_input)
+    for label in (
+        'Boss eDamage applicability factor',
+        'Boss target share',
+        'Boss cadence uptime',
+        'Boss reliability',
+        'Boss semantic normalizer',
+    ):
+        assert label in number_input_labels
+
+
+def test_streamlit_run_controls_are_tab_scoped_not_sidebar_global():
+    source = (ROOT / 'app' / 'streamlit_inspector.py').read_text(encoding='utf-8')
+    assert "TowerSim Operations Console" in source
+    assert "Canonical stats, perk plans, and max-wave runs from sanctioned pipeline artifacts." in source
+    assert "TowerSim Incremental Inspector" not in source
+    assert "st.sidebar.header('Run Controls')" not in source
+    assert "boss_wave_perk_policy_override" not in source
+    assert "perk_policy_override" not in source
+    assert "st.sidebar.header('Snapshots')" in source
+    assert "def _render_pipeline_run_controls" in source
+    assert "def _render_verification_snapshot_controls" in source
+    pipeline_start = source.index("def _render_pipeline(trace_payload")
+    pipeline_end = source.index("\ndef _render_cards_matrix", pipeline_start)
+    main_start = source.index("def main() -> None:")
+    pipeline_block = source[pipeline_start:pipeline_end]
+    assert "with st.expander('Pipeline evidence', expanded=False)" in pipeline_block
+    assert "['Execution', 'Stages', 'Cache', 'Runtime', 'Advanced']" in pipeline_block
+    assert "Active snapshot request defaults" in source[pipeline_start:pipeline_end]
+    assert "Active snapshot request defaults" not in source[main_start:]
+    assert "with st.expander('Execution Path'" not in pipeline_block
+    assert "st.subheader('Cache')" not in pipeline_block
+    assert "st.subheader('Incremental Plan')" not in pipeline_block
+    assert "st.subheader('Runtime Consumers')" not in pipeline_block
+    assert "with st.expander('Advanced raw details')" not in pipeline_block
+    assert "'Run loadout'" in source
+    assert "'Run perk plan'" in source
+    assert "'Verification perk plan'" in source
+    assert "'Boss loadout'" in source
+    assert "'Perk plan'" in source
+
+
+def test_streamlit_perks_tab_renders_four_policy_columns():
+    streamlit_testing = pytest.importorskip("streamlit.testing.v1")
+
+    app_test = streamlit_testing.AppTest.from_file(str(ROOT / 'app' / 'streamlit_inspector.py'))
+    app_test.run(timeout=240)
+
+    assert not app_test.exception
+    assert not app_test.error
+    markdown_text = '\n'.join(str(item.value) for item in app_test.markdown)
+    caption_text = '\n'.join(str(item.value) for item in app_test.caption)
+    for policy_preset in ('eHP Max Waves', 'eHP Farming', 'GC Max Waves', 'GC Farming'):
+        assert policy_preset in markdown_text
+    assert caption_text.count('Priority order') == 4
+    assert caption_text.count('Bans') == 4
+    assert caption_text.count('Taken by wave') == 4
 
 
 def test_streamlit_perks_table_does_not_fallback_to_active_preset_for_tourney():
@@ -173,16 +319,16 @@ def test_streamlit_perks_table_does_not_fallback_to_active_preset_for_tourney():
     )
 
 
-def test_streamlit_sidebar_tourney_gc_max_waves_run_click_is_perk_guarded(tmp_path):
+def test_streamlit_pipeline_tourney_gc_max_waves_run_click_is_perk_guarded(tmp_path):
     streamlit_testing = pytest.importorskip("streamlit.testing.v1")
 
     out_dir = tmp_path / 'streamlit_tourney_run'
     app_test = streamlit_testing.AppTest.from_file(str(ROOT / 'app' / 'streamlit_inspector.py'))
     app_test.run(timeout=240)
-    app_test.sidebar.text_input[1].set_value(str(out_dir))
-    app_test.sidebar.selectbox[0].set_value('Tourney')
-    app_test.sidebar.selectbox[1].set_value('GC Max Waves')
-    app_test.sidebar.button[0].click()
+    _set_streamlit_text_input(app_test, 'Run output dir', str(out_dir))
+    _set_streamlit_selectbox(app_test, 'Run loadout', 'Tourney')
+    _set_streamlit_selectbox(app_test, 'Run perk plan', 'GC Max Waves')
+    _click_streamlit_button(app_test, 'Run snapshot')
     app_test.run(timeout=240)
 
     assert not app_test.exception
@@ -196,16 +342,16 @@ def test_streamlit_sidebar_tourney_gc_max_waves_run_click_is_perk_guarded(tmp_pa
     assert diagnostics['state_matrix']['max_progression']['perks_enabled'] is False
 
 
-def test_streamlit_sidebar_milestone_run_publishes_optimizer_unavailable(tmp_path):
+def test_streamlit_pipeline_milestone_run_publishes_optimizer_unavailable(tmp_path):
     streamlit_testing = pytest.importorskip("streamlit.testing.v1")
 
     out_dir = tmp_path / 'streamlit_milestone_run'
     app_test = streamlit_testing.AppTest.from_file(str(ROOT / 'app' / 'streamlit_inspector.py'))
     app_test.run(timeout=240)
-    app_test.sidebar.text_input[1].set_value(str(out_dir))
-    app_test.sidebar.selectbox[0].set_value('Milestone')
-    app_test.sidebar.selectbox[1].set_value('eHP Max Waves')
-    app_test.sidebar.button[0].click()
+    _set_streamlit_text_input(app_test, 'Run output dir', str(out_dir))
+    _set_streamlit_selectbox(app_test, 'Run loadout', 'Milestone')
+    _set_streamlit_selectbox(app_test, 'Run perk plan', 'eHP Max Waves')
+    _click_streamlit_button(app_test, 'Run snapshot')
     app_test.run(timeout=240)
 
     assert not app_test.exception
@@ -219,16 +365,16 @@ def test_streamlit_sidebar_milestone_run_publishes_optimizer_unavailable(tmp_pat
     assert optimizer_scores['meta']['local_canonical_formula_fallback'] is False
 
 
-def test_streamlit_sidebar_gc_farming_plan_runs_without_errors(tmp_path):
+def test_streamlit_pipeline_gc_farming_plan_runs_without_errors(tmp_path):
     streamlit_testing = pytest.importorskip("streamlit.testing.v1")
 
     out_dir = tmp_path / 'streamlit_gc_farming_run'
     app_test = streamlit_testing.AppTest.from_file(str(ROOT / 'app' / 'streamlit_inspector.py'))
     app_test.run(timeout=240)
-    app_test.sidebar.text_input[1].set_value(str(out_dir))
-    app_test.sidebar.selectbox[0].set_value('Farming')
-    app_test.sidebar.selectbox[1].set_value('GC Farming')
-    app_test.sidebar.button[0].click()
+    _set_streamlit_text_input(app_test, 'Run output dir', str(out_dir))
+    _set_streamlit_selectbox(app_test, 'Run loadout', 'Farming')
+    _set_streamlit_selectbox(app_test, 'Run perk plan', 'GC Farming')
+    _click_streamlit_button(app_test, 'Run snapshot')
     app_test.run(timeout=240)
 
     assert not app_test.exception
@@ -263,7 +409,7 @@ def test_streamlit_register_snapshot_replaces_stale_label_for_reused_output_dir(
     assert session_state['snapshot_dirs'][labels[0]] == str(out_dir)
 
 
-def test_streamlit_main_action_buttons_complete_without_errors(tmp_path):
+def test_streamlit_main_action_buttons_complete_without_errors():
     streamlit_testing = pytest.importorskip("streamlit.testing.v1")
 
     def _click_main_button(app_test, label: str):
@@ -278,46 +424,29 @@ def test_streamlit_main_action_buttons_complete_without_errors(tmp_path):
     assert not app_test.exception
     assert not app_test.error
 
-    app_test = streamlit_testing.AppTest.from_file(str(ROOT / 'app' / 'streamlit_inspector.py'))
-    app_test.run(timeout=240)
-    _click_main_button(app_test, 'Build all-tier milestone matrix')
-    assert not app_test.exception
-    assert not app_test.error
 
-    manual_inputs_override = tmp_path / 'manual_inputs.streamlit-save.yaml'
-    manual_inputs_override.write_text((ROOT / 'input' / 'manual_inputs.yaml').read_text(encoding='utf-8'), encoding='utf-8')
-    app_test = streamlit_testing.AppTest.from_file(str(ROOT / 'app' / 'streamlit_inspector.py'))
-    app_test.run(timeout=240)
-    app_test.sidebar.text_input[2].set_value(str(manual_inputs_override))
-    app_test.run(timeout=240)
-    _click_main_button(app_test, 'Save perk plan')
-    assert not app_test.exception
-    assert not app_test.error
-    assert manual_inputs_override.exists()
-
-
-def test_streamlit_sidebar_run_failures_are_contained(tmp_path):
+def test_streamlit_pipeline_run_failures_are_contained(tmp_path):
     streamlit_testing = pytest.importorskip("streamlit.testing.v1")
 
     app_test = streamlit_testing.AppTest.from_file(str(ROOT / 'app' / 'streamlit_inspector.py'))
     app_test.run(timeout=240)
-    app_test.sidebar.text_input[0].set_value(str(tmp_path / 'missing_ids.csv'))
-    app_test.sidebar.text_input[1].set_value(str(tmp_path / 'bad_run_out'))
-    app_test.sidebar.button[0].click()
+    _set_streamlit_text_input(app_test, 'Run IDS path', str(tmp_path / 'missing_ids.csv'))
+    _set_streamlit_text_input(app_test, 'Run output dir', str(tmp_path / 'bad_run_out'))
+    _click_streamlit_button(app_test, 'Run snapshot')
     app_test.run(timeout=240)
 
     assert not app_test.exception
-    assert any('Run current request failed:' in str(error.value) for error in app_test.error)
+    assert any('Run snapshot failed:' in str(error.value) for error in app_test.error)
 
 
-def test_streamlit_sidebar_verification_failures_are_contained(tmp_path):
+def test_streamlit_checks_verification_failures_are_contained(tmp_path):
     streamlit_testing = pytest.importorskip("streamlit.testing.v1")
 
     app_test = streamlit_testing.AppTest.from_file(str(ROOT / 'app' / 'streamlit_inspector.py'))
     app_test.run(timeout=240)
-    app_test.sidebar.text_input[0].set_value(str(tmp_path / 'missing_ids.csv'))
-    app_test.sidebar.text_input[1].set_value(str(tmp_path / 'bad_verification_out'))
-    app_test.sidebar.button[1].click()
+    _set_streamlit_text_input(app_test, 'Verification IDS path', str(tmp_path / 'missing_ids.csv'))
+    _set_streamlit_text_input(app_test, 'Verification output dir', str(tmp_path / 'bad_verification_out'))
+    _click_streamlit_button(app_test, 'Build default verification set')
     app_test.run(timeout=240)
 
     assert not app_test.exception
@@ -329,13 +458,13 @@ def test_streamlit_default_verification_snapshots_can_be_selected(tmp_path):
 
     app_test = streamlit_testing.AppTest.from_file(str(ROOT / 'app' / 'streamlit_inspector.py'))
     app_test.run(timeout=240)
-    app_test.sidebar.text_input[1].set_value(str(tmp_path / 'verification_base'))
-    app_test.sidebar.button[1].click()
+    _set_streamlit_text_input(app_test, 'Verification output dir', str(tmp_path / 'verification_base'))
+    _click_streamlit_button(app_test, 'Build default verification set')
     app_test.run(timeout=360)
 
     assert not app_test.exception
     assert not app_test.error
-    snapshot_options = list(app_test.sidebar.selectbox[2].options)
+    snapshot_options = list(_streamlit_widget_by_label(app_test.sidebar.selectbox, 'Active snapshot').options)
     assert {
         'Farming | start_of_run | perks auto | farming_start_of_run',
         'Farming | max_progression | perks auto | farming_max_progression',
@@ -343,7 +472,7 @@ def test_streamlit_default_verification_snapshots_can_be_selected(tmp_path):
         'Tourney | max_progression | perks off | tourney_max_progression',
     }.issubset(set(snapshot_options))
     for option in snapshot_options:
-        app_test.sidebar.selectbox[2].set_value(option)
+        _streamlit_widget_by_label(app_test.sidebar.selectbox, 'Active snapshot').set_value(option)
         app_test.run(timeout=240)
         assert not app_test.exception
         assert not app_test.error
@@ -628,25 +757,23 @@ def test_boss_waves_render_uses_published_summary_and_execution_contract() -> No
     start = text.index("def _render_boss_waves(request: PipelineRunRequest")
     end = text.index("\ndef main() -> None:", start)
     boss_block = text[start:end]
-    assert "Checkpoint every N bosses" in boss_block
-    assert "st.toggle('Stop on first failed boss', value=True)" in boss_block
-    assert "Flame Bot DR override (%)" in boss_block
+    assert "stop_on_failure = True" in boss_block
+    assert "stop_on_failure=stop_on_failure" in boss_block
+    assert "Stop on first failed boss" not in boss_block
+    assert "rows after the first failure" not in boss_block
     assert "'flame_bot_damage_reduction_pct': flame_bot_damage_reduction_pct" in boss_block
-    assert "Boss eDamage applicability factor" in boss_block
     assert "'boss_applicable_damage_factor': boss_applicable_damage_factor" in boss_block
-    assert "Boss target share" in boss_block
-    assert "Boss cadence uptime" in boss_block
-    assert "Boss reliability" in boss_block
-    assert "Boss semantic normalizer" in boss_block
     assert "'boss_edamage_target_share': boss_edamage_target_share" in boss_block
     assert "'boss_edamage_cadence_uptime_factor': boss_edamage_cadence_uptime_factor" in boss_block
     assert "'boss_edamage_reliability_factor': boss_edamage_reliability_factor" in boss_block
     assert "'boss_edamage_semantic_normalizer': boss_edamage_semantic_normalizer" in boss_block
     assert "decomposed_bridge_inputs" in boss_block
-    assert "bridge_comparison_inputs" in boss_block
-    assert "comparison_scenario_runtime_inputs=bridge_comparison_inputs or None" in boss_block
-    assert "regular_comparison_display" in boss_block
-    assert "ultimate_weapons_delta_wave" in boss_block
+    assert "build_boss_wave_milestone_matrix" not in boss_block
+    assert "Build all-tier milestone matrix" not in boss_block
+    assert "All-tier milestone matrix" not in boss_block
+    assert "include_dissonance_run_matrix" not in boss_block
+    assert "Dissonance comparison" not in boss_block
+    assert "dissonance_run_matrix" not in boss_block
     assert "display_frame = _build_boss_wave_operator_frame(frame)" in boss_block
     assert "_require_boss_wave_payload_rows(boss_payload, 'operator_rows')" in boss_block
     assert "_require_boss_wave_payload_rows(boss_payload, 'download_rows')" in boss_block
@@ -654,7 +781,15 @@ def test_boss_waves_render_uses_published_summary_and_execution_contract() -> No
     assert "st.error(str(exc))" in boss_block
     assert "payload_summary = dict(boss_payload.get('summary') or {})" in boss_block
     assert "primitive_inputs = dict(payload_diagnostics.get('replacement_primitive_inputs') or {})" in boss_block
-    assert "Boss damage source:" in boss_block
+    assert "_focus_boss_wave_display_frame(" in boss_block
+    assert "_boss_wave_assumption_frame(" in boss_block
+    assert "_boss_wave_runtime_inputs_frame(" in boss_block
+    assert "metric('Rows'" not in boss_block
+    assert "metric('Selected wave'" not in boss_block
+    assert "metric('First failed wave'" not in boss_block
+    assert "metric('Perk plan'" not in boss_block
+    assert "metric('Tier'" not in boss_block
+    assert "metric('Loadout'" not in boss_block
     assert "payload_diagnostics.get('model_certification') or {}" in boss_block
     assert "payload_diagnostics.get('contact_time_contract') or {}" in boss_block
     assert "payload_diagnostics.get('replacement_model') or {}" in boss_block
@@ -667,9 +802,22 @@ def test_boss_waves_render_uses_published_summary_and_execution_contract() -> No
     helper_block = text[helper_start:helper_end]
     assert "'Wall Regen'" in helper_block
     assert "'Regen Gain'" in helper_block
-    assert "'TTK (s)'" in helper_block
+    assert "'Boss Kill Time'" in helper_block
     assert "'Cont Dmg %'" in helper_block
     assert "'Hit Interval (s)'" in helper_block
+    assert "'Damage Reduction'" in helper_block
+    assert "'Killed Before Contact'" in helper_block
+    assert "'Survival Margin'" in helper_block
+    assert "def _boss_wave_assumption_frame(" in helper_block
+    assert "'Boss damage source'" in helper_block
+    assert "'Chain Lightning DPS'" in helper_block
+    assert "'EP eDamage base'" in helper_block
+    assert "'Spotlight exposure'" in helper_block
+    assert "'ACP factor'" in helper_block
+    assert "'EN mastery multiplier'" in helper_block
+    assert "'Boss time to contact'" in helper_block
+    assert "'Chrono Field slow'" in helper_block
+    assert "'Slow Aura slow'" in helper_block
     assert "payload_diagnostics = dict(boss_payload.get('diagnostics') or {})" in boss_block
     assert "payload_download = dict(boss_payload.get('download') or {})" in boss_block
     assert "diagnostics['context_status'] not in {'resolved', 'complete'}" in boss_block
@@ -677,7 +825,11 @@ def test_boss_waves_render_uses_published_summary_and_execution_contract() -> No
     assert "actual_boss_interval_waves" in boss_block
     assert "checkpoint_every_bosses" in boss_block
     assert "Boss Waves is a bounded runtime estimate" in boss_block
-    assert "Boss-wave raw rows (debug)" in boss_block
+    assert "Advanced boss-wave evidence" in boss_block
+    assert "Full boss-wave table" not in boss_block
+    assert "Boss-wave diagnostics" not in boss_block
+    assert "Boss-wave raw rows (debug)" not in boss_block
+    assert "Boss-wave execution details" not in boss_block
     assert "st.download_button(" in boss_block
 
 
@@ -696,7 +848,7 @@ def test_boss_waves_renderer_payload_contract_fails_closed_without_selected_rows
 def test_inputs_dashboard_production_render_avoids_native_streamlit_tables() -> None:
     text = (ROOT / 'app' / 'streamlit_inspector.py').read_text(encoding='utf-8')
     start = text.index("dashboard = active_artifacts.get('input_dashboard.json') or {}")
-    end = text.index("with st.expander('Legacy input debug views'", start)
+    end = text.index("with st.expander('Input lineage and artifact evidence'", start)
     production_block = text[start:end]
     assert 'st.table(' not in production_block
     assert 'st.dataframe(' not in production_block
@@ -727,7 +879,7 @@ def test_inputs_dashboard_cards_panel_uses_published_rows_without_account_state_
 def test_stats_dashboard_production_render_avoids_native_streamlit_tables() -> None:
     text = (ROOT / 'app' / 'streamlit_inspector.py').read_text(encoding='utf-8')
     start = text.index("dashboard = active_artifacts.get('stats_dashboard.json') or {}")
-    end = text.index("with st.expander('Stats debug and verification'", start)
+    end = text.index("with st.expander('Stats evidence and verification'", start)
     production_block = text[start:end]
     assert 'st.table(' not in production_block
     assert 'st.dataframe(' not in production_block
@@ -743,7 +895,15 @@ def test_stats_dashboard_production_render_demotes_secondary_panels_and_guards_d
     assert "render_grouped_modules_html(payload)" in text
     assert "compare_df[['surface_id', 'ep_value', 'ep_value_raw', 'compare_preset', 'compare_perk_state', 'status', 'label']]" not in text
     assert "_render_stats_debug_tools(active_artifacts, comparison_artifacts, request)" in text
-    assert "Stats debug tools unavailable for this snapshot" in text
+    assert "Stats evidence tools unavailable for this snapshot" in text
+    for stale_label in (
+        'Dashboard artifact debug (stats_dashboard.json)',
+        'Dashboard artifact debug (input_dashboard.json)',
+        'Stats debug and verification',
+        'Legacy input debug views',
+        'Raw artifacts',
+    ):
+        assert stale_label not in text
 
 
 def test_load_streamlit_reference_data_uses_request_ids_path(monkeypatch, tmp_path):
