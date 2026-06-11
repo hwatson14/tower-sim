@@ -22,6 +22,11 @@ from qe.run_plan import (
     WaveProgressionRecurrence,
     advance_wave_progression,
 )
+from simulators.timing import (
+    time_limited_multiplier_damage,
+    time_limited_multiplier_kill_seconds,
+    timed_effect_lane_fractions,
+)
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -814,17 +819,18 @@ def _continuous_damage_multiplier_duration(combat: CombatInputs) -> float:
 
 
 def _continuous_damage_between(*, start_seconds: float, end_seconds: float, combat: CombatInputs) -> float:
-    start = max(0.0, float(start_seconds))
-    end = max(start, float(end_seconds))
     dps = _continuous_boss_dps(combat)
-    if dps <= 0.0 or end <= start:
+    if dps <= 0.0:
         return 0.0
     multiplier = _continuous_damage_multiplier(combat)
     multiplier_until = _continuous_damage_multiplier_duration(combat)
-    boosted_end = min(end, max(start, multiplier_until))
-    boosted_seconds = max(0.0, boosted_end - start)
-    base_seconds = max(0.0, end - start - boosted_seconds)
-    return dps * ((boosted_seconds * multiplier) + base_seconds)
+    return time_limited_multiplier_damage(
+        start_seconds=start_seconds,
+        end_seconds=end_seconds,
+        damage_per_second=dps,
+        multiplier=multiplier,
+        multiplier_duration_seconds=multiplier_until,
+    )
 
 
 def _continuous_kill_seconds_in_interval(
@@ -837,25 +843,19 @@ def _continuous_kill_seconds_in_interval(
     remaining = max(0.0, float(hp_to_kill))
     if remaining <= 0.0:
         return max(0.0, float(start_seconds))
-    start = max(0.0, float(start_seconds))
-    end = max(start, float(end_seconds))
     dps = _continuous_boss_dps(combat)
-    if dps <= 0.0 or end <= start:
+    if dps <= 0.0:
         return None
     multiplier = _continuous_damage_multiplier(combat)
     multiplier_until = _continuous_damage_multiplier_duration(combat)
-    boosted_end = min(end, max(start, multiplier_until))
-    boosted_seconds = max(0.0, boosted_end - start)
-    boosted_rate = dps * multiplier
-    if boosted_rate > 0.0 and boosted_seconds > 0.0:
-        boosted_capacity = boosted_rate * boosted_seconds
-        if remaining <= boosted_capacity:
-            return start + (remaining / boosted_rate)
-        remaining -= boosted_capacity
-    base_seconds = max(0.0, end - start - boosted_seconds)
-    if dps > 0.0 and base_seconds > 0.0 and remaining <= dps * base_seconds:
-        return start + boosted_seconds + (remaining / dps)
-    return None
+    return time_limited_multiplier_kill_seconds(
+        start_seconds=start_seconds,
+        end_seconds=end_seconds,
+        hp_to_kill=remaining,
+        damage_per_second=dps,
+        multiplier=multiplier,
+        multiplier_duration_seconds=multiplier_until,
+    )
 
 
 def _simulate_boss_pre_contact_kill_state(*, enemy_health: float, combat: CombatInputs) -> BossPreContactKillState:
@@ -1133,15 +1133,6 @@ def _boss_total_ttk_seconds(
     return None
 
 
-def _timed_dr_fraction(*, damage_reduction_pct: float, duration_seconds: float, cooldown_seconds: float) -> float:
-    dr = _bounded_percent(damage_reduction_pct) / 100.0
-    duration = max(0.0, float(duration_seconds))
-    cooldown = max(0.0, float(cooldown_seconds))
-    if dr <= 0.0 or duration <= 0.0 or cooldown <= 0.0:
-        return 0.0
-    return _bounded_fraction(dr * min(1.0, duration / cooldown))
-
-
 def _timed_dr_fraction_by_lane(
     *,
     damage_reduction_pct: float,
@@ -1150,19 +1141,12 @@ def _timed_dr_fraction_by_lane(
     explicit_uptime_fraction: float | None = None,
 ) -> dict[str, float]:
     dr = _bounded_percent(damage_reduction_pct) / 100.0
-    if explicit_uptime_fraction is None:
-        duration = max(0.0, float(duration_seconds))
-        cooldown = max(0.0, float(cooldown_seconds))
-        if dr <= 0.0 or duration <= 0.0 or cooldown <= 0.0:
-            return {"min": 0.0, "avg": 0.0, "max": 0.0}
-        uptime = min(1.0, duration / cooldown)
-    else:
-        uptime = _bounded_fraction(float(explicit_uptime_fraction))
-    if dr <= 0.0 or uptime <= 0.0:
-        return {"min": 0.0, "avg": 0.0, "max": 0.0}
-    if uptime >= 1.0:
-        return {"min": dr, "avg": dr, "max": dr}
-    return {"min": 0.0, "avg": _bounded_fraction(dr * uptime), "max": dr}
+    return timed_effect_lane_fractions(
+        effect_fraction=dr,
+        duration_seconds=duration_seconds,
+        cooldown_seconds=cooldown_seconds,
+        explicit_uptime_fraction=explicit_uptime_fraction,
+    )
 
 
 def _validate_survivability_contributors(contributors: SurvivabilityContributorBundle) -> None:

@@ -21,7 +21,6 @@ from app.pipeline import (
     _path_cache_token,
     _effective_manual_inputs_path,
     _run_stats_perk_state,
-    _boss_wave_hit_interval_seconds,
 )
 from app.pipeline import RunStatsSession
 from app.publication import (
@@ -867,30 +866,30 @@ def test_build_boss_wave_payload_replacement_inputs_drive_table_summary_export_a
 
 
 def test_boss_wave_flame_bot_static_hit_chance_uses_path_overlap_and_energy_net():
-    from app import pipeline as pipeline_mod
+    from simulators.timing import flame_bot_static_boss_hit_chance
 
-    chance, components = pipeline_mod._boss_wave_flame_bot_static_hit_chance(
+    chance, components = flame_bot_static_boss_hit_chance(
         tower_range_m=69.5,
         flame_bot_effective_range_m=91.0,
         flame_bot_cooldown_seconds=5.0,
         boss_time_to_contact_seconds=6.3,
         energy_net_hold_seconds=4.3,
     )
-    no_net_chance, _ = pipeline_mod._boss_wave_flame_bot_static_hit_chance(
+    no_net_chance, _ = flame_bot_static_boss_hit_chance(
         tower_range_m=69.5,
         flame_bot_effective_range_m=91.0,
         flame_bot_cooldown_seconds=5.0,
         boss_time_to_contact_seconds=2.0,
         energy_net_hold_seconds=0.0,
     )
-    partial_window_chance, partial_window = pipeline_mod._boss_wave_flame_bot_static_hit_chance(
+    partial_window_chance, partial_window = flame_bot_static_boss_hit_chance(
         tower_range_m=69.5,
         flame_bot_effective_range_m=200.0,
         flame_bot_cooldown_seconds=5.0,
         boss_time_to_contact_seconds=2.5,
         energy_net_hold_seconds=0.0,
     )
-    lifetime_chance, lifetime_window = pipeline_mod._boss_wave_flame_bot_static_hit_chance(
+    lifetime_chance, lifetime_window = flame_bot_static_boss_hit_chance(
         tower_range_m=69.5,
         flame_bot_effective_range_m=91.0,
         flame_bot_cooldown_seconds=5.0,
@@ -898,7 +897,7 @@ def test_boss_wave_flame_bot_static_hit_chance_uses_path_overlap_and_energy_net(
         energy_net_hold_seconds=4.3,
         boss_lifetime_seconds=12.3,
     )
-    pre_wall_chance, pre_wall_window = pipeline_mod._boss_wave_flame_bot_static_hit_chance(
+    pre_wall_chance, pre_wall_window = flame_bot_static_boss_hit_chance(
         tower_range_m=69.5,
         flame_bot_effective_range_m=91.0,
         flame_bot_cooldown_seconds=5.0,
@@ -932,6 +931,7 @@ def test_boss_wave_flame_bot_static_hit_chance_uses_path_overlap_and_energy_net(
 def test_boss_wave_flame_bot_static_hit_chance_feeds_binary_hit_dr_when_not_overridden():
     from app import pipeline as pipeline_mod
     from input.state_types import ScenarioRuntimeInputs
+    from simulators.timing import flame_bot_static_boss_hit_chance
 
     primitives = {
         'tower_range_m': 69.5,
@@ -941,7 +941,7 @@ def test_boss_wave_flame_bot_static_hit_chance_feeds_binary_hit_dr_when_not_over
         'boss_time_to_contact_seconds': 6.3,
         'boss_time_to_contact_energy_net_hold_seconds': 4.3,
     }
-    expected_chance, _ = pipeline_mod._boss_wave_flame_bot_static_hit_chance(
+    expected_chance, _ = flame_bot_static_boss_hit_chance(
         tower_range_m=primitives['tower_range_m'],
         flame_bot_effective_range_m=primitives['flame_bot_effective_range_m'],
         flame_bot_cooldown_seconds=primitives['flame_bot_cooldown_seconds'],
@@ -2281,22 +2281,21 @@ def test_boss_wave_model_certification_only_requires_damage_health_decay_for_tou
 
 
 def test_boss_wave_hit_interval_applies_slow_aura_mastery_when_not_explicit() -> None:
-    from input.state_types import ScenarioRuntimeInputs
+    from simulators.timing import boss_hit_interval_seconds
 
-    interval, source, components = _boss_wave_hit_interval_seconds(
-        ScenarioRuntimeInputs.from_mapping({}),
-        scenario_surfaces={'boss_hit_interval_seconds': 2.0},
-        primitives={'slow_aura_mastery_attack_interval_multiplier': 1.5},
+    interval, source, components = boss_hit_interval_seconds(
+        scenario_base_seconds=2.0,
+        slow_aura_mastery_attack_interval_multiplier=1.5,
     )
 
     assert interval == pytest.approx(3.0)
     assert source == 'scenario_boss_hit_interval_plus_slow_aura_mastery'
     assert components['slow_aura_mastery_attack_interval_multiplier'] == pytest.approx(1.5)
 
-    explicit_interval, explicit_source, explicit_components = _boss_wave_hit_interval_seconds(
-        ScenarioRuntimeInputs.from_mapping({'boss_hit_interval_seconds': 2.25}),
-        scenario_surfaces={'boss_hit_interval_seconds': 2.0},
-        primitives={'slow_aura_mastery_attack_interval_multiplier': 1.5},
+    explicit_interval, explicit_source, explicit_components = boss_hit_interval_seconds(
+        explicit_hit_interval_seconds=2.25,
+        scenario_base_seconds=2.0,
+        slow_aura_mastery_attack_interval_multiplier=1.5,
     )
 
     assert explicit_interval == pytest.approx(2.25)
@@ -2538,6 +2537,66 @@ def test_boss_wave_dissonance_run_masks_are_visible_and_feed_max_wave_matrix():
     assert uw_energy_net_primitives['energy_net_duration_seconds'] == pytest.approx(4.3)
     assert uw_energy_net_primitives['energy_net_mastery_multiplier'] == pytest.approx(8.0)
     assert uw_energy_net_primitives['energy_net_damage_multiplier_duration_seconds'] == pytest.approx(14.3)
+
+
+def test_boss_wave_ultimate_weapons_dissonance_masks_chrono_field_before_contact_derivation():
+    from app.pipeline import build_boss_wave_payload
+
+    request = PipelineRunRequest(
+        ids=IDS_PATH,
+        out=ROOT / 'out',
+        perk_mode='max_progression_policy',
+        perk_policy_preset='eHP Farming',
+    )
+    common_kwargs = {
+        'preset_name': 'Farming',
+        'tier_number': 14,
+        'end_wave': 20,
+        'boss_wave_step': 10,
+        'stop_on_failure': False,
+        'scenario_runtime_inputs': {'orb_boss_total_damage_pct': 6.0},
+    }
+
+    regular_run = build_boss_wave_payload(request, **common_kwargs)
+    uw_run = build_boss_wave_payload(
+        request,
+        **common_kwargs,
+        dissonance_run_category='ultimate_weapons',
+    )
+
+    regular_primitives = regular_run['diagnostics']['replacement_primitive_inputs']['values']
+    uw_primitives = uw_run['diagnostics']['replacement_primitive_inputs']['values']
+    uw_mask = uw_run['diagnostics']['dissonance_run_mask']
+    uw_contact_contract = uw_run['diagnostics']['contact_time_contract']['boss_time_to_contact_seconds']
+
+    assert 'boss_time_to_contact_seconds' not in regular_run['diagnostics']['scenario_runtime_inputs']
+    assert 'boss_time_to_contact_seconds' not in uw_run['diagnostics']['scenario_runtime_inputs']
+    assert regular_primitives['chrono_field_slow_pct'] > 0.0
+    assert regular_primitives['boss_time_to_contact_chrono_field_average_slow_fraction'] > 0.0
+
+    for primitive_key in (
+        'chrono_field_duration_seconds',
+        'chrono_field_cooldown_seconds',
+        'chrono_field_damage_reduction_pct',
+        'chrono_field_slow_pct',
+    ):
+        assert uw_primitives[primitive_key] == pytest.approx(0.0)
+        assert uw_mask['restricted_primitives'][primitive_key] == pytest.approx(0.0)
+
+    assert uw_primitives['boss_time_to_contact_chrono_field_average_slow_fraction'] == pytest.approx(0.0)
+    assert uw_contact_contract['chrono_field_average_slow_fraction'] == pytest.approx(0.0)
+    assert uw_contact_contract['source'] == 'derived_base_2s_cf_slow_aura_energy_net'
+    assert 'chrono_field_slow_contact_time_and_dr_disabled' in uw_mask['disabled_runtime_systems']
+
+    slow_aura_fraction = float(uw_primitives['boss_time_to_contact_slow_aura_fraction'])
+    expected_speed_remaining = max(0.01, 1.0 - slow_aura_fraction)
+    expected_contact_time = (
+        float(uw_primitives['boss_time_to_contact_base_seconds']) / expected_speed_remaining
+    ) + float(uw_primitives['boss_time_to_contact_energy_net_hold_seconds'])
+    assert uw_primitives['boss_time_to_contact_speed_remaining_fraction'] == pytest.approx(expected_speed_remaining)
+    assert uw_primitives['boss_time_to_contact_seconds'] == pytest.approx(expected_contact_time)
+    assert uw_contact_contract['value'] == pytest.approx(expected_contact_time)
+    assert regular_primitives['boss_time_to_contact_seconds'] > uw_primitives['boss_time_to_contact_seconds']
 
 
 @pytest.mark.live

@@ -129,6 +129,11 @@ def _streamlit_values(widgets) -> list[str]:
 def test_streamlit_boss_waves_exposes_only_wired_manual_runtime_inputs():
     source = (ROOT / 'app' / 'streamlit_inspector.py').read_text(encoding='utf-8')
     assert 'Combat assumptions' in source
+    assert 'Recommended model assumptions' in source
+    assert 'Use recommended model assumptions' in source
+    assert 'BOSS_WAVE_RECOMMENDED_MODEL_RUNTIME_INPUTS' in source
+    assert "'flame_bot_damage_reduction_pct': 95.0" in source
+    assert "'boss_edamage_target_share': 0.005051405075429985" in source
     assert 'Override boss damage calibration' in source
     assert 'Advanced damage calibration' not in source
     assert "number_input('End wave', min_value=10, value=10000, step=10)" in source
@@ -155,6 +160,34 @@ def test_streamlit_boss_waves_exposes_only_wired_manual_runtime_inputs():
         'PBH uptime',
     ):
         assert stale_label not in source
+
+
+def test_boss_wave_recommended_model_assumptions_are_session_local_runtime_inputs():
+    from app.streamlit_inspector import (
+        _boss_wave_recommended_model_assumption_frame,
+        _boss_wave_recommended_model_runtime_inputs,
+    )
+
+    runtime_inputs = _boss_wave_recommended_model_runtime_inputs()
+
+    assert {
+        key: value
+        for key, value in runtime_inputs.items()
+        if key != 'boss_edamage_target_share'
+    } == {
+        'flame_bot_damage_reduction_pct': 95.0,
+        'boss_edamage_cadence_uptime_factor': 1.0,
+        'boss_edamage_reliability_factor': 1.0,
+        'boss_edamage_semantic_normalizer': 1.0,
+    }
+    assert runtime_inputs['boss_edamage_target_share'] == pytest.approx(0.005051405075429985)
+    assert 'flame_bot_boss_hit_chance_pct' not in runtime_inputs
+    assert 'boss_time_to_contact_seconds' not in runtime_inputs
+
+    frame = _boss_wave_recommended_model_assumption_frame()
+    assert {'group', 'assumption', 'value', 'runtime_input', 'source'}.issubset(frame.columns)
+    assert 'Flame Bot hit chance' in set(frame['assumption'])
+    assert 'Boss contact time' in set(frame['assumption'])
 
 
 def test_streamlit_perks_tab_consumes_pipeline_preview_not_local_generator():
@@ -210,12 +243,14 @@ def test_streamlit_boss_waves_operator_surface_renders_cleanly():
     assert 'Matrix checkpoint cadence (bosses)' in number_input_labels
 
     toggle_labels = _streamlit_labels(app_test.toggle)
+    assert 'Use recommended model assumptions' in toggle_labels
     assert 'Override boss damage calibration' in toggle_labels
     assert 'Show all checkpoints' in toggle_labels
     assert 'Stop on first failed boss' not in toggle_labels
 
     expander_labels = _streamlit_labels(app_test.expander)
     for label in (
+        'Recommended model assumptions',
         'Combat assumptions',
         'All-tier preset matrix',
         'Model assumptions',
@@ -816,6 +851,10 @@ def test_boss_waves_render_uses_published_summary_and_execution_contract() -> No
     assert "'boss_edamage_cadence_uptime_factor': boss_edamage_cadence_uptime_factor" in boss_block
     assert "'boss_edamage_reliability_factor': boss_edamage_reliability_factor" in boss_block
     assert "'boss_edamage_semantic_normalizer': boss_edamage_semantic_normalizer" in boss_block
+    assert "if use_recommended_model_assumptions:" in boss_block
+    assert "**_boss_wave_recommended_model_runtime_inputs()," in boss_block
+    assert "_boss_wave_recommended_model_assumption_frame()" in boss_block
+    assert "nonzero manual combat fields override the recommended values" in boss_block
     assert "'fleet_terminal_max_wave': fleet_terminal_max_wave" in boss_block
     assert "'elite_terminal_max_wave': elite_terminal_max_wave" in boss_block
     assert "'protector_terminal_max_wave': protector_terminal_max_wave" in boss_block
@@ -877,6 +916,8 @@ def test_boss_waves_render_uses_published_summary_and_execution_contract() -> No
     assert "'Killed Before Contact'" in helper_block
     assert "'Survival Margin'" in helper_block
     assert "def _boss_wave_assumption_frame(" in helper_block
+    assert "def _boss_wave_recommended_model_runtime_inputs(" in helper_block
+    assert "def _boss_wave_recommended_model_assumption_frame(" in helper_block
     assert "'Boss damage source'" in helper_block
     assert "'Chain Lightning DPS'" in helper_block
     assert "'EP eDamage base'" in helper_block

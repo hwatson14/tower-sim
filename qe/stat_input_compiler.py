@@ -801,6 +801,8 @@ _GOVERNED_NUMERIC_FORMULAS = {
 _CARD_MASTERY_NAME_ALIASES = {
     'Package Chance Mastery': 'Recovery Package Chance Mastery',
 }
+_INTRO_SPRINT_MASTERY_MAX_LEVEL = 9
+_INTRO_SPRINT_MASTERY_MULTIPLIER_STEP = 1.8
 
 
 def _card_name_for_mastery_lab(name: str) -> str | None:
@@ -981,6 +983,44 @@ def _parse_mastery_value_token(raw: str) -> Tuple[float | None, str]:
         return None, 'raw_text'
 
 
+def intro_sprint_mastery_multiplier_for_level(mastery_level: int | float | None) -> float | None:
+    """Return the KB-sanctioned Intro Sprint Mastery multiplier for zero-based levels 0..9."""
+    if mastery_level is None:
+        return None
+    try:
+        level_float = float(mastery_level)
+    except (TypeError, ValueError):
+        return None
+    if not level_float.is_integer():
+        return None
+    level = int(level_float)
+    if level < 0 or level > _INTRO_SPRINT_MASTERY_MAX_LEVEL:
+        return None
+    return _INTRO_SPRINT_MASTERY_MULTIPLIER_STEP * float(level + 1)
+
+
+def _card_mastery_formula_value(mastery_name: str, mastery_level: int | float | None) -> Tuple[float, str] | None:
+    if mastery_name == 'Intro Sprint Mastery':
+        multiplier = intro_sprint_mastery_multiplier_for_level(mastery_level)
+        if multiplier is None:
+            return None
+        return multiplier, 'multiplier'
+    return None
+
+
+def _assert_intro_sprint_mastery_row_matches_formula(row: Mapping[str, str]) -> None:
+    for level in range(_INTRO_SPRINT_MASTERY_MAX_LEVEL + 1):
+        expected = intro_sprint_mastery_multiplier_for_level(level)
+        actual, value_type = _parse_mastery_value_token(row.get(f'level_{level}', ''))
+        if expected is None or actual is None:
+            raise ValueError('Intro Sprint Mastery KB row must define all formula levels 0..9')
+        if value_type != 'multiplier' or abs(actual - expected) > 1e-9:
+            raise ValueError(
+                f'Intro Sprint Mastery KB row level_{level}={actual!r}/{value_type!r} '
+                f'does not match formula x1.8 * (level + 1) = x{expected:g}'
+            )
+
+
 @lru_cache(maxsize=1)
 def _load_card_mastery_values() -> Dict[Tuple[str, int], Tuple[float, str]]:
     out: Dict[Tuple[str, int], Tuple[float, str]] = {}
@@ -995,6 +1035,14 @@ def _load_card_mastery_values() -> Dict[Tuple[str, int], Tuple[float, str]]:
             alias = _CARD_MASTERY_NAME_ALIASES.get(f'{mastery_name} Mastery')
             if alias is not None:
                 mastery_keys.append(alias)
+            if mastery_name == 'Intro Sprint':
+                _assert_intro_sprint_mastery_row_matches_formula(row)
+                for level in range(_INTRO_SPRINT_MASTERY_MAX_LEVEL + 1):
+                    value = intro_sprint_mastery_multiplier_for_level(level)
+                    if value is not None:
+                        for mastery_key in mastery_keys:
+                            out[(mastery_key, level)] = (value, 'multiplier')
+                continue
             for level in range(10):
                 value, value_type = _parse_mastery_value_token(row.get(f'level_{level}', ''))
                 if value is not None:
@@ -1075,8 +1123,7 @@ def _bind_governed_numeric_row(
         return True
     if name.endswith(' Mastery'):
         mastery_level = int(level) if isinstance(level, int) else 0 if level in {None, ''} else None
-        mastery_key = (name, mastery_level) if mastery_level is not None else None
-        mastery_value = card_mastery_values.get(mastery_key) if mastery_key is not None else None
+        mastery_value = _card_mastery_value(card_mastery_values, name, mastery_level)
         if mastery_value is not None:
             _set_row_field(row, 'value', mastery_value[0])
             _set_row_field(row, 'value_type', mastery_value[1])
@@ -1146,6 +1193,11 @@ def _card_mastery_value(
 ) -> Tuple[float, str] | None:
     if mastery_level is None:
         return None
+    formula_value = _card_mastery_formula_value(mastery_name, mastery_level)
+    if mastery_name == 'Intro Sprint Mastery':
+        return formula_value
+    if formula_value is not None:
+        return formula_value
     return card_mastery_values.get((mastery_name, int(mastery_level)))
 
 

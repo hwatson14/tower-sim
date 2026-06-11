@@ -95,6 +95,24 @@ def test_publish_derived_composites_applies_v28_utility_dissonance_to_eecon() ->
     assert dissonant_rows['derived::eecon'].final_value == pytest.approx(base_rows['derived::eecon'].final_value * 3.0)
 
 
+def test_publish_derived_composites_uses_resolved_intro_sprint_waves_for_eecon_wave_factor() -> None:
+    rows = {
+        'state::economy.coins_per_kill_bonus': StatRow(stat_name='state::economy.coins_per_kill_bonus', final_value=1.0, value_type='multiplier', source_count=1, status='resolved', contributors=[], schema=None),
+        'support_surface::eecon.intro_sprint_active': StatRow(stat_name='support_surface::eecon.intro_sprint_active', final_value=True, value_type='bool', source_count=1, status='resolved', contributors=[], schema=None),
+        'support_surface::eecon.intro_sprint_waves': StatRow(stat_name='support_surface::eecon.intro_sprint_waves', final_value=100.0, value_type='waves', source_count=1, status='resolved', contributors=[], schema=None),
+        'support_surface::eecon.intro_sprint_mastery_active': StatRow(stat_name='support_surface::eecon.intro_sprint_mastery_active', final_value=True, value_type='bool', source_count=1, status='resolved', contributors=[], schema=None),
+        'support_surface::eecon.intro_sprint_mastery_level': StatRow(stat_name='support_surface::eecon.intro_sprint_mastery_level', final_value=0.0, value_type='level', source_count=1, status='resolved', contributors=[], schema=None),
+        'state::cards.intro_sprint.waves': StatRow(stat_name='state::cards.intro_sprint.waves', final_value=1440.0, value_type='waves', source_count=1, status='resolved', contributors=[], schema=None),
+    }
+
+    derived.publish_derived_composites(rows)
+
+    base_reduction = 100.0 - (1.0 + 100.0 / 10.0)
+    mastery_extra = 1440.0 - 100.0
+    expected_wave_factor = 6500.0 / (6500.0 - base_reduction - (mastery_extra - mastery_extra / 10.0))
+    assert rows['derived::eecon.wave_factor'].final_value == pytest.approx(expected_wave_factor)
+
+
 def test_publish_derived_composites_uses_resolved_bhd_freeup_surfaces_for_eecon() -> None:
     rows = {
         'state::economy.coins_per_kill_bonus': StatRow(stat_name='state::economy.coins_per_kill_bonus', final_value=1.0, value_type='multiplier', source_count=1, status='resolved', contributors=[], schema=None),

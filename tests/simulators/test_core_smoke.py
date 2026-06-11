@@ -73,6 +73,100 @@ def test_timing_public_api_is_importable__query_callables_exposed():
     assert callable(resolve_timing_consumer_bundle)
 
 
+def test_timing_engine_owns_boss_contact_dr_and_damage_windows():
+    from simulators.timing import (
+        boss_contact_time_seconds,
+        energy_net_mastery_damage_window_seconds,
+        flame_bot_static_boss_hit_chance,
+        shockwave_active_fraction,
+        time_limited_multiplier_damage,
+        time_limited_multiplier_kill_seconds,
+        timed_dr_lanes_from_sources,
+        timed_dr_source,
+        timed_effect_lane_fractions,
+    )
+
+    contact_time, source, components = boss_contact_time_seconds(
+        chrono_field_duration_seconds=50.0,
+        chrono_field_cooldown_seconds=60.0,
+        chrono_field_slow_pct=30.0,
+        slow_aura_enemy_speed_pct=0.0,
+        energy_net_duration_seconds=4.3,
+    )
+    assert source == 'derived_base_2s_cf_slow_aura_energy_net'
+    assert components['chrono_field_average_slow_fraction'] == pytest.approx(0.25)
+    assert components['energy_net_hold_seconds'] == pytest.approx(4.3)
+    assert contact_time == pytest.approx((2.0 / 0.75) + 4.3)
+
+    assert energy_net_mastery_damage_window_seconds(
+        energy_net_duration_seconds=4.3,
+        energy_net_mastery_multiplier=8.0,
+    ) == pytest.approx(14.3)
+    assert energy_net_mastery_damage_window_seconds(
+        energy_net_duration_seconds=4.3,
+        energy_net_mastery_multiplier=1.0,
+    ) == pytest.approx(0.0)
+
+    hit_probability, active_fraction = shockwave_active_fraction(
+        contact_time_seconds=10.0,
+        shockwave_interval_seconds=14.0,
+    )
+    assert hit_probability == pytest.approx(10.0 / 14.0)
+    assert active_fraction == pytest.approx(0.5)
+
+    dr_lanes = timed_effect_lane_fractions(
+        effect_fraction=0.8,
+        duration_seconds=36.0,
+        cooldown_seconds=46.0,
+    )
+    assert dr_lanes == pytest.approx({'min': 0.0, 'avg': 0.8 * (36.0 / 46.0), 'max': 0.8})
+
+    flame_dr_source = timed_dr_source(
+        damage_reduction_pct=95.0,
+        duration_seconds=None,
+        cooldown_seconds=5.0,
+        explicit_uptime_fraction=0.97,
+        primitive_status='test_binary_hit_model',
+        binary_outcome=True,
+        binary_avg_hit_threshold=0.95,
+    )
+    assert flame_dr_source['deterministic_hit_dr_fraction'] == pytest.approx(0.95)
+    assert flame_dr_source['probability_weighted_dr_fraction'] == pytest.approx(0.95 * 0.97)
+    assert timed_dr_lanes_from_sources(
+        {'flame_bot': flame_dr_source, 'black_hole_pbh': {'damage_reduction_pct': 80.0, 'uptime_fraction': 1.0}},
+        binary_avg_hit_threshold=0.95,
+        excluded_source_names=('black_hole_pbh',),
+    ) == pytest.approx({'min': 0.0, 'avg': 0.95, 'max': 0.95})
+
+    assert time_limited_multiplier_damage(
+        start_seconds=0.0,
+        end_seconds=10.0,
+        damage_per_second=100.0,
+        multiplier=2.0,
+        multiplier_duration_seconds=3.0,
+    ) == pytest.approx(1300.0)
+    assert time_limited_multiplier_kill_seconds(
+        start_seconds=0.0,
+        end_seconds=10.0,
+        hp_to_kill=1000.0,
+        damage_per_second=100.0,
+        multiplier=2.0,
+        multiplier_duration_seconds=3.0,
+    ) == pytest.approx(7.0)
+
+    flame_hit_chance, flame_components = flame_bot_static_boss_hit_chance(
+        tower_range_m=69.5,
+        flame_bot_effective_range_m=91.0,
+        flame_bot_cooldown_seconds=5.0,
+        boss_time_to_contact_seconds=6.3,
+        energy_net_hold_seconds=4.3,
+    )
+    assert flame_components['status'] == 'resolved'
+    assert flame_components['model'] == 'static_uniform_flame_bot_center_vs_boss_path'
+    assert flame_hit_chance == pytest.approx(flame_components['hit_fraction'])
+    assert flame_components['energy_net_hold_seconds'] == pytest.approx(4.3)
+
+
 def test_tier_enemy_level_skip_reduction_continues_expected_late_tier_pattern():
     from simulators.scenario import ScenarioConfig, _load_tier_battle_conditions, compute_scenario_surfaces, normalize_els_reduction_to_fraction
 

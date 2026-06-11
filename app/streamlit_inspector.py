@@ -104,6 +104,71 @@ from qe.contracts import normalize_surface_id_to_contract
 
 DEFAULT_OUT = ROOT / 'out'
 DEFAULT_IDS = ROOT / 'input' / 'imports' / 'ids.csv'
+BOSS_WAVE_RECOMMENDED_MODEL_RUNTIME_INPUTS = {
+    'flame_bot_damage_reduction_pct': 95.0,
+    'boss_edamage_target_share': 0.005051405075429985,
+    'boss_edamage_cadence_uptime_factor': 1.0,
+    'boss_edamage_reliability_factor': 1.0,
+    'boss_edamage_semantic_normalizer': 1.0,
+}
+BOSS_WAVE_RECOMMENDED_MODEL_ASSUMPTIONS = (
+    {
+        'group': 'Defense',
+        'assumption': 'Flame Bot DR override',
+        'value': '95%',
+        'runtime_input': 'flame_bot_damage_reduction_pct',
+        'source': 'session-local disco-run bot respec override',
+    },
+    {
+        'group': 'Damage',
+        'assumption': 'Boss target share',
+        'value': '0.005051405075429985',
+        'runtime_input': 'boss_edamage_target_share',
+        'source': 'explicit decomposed eDamage bridge',
+    },
+    {
+        'group': 'Damage',
+        'assumption': 'Boss cadence uptime',
+        'value': '1',
+        'runtime_input': 'boss_edamage_cadence_uptime_factor',
+        'source': 'explicit decomposed eDamage bridge',
+    },
+    {
+        'group': 'Damage',
+        'assumption': 'Boss reliability',
+        'value': '1',
+        'runtime_input': 'boss_edamage_reliability_factor',
+        'source': 'explicit decomposed eDamage bridge',
+    },
+    {
+        'group': 'Damage',
+        'assumption': 'Boss semantic normalizer',
+        'value': '1',
+        'runtime_input': 'boss_edamage_semantic_normalizer',
+        'source': 'explicit decomposed eDamage bridge',
+    },
+    {
+        'group': 'Timing',
+        'assumption': 'Boss contact time',
+        'value': 'derived',
+        'runtime_input': 'none',
+        'source': 'simulators.timing contact-time contract',
+    },
+    {
+        'group': 'Timing',
+        'assumption': 'Energy Net hold',
+        'value': 'derived',
+        'runtime_input': 'none',
+        'source': 'QE card duration plus timing engine',
+    },
+    {
+        'group': 'Defense',
+        'assumption': 'Flame Bot hit chance',
+        'value': 'derived all-or-nothing tag chance',
+        'runtime_input': 'none',
+        'source': 'timing/geometry-derived Flame Bot source semantics',
+    },
+)
 
 
 def _friendly_recompute_mode(value: object) -> str:
@@ -236,6 +301,14 @@ def _boss_wave_assumption_text(value: object) -> str:
         return json.dumps(value, sort_keys=True, default=str)
     text = str(value).strip()
     return text or 'n/a'
+
+
+def _boss_wave_recommended_model_runtime_inputs() -> dict[str, float]:
+    return dict(BOSS_WAVE_RECOMMENDED_MODEL_RUNTIME_INPUTS)
+
+
+def _boss_wave_recommended_model_assumption_frame() -> pd.DataFrame:
+    return pd.DataFrame(list(BOSS_WAVE_RECOMMENDED_MODEL_ASSUMPTIONS))
 
 
 def _boss_wave_assumption_frame(
@@ -2094,6 +2167,14 @@ def _render_boss_waves(request: PipelineRunRequest) -> None:
     if preset_name == 'Tourney':
         tournament_wave_override = st.number_input('Legends tournament wave', min_value=1, value=100, step=10)
 
+    with st.expander('Recommended model assumptions', expanded=False):
+        st.caption(
+            'Optional session-local overrides for this Boss Waves run. These do not change IDS, KB, or QE truth; '
+            'nonzero manual combat fields override the recommended values.'
+        )
+        use_recommended_model_assumptions = st.toggle('Use recommended model assumptions', value=False)
+        st.dataframe(_boss_wave_recommended_model_assumption_frame(), width='stretch', hide_index=True)
+
     with st.expander('Combat assumptions', expanded=False):
         runtime_cols = st.columns(5)
         orb_boss_total_damage_pct = runtime_cols[0].number_input('Orb damage to boss (total %)', min_value=0.0, max_value=100.0, value=6.0, step=0.1)
@@ -2140,6 +2221,11 @@ def _render_boss_waves(request: PipelineRunRequest) -> None:
         **({'tournament_wave': int(tournament_wave_override)} if preset_name == 'Tourney' and int(tournament_wave_override) > 0 else {}),
         'death_wave_health_max_wave': death_wave_health_max_wave,
     }
+    if use_recommended_model_assumptions:
+        scenario_runtime_inputs = {
+            **_boss_wave_recommended_model_runtime_inputs(),
+            **scenario_runtime_inputs,
+        }
     try:
         boss_calc_start = time.perf_counter()
         boss_payload = build_boss_wave_payload(

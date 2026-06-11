@@ -14,6 +14,7 @@ from qe.compat.legacy_surface_ids import (
 from qe.contracts import normalize_surface_id_to_contract
 from qe.models import StatRow
 from qe.run_plan import derive_wall_hp_from_qe_primitives, derive_wall_regen_hp_per_second
+from qe.stat_input_compiler import intro_sprint_mastery_multiplier_for_level
 
 
 def _surface_id_candidates(key: str) -> tuple[str, ...]:
@@ -2029,14 +2030,23 @@ def publish_derived_composites(rows: Dict[str, StatRow]) -> None:
         intro_active = _bool(rows, ['support_surface::eecon.intro_sprint_active'], False)
         intro_waves = _get_first(rows, ['support_surface::eecon.intro_sprint_waves'], 0.0)
         intro_mastery_active = _bool(rows, ['support_surface::eecon.intro_sprint_mastery_active'], False)
-        intro_mastery_bonus = 100.0 * 1.8 * (1.0 + _get_first(rows, ['support_surface::eecon.intro_sprint_mastery_level'], 0.0))
+        intro_mastery_total_waves = _get_first(rows, ['state::cards.intro_sprint.waves', _compat_runtime('cards.intro_sprint.waves')], 0.0)
+        if intro_mastery_total_waves <= 0.0:
+            intro_mastery_multiplier = intro_sprint_mastery_multiplier_for_level(
+                _get_first(rows, ['support_surface::eecon.intro_sprint_mastery_level'], 0.0)
+            )
+            intro_mastery_total_waves = (
+                intro_waves * intro_mastery_multiplier
+                if intro_mastery_multiplier is not None and intro_waves > 0.0
+                else 0.0
+            )
         is_reduction = 0.0
         isd = 0.0
         if intro_active:
             is_reduction = intro_waves - (1.0 + intro_waves / 10.0)
             isd = intro_waves
             if intro_mastery_active:
-                extra = intro_mastery_bonus - intro_waves
+                extra = max(0.0, intro_mastery_total_waves - intro_waves)
                 is_reduction += extra - (extra / 10.0)
                 isd += extra
 

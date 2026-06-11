@@ -450,17 +450,32 @@ def test_intro_sprint_is_mapped() -> None:
     assert row.notes == 'kb_card_effect_registry_routed:INTRO_SPRINT'
 
 
-def test_intro_sprint_mastery_composes_into_effective_runtime_waves() -> None:
+def test_intro_sprint_mastery_formula_matches_kb_ladder_for_every_level() -> None:
+    values = stat_input_compiler.load_card_mastery_values()
+
+    for mastery_level in range(10):
+        expected_multiplier = 1.8 * (mastery_level + 1)
+        assert stat_input_compiler.intro_sprint_mastery_multiplier_for_level(mastery_level) == pytest.approx(expected_multiplier)
+        value, value_type = values[('Intro Sprint Mastery', mastery_level)]
+        assert value == pytest.approx(expected_multiplier)
+        assert value_type == 'multiplier'
+    assert stat_input_compiler.intro_sprint_mastery_multiplier_for_level(-1) is None
+    assert stat_input_compiler.intro_sprint_mastery_multiplier_for_level(1.5) is None
+    assert stat_input_compiler.intro_sprint_mastery_multiplier_for_level(10) is None
+
+
+@pytest.mark.parametrize('mastery_level', range(10))
+def test_intro_sprint_mastery_composes_into_effective_runtime_waves(mastery_level: int) -> None:
     state = _base_account_state()
     assert 'Intro Sprint' in state.cards_inventory
     intro_sprint = replace(
         state.cards_inventory['Intro Sprint'],
         mastery_unlocked=True,
-        mastery_lab_level=7,
+        mastery_lab_level=mastery_level,
     )
     mutated = replace(
         state,
-        labs={**state.labs, 'Intro Sprint Mastery': 7},
+        labs={**state.labs, 'Intro Sprint Mastery': mastery_level},
         cards_inventory={**state.cards_inventory, 'Intro Sprint': intro_sprint},
         card_presets={**state.card_presets, state.default_preset: ['Intro Sprint']},
     )
@@ -468,13 +483,14 @@ def test_intro_sprint_mastery_composes_into_effective_runtime_waves() -> None:
     rows = _compiled_rows(mutated)
     card_row = _single_row_by_family(rows, name='Intro Sprint', source_family='card')
     mastery_row = _single_row(rows, 'Intro Sprint Mastery')
+    expected_multiplier = 1.8 * (mastery_level + 1)
 
     assert card_row.destination_object_type == 'runtime_mechanic_param'
     assert card_row.destination_id == 'cards.intro_sprint.waves'
-    assert card_row.value == pytest.approx(100.0 * 14.4)
-    assert 'kb_card_mastery_applied:Intro Sprint Mastery x14.4' in str(card_row.notes)
+    assert card_row.value == pytest.approx(100.0 * expected_multiplier)
+    assert f'kb_card_mastery_applied:Intro Sprint Mastery x{expected_multiplier:g}' in str(card_row.notes)
     assert mastery_row.active is True
-    assert mastery_row.value == pytest.approx(14.4)
+    assert mastery_row.value == pytest.approx(expected_multiplier)
 
 
 def test_enemy_balance_card_splits_to_spawn_and_cash_routes() -> None:

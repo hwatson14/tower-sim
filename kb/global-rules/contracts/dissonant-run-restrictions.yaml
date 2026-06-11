@@ -334,5 +334,6 @@ categories:
       - ultimate_weapons_disabled
       - chain_lightning_continuous_boss_damage_disabled
       - black_hole_and_primordial_black_hole_dr_disabled
+      - chrono_field_slow_contact_time_and_dr_disabled
       - chrono_field_dr_disabled
       - death_wave_health_multiplier_disabled
