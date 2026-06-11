@@ -98,6 +98,22 @@ def test_timing_engine_owns_boss_contact_dr_and_damage_windows():
     assert components['energy_net_hold_seconds'] == pytest.approx(4.3)
     assert contact_time == pytest.approx((2.0 / 0.75) + 4.3)
 
+    geometry_contact_time, geometry_source, geometry_components = boss_contact_time_seconds(
+        chrono_field_duration_seconds=50.0,
+        chrono_field_cooldown_seconds=60.0,
+        chrono_field_slow_pct=30.0,
+        geometry_base_contact_time_seconds=3.0,
+        geometry_base_components={
+            'status': 'resolved_displayed_proxy_candidate',
+            'truth_status': 'displayed_proxy_candidate_not_wall_contact_truth',
+            'boss_path_distance_to_wall_displayed_candidate_m': 60.0,
+        },
+    )
+    assert geometry_source == 'derived_geometry_displayed_proxy_base_cf_slow_aura_energy_net'
+    assert geometry_components['base_seconds_source'] == 'geometry_displayed_proxy_candidate'
+    assert geometry_components['geometry_proxy_truth_status'] == 'displayed_proxy_candidate_not_wall_contact_truth'
+    assert geometry_contact_time == pytest.approx(3.0 / 0.75)
+
     assert energy_net_mastery_damage_window_seconds(
         energy_net_duration_seconds=4.3,
         energy_net_mastery_multiplier=8.0,

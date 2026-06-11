@@ -79,6 +79,18 @@ def positive_factor(value: object, *, default: float = 1.0) -> float:
     return factor if factor > 0.0 else default
 
 
+def _finite_nonnegative_or_none(value: object) -> float | None:
+    if value in (None, ''):
+        return None
+    try:
+        parsed = float(value)
+    except (TypeError, ValueError):
+        return None
+    if not math.isfinite(parsed) or parsed < 0.0:
+        return None
+    return parsed
+
+
 def duration_over_cooldown_uptime_fraction(duration_seconds: object, cooldown_seconds: object) -> float:
     duration = max(0.0, float(duration_seconds or 0.0))
     cooldown = max(0.0, float(cooldown_seconds or 0.0))
@@ -216,8 +228,11 @@ def boss_contact_time_seconds(
     chrono_field_slow_pct: object = 0.0,
     slow_aura_enemy_speed_pct: object = 0.0,
     energy_net_duration_seconds: object = 0.0,
+    geometry_base_contact_time_seconds: object | None = None,
+    geometry_base_components: Mapping[str, object] | None = None,
     base_seconds: float = 2.0,
-) -> tuple[float, str, dict[str, float]]:
+) -> tuple[float, str, dict[str, object]]:
+    geometry_components = dict(geometry_base_components or {})
     if explicit_contact_time_seconds is not None:
         contact_time = max(0.0, float(explicit_contact_time_seconds))
         return (
@@ -225,12 +240,30 @@ def boss_contact_time_seconds(
             'runtime_input_boss_time_to_contact_seconds',
             {
                 'base_seconds': float(base_seconds),
+                'base_seconds_source': 'runtime_input_override_contact_time',
                 'chrono_field_average_slow_fraction': 0.0,
                 'slow_aura_fraction': 0.0,
                 'speed_remaining_fraction': 1.0,
                 'energy_net_hold_seconds': 0.0,
+                'geometry_base_seconds': _finite_nonnegative_or_none(geometry_base_contact_time_seconds),
+                'geometry_base_status': str(geometry_components.get('status') or 'not_used_runtime_override'),
+                'geometry_proxy_truth_status': str(
+                    geometry_components.get('truth_status') or 'not_used_runtime_override'
+                ),
             },
         )
+    resolved_base_seconds = float(base_seconds)
+    base_seconds_source = 'constant_2s_reference'
+    source = 'derived_base_2s_cf_slow_aura_energy_net'
+    geometry_base = _finite_nonnegative_or_none(geometry_base_contact_time_seconds)
+    geometry_base_status = str(geometry_components.get('status') or 'not_supplied')
+    geometry_proxy_truth_status = str(geometry_components.get('truth_status') or 'not_supplied')
+    if geometry_base is not None:
+        resolved_base_seconds = geometry_base
+        base_seconds_source = 'geometry_displayed_proxy_candidate'
+        source = 'derived_geometry_displayed_proxy_base_cf_slow_aura_energy_net'
+        if geometry_base_status == 'not_supplied':
+            geometry_base_status = 'resolved_displayed_proxy_candidate'
     cf_uptime = duration_over_cooldown_uptime_fraction(
         chrono_field_duration_seconds,
         chrono_field_cooldown_seconds,
@@ -239,16 +272,29 @@ def boss_contact_time_seconds(
     slow_aura = bounded_percent_fraction(slow_aura_enemy_speed_pct)
     speed_remaining = max(0.01, (1.0 - cf_average_slow) * (1.0 - slow_aura))
     energy_net_hold = max(0.0, float(energy_net_duration_seconds or 0.0))
-    contact_time = (float(base_seconds) / speed_remaining) + energy_net_hold
+    contact_time = (resolved_base_seconds / speed_remaining) + energy_net_hold
     return (
         contact_time,
-        'derived_base_2s_cf_slow_aura_energy_net',
+        source,
         {
-            'base_seconds': float(base_seconds),
+            'base_seconds': resolved_base_seconds,
+            'base_seconds_source': base_seconds_source,
             'chrono_field_average_slow_fraction': cf_average_slow,
             'slow_aura_fraction': slow_aura,
             'speed_remaining_fraction': speed_remaining,
             'energy_net_hold_seconds': energy_net_hold,
+            'geometry_base_seconds': geometry_base,
+            'geometry_base_status': geometry_base_status,
+            'geometry_proxy_truth_status': geometry_proxy_truth_status,
+            'geometry_tower_range_theoretical_m': geometry_components.get('tower_range_theoretical_m'),
+            'geometry_tower_range_displayed_m': geometry_components.get('tower_range_displayed_m'),
+            'geometry_wall_radius_displayed_m': geometry_components.get('wall_radius_displayed_m'),
+            'geometry_path_distance_to_wall_displayed_candidate_m': geometry_components.get(
+                'boss_path_distance_to_wall_displayed_candidate_m'
+            ),
+            'geometry_reference_path_distance_to_wall_displayed_m': geometry_components.get(
+                'reference_path_distance_to_wall_displayed_m'
+            ),
         },
     )
 

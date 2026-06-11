@@ -217,6 +217,7 @@ _SIMULATORS_FILE_ALLOWLIST = {
     "__init__.py",
     "contracts.py",
     "evaluator_kernel.py",
+    "geometry.py",
     "incremental_cache_fingerprint.py",
     "incremental_cache_validator.py",
     "incremental_overlay_publisher.py",

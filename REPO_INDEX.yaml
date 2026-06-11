@@ -324,6 +324,11 @@ simulators:
     layer: simulators/
     note: Boss Waves Table 2 scenario overlay, v21 event-only combat kernel, lanes, and operator handles; consumes staged outputs
 
+  simulators/geometry.py:
+    status: active_candidate
+    layer: simulators/
+    note: Displayed/proxy geometry engine for range transforms, wall-travel contact-time proxy base, spatial overlaps, consumer payloads, and proxy-governed geometry diagnostics
+
   simulators/incremental_cache_fingerprint.py:
     status: active_candidate
     layer: simulators/
@@ -383,6 +388,7 @@ simulators:
   simulators/timing.py:
     status: active_candidate
     layer: simulators/
+    note: Timing owner for contact/hit intervals and timed effects; consumes geometry displayed wall-travel proxy only as labeled boss contact-time base when no manual override is supplied
 
   simulators/wave_progression_policy.py:
     status: active_candidate

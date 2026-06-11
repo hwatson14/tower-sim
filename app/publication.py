@@ -37,6 +37,11 @@ RUN_STATS_LOCAL_SUPPORT_ARTIFACTS: tuple[str, ...] = (
     'diagnostics.json',
     'input_dashboard.json',
     'module_card_payloads.json',
+    'geometry_engine_payload.json',
+    'geometry_range_report.json',
+    'geometry_range_report.csv',
+    'geometry_consumer_interfaces.json',
+    'geometry_proxy_governance.json',
 )
 
 RUN_STATS_BOUNDED_OUTPUT_ARTIFACTS: tuple[str, ...] = (

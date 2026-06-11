@@ -12,8 +12,8 @@ from qe.contracts import normalize_surface_id_to_contract
 
 INSPECTOR_ARTIFACTS = (
     'pipeline_trace.json',
-    *RUN_STATS_BOUNDED_OUTPUT_ARTIFACTS,
-    *FULL_PIPELINE_PUBLICATION_ARTIFACTS,
+    *(name for name in RUN_STATS_BOUNDED_OUTPUT_ARTIFACTS if name.endswith('.json')),
+    *(name for name in FULL_PIPELINE_PUBLICATION_ARTIFACTS if name.endswith('.json')),
 )
 
 

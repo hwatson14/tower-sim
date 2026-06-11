@@ -97,6 +97,10 @@ from simulators.timing import (
     timed_dr_lanes_from_sources,
     timed_dr_source,
 )
+from simulators.geometry import (
+    boss_wall_travel_displayed_proxy_from_tower_range,
+    build_run_stats_geometry_artifacts,
+)
 from input.state_types import ScenarioProjectionState, ScenarioRuntimeInputs
 from qe.models import BoundStatInputs, StatRow, bind_state_identity
 
@@ -2181,10 +2185,20 @@ def build_boss_wave_milestone_matrix(
                 'value': runtime_inputs.get('boss_time_to_contact_seconds'),
                 'source': runtime_input_sources.get(
                     'boss_time_to_contact_seconds',
-                    'per_candidate_derived_base_2s_cf_slow_aura_energy_net',
+                    'per_candidate_derived_geometry_displayed_proxy_base_cf_slow_aura_energy_net',
                 ),
-                'ownership': 'runtime_input_override_or_per_candidate_simulator_derivation',
+                'ownership': 'runtime_input_override_or_per_candidate_geometry_proxy_simulator_derivation',
                 'derived_by_simulator': 'boss_time_to_contact_seconds' not in runtime_inputs,
+                'geometry_proxy_status': (
+                    None
+                    if 'boss_time_to_contact_seconds' in runtime_inputs
+                    else 'per_candidate_displayed_proxy_base'
+                ),
+                'geometry_proxy_truth_status': (
+                    None
+                    if 'boss_time_to_contact_seconds' in runtime_inputs
+                    else 'displayed_proxy_candidate_not_wall_contact_truth'
+                ),
                 'matrix_default_is_uncertified_assumption': (
                     runtime_input_sources.get('boss_time_to_contact_seconds') == 'matrix_default_assumption'
                 ),
@@ -2320,6 +2334,14 @@ def _build_replacement_operator_table_and_summary(
         primitives=primitives,
         electron_boss_remaining_hp_pct=float(ELECTRON_BOSS_REMAINING_HP_PCT),
     )
+    boss_contact_geometry_proxy = boss_wall_travel_displayed_proxy_from_tower_range(
+        tower_range_theoretical_m=primitives.get('tower_range_m'),
+    )
+    geometry_base_contact_time_seconds = (
+        boss_contact_geometry_proxy.get('boss_contact_time_displayed_proxy_seconds')
+        if boss_contact_geometry_proxy.get('status') == 'resolved_displayed_proxy_candidate'
+        else None
+    )
     boss_time_to_contact_seconds, boss_time_to_contact_source, boss_time_to_contact_components = (
         timing_boss_contact_time_seconds(
             explicit_contact_time_seconds=getattr(runtime_inputs, 'boss_time_to_contact_seconds'),
@@ -2328,6 +2350,8 @@ def _build_replacement_operator_table_and_summary(
             chrono_field_slow_pct=primitives.get('chrono_field_slow_pct'),
             slow_aura_enemy_speed_pct=primitives.get('slow_aura_enemy_speed_pct'),
             energy_net_duration_seconds=primitives.get('energy_net_duration_seconds'),
+            geometry_base_contact_time_seconds=geometry_base_contact_time_seconds,
+            geometry_base_components=boss_contact_geometry_proxy,
         )
     )
     boss_hit_interval_seconds, boss_hit_interval_source, boss_hit_interval_components = timing_boss_hit_interval_seconds(
@@ -2350,6 +2374,30 @@ def _build_replacement_operator_table_and_summary(
     primitives['boss_time_to_contact_energy_net_hold_seconds'] = boss_time_to_contact_components[
         'energy_net_hold_seconds'
     ]
+    primitives['boss_time_to_contact_base_seconds_source'] = boss_time_to_contact_components[
+        'base_seconds_source'
+    ]
+    primitives['boss_time_to_contact_geometry_proxy_status'] = boss_time_to_contact_components[
+        'geometry_base_status'
+    ]
+    primitives['boss_time_to_contact_geometry_proxy_truth_status'] = boss_time_to_contact_components[
+        'geometry_proxy_truth_status'
+    ]
+    primitives['boss_time_to_contact_geometry_tower_range_theoretical_m'] = boss_time_to_contact_components.get(
+        'geometry_tower_range_theoretical_m'
+    )
+    primitives['boss_time_to_contact_geometry_tower_range_displayed_m'] = boss_time_to_contact_components.get(
+        'geometry_tower_range_displayed_m'
+    )
+    primitives['boss_time_to_contact_geometry_wall_radius_displayed_m'] = boss_time_to_contact_components.get(
+        'geometry_wall_radius_displayed_m'
+    )
+    primitives['boss_time_to_contact_geometry_path_distance_to_wall_displayed_candidate_m'] = (
+        boss_time_to_contact_components.get('geometry_path_distance_to_wall_displayed_candidate_m')
+    )
+    primitives['boss_time_to_contact_geometry_reference_path_distance_to_wall_displayed_m'] = (
+        boss_time_to_contact_components.get('geometry_reference_path_distance_to_wall_displayed_m')
+    )
     primitives['boss_hit_interval_seconds'] = boss_hit_interval_seconds
     primitives['boss_hit_interval_source'] = boss_hit_interval_source
     primitives['boss_hit_interval_scenario_base_seconds'] = boss_hit_interval_components['scenario_base_seconds']
@@ -4442,6 +4490,30 @@ def _build_replacement_diagnostics(
                 != 'runtime_input_boss_time_to_contact_seconds',
                 'required_for_self_closing_boss_waves': True,
                 'base_seconds': (primitive_inputs or {}).get('boss_time_to_contact_base_seconds'),
+                'base_seconds_source': (primitive_inputs or {}).get(
+                    'boss_time_to_contact_base_seconds_source'
+                ),
+                'geometry_proxy_status': (primitive_inputs or {}).get(
+                    'boss_time_to_contact_geometry_proxy_status'
+                ),
+                'geometry_proxy_truth_status': (primitive_inputs or {}).get(
+                    'boss_time_to_contact_geometry_proxy_truth_status'
+                ),
+                'geometry_tower_range_theoretical_m': (primitive_inputs or {}).get(
+                    'boss_time_to_contact_geometry_tower_range_theoretical_m'
+                ),
+                'geometry_tower_range_displayed_m': (primitive_inputs or {}).get(
+                    'boss_time_to_contact_geometry_tower_range_displayed_m'
+                ),
+                'geometry_wall_radius_displayed_m': (primitive_inputs or {}).get(
+                    'boss_time_to_contact_geometry_wall_radius_displayed_m'
+                ),
+                'geometry_path_distance_to_wall_displayed_candidate_m': (primitive_inputs or {}).get(
+                    'boss_time_to_contact_geometry_path_distance_to_wall_displayed_candidate_m'
+                ),
+                'geometry_reference_path_distance_to_wall_displayed_m': (primitive_inputs or {}).get(
+                    'boss_time_to_contact_geometry_reference_path_distance_to_wall_displayed_m'
+                ),
                 'chrono_field_average_slow_fraction': (primitive_inputs or {}).get(
                     'boss_time_to_contact_chrono_field_average_slow_fraction'
                 ),
@@ -6532,6 +6604,11 @@ class RunStatsSession:
             'query_plans': state_query_plans,
             'timings_ms': pipeline_timings,
         }
+        geometry_artifacts = build_run_stats_geometry_artifacts(
+            start_books_by_preset=start_books_by_preset,
+            max_books_by_preset=max_books_by_preset,
+        )
+        diagnostics['geometry_engine'] = geometry_artifacts['diagnostics']
         run_stats_payload['diagnostics'] = diagnostics
         return {
             'run_stats_payload': run_stats_payload,
@@ -6541,6 +6618,7 @@ class RunStatsSession:
             'start_books_by_preset': start_books_by_preset,
             'max_books_by_preset': max_books_by_preset,
             'state_query_plans': state_query_plans,
+            'geometry_artifacts': geometry_artifacts,
         }
 
     def execute(self, args) -> int:
@@ -6605,6 +6683,27 @@ class RunStatsSession:
         )
         (args.out / 'stats_dashboard.json').write_text(
             json.dumps(contract_payload(stats_dashboard_payload), indent=2, default=str)
+        )
+        geometry_artifacts = artifacts['geometry_artifacts']
+        (args.out / 'geometry_engine_payload.json').write_text(
+            json.dumps(contract_payload(geometry_artifacts['geometry_engine_payload']), indent=2, default=str),
+            encoding='utf-8',
+        )
+        (args.out / 'geometry_range_report.json').write_text(
+            json.dumps(contract_payload(geometry_artifacts['geometry_range_report']), indent=2, default=str),
+            encoding='utf-8',
+        )
+        (args.out / 'geometry_range_report.csv').write_text(
+            str(geometry_artifacts['geometry_range_report_csv']),
+            encoding='utf-8',
+        )
+        (args.out / 'geometry_consumer_interfaces.json').write_text(
+            json.dumps(contract_payload(geometry_artifacts['geometry_consumer_interfaces']), indent=2, default=str),
+            encoding='utf-8',
+        )
+        (args.out / 'geometry_proxy_governance.json').write_text(
+            json.dumps(contract_payload(geometry_artifacts['geometry_proxy_governance']), indent=2, default=str),
+            encoding='utf-8',
         )
         optional_committed_artifacts: list[str] = []
         if bool(getattr(args, 'include_boss_wave_milestone_matrix', False)):

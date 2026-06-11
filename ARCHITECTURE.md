@@ -76,6 +76,7 @@ The active surface should be small enough that an AI agent can navigate it in on
     __init__.py
     contracts.py                # simulator-facing checkpoint/row contracts
     evaluator_kernel.py         # Boss Waves scenario overlay, v21 combat kernel, and lane registry
+    geometry.py                 # displayed/proxy spatial geometry, range transforms, and overlap payloads
     perks.py                    # checkpoint-local perk application helpers
     snapshot_resolver.py        # lightweight QE-backed checkpoint resolver
     performance.py              # narrow simulator performance probes/benchmarks
@@ -200,6 +201,7 @@ Allowed direct files are:
 - `__init__.py`
 - `contracts.py`
 - `evaluator_kernel.py`
+- `geometry.py`
 - `incremental_cache_fingerprint.py`
 - `incremental_cache_validator.py`
 - `incremental_overlay_publisher.py`
@@ -273,7 +275,7 @@ Locked-foundation rules:
 - No additional `qe.stat_resolution` symbols may be imported into active QE/runtime consumers without updating this document and the matching boundary test.
 
 ### `simulators/`
-**Owns:** progression projection, timing projection, scenario projection.
+**Owns:** progression projection, timing projection, scenario projection, displayed/proxy geometry.
 **Must not own:** stat resolution truth, recommendation policy.
 **Consumes:** QE outputs only (not legacy engine internals directly).
 
@@ -281,6 +283,7 @@ Locked-foundation rules:
 - Simulator hot paths must use explicit requested-surface QE seams.
 - The Boss Waves replacement kernel consumes `qe.run_plan` compiled RunPlan/common-trajectory rows and explicit staged survivability contributor bundles plus scenario transforms; it must not call the legacy Boss Waves row-engine as its runtime authority.
 - Boss Waves replacement combat uses the v21 event-only boss TTK/TTD contract for this tranche; continuous additive tower/projectile DPS proxy logic is forbidden in `simulators/evaluator_kernel.py`.
+- `simulators.geometry` may provide displayed/proxy wall-travel base seconds to `simulators.timing`; `simulators.timing` remains the owner of boss contact-time effects and manual override precedence, and the geometry value must not be labeled as measured/effective wall-contact truth.
 - Boss Waves product payloads are replacement-owned through `app.pipeline`; product behavior must not expose legacy rollback/shadow/reference branches.
 - `simulators/run_executor.py` has been removed after final dependency inventory found no active product or active non-product consumers; do not recreate the old row-engine as a compatibility shim.
 - Ordinary row/checkpoint execution must not call `ProgressionRecalcBridge.recompute()`.

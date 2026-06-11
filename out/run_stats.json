@@ -14393,6 +14393,20 @@
         }
       }
     },
+    "geometry_engine": {
+      "status": "partial_displayed_proxy",
+      "artifact": "geometry_engine_payload.json",
+      "range_report_artifact": "geometry_range_report.json",
+      "range_report_csv_artifact": "geometry_range_report.csv",
+      "consumer_interfaces_artifact": "geometry_consumer_interfaces.json",
+      "proxy_governance_artifact": "geometry_proxy_governance.json",
+      "state_count": 4,
+      "resolved_state_count": 0,
+      "partial_state_count": 4,
+      "unresolved_state_count": 0,
+      "effective_contact_truth_promoted": false,
+      "proxy_governance_status": "active"
+    },
     "boss_wave_milestone_matrix": {
       "enabled": true,
       "artifact": "boss_wave_milestone_matrix.json",
@@ -14419,7 +14433,12 @@
       "local_support_artifacts": [
         "diagnostics.json",
         "input_dashboard.json",
-        "module_card_payloads.json"
+        "module_card_payloads.json",
+        "geometry_engine_payload.json",
+        "geometry_range_report.json",
+        "geometry_range_report.csv",
+        "geometry_consumer_interfaces.json",
+        "geometry_proxy_governance.json"
       ],
       "optional_committed_artifacts": [
         "boss_wave_milestone_matrix.json"
@@ -14429,6 +14448,11 @@
         "diagnostics.json",
         "input_dashboard.json",
         "module_card_payloads.json",
+        "geometry_engine_payload.json",
+        "geometry_range_report.json",
+        "geometry_range_report.csv",
+        "geometry_consumer_interfaces.json",
+        "geometry_proxy_governance.json",
         "account_state.json",
         "run_stats.json",
         "stats_dashboard.json",

@@ -2585,7 +2585,12 @@ def test_boss_wave_ultimate_weapons_dissonance_masks_chrono_field_before_contact
 
     assert uw_primitives['boss_time_to_contact_chrono_field_average_slow_fraction'] == pytest.approx(0.0)
     assert uw_contact_contract['chrono_field_average_slow_fraction'] == pytest.approx(0.0)
-    assert uw_contact_contract['source'] == 'derived_base_2s_cf_slow_aura_energy_net'
+    assert uw_contact_contract['source'] == 'derived_geometry_displayed_proxy_base_cf_slow_aura_energy_net'
+    assert uw_contact_contract['base_seconds_source'] == 'geometry_displayed_proxy_candidate'
+    assert (
+        uw_contact_contract['geometry_proxy_truth_status']
+        == 'displayed_proxy_candidate_not_wall_contact_truth'
+    )
     assert 'chrono_field_slow_contact_time_and_dr_disabled' in uw_mask['disabled_runtime_systems']
 
     slow_aura_fraction = float(uw_primitives['boss_time_to_contact_slow_aura_fraction'])
@@ -2737,9 +2742,10 @@ def test_boss_wave_milestone_matrix_labels_default_contact_time_as_uncertified_a
     contact_contract = matrix['contact_time_contract']['boss_time_to_contact_seconds']
     assert 'boss_time_to_contact_seconds' not in matrix['scenario_runtime_inputs']
     assert 'boss_time_to_contact_seconds' not in matrix['scenario_runtime_input_sources']
-    assert contact_contract['source'] == 'per_candidate_derived_base_2s_cf_slow_aura_energy_net'
-    assert contact_contract['ownership'] == 'runtime_input_override_or_per_candidate_simulator_derivation'
+    assert contact_contract['source'] == 'per_candidate_derived_geometry_displayed_proxy_base_cf_slow_aura_energy_net'
+    assert contact_contract['ownership'] == 'runtime_input_override_or_per_candidate_geometry_proxy_simulator_derivation'
     assert contact_contract['derived_by_simulator'] is True
+    assert contact_contract['geometry_proxy_status'] == 'per_candidate_displayed_proxy_base'
     assert contact_contract['matrix_default_is_uncertified_assumption'] is False
     assert (
         'matrix_default_boss_contact_time_is_uncertified_assumption'
@@ -3195,10 +3201,12 @@ def test_boss_wave_payload_without_contact_time_returns_structured_incomplete_wh
     assert payload['diagnostics']['context_status'] == 'complete'
     contact_time = payload['diagnostics']['contact_time_contract']['boss_time_to_contact_seconds']
     assert contact_time['value'] > 2.0
-    assert contact_time['source'] == 'derived_base_2s_cf_slow_aura_energy_net'
+    assert contact_time['source'] == 'derived_geometry_displayed_proxy_base_cf_slow_aura_energy_net'
     assert contact_time['ownership'] == 'runtime_input_override_or_simulator_derived_from_base_travel_and_slow_effects'
     assert contact_time['derived_by_simulator'] is True
     assert contact_time['required_for_self_closing_boss_waves'] is True
+    assert contact_time['base_seconds_source'] == 'geometry_displayed_proxy_candidate'
+    assert contact_time['geometry_path_distance_to_wall_displayed_candidate_m'] > 0.0
 
     stop_on_failure_payload = build_boss_wave_payload(
         request,
@@ -4467,7 +4475,7 @@ def test_run_stats_committed_payload_excludes_volatile_timing_telemetry(run_stat
 @pytest.mark.live
 def test_run_stats_bounded_outputs_do_not_masquerade_as_full_pipeline_outputs(run_stats_single_execution):
     out_dir = run_stats_single_execution["out_dir"]
-    written_names = {path.name for path in out_dir.glob("*.json")}
+    written_names = {path.name for path in out_dir.iterdir() if path.is_file()}
 
     assert set(RUN_STATS_BOUNDED_OUTPUT_ARTIFACTS).issubset(written_names)
     assert 'pipeline_trace.json' not in written_names
@@ -4475,6 +4483,37 @@ def test_run_stats_bounded_outputs_do_not_masquerade_as_full_pipeline_outputs(ru
         if name in RUN_STATS_BOUNDED_OUTPUT_ARTIFACTS:
             continue
         assert name not in written_names, f"run_stats bounded output must not silently publish full-pipeline artifact {name}"
+
+
+@pytest.mark.live
+def test_run_stats_emits_geometry_support_artifacts(run_stats_single_execution):
+    out_dir = run_stats_single_execution["out_dir"]
+    diagnostics = run_stats_single_execution["parsed_outputs"]["diagnostics.json"]
+    geometry_diag = diagnostics["geometry_engine"]
+
+    for name in (
+        "geometry_engine_payload.json",
+        "geometry_range_report.json",
+        "geometry_range_report.csv",
+        "geometry_consumer_interfaces.json",
+        "geometry_proxy_governance.json",
+    ):
+        assert (out_dir / name).exists(), f"Expected geometry support artifact {name}"
+
+    geometry_payload = json.loads((out_dir / "geometry_engine_payload.json").read_text(encoding="utf-8"))
+    range_report = json.loads((out_dir / "geometry_range_report.json").read_text(encoding="utf-8"))
+    governance = json.loads((out_dir / "geometry_proxy_governance.json").read_text(encoding="utf-8"))
+    csv_text = (out_dir / "geometry_range_report.csv").read_text(encoding="utf-8")
+
+    assert geometry_diag["artifact"] == "geometry_engine_payload.json"
+    assert geometry_diag["effective_contact_truth_promoted"] is False
+    assert geometry_payload["owner"] == "simulators.geometry"
+    assert geometry_payload["diagnostics"]["state_count"] == 4
+    assert range_report["diagnostics"]["surface_split"] == "tower_range_theoretical_m -> tower_range_displayed_m"
+    assert len(range_report["rows"]) == 4
+    assert csv_text.startswith("preset,state_mode,status,tower_range_input_surface_id")
+    assert "range_sensitive_contact_time_proxy_base" in governance["geometry_proxy_governance"]["allowed_uses"]
+    assert "boss_contact_time_truth" in governance["geometry_proxy_governance"]["blocked_uses"]
 
 
 @pytest.mark.live

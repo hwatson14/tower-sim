@@ -270,7 +270,7 @@ latest_local_verification:
       policy difference instead of a Dissonance restriction difference; targeted
       app tests passed after the correction.
 remaining_max_wave_completion:
-  date_local: '2026-05-23'
+  date_local: '2026-06-11'
   status: tracked_not_complete
   authority_note: >
     The current milestone matrix is useful and KB/QE-backed for Boss Waves
@@ -290,6 +290,7 @@ remaining_max_wave_completion:
     - Boss Waves payloads and milestone-matrix rows now publish a normalized model_certification block and per-row certification status/blockers so partial max-wave outputs cannot look fully certified
     - Boss Waves model_certification now separately reports which otherwise-missing max-wave inputs are closed by explicit runtime overrides for that run, and marks tournament-only Damage/Health Decay magnitudes as not applicable to normal milestone matrix runs; source-owned blockers remain for default runs where the mechanic is applicable
     - Streamlit Boss Waves now accepts both resolved and complete context statuses from the sanctioned payload path; the Streamlit AppTest harness verifies the T14 Farming summary, five-row Dissonant Run matrix, and 21-row all-tier milestone matrix render without false context errors
+    - simulators/geometry.py now emits displayed/proxy Geometry Engine support artifacts through bounded run_stats, including range split, wall-travel contact-time proxy base, consumer-interface, and proxy-governance payloads; these artifacts do not close measured/effective wall contact, boss contact time truth, exact capture/tag fractions, density-weighted coin truth, or source-owned non-boss terminal pressure
   completion_items:
     - id: MW-1
       title: Keep max-wave model scoped to boss-contact proxy with honest terminal-pressure caps
@@ -368,23 +369,22 @@ remaining_max_wave_completion:
       status: complete_targeted
       owner_path: simulators/timing.py + simulators/scenario.py + app/streamlit_inspector.py
       work: >
-        boss_time_to_contact_seconds is intentionally explicit today. The
-        current completion path uses a hard contract rather than invented
-        boss-pathing physics: certified max-wave runs require an external
-        scenario input unless a future simulator-owned derivation replaces it.
-        The matrix may still use a 10s product default, but it labels that
-        value as an uncertified display assumption.
+        boss_time_to_contact_seconds remains an optional explicit override.
+        When omitted, Boss Waves now uses the simulator-owned Geometry Engine
+        displayed wall-travel proxy as timing's base seconds candidate, then
+        applies Chrono Field, Energy Net, and Slow Aura effects in
+        simulators.timing. This is a governed displayed proxy, not measured
+        wall-contact truth.
       acceptance:
-        - no silent default is used in a certified matrix
-        - diagnostics distinguish derived contact time from user-supplied contact time
+        - no silent measured-contact truth is claimed in a certified matrix
+        - diagnostics distinguish geometry-proxy-derived contact time from user-supplied contact time
       closure_note: >
         app.pipeline now publishes scenario_runtime_input_sources and a
         contact_time_contract in Boss Waves diagnostics and milestone-matrix
-        payloads. Direct Boss Waves payloads report caller-supplied or
-        not-supplied contact time; missing contact time remains a structured
-        KernelAmbiguityError/incomplete result. Matrix defaults are labeled as
-        matrix_default_assumption with matrix_default_is_uncertified_assumption
-        true, while caller-supplied matrix values are labeled separately.
+        payloads. Direct Boss Waves payloads report caller-supplied contact
+        time or the geometry displayed-proxy base used by simulators.timing.
+        Matrix defaults are per-candidate geometry-proxy derivations, while
+        caller-supplied matrix values are labeled separately.
       validation:
         - .venv\Scripts\python.exe -m pytest -q tests\app\test_pipeline_functional.py::test_boss_wave_payload_without_contact_time_returns_structured_incomplete_when_allowed tests\app\test_pipeline_functional.py::test_boss_wave_milestone_matrix_selects_best_loadout_by_tier_and_dissonance_category tests\app\test_pipeline_functional.py::test_boss_wave_milestone_matrix_labels_default_contact_time_as_uncertified_assumption
     - id: MW-4
