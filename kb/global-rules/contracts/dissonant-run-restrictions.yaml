@@ -152,6 +152,9 @@ categories:
       state::tower.defense_absolute: 0.0
       state::tower.thorns_damage_pct: 0.0
       state::wall.thorns_damage_pct: 0.0
+      state::tower.death_defy_chance_pct: 0.0
+      state::capability.energy_shield.enabled: 0.0
+      state::cards.energy_shield.extra_charge_count: 0.0
     primitive_restrictions:
       tower_hp: 1.0
       tower_hp_qe_surface: 1.0
@@ -173,6 +176,14 @@ categories:
       wall_thorns_level: 0.0
       wall_thorns_contact_damage_pct: 0.0
       wall_thorns_damage_increase_per_hit: 0.0
+      death_defy_chance_pct: 0.0
+      death_defy_down_percent_points: 0.0
+      death_defy_effective_chance_pct: 0.0
+      energy_shield_enabled: 0.0
+      energy_shield_base_charge_count: 0.0
+      energy_shield_extra_charge_count: 0.0
+      energy_shield_total_charge_count: 0.0
+      energy_shield_effective_charge_count: 0.0
       orb_boss_total_damage_pct: 0.0
       electron_total_damage_pct: 0.0
     zero_workshop_tracks:
@@ -200,6 +211,8 @@ categories:
       - wall_and_defensive_workshop_functions_disabled
       - defense_percent_and_defense_absolute_disabled
       - wall_thorns_and_sharp_fortitude_contact_damage_disabled
+      - death_defy_stochastic_survival_disabled
+      - energy_shield_contact_absorption_disabled
   utility:
     disabled_category: Utility
     public_restriction_summary: Cash, coins, packages, free upgrades, and enemy level skips are disabled; only Starting Cash can add cash during the run.
@@ -306,9 +319,11 @@ categories:
       chrono_field_duration_seconds: 0.0
       chrono_field_cooldown_seconds: 0.0
       chrono_field_damage_reduction_pct: 0.0
+      chrono_field_slow_pct: 0.0
       primordial_collapse_bh_damage_reduction_pct: 0.0
-      energy_net_mastery_multiplier: 1.0
-      energy_net_damage_multiplier_duration_seconds: 0.0
+      spotlight_bonus_multiplier: 1.0
+      spotlight_angle_degrees: 0.0
+      spotlight_count: 0.0
     conditional_primitive_restrictions:
       gc_boss_damage_per_second:
         value: 0.0

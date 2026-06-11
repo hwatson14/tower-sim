@@ -59,20 +59,42 @@ def _fraction_from_float(value: float) -> Fraction:
 
 
 @lru_cache(maxsize=1)
-def _load_wave_timing_baselines() -> Dict[str, float]:
-    out: Dict[str, float] = {}
+def _load_wave_timing_baseline_components() -> Dict[str, Dict[str, float]]:
+    out: Dict[str, Dict[str, float]] = {}
     with WAVE_TIMING_BASELINES_TABLE.open(newline='') as fh:
         for row in csv.DictReader(fh):
             mode_id = str(row.get('mode_id') or '').strip()
             if not mode_id:
                 continue
             try:
-                out[mode_id] = float(row['total_wave_duration_seconds'])
+                spawn_seconds = float(row['spawn_phase_seconds'])
+                cooldown_seconds = float(row['cooldown_phase_seconds'])
+                total_seconds = float(row['total_wave_duration_seconds'])
             except (TypeError, ValueError, KeyError):
-                raise ValueError(f'Invalid total_wave_duration_seconds row in {WAVE_TIMING_BASELINES_TABLE}: {row!r}.')
+                raise ValueError(f'Invalid wave timing baseline row in {WAVE_TIMING_BASELINES_TABLE}: {row!r}.')
+            out[mode_id] = {
+                'spawn_phase_seconds': spawn_seconds,
+                'cooldown_phase_seconds': cooldown_seconds,
+                'total_wave_duration_seconds': total_seconds,
+            }
     if 'farming' not in out or 'tournament' not in out:
         raise ValueError(f'{WAVE_TIMING_BASELINES_TABLE} must define farming and tournament base wave durations.')
     return out
+
+
+def _load_wave_timing_baselines() -> Dict[str, float]:
+    return {
+        mode_id: float(row['total_wave_duration_seconds'])
+        for mode_id, row in _load_wave_timing_baseline_components().items()
+    }
+
+
+def wave_duration_seconds_after_cooldown_reduction(mode_id: str, wave_cooldown_reduction_pct: float) -> float:
+    components = _load_wave_timing_baseline_components()[str(mode_id)]
+    spawn_seconds = max(0.0, float(components['spawn_phase_seconds']))
+    cooldown_seconds = max(0.0, float(components['cooldown_phase_seconds']))
+    cooldown_reduction = max(0.0, min(100.0, float(wave_cooldown_reduction_pct or 0.0))) / 100.0
+    return max(0.0, spawn_seconds + cooldown_seconds * (1.0 - cooldown_reduction))
 
 
 def shared_cycle_seconds(periods: Iterable[float]) -> float:
@@ -549,8 +571,8 @@ def compile_timing_family_rows(
     )
     scenario = compute_scenario_surfaces(scenario_config)
     timing = compute_timing_surfaces(scenario_config, scenario)
-    wave_acceleration_pct = _wave_acceleration_pct_from_rows(bound.stat_inputs)
-    derived_rows = tuple(_timing_family_derived_rows(scenario_config, scenario, timing, wave_acceleration_pct))
+    wave_cooldown_reduction_pct = _wave_cooldown_reduction_pct_from_rows(bound.stat_inputs)
+    derived_rows = tuple(_timing_family_derived_rows(scenario_config, scenario, timing, wave_cooldown_reduction_pct))
     replaced_surface_keys = {
         (row.destination_object_type, row.destination_id)
         for row in derived_rows
@@ -733,10 +755,10 @@ def _timing_family_derived_rows(
     config: ScenarioConfig,
     scenario: ScenarioSurfaces,
     timing: TimingSurfaces,
-    wave_acceleration_pct: float,
+    wave_cooldown_reduction_pct: float,
 ) -> tuple[StatInput, ...]:
-    base_wave_duration_seconds = _load_wave_timing_baselines()['tournament' if config.mode_id == 'tournament' else 'farming']
-    effective_wave_duration_seconds = max(0.0, base_wave_duration_seconds * (1.0 - (max(0.0, wave_acceleration_pct) / 100.0)))
+    mode_id = 'tournament' if config.mode_id == 'tournament' else 'farming'
+    effective_wave_duration_seconds = wave_duration_seconds_after_cooldown_reduction(mode_id, wave_cooldown_reduction_pct)
     return (
         StatInput(
             stat_name='Black Hole Effective Duration',
@@ -806,11 +828,11 @@ def _timing_family_derived_rows(
     )
 
 
-def _wave_acceleration_pct_from_rows(rows: Sequence[StatInput]) -> float:
+def _wave_cooldown_reduction_pct_from_rows(rows: Sequence[StatInput]) -> float:
     for row in rows:
         if (
             row.destination_object_type == 'runtime_mechanic_param'
-            and row.destination_id == 'cards.wave_accelerator.spawn_rate_acceleration'
+            and row.destination_id == 'cards.wave_accelerator.wave_cooldown_reduction_pct'
             and row.active
         ):
             try:

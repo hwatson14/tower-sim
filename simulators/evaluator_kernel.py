@@ -107,6 +107,7 @@ class CombatInputs:
     electron_hits_per_second: float | None = None
     boss_time_to_contact_seconds: float | None = None
     boss_hit_interval_seconds: float = 2.0
+    energy_shield_hit_charges: float = 0.0
     max_ttk_seconds: float = 120.0
     plasma_cannon_resistance_multiplier: float = 1.0
     orb_resistance_multiplier: float = 1.0
@@ -560,6 +561,8 @@ def _active_perk_state(row: CommonTrajectoryRow, scenario: ScenarioOverlayInputs
         return counts, contributions
     removed = set(str(perk_id) for perk_id in scenario.removed_perk_ids)
     if not removed:
+        if not counts and not contributions:
+            return {}, {}
         raise KernelAmbiguityError("tournament perk removal requested without removed_perk_ids")
     missing = sorted(perk_id for perk_id in removed if perk_id not in counts)
     if missing:
@@ -738,6 +741,12 @@ def _simulate_boss_combat_timeline(*, enemy_health: float, combat: CombatInputs)
         contact_thorns_kill_seconds=contact_thorns_result.kill_seconds,
         combat=combat,
     )
+    contact_events = contact_thorns_result.thorns_hits
+    shielded_hits = min(
+        contact_events,
+        _bounded_whole_hit_count(combat.energy_shield_hit_charges, "energy_shield_hit_charges"),
+    )
+    damaging_hits_to_player = max(0, contact_events - shielded_hits)
     return BossCombatTimeline(
         ttk_seconds=ttk_seconds,
         damage_breakdown=BossDamageBreakdown(
@@ -763,7 +772,7 @@ def _simulate_boss_combat_timeline(*, enemy_health: float, combat: CombatInputs)
             thorns_hits=contact_thorns_result.thorns_hits,
         ),
         wall_thorns_kill_seconds=contact_thorns_result.kill_seconds,
-        boss_hits_to_player=contact_thorns_result.thorns_hits,
+        boss_hits_to_player=damaging_hits_to_player,
     )
 
 

@@ -768,6 +768,46 @@ nodes:
     verification_status: verified
     blocker_reason: ''
     notes: Energy Net Mastery boss damage multiplier consumed by Boss Waves continuous boss-damage timing.
+  - node_id: source_input::card:Energy Shield
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: verified
+    blocker_reason: ''
+    notes: Energy Shield card source for Boss Waves contact-hit absorption capability and recharge provenance.
+  - node_id: source_input::lab:Energy Shield Extra Hit
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: verified
+    blocker_reason: ''
+    notes: Energy Shield Extra Hit lab source for Boss Waves extra shield-charge count.
+  - node_id: state::capability.energy_shield.enabled
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: debug_only
+    verification_status: verified
+    blocker_reason: ''
+    notes: Energy Shield equipped capability consumed by Boss Waves contact-hit absorption.
+  - node_id: state::cards.energy_shield.recharge_cooldown_seconds
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: debug_only
+    verification_status: verified
+    blocker_reason: ''
+    notes: Energy Shield recharge cooldown carried as Boss Waves provenance.
+  - node_id: state::cards.energy_shield.extra_charge_count
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: debug_only
+    verification_status: verified
+    blocker_reason: ''
+    notes: Energy Shield Extra Hit lab count bonus consumed by Boss Waves as extra shield charges.
   - node_id: source_input::card:Slow Aura
     node_kind: source_input
     family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
@@ -800,6 +840,62 @@ nodes:
     verification_status: verified
     blocker_reason: ''
     notes: Slow Aura Mastery attack-interval multiplier consumed by Boss Waves boss-hit interval derivation.
+  - node_id: source_input::card:Super Tower
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: verified
+    blocker_reason: ''
+    notes: Super Tower card source for eDamage Super Tower active, bonus, cooldown, and mastery-derived UW multiplier surfaces.
+  - node_id: source_input::lab:Super Tower Mastery
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: verified
+    blocker_reason: ''
+    notes: Super Tower Mastery lab source for cooldown reduction and Super Tower Mastery activation surfaces.
+  - node_id: state::cards.super_tower.active
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: debug_only
+    verification_status: verified
+    blocker_reason: ''
+    notes: Super Tower active-card flag consumed by eDamage Super Tower uptime helpers.
+  - node_id: state::cards.super_tower.bonus_multiplier
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: debug_only
+    verification_status: verified
+    blocker_reason: ''
+    notes: Super Tower base-card bonus consumed by eDamage Super Tower uptime helpers.
+  - node_id: state::cards.super_tower.cooldown_seconds
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: debug_only
+    verification_status: verified
+    blocker_reason: ''
+    notes: Super Tower effective cooldown, including Super Tower Mastery cooldown reduction when active.
+  - node_id: state::cards.super_tower.mastery_active
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: debug_only
+    verification_status: verified
+    blocker_reason: ''
+    notes: Super Tower Mastery active flag consumed by eDamage Super Tower helpers.
+  - node_id: state::cards.super_tower.uw_mastery_multiplier
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: debug_only
+    verification_status: verified
+    blocker_reason: ''
+    notes: Super Tower Mastery Ultimate Weapon multiplier consumed by eDamage UW aggregate helpers.
   - node_id: source_input::card:Ultimate Crit
     node_kind: source_input
     family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
@@ -2185,6 +2281,22 @@ nodes:
     verification_status: verified
     blocker_reason: ''
     notes: Wave Accelerator card assertion source.
+  - node_id: source_input::lab:Wave Accelerator Mastery
+    node_kind: source_input
+    family_ids: [timing_tournament_no_perks, timing_farm_with_perks, timing_scenario_probe, progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: verified
+    blocker_reason: ''
+    notes: Wave Accelerator Mastery lab source for the effective spawn acceleration surface.
+  - node_id: state::cards.wave_accelerator.wave_cooldown_reduction_pct
+    node_kind: environment
+    family_ids: [timing_tournament_no_perks, timing_farm_with_perks, timing_scenario_probe, progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: support_only
+    verification_status: verified
+    blocker_reason: ''
+    notes: Wave Accelerator base-card cooldown reduction input.
   - node_id: state::cards.wave_accelerator.spawn_rate_acceleration
     node_kind: environment
     family_ids: [timing_tournament_no_perks, timing_farm_with_perks, timing_scenario_probe, progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
@@ -2192,7 +2304,31 @@ nodes:
     publication_relevance: support_only
     verification_status: verified
     blocker_reason: ''
-    notes: Scenario-adjusted wave acceleration support input.
+    notes: Wave Accelerator Mastery spawn-rate acceleration support input.
+  - node_id: source_input::card:Intro Sprint
+    node_kind: source_input
+    family_ids: [timing_farm_with_perks, timing_scenario_probe, progression_start_of_run, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: verified
+    blocker_reason: ''
+    notes: Intro Sprint card assertion source for scenario throughput.
+  - node_id: source_input::lab:Intro Sprint Mastery
+    node_kind: source_input
+    family_ids: [timing_farm_with_perks, timing_scenario_probe, progression_start_of_run, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: verified
+    blocker_reason: ''
+    notes: Intro Sprint Mastery lab source for the effective Intro Sprint active-wave surface.
+  - node_id: state::cards.intro_sprint.waves
+    node_kind: environment
+    family_ids: [timing_farm_with_perks, timing_scenario_probe, progression_start_of_run, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: support_only
+    verification_status: verified
+    blocker_reason: ''
+    notes: Effective Intro Sprint active-wave support input consumed by scenario throughput.
   - node_id: source_input::card:Coins
     node_kind: source_input
     family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
@@ -3381,6 +3517,27 @@ edges:
     publication_relevance: support_only
     verification_status: verified
     notes: Energy Net Mastery lab level governs the Boss Waves boss damage multiplier surface.
+  - upstream_node_id: source_input::card:Energy Shield
+    downstream_node_id: state::capability.energy_shield.enabled
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [card_assertions]
+    publication_relevance: support_only
+    verification_status: verified
+    notes: Energy Shield equipped state governs the Boss Waves shield-enabled capability surface.
+  - upstream_node_id: source_input::card:Energy Shield
+    downstream_node_id: state::cards.energy_shield.recharge_cooldown_seconds
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [card_assertions]
+    publication_relevance: support_only
+    verification_status: verified
+    notes: Energy Shield card level governs the recharge cooldown provenance surface.
+  - upstream_node_id: source_input::lab:Energy Shield Extra Hit
+    downstream_node_id: state::cards.energy_shield.extra_charge_count
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [lab_level_change]
+    publication_relevance: support_only
+    verification_status: verified
+    notes: Energy Shield Extra Hit lab level governs the extra shield-charge surface.
   - upstream_node_id: source_input::card:Slow Aura
     downstream_node_id: state::cards.slow_aura.enemy_speed_pct
     invalidation_semantics: recompute_downstream
@@ -3395,6 +3552,55 @@ edges:
     publication_relevance: support_only
     verification_status: verified
     notes: Slow Aura Mastery lab level governs the Boss Waves boss-hit interval surface.
+  - upstream_node_id: source_input::card:Super Tower
+    downstream_node_id: state::cards.super_tower.active
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [card_assertions]
+    publication_relevance: support_only
+    verification_status: verified
+    notes: Super Tower equipped state governs the active-card flag.
+  - upstream_node_id: source_input::card:Super Tower
+    downstream_node_id: state::cards.super_tower.bonus_multiplier
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [card_assertions]
+    publication_relevance: support_only
+    verification_status: verified
+    notes: Super Tower card level governs the base-card bonus multiplier.
+  - upstream_node_id: source_input::card:Super Tower
+    downstream_node_id: state::cards.super_tower.cooldown_seconds
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [card_assertions]
+    publication_relevance: support_only
+    verification_status: verified
+    notes: Super Tower equipped state governs the effective cooldown surface.
+  - upstream_node_id: source_input::lab:Super Tower Mastery
+    downstream_node_id: state::cards.super_tower.cooldown_seconds
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [lab_level_change]
+    publication_relevance: support_only
+    verification_status: verified
+    notes: Super Tower Mastery lab level reduces the effective Super Tower cooldown surface.
+  - upstream_node_id: source_input::lab:Super Tower Mastery
+    downstream_node_id: state::cards.super_tower.mastery_active
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [lab_level_change]
+    publication_relevance: support_only
+    verification_status: verified
+    notes: Super Tower Mastery lab state governs the active mastery flag after equip/unlock gating.
+  - upstream_node_id: source_input::card:Super Tower
+    downstream_node_id: state::cards.super_tower.uw_mastery_multiplier
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [card_assertions]
+    publication_relevance: support_only
+    verification_status: verified
+    notes: Super Tower card bonus is used to derive the Super Tower Mastery UW multiplier.
+  - upstream_node_id: source_input::lab:Super Tower Mastery
+    downstream_node_id: state::cards.super_tower.uw_mastery_multiplier
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [lab_level_change]
+    publication_relevance: support_only
+    verification_status: verified
+    notes: Super Tower Mastery lab state gates the Super Tower Mastery UW multiplier surface.
   - upstream_node_id: source_input::card:Ultimate Crit
     downstream_node_id: state::cards.ultimate_crit.chance_pct
     invalidation_semantics: recompute_downstream
@@ -4097,12 +4303,40 @@ edges:
     verification_status: verified
     notes: Scenario timing inputs publish GT cooldown.
   - upstream_node_id: source_input::card:Wave Accelerator
+    downstream_node_id: state::cards.wave_accelerator.wave_cooldown_reduction_pct
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [card_assertions]
+    publication_relevance: support_only
+    verification_status: verified
+    notes: Wave Accelerator card affects wave cooldown reduction.
+  - upstream_node_id: source_input::card:Wave Accelerator
     downstream_node_id: state::cards.wave_accelerator.spawn_rate_acceleration
     invalidation_semantics: recompute_downstream
     mutation_classes: [card_assertions]
     publication_relevance: support_only
     verification_status: verified
-    notes: Wave Accelerator card affects spawn acceleration.
+    notes: Wave Accelerator card equip gates the mastery spawn-rate acceleration surface.
+  - upstream_node_id: source_input::lab:Wave Accelerator Mastery
+    downstream_node_id: state::cards.wave_accelerator.spawn_rate_acceleration
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [lab_level_change]
+    publication_relevance: support_only
+    verification_status: verified
+    notes: Active Wave Accelerator Mastery publishes the equipped-card spawn-rate acceleration multiplier after equip/unlock gating.
+  - upstream_node_id: source_input::card:Intro Sprint
+    downstream_node_id: state::cards.intro_sprint.waves
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [card_assertions]
+    publication_relevance: support_only
+    verification_status: verified
+    notes: Intro Sprint equipped state and card level govern the scenario throughput active-wave surface.
+  - upstream_node_id: source_input::lab:Intro Sprint Mastery
+    downstream_node_id: state::cards.intro_sprint.waves
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [lab_level_change]
+    publication_relevance: support_only
+    verification_status: verified
+    notes: Active Intro Sprint Mastery multiplies the equipped card active-wave surface after equip/unlock gating.
   - upstream_node_id: source_input::card:Wave Skip
     downstream_node_id: state::cards.wave_skip.chance_pct
     invalidation_semantics: recompute_downstream
@@ -4327,13 +4561,13 @@ edges:
     publication_relevance: publishable_path
     verification_status: verified
     notes: Plasma Cannon card affects the bounded Plasma Cannon effect surface.
-  - upstream_node_id: state::cards.wave_accelerator.spawn_rate_acceleration
+  - upstream_node_id: state::cards.wave_accelerator.wave_cooldown_reduction_pct
     downstream_node_id: support_surface::timing.wave_duration_seconds_effective
     invalidation_semantics: recompute_downstream
     mutation_classes: [card_assertions, runtime_target_display_wave, package_event_model]
     publication_relevance: publishable_path
     verification_status: verified
-    notes: Wave acceleration affects effective wave duration.
+    notes: Wave Accelerator cooldown reduction affects effective wave duration; mastery spawn-rate acceleration does not.
   - upstream_node_id: source_input::derived_composite_analysis
     downstream_node_id: derived::ehp
     invalidation_semantics: recompute_downstream
@@ -4425,6 +4659,13 @@ edges:
     publication_relevance: publishable_path
     verification_status: verified
     notes: Target farming wave feeds effective waves per run.
+  - upstream_node_id: state::cards.intro_sprint.waves
+    downstream_node_id: support_surface::scenario.waves_per_run_effective
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [card_assertions, lab_level_change]
+    publication_relevance: publishable_path
+    verification_status: verified
+    notes: Effective Intro Sprint active-wave count feeds effective waves per run.
   - upstream_node_id: support_surface::scenario.target_farming_wave
     downstream_node_id: support_surface::scenario.runs_per_day_effective
     invalidation_semantics: recompute_downstream
@@ -4646,6 +4887,13 @@ mutation_triggers:
   - mutation_class: card_assertions
     trigger_key: Wave Accelerator
     source_node_id: source_input::card:Wave Accelerator
+    invalidation_semantics: recompute_downstream
+    publication_relevance: mutation_source_only
+    verification_status: verified
+    notes: Card assertion trigger.
+  - mutation_class: card_assertions
+    trigger_key: Intro Sprint
+    source_node_id: source_input::card:Intro Sprint
     invalidation_semantics: recompute_downstream
     publication_relevance: mutation_source_only
     verification_status: verified

@@ -113,6 +113,10 @@ consumers:
     - state::cards.plasma_cannon.effect_pct
     - state::cards.energy_net.duration_seconds
     - state::cards.energy_net.mastery_effect
+    - state::capability.energy_shield.enabled
+    - state::cards.energy_shield.recharge_cooldown_seconds
+    - state::cards.energy_shield.extra_charge_count
+    - state::cards.slow_aura.enemy_speed_pct
     - state::cards.slow_aura.mastery_effect
     - state::module.orbital_augment.electron_count
     - state::module.black_hole_digestor.extra_coin_kill_bonus_per_free_upgrade_pct
@@ -162,6 +166,11 @@ consumers:
     - state::shock.damage_multiplier
     - state::cards.damage.mastery_effect
     - state::cards.berserker.assumed_bonus_multiplier
+    - state::cards.super_tower.active
+    - state::cards.super_tower.bonus_multiplier
+    - state::cards.super_tower.cooldown_seconds
+    - state::cards.super_tower.mastery_active
+    - state::cards.super_tower.uw_mastery_multiplier
     - state::cards.slow_aura.mastery_effect
     - state::cards.ultimate_crit.chance_pct
     - state::economy.coins_multiplier
@@ -245,6 +254,7 @@ consumers:
     required_surface_ids:
     - support_surface::timing.wave_duration_seconds_effective
     optional_surface_ids:
+    - state::cards.wave_accelerator.wave_cooldown_reduction_pct
     - state::cards.wave_accelerator.spawn_rate_acceleration
     - state::cards.wave_skip.chance_pct
     - state::tower.package_chance_pct
@@ -378,6 +388,7 @@ consumers:
     - support_surface::timing.wave_duration_seconds_effective
     - state::tower.package_chance_pct
     optional_surface_ids:
+    - state::cards.wave_accelerator.wave_cooldown_reduction_pct
     - state::cards.wave_accelerator.spawn_rate_acceleration
     minimum_trace_mode: contributors
     overlays_allowed: false
@@ -399,19 +410,40 @@ consumers:
     - state::wall.fortification_multiplier
     - state::tower.defense_pct
     - state::tower.defense_absolute
+    - state::tower.shockwave_interval_seconds
+    - state::tower.shockwave_size_m
+    - state::tower.ultimate_damage_multiplier
     - state::tower.thorns_damage_pct
     - state::wall.thorns_damage_pct
+    - state::tower.death_defy_chance_pct
     - state::tower.orb_count
     - state::tower.orb_speed_rpm
     - state::cards.plasma_cannon.effect_pct
     - state::cards.energy_net.duration_seconds
     - state::cards.energy_net.mastery_effect
+    - state::capability.energy_shield.enabled
+    - state::cards.energy_shield.recharge_cooldown_seconds
+    - state::cards.energy_shield.extra_charge_count
     - state::module.orbital_augment.electron_count
     - state::tower.free_attack_upgrade_chance_pct
     - state::tower.free_defense_upgrade_chance_pct
     - state::tower.free_utility_upgrade_chance_pct
     - state::tower.enemy_attack_level_skip_pct
     - state::tower.enemy_health_level_skip_pct
+    - state::labs.dissonant_echo.defense.level
+    - state::dissonance.defense.active_boost_multiplier
+    - state::dissonance.defense.echo_source_bonus
+    - state::uw.chrono_field.slow_pct
+    - state::uw.chain_lightning.max_enemy_damage_reduction_pct
+    - state::uw.death_wave.effect_wave_count
+    - state::uw.death_wave.cooldown_seconds
+    - state::uw.spotlight.angle_degrees
+    - state::uw.spotlight.count
+    - state::bot.flame.owned
+    - state::bot.flame.damage_reduction_pct
+    - state::bot.flame.cooldown_seconds
+    - state::bot.flame.range_m
+    - state::bot.flame.effective_range_m
     optional_surface_ids:
     - state::tower.damage
     - state::tower.attack_speed
@@ -433,6 +465,13 @@ consumers:
     - state::tower.max_rend_multiplier
     - state::cards.damage.mastery_effect
     - state::cards.berserker.assumed_bonus_multiplier
+    - state::cards.slow_aura.enemy_speed_pct
+    - state::cards.slow_aura.mastery_effect
+    - state::cards.super_tower.active
+    - state::cards.super_tower.bonus_multiplier
+    - state::cards.super_tower.cooldown_seconds
+    - state::cards.super_tower.mastery_active
+    - state::cards.super_tower.uw_mastery_multiplier
     - state::cards.ultimate_crit.chance_pct
     - state::uw.black_hole.base_duration_seconds
     - state::uw.black_hole.base_cooldown_seconds

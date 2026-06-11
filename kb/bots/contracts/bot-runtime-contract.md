@@ -52,3 +52,20 @@ Where:
   `Displayed Range Golden Bot = RangeBot x 1.33 x (RangeTower / 69.5m)`
 
 Raw EP exports may support future audits, but they are not the active owner surface for this formula.
+
+## Boss Waves Flame Bot Hit Estimate
+
+Boss Waves may use a static expected-hit estimate for Flame Bot damage reduction when no explicit runtime hit-chance override is supplied.
+
+This is a simulator encounter approximation, not a new QE-owned stat surface:
+- Flame Bot center positions are treated as uniformly distributed inside the tower range disk.
+- Reference geometry uses tower range `69.5m` and approximate wall radius `20m`.
+- Boss movement is approximated as a radial path from tower range to the wall radius; if boss lifetime ends before wall contact, exposure ends on the partial path.
+- Energy Net hold time extends the pre-contact exposure window at the wall radius.
+- If boss lifetime extends after wall contact, post-contact exposure continues at the wall radius until modeled boss death.
+- Flame Bot effective range must come from `state::bot.flame.effective_range_m`, so raw range, shared bot-range bonus, Singularity Harness range, and tower-range amplification stay QE-owned.
+- Because bot range scales with tower range, Boss Waves normalizes the effective Flame Bot range back to the `69.5m` reference geometry for this probability estimate.
+- Flame Bot cooldown comes from `state::bot.flame.cooldown_seconds`; repeated activations over the exposure window are modeled as deterministic cooldown windows with random phase.
+- The estimate is a chance that the boss is tagged at least once. It must not be applied as fractional Flame Bot damage reduction; a tagged boss receives the full Flame Bot hit-state semantics until death, and an untagged boss receives none.
+
+Explicit runtime hit-chance inputs remain higher priority for scenario experiments. Exact same-tick pathing, per-frame bot movement, and micro-precedence with other timed effects remain out of scope unless a future KB contract owns them.

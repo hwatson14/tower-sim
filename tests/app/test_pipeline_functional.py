@@ -551,13 +551,13 @@ def _install_fake_boss_wave_app_dependencies(monkeypatch, pipeline_mod):
         lambda ids_path=None, manual_inputs_path=None: type(
             'Bundle',
             (),
-            {'ids_raw': {}, 'loadout_config': {}, 'perk_config': {}, 'perk_policy': {}},
+            {'ids_raw': {}, 'loadout_config': {}, 'perk_config': {}, 'perk_policy': {}, 'manual_inputs': {}},
         )(),
     )
     monkeypatch.setattr(
         pipeline_mod,
         'build_runtime_state',
-        lambda ids_raw, loadout_config=None, perk_config=None: type(
+        lambda ids_raw, loadout_config=None, perk_config=None, manual_inputs=None: type(
             'State',
             (),
             {
@@ -663,6 +663,7 @@ def _install_fake_boss_wave_replacement_primitives(monkeypatch, pipeline_mod, *,
         'state::tower.free_utility_upgrade_chance_pct': _FakeRow(0.0),
         'state::tower.hp': _FakeRow(500.0),
         'state::tower.regen': _FakeRow(100.0),
+        'state::tower.range_m': _FakeRow(69.5),
         'state::wall.hp': _FakeRow(
             1000.0,
             contributors=[
@@ -694,7 +695,11 @@ def _install_fake_boss_wave_replacement_primitives(monkeypatch, pipeline_mod, *,
         'state::tower.defense_pct': _FakeRow(90.0),
         'state::tower.thorns_damage_pct': _FakeRow(99.0),
         'state::wall.thorns_damage_pct': _FakeRow(15.84),
+        'state::tower.death_defy_chance_pct': _FakeRow(30.0),
         'state::cards.plasma_cannon.effect_pct': _FakeRow(100.0),
+        'state::capability.energy_shield.enabled': _FakeRow(True),
+        'state::cards.energy_shield.recharge_cooldown_seconds': _FakeRow(480.0),
+        'state::cards.energy_shield.extra_charge_count': _FakeRow(2.0),
         'state::module.orbital_augment.electron_count': _FakeRow(2.0),
         'state::module.primordial_collapse.bh_damage_reduction_pct': _FakeRow(80.0),
         'state::uw.black_hole.duration_seconds': _FakeRow(36.0),
@@ -706,6 +711,7 @@ def _install_fake_boss_wave_replacement_primitives(monkeypatch, pipeline_mod, *,
         'state::bot.flame.damage_reduction_pct': _FakeRow(0.35),
         'state::bot.flame.cooldown_seconds': _FakeRow(26.0),
         'state::bot.flame.range_m': _FakeRow(55.0),
+        'state::bot.flame.effective_range_m': _FakeRow(73.15),
     }
     if omit_surface:
         rows.pop(omit_surface)
@@ -765,7 +771,17 @@ def test_build_boss_wave_payload_replacement_inputs_drive_table_summary_export_a
     assert operator_rows[0]['boss_wall_thorns_damage_to_boss_pct'] >= 0
     assert operator_rows[0]['boss_expected_wall_thorns_damage_from_hits_pct'] >= operator_rows[0]['boss_wall_thorns_damage_to_boss_pct']
     assert operator_rows[0]['boss_hits_to_player'] == operator_rows[0]['boss_hits_taken']
-    assert operator_rows[0]['boss_wall_thorns_hits'] == operator_rows[0]['boss_hits_taken']
+    assert operator_rows[0]['boss_wall_thorns_hits'] >= operator_rows[0]['boss_hits_taken']
+    assert operator_rows[0]['boss_hits_taken'] == max(
+        0,
+        operator_rows[0]['boss_wall_thorns_hits'] - int(operator_rows[0]['energy_shield_effective_charge_count']),
+    )
+    assert operator_rows[0]['flame_bot_hit_state_semantics'] == 'persistent_until_boss_death_after_first_flame_bot_hit'
+    assert operator_rows[0]['flame_bot_lifetime_exposure_seconds'] == pytest.approx(operator_rows[0]['boss_ttk_seconds'])
+    if operator_rows[0]['boss_ttk_seconds'] >= operator_rows[0]['boss_time_to_contact_seconds']:
+        assert operator_rows[0]['flame_bot_lifetime_hit_chance_pct'] >= operator_rows[0]['flame_bot_contact_window_hit_chance_pct']
+    else:
+        assert operator_rows[0]['flame_bot_lifetime_hit_chance_pct'] <= operator_rows[0]['flame_bot_contact_window_hit_chance_pct']
     assert 'legacy_export_owner' not in contract
     assert 'legacy_shadow' not in payload
     assert payload.get('download_rows')[0]['replacement_source'] == 'replacement'
@@ -777,18 +793,24 @@ def test_build_boss_wave_payload_replacement_inputs_drive_table_summary_export_a
     assert diagnostics.get('execution_mode') == 'staged_replacement'
     assert diagnostics.get('checkpoint_resolution_mode') == 'replacement_table1_table2_overlay'
     assert diagnostics.get('source_selection', {}).get('diagnostics_source') == 'replacement'
-    assert diagnostics.get('replacement_model', {}).get('boss_ttk_contract') == 'v21_events_plus_gc_boss_continuous_damage'
+    assert diagnostics.get('replacement_model', {}).get('boss_ttk_contract') == 'v21_events_plus_continuous_boss_damage'
     assert diagnostics.get('replacement_model', {}).get('boss_kill_sources') == [
         'plasma_cannon',
         'orbs',
         'electrons',
-        'gc_boss_continuous_damage',
+        'continuous_boss_damage',
         'thorns_contact',
     ]
     assert diagnostics.get('replacement_model', {}).get('contact_resolution_sources') == ['wall_thorns_contact']
     assert diagnostics.get('replacement_model', {}).get('thorns_contact_source') == 'wall_thorns_contact_damage_pct_derived_from_tower_thorns_and_wall_thorns_lab'
     assert diagnostics.get('replacement_model', {}).get('wall_thorns_repeated_hit_multiplier') == 'Sharp Fortitude primary armor adds +1% wall-thorns damage taken per subsequent contact hit'
     assert diagnostics.get('replacement_model', {}).get('continuous_tower_dps_included') is True
+    assert diagnostics.get('replacement_model', {}).get('flame_bot_hit_model') == 'static_uniform_center_overlap_recomputed_per_operator_row_over_boss_lifetime_when_ttk_is_known'
+    assert diagnostics.get('replacement_model', {}).get('flame_bot_hit_state_semantics') == 'persistent_until_boss_death_after_first_flame_bot_hit'
+    survival_policy = diagnostics.get('replacement_model', {}).get('stochastic_survival_policy') or {}
+    assert survival_policy.get('death_defy') == 'diagnostic_only_not_applied_to_deterministic_boss_contact_ttd'
+    assert survival_policy.get('death_defy_chance_pct') == pytest.approx(30.0)
+    assert survival_policy.get('death_defy_effective_chance_pct') == pytest.approx(30.0)
     assert diagnostics.get('replacement_model', {}).get('contract_version') == 'boss_waves_replacement_v1'
     assert diagnostics.get('replacement_model', {}).get('table1_source_basis') == 'app_pipeline_qe_checkpoint_surfaces_to_run_plan'
     assert 'legacy_shadow_available' not in diagnostics
@@ -801,20 +823,42 @@ def test_build_boss_wave_payload_replacement_inputs_drive_table_summary_export_a
     assert ttk_inputs.get('electron_total_damage_source') == 'orbital_augment_electron_count_times_boss_electron_pct'
     assert ttk_inputs.get('orbital_augment_electron_count') == pytest.approx(2.0)
     primitive_values = diagnostics.get('replacement_primitive_inputs', {}).get('values') or {}
+    assert primitive_values['energy_shield_enabled'] is True
+    assert primitive_values['energy_shield_recharge_cooldown_seconds'] == pytest.approx(480.0)
+    assert primitive_values['energy_shield_extra_charge_count'] == pytest.approx(2.0)
+    assert primitive_values['energy_shield_total_charge_count'] == pytest.approx(3.0)
+    assert primitive_values['energy_shield_effective_charge_count'] == pytest.approx(3.0)
     assert primitive_values['tower_thorns_damage_pct'] == pytest.approx(99.0)
     assert primitive_values['wall_thorns_level'] == pytest.approx(16.0)
     assert primitive_values['wall_thorns_contact_damage_pct'] == pytest.approx(15.84)
+    assert primitive_values['death_defy_chance_pct'] == pytest.approx(30.0)
+    assert primitive_values['death_defy_down_percent_points'] == pytest.approx(0.0)
+    assert primitive_values['death_defy_effective_chance_pct'] == pytest.approx(30.0)
+    assert (
+        primitive_values['death_defy_model_policy']
+        == 'diagnostic_only_stochastic_survival_not_applied_to_deterministic_boss_contact_ttd'
+    )
     assert primitive_values['primordial_collapse_bh_damage_reduction_pct'] == pytest.approx(80.0)
     assert primitive_values['black_hole_duration_seconds'] == pytest.approx(36.0)
     assert primitive_values['black_hole_cooldown_seconds'] == pytest.approx(46.0)
+    primitive_ledger = diagnostics.get('replacement_primitive_semantics_ledger', {}).get('primitives') or {}
+    assert primitive_ledger['state::tower.death_defy_chance_pct']['exact_value'] == pytest.approx(30.0)
+    assert primitive_ledger['state::combat.death_defy_effective_chance_pct']['exact_value'] == pytest.approx(30.0)
+    assert primitive_ledger['state::uw.chrono_field.slow_pct']['exact_value'] == pytest.approx(30.0)
+    assert primitive_ledger['state::cards.slow_aura.enemy_speed_pct']['exact_value'] == pytest.approx(0.0)
     timed_dr = diagnostics.get('replacement_primitive_semantics_ledger', {}).get('timed_dr_semantic_contract') or {}
     timed_sources = timed_dr.get('sources') or {}
     assert timed_sources['black_hole_pbh']['damage_reduction_pct'] == pytest.approx(80.0)
     assert timed_sources['black_hole_pbh']['uptime_fraction'] == pytest.approx(36.0 / 46.0)
     assert timed_sources['black_hole_pbh']['effective_dr_fraction'] == pytest.approx(0.8 * (36.0 / 46.0))
     assert 'final_dr_override' not in timed_sources
-    assert timed_sources['flame_bot']['primitive_status'] == 'blocked_missing_duration_seconds_primitive'
+    assert timed_sources['flame_bot']['primitive_status'] == 'static_boss_path_overlap_model'
+    assert timed_sources['flame_bot']['uptime_source'] == 'static_boss_path_overlap_fraction'
+    assert timed_sources['flame_bot']['static_hit_chance_model']['status'] == 'resolved'
     assert timed_sources['defense_field']['primitive_status'] == 'explicit_runtime_only_no_qe_surface_found'
+    assert timed_dr['lane_policy'] == (
+        'duration-style timed DR uses uptime-weighted average lanes; Flame Bot hit-chance sources are binary per boss, so min is miss, avg assumes the hit only when the modeled tag chance is near-certain, max is the full-hit lane, and hit probability is surfaced separately'
+    )
 
     summary = payload.get('summary') or {}
     assert summary['max_surviving_wave'] == 27
@@ -822,7 +866,120 @@ def test_build_boss_wave_payload_replacement_inputs_drive_table_summary_export_a
     assert summary['survives_through_end'] is True
 
 
-def test_boss_wave_flame_bot_hit_chance_applies_average_expected_dr():
+def test_boss_wave_flame_bot_static_hit_chance_uses_path_overlap_and_energy_net():
+    from app import pipeline as pipeline_mod
+
+    chance, components = pipeline_mod._boss_wave_flame_bot_static_hit_chance(
+        tower_range_m=69.5,
+        flame_bot_effective_range_m=91.0,
+        flame_bot_cooldown_seconds=5.0,
+        boss_time_to_contact_seconds=6.3,
+        energy_net_hold_seconds=4.3,
+    )
+    no_net_chance, _ = pipeline_mod._boss_wave_flame_bot_static_hit_chance(
+        tower_range_m=69.5,
+        flame_bot_effective_range_m=91.0,
+        flame_bot_cooldown_seconds=5.0,
+        boss_time_to_contact_seconds=2.0,
+        energy_net_hold_seconds=0.0,
+    )
+    partial_window_chance, partial_window = pipeline_mod._boss_wave_flame_bot_static_hit_chance(
+        tower_range_m=69.5,
+        flame_bot_effective_range_m=200.0,
+        flame_bot_cooldown_seconds=5.0,
+        boss_time_to_contact_seconds=2.5,
+        energy_net_hold_seconds=0.0,
+    )
+    lifetime_chance, lifetime_window = pipeline_mod._boss_wave_flame_bot_static_hit_chance(
+        tower_range_m=69.5,
+        flame_bot_effective_range_m=91.0,
+        flame_bot_cooldown_seconds=5.0,
+        boss_time_to_contact_seconds=6.3,
+        energy_net_hold_seconds=4.3,
+        boss_lifetime_seconds=12.3,
+    )
+    pre_wall_chance, pre_wall_window = pipeline_mod._boss_wave_flame_bot_static_hit_chance(
+        tower_range_m=69.5,
+        flame_bot_effective_range_m=91.0,
+        flame_bot_cooldown_seconds=5.0,
+        boss_time_to_contact_seconds=6.3,
+        energy_net_hold_seconds=4.3,
+        boss_lifetime_seconds=1.0,
+    )
+
+    assert components['status'] == 'resolved'
+    assert components['model'] == 'static_uniform_flame_bot_center_vs_boss_path'
+    assert components['tower_range_reference_m'] == pytest.approx(69.5)
+    assert components['wall_radius_m'] == pytest.approx(20.0)
+    assert components['energy_net_hold_seconds'] == pytest.approx(4.3)
+    assert components['boss_lifetime_source'] == 'boss_time_to_contact_seconds_fallback'
+    assert chance == pytest.approx(components['hit_fraction'])
+    assert components['average_spatial_fraction'] > 0.75
+    assert chance > no_net_chance
+    assert partial_window['average_spatial_fraction'] == pytest.approx(1.0)
+    assert partial_window_chance == pytest.approx(0.5)
+    assert lifetime_window['boss_lifetime_source'] == 'explicit_boss_lifetime_seconds'
+    assert lifetime_window['total_exposure_seconds'] == pytest.approx(12.3)
+    assert lifetime_window['post_contact_seconds'] == pytest.approx(6.0)
+    assert lifetime_window['hit_state_semantics'] == 'persistent_until_boss_death_after_first_flame_bot_hit'
+    assert lifetime_chance > chance
+    assert pre_wall_window['movement_seconds'] == pytest.approx(1.0)
+    assert pre_wall_window['energy_net_hold_seconds'] == pytest.approx(0.0)
+    assert pre_wall_window['post_contact_seconds'] == pytest.approx(0.0)
+    assert pre_wall_chance < chance
+
+
+def test_boss_wave_flame_bot_static_hit_chance_feeds_binary_hit_dr_when_not_overridden():
+    from app import pipeline as pipeline_mod
+    from input.state_types import ScenarioRuntimeInputs
+
+    primitives = {
+        'tower_range_m': 69.5,
+        'flame_bot_damage_reduction_pct': 0.95,
+        'flame_bot_cooldown_seconds': 5.0,
+        'flame_bot_effective_range_m': 91.0,
+        'boss_time_to_contact_seconds': 6.3,
+        'boss_time_to_contact_energy_net_hold_seconds': 4.3,
+    }
+    expected_chance, _ = pipeline_mod._boss_wave_flame_bot_static_hit_chance(
+        tower_range_m=primitives['tower_range_m'],
+        flame_bot_effective_range_m=primitives['flame_bot_effective_range_m'],
+        flame_bot_cooldown_seconds=primitives['flame_bot_cooldown_seconds'],
+        boss_time_to_contact_seconds=primitives['boss_time_to_contact_seconds'],
+        energy_net_hold_seconds=primitives['boss_time_to_contact_energy_net_hold_seconds'],
+    )
+
+    timed_dr_by_lane, sources = pipeline_mod._boss_wave_timed_dr_inputs(
+        ScenarioRuntimeInputs.from_mapping({}),
+        primitives=primitives,
+    )
+
+    expected_avg_dr = (
+        0.95
+        if expected_chance >= pipeline_mod.BOSS_WAVE_BINARY_OUTCOME_AVG_HIT_THRESHOLD
+        else 0.0
+    )
+    assert timed_dr_by_lane == pytest.approx({'min': 0.0, 'avg': expected_avg_dr, 'max': 0.95})
+    assert sources['flame_bot']['damage_reduction_pct'] == pytest.approx(95.0)
+    assert sources['flame_bot']['uptime_fraction'] == pytest.approx(expected_chance)
+    assert sources['flame_bot']['uptime_source'] == 'static_boss_path_overlap_fraction'
+    assert sources['flame_bot']['primitive_status'] == 'static_boss_path_overlap_model'
+    assert sources['flame_bot']['binary_outcome'] is True
+    assert sources['flame_bot']['deterministic_hit_dr_fraction'] == pytest.approx(expected_avg_dr)
+    assert sources['flame_bot']['binary_avg_hit_threshold'] == pytest.approx(
+        pipeline_mod.BOSS_WAVE_BINARY_OUTCOME_AVG_HIT_THRESHOLD
+    )
+    assert sources['flame_bot']['lane_policy'] == (
+        'binary_outcome_min_miss_avg_near_certain_hit_max_hit_probability_reported_separately'
+    )
+    assert sources['flame_bot']['effective_dr_fraction'] == pytest.approx(0.95 * expected_chance)
+    assert sources['flame_bot']['probability_weighted_dr_fraction'] == pytest.approx(0.95 * expected_chance)
+    assert sources['flame_bot']['encounter_hit_chance_fraction'] == pytest.approx(expected_chance)
+    assert sources['flame_bot']['static_hit_chance_model']['hit_chance_pct'] == pytest.approx(expected_chance * 100.0)
+    assert primitives['flame_bot_static_boss_hit_chance_pct'] == pytest.approx(expected_chance * 100.0)
+
+
+def test_boss_wave_flame_bot_hit_chance_applies_binary_dr_with_probability_metadata():
     from app import pipeline as pipeline_mod
     from input.state_types import ScenarioRuntimeInputs
 
@@ -834,17 +991,26 @@ def test_boss_wave_flame_bot_hit_chance_applies_average_expected_dr():
         },
     )
 
-    assert timed_dr_by_lane == pytest.approx({'min': 0.0, 'avg': 0.14, 'max': 0.35})
+    assert timed_dr_by_lane == pytest.approx({'min': 0.0, 'avg': 0.0, 'max': 0.35})
     assert sources['flame_bot']['damage_reduction_pct'] == pytest.approx(35.0)
     assert sources['flame_bot']['uptime_fraction'] == pytest.approx(0.4)
     assert sources['flame_bot']['uptime_source'] == 'manual_boss_hit_chance_fraction'
     assert sources['flame_bot']['effective_dr_fraction'] == pytest.approx(0.14)
-    assert sources['flame_bot']['primitive_status'] == 'manual_boss_hit_chance_average_model'
+    assert sources['flame_bot']['probability_weighted_dr_fraction'] == pytest.approx(0.14)
+    assert sources['flame_bot']['encounter_hit_chance_fraction'] == pytest.approx(0.4)
+    assert sources['flame_bot']['deterministic_hit_dr_fraction'] == pytest.approx(0.0)
+    assert sources['flame_bot']['binary_avg_hit_threshold'] == pytest.approx(
+        pipeline_mod.BOSS_WAVE_BINARY_OUTCOME_AVG_HIT_THRESHOLD
+    )
+    assert sources['flame_bot']['lane_policy'] == (
+        'binary_outcome_min_miss_avg_near_certain_hit_max_hit_probability_reported_separately'
+    )
+    assert sources['flame_bot']['primitive_status'] == 'manual_boss_hit_chance_binary_model'
 
     override_dr_by_lane, override_sources = pipeline_mod._boss_wave_timed_dr_inputs(
         ScenarioRuntimeInputs.from_mapping(
             {
-                'flame_bot_boss_hit_chance_pct': 90.0,
+                'flame_bot_boss_hit_chance_pct': 99.0,
                 'flame_bot_damage_reduction_pct': 95.0,
             }
         ),
@@ -854,10 +1020,12 @@ def test_boss_wave_flame_bot_hit_chance_applies_average_expected_dr():
         },
     )
 
-    assert override_dr_by_lane == pytest.approx({'min': 0.0, 'avg': 0.855, 'max': 0.95})
+    assert override_dr_by_lane == pytest.approx({'min': 0.0, 'avg': 0.95, 'max': 0.95})
     assert override_sources['flame_bot']['damage_reduction_pct'] == pytest.approx(95.0)
-    assert override_sources['flame_bot']['uptime_fraction'] == pytest.approx(0.9)
-    assert override_sources['flame_bot']['effective_dr_fraction'] == pytest.approx(0.855)
+    assert override_sources['flame_bot']['uptime_fraction'] == pytest.approx(0.99)
+    assert override_sources['flame_bot']['effective_dr_fraction'] == pytest.approx(0.9405)
+    assert override_sources['flame_bot']['probability_weighted_dr_fraction'] == pytest.approx(0.9405)
+    assert override_sources['flame_bot']['deterministic_hit_dr_fraction'] == pytest.approx(0.95)
 
 
 def test_boss_wave_summary_uses_sequential_not_independent_survival():
@@ -910,8 +1078,11 @@ def test_boss_wave_summary_gc_loadout_uses_unified_hit_by_hit_lane():
 
     assert summary['max_surviving_wave'] == 120
     assert summary['contact_envelope_max_wave'] == 120
+    assert summary['pre_contact_boss_kill_max_wave'] == 100
+    assert summary['pre_contact_boss_kill_max_independent_wave'] == 120
     assert summary['gc_pre_contact_max_wave'] == 100
     assert summary['gc_pre_contact_max_independent_wave'] == 120
+    assert summary['gc_pre_contact_max_wave'] == summary['pre_contact_boss_kill_max_wave']
     assert summary['selected_max_wave'] == 120
     assert summary['selected_first_failed_wave'] == 0
     assert summary['selected_model'] == 'unified_hit_by_hit_boss_survival'
@@ -954,15 +1125,75 @@ def test_boss_wave_summary_loadout_type_does_not_change_selected_max_wave_calcul
     assert summaries['GC Farming']['selected_loadout_type'] == 'farm'
 
 
-def test_boss_wave_loadout_profile_resolves_farming_named_presets_to_farming_profile():
+def test_boss_wave_dissonance_labels_do_not_switch_selected_lane():
     from app import pipeline as pipeline_mod
 
-    assert pipeline_mod._boss_wave_loadout_profile_preset(
+    rows = [
+        {
+            'display_wave': 100,
+            'survives_boss': True,
+            'contact_envelope_survives_boss': True,
+            'boss_killed_before_contact': True,
+        },
+        {
+            'display_wave': 110,
+            'survives_boss': False,
+            'contact_envelope_survives_boss': True,
+            'boss_killed_before_contact': True,
+        },
+        {
+            'display_wave': 120,
+            'survives_boss': False,
+            'contact_envelope_survives_boss': True,
+            'boss_killed_before_contact': True,
+        },
+    ]
+
+    for policy_preset in ('eHP Max Waves', 'GC Max Waves', 'eHP Farming', 'GC Farming'):
+        for category in ('none', 'attack', 'defense', 'utility', 'ultimate_weapons'):
+            summary = pipeline_mod._replacement_summary_from_operator_rows(
+                rows,
+                perk_policy_preset=policy_preset,
+            )
+            pipeline_mod._apply_dissonance_selected_lane_constraints(
+                summary,
+                dissonance_run_category=category,
+            )
+
+            expected_model = (
+                'unified_hit_by_hit_boss_survival'
+                if category == 'none'
+                else f'unified_hit_by_hit_boss_survival_under_{category}_dissonance'
+            )
+            assert summary['selected_max_wave'] == 100
+            assert summary['selected_max_wave'] == summary['hit_by_hit_max_wave']
+            assert summary['contact_envelope_max_wave'] == 120
+            assert summary['pre_contact_boss_kill_max_wave'] == 120
+            assert summary['gc_pre_contact_max_wave'] == 120
+            assert summary['gc_pre_contact_max_wave'] == summary['pre_contact_boss_kill_max_wave']
+            assert summary['selected_model'] == expected_model
+
+
+def test_boss_wave_loadout_and_card_profiles_resolve_max_wave_policies_separately():
+    from app import pipeline as pipeline_mod
+
+    ehp_loadout = pipeline_mod._boss_wave_loadout_profile_preset(
         boss_preset_name='Milestone',
         perk_policy_preset='eHP Max Waves',
-    ) == 'Farming'
-    assert pipeline_mod._boss_wave_loadout_profile_preset(
+    )
+    gc_loadout = pipeline_mod._boss_wave_loadout_profile_preset(
         boss_preset_name='Milestone',
+        perk_policy_preset='GC Max Waves',
+    )
+
+    assert ehp_loadout == 'Farming'
+    assert pipeline_mod._boss_wave_card_profile_preset(
+        loadout_profile_preset=ehp_loadout,
+        perk_policy_preset='eHP Max Waves',
+    ) == 'Farming'
+    assert gc_loadout == 'Tourney'
+    assert pipeline_mod._boss_wave_card_profile_preset(
+        loadout_profile_preset=gc_loadout,
         perk_policy_preset='GC Max Waves',
     ) == 'Tourney'
     assert pipeline_mod._boss_wave_loadout_profile_preset(
@@ -973,6 +1204,152 @@ def test_boss_wave_loadout_profile_resolves_farming_named_presets_to_farming_pro
         boss_preset_name='Milestone',
         perk_policy_preset='GC Farming',
     ) == 'Farming'
+
+
+def test_boss_wave_ehp_max_waves_routes_farming_loadout_and_card_primitives():
+    from app.models import PipelineRunRequest
+    from app.pipeline import build_boss_wave_payload
+
+    payload = build_boss_wave_payload(
+        PipelineRunRequest(
+            ids=IDS_PATH,
+            out=ROOT / 'out',
+            perk_mode='max_progression_policy',
+            perk_policy_preset='eHP Max Waves',
+        ),
+        preset_name='Farming',
+        tier_number=16,
+        end_wave=100,
+        boss_wave_step=10,
+        stop_on_failure=False,
+        scenario_runtime_inputs={},
+    )
+
+    diagnostics = payload['diagnostics']
+    primitives = diagnostics['replacement_primitive_inputs']['values']
+    contact_contract = diagnostics['contact_time_contract']
+
+    assert diagnostics['loadout_profile_preset'] == 'Farming'
+    assert diagnostics['card_profile_preset'] == 'Farming'
+    assert primitives['loadout_profile_preset'] == 'Farming'
+    assert primitives['card_profile_preset'] == 'Farming'
+    assert primitives['energy_net_duration_seconds'] == pytest.approx(0.0)
+    assert primitives['energy_net_mastery_multiplier'] == pytest.approx(1.0)
+    assert primitives['energy_net_damage_multiplier_duration_seconds'] == pytest.approx(0.0)
+    assert primitives['slow_aura_enemy_speed_pct'] == pytest.approx(0.0)
+    assert primitives['boss_time_to_contact_energy_net_hold_seconds'] == pytest.approx(0.0)
+    assert contact_contract['boss_time_to_contact_seconds']['energy_net_hold_seconds'] == pytest.approx(0.0)
+    assert primitives['boss_time_to_contact_seconds'] == pytest.approx(
+        primitives['boss_time_to_contact_base_seconds']
+        / primitives['boss_time_to_contact_speed_remaining_fraction']
+        + primitives['energy_net_duration_seconds']
+    )
+    assert diagnostics['replacement_primitive_semantics_ledger']['primitives'][
+        'state::cards.energy_net.duration_seconds'
+    ]['exact_value'] == pytest.approx(0.0)
+    assert diagnostics['replacement_primitive_semantics_ledger']['primitives'][
+        'state::cards.slow_aura.enemy_speed_pct'
+    ]['exact_value'] == pytest.approx(0.0)
+    assert diagnostics['replacement_primitive_semantics_ledger']['primitives'][
+        'module::Sharp Fortitude.wall_thorns_damage_increase_per_hit'
+    ]['exact_value'] == pytest.approx(0.01)
+
+
+def test_boss_wave_gc_damage_primitives_include_card_and_module_damage_support():
+    from app.models import PipelineRunRequest
+    from app.pipeline import build_boss_wave_payload
+
+    payload = build_boss_wave_payload(
+        PipelineRunRequest(
+            ids=IDS_PATH,
+            out=ROOT / 'out',
+            perk_mode='max_progression_policy',
+            perk_policy_preset='GC Max Waves',
+        ),
+        preset_name='Farming',
+        tier_number=14,
+        end_wave=100,
+        boss_wave_step=10,
+        stop_on_failure=False,
+        scenario_runtime_inputs={'boss_time_to_contact_seconds': 10.0, 'orb_boss_total_damage_pct': 6.0},
+    )
+
+    diagnostics = payload['diagnostics']
+    primitives = diagnostics['replacement_primitive_inputs']['values']
+    ledger = diagnostics['replacement_primitive_semantics_ledger']['primitives']
+
+    assert diagnostics['card_profile_preset'] == 'Tourney'
+    assert primitives['card_profile_preset'] == 'Tourney'
+    assert primitives['super_tower_active'] is True
+    assert primitives['super_tower_bonus_multiplier'] == pytest.approx(5.0)
+    assert primitives['super_tower_cooldown_seconds'] == pytest.approx(18.0)
+    assert primitives['super_tower_mastery_active'] is True
+    assert primitives['super_tower_uw_mastery_multiplier'] == pytest.approx(2.4)
+    assert primitives['edamage_super_tower_factor'] == pytest.approx(7.067708333333333)
+    assert primitives['energy_shield_enabled'] is True
+    assert primitives['energy_shield_recharge_cooldown_seconds'] == pytest.approx(480.0)
+    assert primitives['energy_shield_base_charge_count'] == pytest.approx(1.0)
+    assert primitives['energy_shield_extra_charge_count'] == pytest.approx(2.0)
+    assert primitives['energy_shield_total_charge_count'] == pytest.approx(3.0)
+    assert primitives['energy_shields_down_fraction'] == pytest.approx(0.0)
+    assert primitives['energy_shield_effective_charge_count'] == pytest.approx(3.0)
+    assert primitives['death_defy_chance_pct'] >= 0.0
+    assert primitives['death_defy_down_percent_points'] == pytest.approx(0.0)
+    assert primitives['death_defy_effective_chance_pct'] == pytest.approx(primitives['death_defy_chance_pct'])
+    assert (
+        primitives['death_defy_model_policy']
+        == 'diagnostic_only_stochastic_survival_not_applied_to_deterministic_boss_contact_ttd'
+    )
+    assert primitives['project_funding_cash_digit_multiplier_pct'] == pytest.approx(100.0)
+    assert primitives['project_funding_current_cash'] == pytest.approx(50_000_000_000.0)
+    assert primitives['edamage_project_funding_factor'] == pytest.approx(11.698970004336019)
+    assert ledger['state::capability.energy_shield.enabled']['exact_value'] == pytest.approx(1.0)
+    assert ledger['state::cards.energy_shield.recharge_cooldown_seconds']['exact_value'] == pytest.approx(480.0)
+    assert ledger['state::cards.energy_shield.extra_charge_count']['exact_value'] == pytest.approx(2.0)
+    assert ledger['state::combat.energy_shield_effective_charge_count']['exact_value'] == pytest.approx(3.0)
+    assert ledger['state::tower.death_defy_chance_pct']['exact_value'] == pytest.approx(
+        primitives['death_defy_chance_pct']
+    )
+    assert ledger['state::combat.death_defy_effective_chance_pct']['exact_value'] == pytest.approx(
+        primitives['death_defy_effective_chance_pct']
+    )
+    assert ledger['derived::edamage.super_tower_factor']['exact_value'] == pytest.approx(
+        primitives['edamage_super_tower_factor']
+    )
+    assert ledger['derived::edamage.super_tower_factor']['owner_layer'].startswith('QE publishes')
+    assert ledger['support_surface::module.project_funding.current_cash']['exact_value'] == pytest.approx(
+        primitives['project_funding_current_cash']
+    )
+    assert ledger['derived::edamage.project_funding_factor']['exact_value'] == pytest.approx(
+        primitives['edamage_project_funding_factor']
+    )
+
+
+def test_boss_wave_primitive_request_covers_declared_hot_bundle_surfaces():
+    from app import pipeline as pipeline_mod
+
+    contract = yaml.safe_load((ROOT / 'kb' / 'global-rules' / 'contracts' / 'stat-query-consumer-bundles.yaml').read_text())
+    bundle = next(
+        bundle
+        for consumer in contract['consumers']
+        if consumer.get('consumer_id') == 'simulator_boss_wave'
+        for bundle in consumer['bundles']
+        if bundle.get('bundle_id') == 'boss_wave_hot_surfaces'
+    )
+    declared_surfaces = set(bundle.get('required_surface_ids') or ()) | set(bundle.get('optional_surface_ids') or ())
+    requested_surfaces = set(pipeline_mod.BOSS_WAVE_REPLACEMENT_PRIMITIVE_SURFACE_IDS)
+    requested_surfaces.update(pipeline_mod.BOSS_WAVE_OPTIONAL_PRIMITIVE_SURFACE_IDS)
+    requested_surfaces.update(pipeline_mod.BOSS_WAVE_SLOW_AURA_OPTIONAL_PRIMITIVE_SURFACE_IDS)
+    scenario_support_surfaces = {
+        'support_surface::dissonance.attack_run_active',
+        'support_surface::dissonance.defense_run_active',
+        'support_surface::dissonance.utility_run_active',
+        'support_surface::dissonance.ultimate_weapons_run_active',
+    }
+
+    assert declared_surfaces - requested_surfaces == set()
+    assert requested_surfaces - declared_surfaces == scenario_support_surfaces
+    assert 'state::tower.death_defy_chance_pct' in declared_surfaces
 
 
 def test_boss_wave_summary_can_be_limited_by_explicit_non_boss_terminal_pressure():
@@ -1004,6 +1381,139 @@ def test_boss_wave_summary_can_be_limited_by_explicit_non_boss_terminal_pressure
     assert summary['terminal_pressure_limiter'] == 'fleet_non_boss_pressure'
     assert summary['terminal_pressure_limited'] is True
     assert summary['selected_model'] == 'unified_hit_by_hit_boss_survival_limited_by_fleet_non_boss_pressure'
+
+
+def test_boss_wave_unsupported_terminal_pressure_reference_cap_limits_selected_wave():
+    from types import SimpleNamespace
+
+    from app import pipeline as pipeline_mod
+    from input.state_types import ScenarioRuntimeInputs
+
+    summary = pipeline_mod._replacement_summary_from_operator_rows(
+        [
+            {
+                'display_wave': 1400,
+                'survives_boss': True,
+                'contact_envelope_survives_boss': True,
+                'boss_killed_before_contact': False,
+            },
+        ],
+    )
+    account_state = SimpleNamespace(
+        tier_progression_waves={},
+        dissonance_pbs_by_tier={'Tier 16': {'ultimate_weapons': 780}},
+    )
+
+    pipeline_mod._apply_unsupported_terminal_pressure_reference_limit(
+        summary,
+        account_state=account_state,
+        tier_number=16,
+        dissonance_run_category='ultimate_weapons',
+        unsupported_terminal_pressures=['armored_enemies_blocked_hits'],
+        runtime_inputs=ScenarioRuntimeInputs.from_mapping({}),
+    )
+
+    limit = summary['unsupported_pressure_reference_limit']
+    assert summary['selected_max_wave'] == 780
+    assert summary['selected_first_failed_wave'] == 781
+    assert summary['terminal_pressure_limiter'] == 'unsupported_pressure_empirical_reference'
+    assert summary['terminal_pressure_limited'] is True
+    assert summary['unsupported_pressure_reference_limited'] is True
+    assert limit['applicable'] is True
+    assert limit['limited'] is True
+    assert limit['reference_wave'] == 780
+    assert limit['reference_kind'] == 'ids_dissonant_pb_wave'
+    assert limit['uncapped_selected_max_wave'] == 1400
+    assert (
+        summary['selected_model']
+        == 'unified_hit_by_hit_boss_survival_limited_by_unsupported_pressure_empirical_reference'
+    )
+
+
+def test_boss_wave_unsupported_terminal_pressure_reference_cap_skips_when_explicitly_closed():
+    from types import SimpleNamespace
+
+    from app import pipeline as pipeline_mod
+    from input.state_types import ScenarioRuntimeInputs
+
+    summary = pipeline_mod._replacement_summary_from_operator_rows(
+        [
+            {
+                'display_wave': 1400,
+                'survives_boss': True,
+                'contact_envelope_survives_boss': True,
+                'boss_killed_before_contact': False,
+            },
+        ],
+    )
+    pipeline_mod._apply_unsupported_terminal_pressure_reference_limit(
+        summary,
+        account_state=SimpleNamespace(
+            tier_progression_waves={},
+            dissonance_pbs_by_tier={'Tier 16': {'ultimate_weapons': 780}},
+        ),
+        tier_number=16,
+        dissonance_run_category='ultimate_weapons',
+        unsupported_terminal_pressures=['armored_enemies_blocked_hits'],
+        runtime_inputs=ScenarioRuntimeInputs.from_mapping(
+            {
+                'fleet_terminal_max_wave': 900,
+                'elite_terminal_max_wave': 900,
+                'protector_terminal_max_wave': 900,
+                'armored_terminal_max_wave': 900,
+            }
+        ),
+    )
+
+    assert summary['selected_max_wave'] == 1400
+    assert summary['terminal_pressure_limited'] is False
+    assert summary['unsupported_pressure_reference_limit']['applicable'] is False
+
+
+def test_boss_wave_unsupported_terminal_pressure_without_reference_blocks_selected_wave():
+    from types import SimpleNamespace
+
+    from app import pipeline as pipeline_mod
+    from input.state_types import ScenarioRuntimeInputs
+
+    summary = pipeline_mod._replacement_summary_from_operator_rows(
+        [
+            {
+                'display_wave': 1400,
+                'survives_boss': True,
+                'contact_envelope_survives_boss': True,
+                'boss_killed_before_contact': False,
+            },
+        ],
+    )
+
+    pipeline_mod._apply_unsupported_terminal_pressure_reference_limit(
+        summary,
+        account_state=SimpleNamespace(tier_progression_waves={}, dissonance_pbs_by_tier={}),
+        tier_number=16,
+        dissonance_run_category='ultimate_weapons',
+        unsupported_terminal_pressures=['armored_enemies_blocked_hits'],
+        runtime_inputs=ScenarioRuntimeInputs.from_mapping({}),
+    )
+
+    limit = summary['unsupported_pressure_reference_limit']
+    assert summary['selected_max_wave'] == 0
+    assert summary['selected_first_failed_wave'] == 0
+    assert summary['selected_max_independent_wave'] == 0
+    assert summary['status'] == 'incomplete'
+    assert summary['failure_kind'] == 'unsupported_terminal_pressure_without_reference_limit'
+    assert summary['terminal_pressure_limiter'] == 'unsupported_pressure_missing_empirical_reference'
+    assert summary['terminal_pressure_limited'] is True
+    assert summary['unsupported_pressure_reference_limited'] is False
+    assert summary['unsupported_pressure_missing_reference_blocked'] is True
+    assert limit['applicable'] is True
+    assert limit['missing_reference'] is True
+    assert limit['blocked'] is True
+    assert limit['uncapped_selected_max_wave'] == 1400
+    assert (
+        summary['selected_model']
+        == 'unified_hit_by_hit_boss_survival_blocked_by_unsupported_pressure_missing_empirical_reference'
+    )
 
 
 def test_build_boss_wave_payload_rejects_legacy_source_after_excision():
@@ -1114,10 +1624,16 @@ def test_build_boss_wave_payload_fails_closed_on_missing_export_mapping(monkeypa
 def test_build_boss_wave_payload_live_path_avoids_delta_fallback():
     from app.models import PipelineRunRequest
     from app.pipeline import build_boss_wave_payload, build_runtime_state, load_inputs
-    from input.state_types import ScenarioRuntimeInputs
+    from input.state_types import ScenarioProjectionState, ScenarioRuntimeInputs
+    from qe.publication import publish_query_surfaces
     from qe.routing import query_response_to_statbook, resolve_checkpoint_surfaces
 
-    request = PipelineRunRequest(ids=IDS_PATH, out=ROOT / 'out', perk_mode='runtime_timeline')
+    request = PipelineRunRequest(
+        ids=IDS_PATH,
+        out=ROOT / 'out',
+        perk_mode='runtime_timeline',
+        runtime_state_overlay='disco_respec_2026_06_10',
+    )
     runtime_inputs = {
             'orb_boss_hit_pct': 100.0,
             'orb_boss_hit_count': 1,
@@ -1126,7 +1642,13 @@ def test_build_boss_wave_payload_live_path_avoids_delta_fallback():
         'incoming_damage_multiplier': 1.0,
     }
     bundle = load_inputs(ids_path=request.ids, manual_inputs_path=request.manual_inputs)
-    account_state = build_runtime_state(bundle.ids_raw, loadout_config=bundle.loadout_config, perk_config=bundle.perk_config)
+    account_state = build_runtime_state(
+        bundle.ids_raw,
+        loadout_config=bundle.loadout_config,
+        perk_config=bundle.perk_config,
+        manual_inputs=bundle.manual_inputs,
+        runtime_state_overlay=request.runtime_state_overlay,
+    )
     canonical_response = resolve_checkpoint_surfaces(
         account_state,
         requested_surface_ids=(
@@ -1139,31 +1661,46 @@ def test_build_boss_wave_payload_live_path_avoids_delta_fallback():
             'state::wall.fortification_multiplier',
             'state::tower.defense_pct',
             'state::tower.defense_absolute',
+            'state::tower.death_defy_chance_pct',
             'state::tower.thorns_damage_pct',
+            'state::tower.range_m',
             'state::wall.thorns_damage_pct',
+            'state::tower.orb_count',
+            'state::tower.orb_speed_rpm',
             'state::cards.plasma_cannon.effect_pct',
+            'state::capability.energy_shield.enabled',
+            'state::cards.energy_shield.recharge_cooldown_seconds',
+            'state::cards.energy_shield.extra_charge_count',
             'state::module.orbital_augment.electron_count',
             'state::module.primordial_collapse.bh_damage_reduction_pct',
             'support_surface::ehp.black_hole_duration_seconds',
             'support_surface::ehp.black_hole_cooldown_seconds',
             'state::uw.black_hole.base_duration_seconds',
             'state::uw.black_hole.base_cooldown_seconds',
+            'state::uw.golden_tower.base_duration_seconds',
+            'state::uw.golden_tower.base_cooldown_seconds',
             'state::uw.chrono_field.duration_seconds',
             'state::uw.chrono_field.cooldown_seconds',
             'state::uw.chrono_field.damage_reduction_pct',
             'state::bot.flame.owned',
             'state::bot.flame.damage_reduction_pct',
             'state::bot.flame.cooldown_seconds',
+            'state::bot.flame.range_m',
+            'state::bot.global.range_bonus_m',
+            'state::bot.flame.effective_range_m',
         ),
         preset_name='Farming',
         state_mode='start_of_run',
-        perks_enabled=True,
+        perks_enabled=False,
+        scenario_projection_state=ScenarioProjectionState(second_wind_mastery_regen=True),
         scenario_runtime_inputs=ScenarioRuntimeInputs.from_mapping(runtime_inputs),
     )
     canonical_statbook = query_response_to_statbook(canonical_response, notes='Boss Waves primitive authority reconciliation test.')
+    publish_query_surfaces(canonical_statbook.rows, account_state_labs=getattr(account_state, 'labs', {}) or {})
     canonical = {
         surface_id: float(canonical_statbook.rows[surface_id].final_value)
         for surface_id in canonical_statbook.rows
+        if canonical_statbook.rows[surface_id].final_value is not None
     }
     payload = build_boss_wave_payload(
         request,
@@ -1186,14 +1723,15 @@ def test_build_boss_wave_payload_live_path_avoids_delta_fallback():
     assert diagnostics['source_selection']['csv_export_source'] == 'replacement'
     assert diagnostics['source_selection']['diagnostics_source'] == 'replacement'
     assert payload['source_selection']['active_source'] == 'replacement'
-    assert diagnostics['replacement_model']['boss_ttk_contract'] == 'v21_events_plus_gc_boss_continuous_damage'
+    assert diagnostics['replacement_model']['boss_ttk_contract'] == 'v21_events_plus_continuous_boss_damage'
     assert diagnostics['replacement_model']['contract_version'] == 'boss_waves_replacement_v1'
     assert diagnostics['model_scope'] == 'boss_contact_survivability'
     assert diagnostics['not_full_max_wave_model'] is True
     assert diagnostics['model_certification']['certified_full_max_wave_model'] is False
     assert diagnostics['model_certification']['model_certification_status'] == 'partial_boss_contact_model'
+    assert diagnostics['model_certification']['model_requirement_applicability']['boss_applicable_damage_semantics'] is False
     assert diagnostics['model_certification']['model_requirement_applicability']['gc_boss_applicable_damage_semantics'] is False
-    assert 'source_owned_full_gc_boss_applicable_damage_semantics' not in diagnostics['model_certification']['model_completion_blockers']
+    assert 'source_owned_full_boss_applicable_damage_semantics' not in diagnostics['model_certification']['model_completion_blockers']
     assert diagnostics['model_certification']['model_requirement_applicability']['non_boss_terminal_pressure'] is False
     assert diagnostics['unsupported_terminal_pressures'] == []
     assert 'full_dissonance_family_masks' not in diagnostics['unsupported_terminal_pressures']
@@ -1219,8 +1757,9 @@ def test_build_boss_wave_payload_live_path_avoids_delta_fallback():
     assert 'legacy_shadow_materialized' not in diagnostics
     assert diagnostics['delta_fallback_count'] == 0
     primitive_inputs = diagnostics['replacement_primitive_inputs']
-    assert primitive_inputs['layer'] == 'start_of_run_static_primitives_plus_row_evolved_workshop_skip_inputs_not_final_displayed_rows'
+    assert primitive_inputs['layer'] == 'start_of_run_static_primitives_plus_second_wind_mastery_regen_projection_plus_row_evolved_workshop_skip_inputs_not_final_displayed_rows'
     primitives = primitive_inputs['values']
+    assert primitives['survivability_projection_state']['second_wind_mastery_regen'] is True
     assert primitives['enemy_level_skip_reduction_fraction'] == pytest.approx(0.025)
     assert primitives['enemy_level_skip_chance_delta'] == pytest.approx(-0.025)
     expected_wall_regen = canonical['state::tower.regen'] * (canonical['state::wall.regen'] / 100.0)
@@ -1240,22 +1779,40 @@ def test_build_boss_wave_payload_live_path_avoids_delta_fallback():
     assert primitives['wall_regen'] == pytest.approx(expected_wall_regen)
     assert primitives['wall_fortification_multiplier'] == pytest.approx(canonical['state::wall.fortification_multiplier'])
     assert primitives['tower_defense_pct'] == pytest.approx(canonical['state::tower.defense_pct'])
+    assert primitives['death_defy_chance_pct'] == pytest.approx(canonical['state::tower.death_defy_chance_pct'])
+    assert primitives['death_defy_down_percent_points'] == pytest.approx(0.0)
+    assert primitives['death_defy_effective_chance_pct'] == pytest.approx(canonical['state::tower.death_defy_chance_pct'])
     assert primitives['tower_thorns_damage_pct'] == pytest.approx(canonical['state::tower.thorns_damage_pct'])
     assert primitives['wall_thorns_contact_damage_pct'] == pytest.approx(canonical['state::wall.thorns_damage_pct'])
     assert primitives['wall_thorns_level'] == pytest.approx(float(account_state.labs['Wall Thorns']))
+    assert primitives['tower_orb_count'] == pytest.approx(canonical['state::tower.orb_count'])
+    assert primitives['tower_orb_speed_rpm'] == pytest.approx(canonical['state::tower.orb_speed_rpm'])
     assert primitives['plasma_cannon_effect_pct'] == pytest.approx(canonical['state::cards.plasma_cannon.effect_pct'])
+    assert primitives['energy_shield_enabled'] == bool(canonical['state::capability.energy_shield.enabled'])
+    assert primitives['energy_shield_recharge_cooldown_seconds'] == pytest.approx(
+        canonical['state::cards.energy_shield.recharge_cooldown_seconds']
+    )
+    assert primitives['energy_shield_extra_charge_count'] == pytest.approx(
+        canonical['state::cards.energy_shield.extra_charge_count']
+    )
+    assert primitives['energy_shield_total_charge_count'] == pytest.approx(3.0)
+    assert primitives['energy_shield_effective_charge_count'] == pytest.approx(3.0)
     assert primitives['orbital_augment_electron_count'] == pytest.approx(canonical['state::module.orbital_augment.electron_count'])
     assert primitives['primordial_collapse_bh_damage_reduction_pct'] == pytest.approx(canonical['state::module.primordial_collapse.bh_damage_reduction_pct'])
     assert primitives['black_hole_duration_seconds'] == pytest.approx(canonical['state::uw.black_hole.base_duration_seconds'])
     assert primitives['black_hole_cooldown_seconds'] == pytest.approx(canonical['state::uw.black_hole.base_cooldown_seconds'])
+    assert primitives['black_hole_base_duration_seconds'] == pytest.approx(canonical['state::uw.black_hole.base_duration_seconds'])
+    assert primitives['black_hole_base_cooldown_seconds'] == pytest.approx(canonical['state::uw.black_hole.base_cooldown_seconds'])
+    assert primitives['golden_tower_base_duration_seconds'] == pytest.approx(canonical['state::uw.golden_tower.base_duration_seconds'])
+    assert primitives['golden_tower_base_cooldown_seconds'] == pytest.approx(canonical['state::uw.golden_tower.base_cooldown_seconds'])
     assert primitives['chrono_field_duration_seconds'] == pytest.approx(canonical['state::uw.chrono_field.duration_seconds'])
     assert primitives['chrono_field_cooldown_seconds'] == pytest.approx(canonical['state::uw.chrono_field.cooldown_seconds'])
     assert primitives['chrono_field_damage_reduction_pct'] == pytest.approx(canonical['state::uw.chrono_field.damage_reduction_pct'])
-    assert canonical['state::bot.flame.owned'] == pytest.approx(0.0)
-    assert primitives['flame_bot_owned'] is False
-    assert primitives['flame_bot_damage_reduction_pct'] == pytest.approx(0.0)
+    assert primitives['tower_range_m'] == pytest.approx(canonical['state::tower.range_m'])
+    assert primitives['flame_bot_owned'] == bool(canonical['state::bot.flame.owned'])
     assert primitives['flame_bot_damage_reduction_pct'] == pytest.approx(canonical['state::bot.flame.damage_reduction_pct'])
     assert primitives['flame_bot_cooldown_seconds'] == pytest.approx(canonical['state::bot.flame.cooldown_seconds'])
+    assert primitives['flame_bot_effective_range_m'] > 0.0
     ledger = diagnostics['replacement_primitive_semantics_ledger']
     assert ledger['primitives']['state::tower.enemy_attack_level_skip_pct']['state_phase'] == 'start_of_run'
     assert ledger['primitives']['state::tower.enemy_health_level_skip_pct']['state_phase'] == 'start_of_run'
@@ -1275,6 +1832,13 @@ def test_build_boss_wave_payload_live_path_avoids_delta_fallback():
     assert ledger['primitives']['state::wall.regen']['exact_value'] == pytest.approx(canonical['state::wall.regen'])
     assert ledger['primitives']['state::wall.regen']['row_input_value'] == pytest.approx(expected_wall_regen)
     assert ledger['primitives']['state::tower.regen']['exact_value'] == pytest.approx(canonical['state::tower.regen'])
+    assert ledger['primitives']['state::tower.death_defy_chance_pct']['exact_value'] == pytest.approx(
+        canonical['state::tower.death_defy_chance_pct']
+    )
+    assert ledger['primitives']['state::combat.death_defy_effective_chance_pct']['exact_value'] == pytest.approx(
+        canonical['state::tower.death_defy_chance_pct']
+    )
+    assert ledger['primitives']['state::tower.regen']['state_phase'] == 'start_of_run_with_second_wind_mastery_regen_projection'
     assert ledger['primitives']['state::tower.thorns_damage_pct']['semantic_meaning'].endswith(
         'upstream base for Wall Thorns contact damage'
     )
@@ -1296,9 +1860,20 @@ def test_build_boss_wave_payload_live_path_avoids_delta_fallback():
         (canonical['state::module.primordial_collapse.bh_damage_reduction_pct'] / 100.0)
         * (primitives['black_hole_duration_seconds'] / primitives['black_hole_cooldown_seconds'])
     )
-    assert timed_sources['flame_bot']['primitive_status'] == 'runtime_or_qe_primitives'
-    assert timed_sources['flame_bot']['damage_reduction_pct'] == pytest.approx(0.0)
-    assert timed_sources['flame_bot']['effective_dr_fraction'] == pytest.approx(0.0)
+    assert timed_sources['flame_bot']['primitive_status'] == 'static_boss_path_overlap_model'
+    assert timed_sources['flame_bot']['uptime_source'] == 'static_boss_path_overlap_fraction'
+    expected_flame_dr_pct = primitives['flame_bot_damage_reduction_pct']
+    if expected_flame_dr_pct <= 1.0:
+        expected_flame_dr_pct *= 100.0
+    assert timed_sources['flame_bot']['damage_reduction_pct'] == pytest.approx(expected_flame_dr_pct)
+    assert timed_sources['flame_bot']['static_hit_chance_model']['status'] == 'resolved'
+    assert timed_sources['flame_bot']['binary_outcome'] is True
+    assert timed_sources['flame_bot']['effective_dr_fraction'] == pytest.approx(
+        timed_sources['flame_bot']['probability_weighted_dr_fraction']
+    )
+    assert timed_sources['flame_bot']['probability_weighted_dr_fraction'] <= (
+        timed_sources['flame_bot']['damage_reduction_pct'] / 100.0
+    )
     assert timed_sources['defense_field']['primitive_status'] == 'explicit_runtime_only_no_qe_surface_found'
     assert ledger['primitives']['module::Sharp Fortitude.wall_thorns_damage_increase_per_hit']['exact_value'] == pytest.approx(0.01)
     assert ledger['workshop_levels']['Wall Health']['exact_value'] == account_state.workshop['Wall Health'].preset_levels['Farming']
@@ -1322,7 +1897,7 @@ def test_build_boss_wave_payload_live_path_avoids_delta_fallback():
     assert semantic_contract['state::wall.regen']['decision'] == 'transformed_percent_points_primitive_not_final_hp_per_second'
     assert diagnostics['replacement_display_derivation']['wall_hp'].startswith('operator_rows.wall_hp')
     assert diagnostics['replacement_model']['death_wave_health_multiplier_applies_to'] == 'table1_row_evolved_tower_hp_then_wall_hp_not_wall_regen_or_enemy_health'
-    assert diagnostics['replacement_model']['boss_survival_model'] == 'max_waves_compares_v21_plus_gc_boss_ttk_against_hit_by_hit_wall_ttd_with_between_hit_regen_only'
+    assert diagnostics['replacement_model']['boss_survival_model'] == 'max_waves_compares_v21_plus_continuous_boss_ttk_against_hit_by_hit_wall_ttd_with_between_hit_regen_only'
     ttk_inputs = ledger['boss_ttk_input_contract']
     assert ttk_inputs['orb_boss_total_damage_pct'] == pytest.approx(6.0)
     assert ttk_inputs['orb_boss_total_damage_source'] == 'default_orb_boss_total_damage_pct_6'
@@ -1459,12 +2034,163 @@ def test_boss_wave_model_certification_marks_explicit_runtime_override_closure()
     assert certification['runtime_override_closure'] == {
         'non_boss_terminal_pressure': True,
         'v28_damage_health_decay_magnitudes': True,
+        'boss_applicable_damage_semantics': True,
         'gc_boss_applicable_damage_semantics': True,
     }
     assert certification['model_requirement_applicability']['non_boss_terminal_pressure'] is False
     assert 'source_owned_non_boss_terminal_pressure_formulas' not in certification['model_completion_blockers']
     assert 'source_owned_v28_damage_health_decay_magnitudes' not in certification['model_completion_blockers']
-    assert 'source_owned_full_gc_boss_applicable_damage_semantics' not in certification['model_completion_blockers']
+    assert 'source_owned_full_boss_applicable_damage_semantics' not in certification['model_completion_blockers']
+
+
+def test_boss_wave_high_tier_dissonance_flags_unsupported_terminal_pressure():
+    from app.models import PipelineRunRequest
+    from app.pipeline import build_boss_wave_payload
+
+    request = PipelineRunRequest(
+        ids=IDS_PATH,
+        out=ROOT / 'out',
+        perk_mode='runtime_timeline',
+        perk_state='on',
+        perk_policy_preset='eHP Max Waves',
+    )
+    payload = build_boss_wave_payload(
+        request,
+        preset_name='Milestone',
+        tier_number=17,
+        end_wave=120,
+        boss_wave_step=10,
+        stop_on_failure=False,
+        scenario_runtime_inputs={'orb_boss_total_damage_pct': 6.0},
+        dissonance_run_category='ultimate_weapons',
+    )
+
+    diagnostics = payload['diagnostics']
+    certification = diagnostics['model_certification']
+    assert {
+        'armored_enemies_blocked_hits',
+        'knockback_resistance_non_boss_pressure',
+        'protector_ultimate_deferred',
+        'boss_ultimate_deferred',
+        'mass_enforcement_deferred',
+    } <= set(diagnostics['unsupported_terminal_pressures'])
+    assert certification['model_requirement_applicability']['non_boss_terminal_pressure'] is True
+    assert 'source_owned_non_boss_terminal_pressure_formulas' in certification['model_completion_blockers']
+    assert certification['unsupported_terminal_pressures'] == diagnostics['unsupported_terminal_pressures']
+    assert diagnostics['replacement_model']['unsupported_terminal_pressures'] == diagnostics['unsupported_terminal_pressures']
+
+
+@pytest.mark.live
+def test_boss_wave_milestone_matrix_caps_unsupported_high_tier_to_manual_dissonance_reference():
+    from app.models import PipelineRunRequest
+    from app.pipeline import build_boss_wave_milestone_matrix
+
+    matrix = build_boss_wave_milestone_matrix(
+        PipelineRunRequest(ids=IDS_PATH, out=ROOT / 'out', runtime_state_overlay='disco_respec_2026_06_10'),
+        tiers=(16,),
+        end_wave=1600,
+        boss_wave_step=10,
+        stop_on_failure=True,
+        scenario_runtime_inputs={'orb_boss_total_damage_pct': 6.0},
+        loadout_policy_presets=('eHP Max Waves',),
+        dissonance_run_categories=('ultimate_weapons',),
+    )
+
+    row = matrix['rows'][0]
+    candidate = row['candidate_results'][0]
+    assert row['reference_kind'] == 'ids_dissonant_pb_wave'
+    assert row['reference_wave'] == 780
+    assert row['dissonance_pb_reference_wave'] == 780
+    assert row['best_selected_max_wave'] == 780
+    assert row['delta_vs_reference_wave'] == 0
+    assert row['terminal_pressure_limiter'] == 'unsupported_pressure_empirical_reference'
+    assert row['unsupported_pressure_reference_limited'] is True
+    assert row['unsupported_pressure_uncapped_selected_max_wave'] > 780
+    assert candidate['selected_max_wave'] == 780
+    assert candidate['unsupported_pressure_reference_limited'] is True
+    assert candidate['unsupported_pressure_reference_limit']['uncapped_selected_max_wave'] > 780
+    assert 'source_owned_non_boss_terminal_pressure_formulas' in row['model_completion_blockers']
+
+
+@pytest.mark.live
+def test_boss_wave_direct_dissonance_matrix_carries_terminal_pressure_cap_metadata():
+    from app.models import PipelineRunRequest
+    from app.pipeline import build_boss_wave_payload
+
+    payload = build_boss_wave_payload(
+            PipelineRunRequest(
+                ids=IDS_PATH,
+                out=ROOT / 'out',
+                perk_mode='max_progression_policy',
+                perk_policy_preset='eHP Max Waves',
+                runtime_state_overlay='disco_respec_2026_06_10',
+            ),
+        preset_name='Milestone',
+        tier_number=16,
+        end_wave=1600,
+        boss_wave_step=10,
+        stop_on_failure=True,
+        scenario_runtime_inputs={'orb_boss_total_damage_pct': 6.0},
+        include_dissonance_run_matrix=True,
+    )
+
+    uw_row = next(row for row in payload['dissonance_run_matrix'] if row['dissonance_run_category'] == 'ultimate_weapons')
+    assert uw_row['selected_max_wave'] == 780
+    assert uw_row['terminal_pressure_limiter'] == 'unsupported_pressure_empirical_reference'
+    assert uw_row['terminal_pressure_limited'] is True
+    assert uw_row['unsupported_pressure_reference_limited'] is True
+    assert uw_row['unsupported_pressure_uncapped_selected_max_wave'] == 1477
+    assert uw_row['unsupported_pressure_reference_limit']['reference_wave'] == 780
+    assert {
+        'armored_enemies_blocked_hits',
+        'knockback_resistance_non_boss_pressure',
+        'protector_ultimate_deferred',
+    } <= set(uw_row['unsupported_terminal_pressures'])
+    assert 'source_owned_non_boss_terminal_pressure_formulas' in uw_row['model_completion_blockers']
+
+    utility_row = next(row for row in payload['dissonance_run_matrix'] if row['dissonance_run_category'] == 'utility')
+    assert utility_row['selected_max_wave'] == 0
+    assert utility_row['status'] == 'incomplete'
+    assert utility_row['terminal_pressure_limiter'] == 'unsupported_pressure_missing_empirical_reference'
+    assert utility_row['terminal_pressure_limited'] is True
+    assert utility_row['unsupported_pressure_missing_reference_blocked'] is True
+    assert utility_row['unsupported_pressure_reference_limit']['missing_reference'] is True
+    assert utility_row['unsupported_pressure_uncapped_selected_max_wave'] > 0
+
+
+@pytest.mark.live
+def test_boss_wave_milestone_matrix_blocks_unsupported_pressure_without_reference():
+    from app.models import PipelineRunRequest
+    from app.pipeline import build_boss_wave_milestone_matrix
+
+    matrix = build_boss_wave_milestone_matrix(
+        PipelineRunRequest(ids=IDS_PATH, out=ROOT / 'out', runtime_state_overlay='disco_respec_2026_06_10'),
+        tiers=(16,),
+        end_wave=2000,
+        boss_wave_step=10,
+        stop_on_failure=True,
+        scenario_runtime_inputs={'orb_boss_total_damage_pct': 6.0},
+        loadout_policy_presets=('eHP Max Waves',),
+        dissonance_run_categories=('utility',),
+    )
+
+    row = matrix['rows'][0]
+    candidate = row['candidate_results'][0]
+    assert row['reference_kind'] == 'ids_dissonant_pb_wave'
+    assert row['reference_wave'] is None
+    assert row['best_status'] == 'incomplete'
+    assert row['best_selected_max_wave'] == 0
+    assert row['terminal_pressure_limiter'] == 'unsupported_pressure_missing_empirical_reference'
+    assert row['terminal_pressure_limited'] is True
+    assert row['unsupported_pressure_reference_limited'] is False
+    assert row['unsupported_pressure_missing_reference_blocked'] is True
+    assert row['unsupported_pressure_uncapped_selected_max_wave'] > 0
+    assert row['unsupported_pressure_reference_limit']['missing_reference'] is True
+    assert row['unsupported_pressure_reference_limit']['blocked'] is True
+    assert candidate['selected_max_wave'] == 0
+    assert candidate['unsupported_pressure_missing_reference_blocked'] is True
+    assert candidate['unsupported_pressure_reference_limit']['uncapped_selected_max_wave'] > 0
+    assert 'source_owned_non_boss_terminal_pressure_formulas' in row['model_completion_blockers']
 
 
 def test_boss_wave_model_certification_only_requires_damage_health_decay_for_tournament_modes():
@@ -1495,19 +2221,60 @@ def test_boss_wave_model_certification_only_requires_damage_health_decay_for_tou
         'source_owned_v28_damage_health_decay_magnitudes'
         in tournament['model_completion_blockers']
     )
+    assert normal['model_requirement_applicability']['boss_applicable_damage_semantics'] is True
     assert normal['model_requirement_applicability']['gc_boss_applicable_damage_semantics'] is True
-    assert 'source_owned_full_gc_boss_applicable_damage_semantics' in normal['model_completion_blockers']
+    assert 'source_owned_full_boss_applicable_damage_semantics' in normal['model_completion_blockers']
+    assert normal_ehp['model_requirement_applicability']['boss_applicable_damage_semantics'] is False
     assert normal_ehp['model_requirement_applicability']['gc_boss_applicable_damage_semantics'] is False
-    assert 'source_owned_full_gc_boss_applicable_damage_semantics' not in normal_ehp['model_completion_blockers']
+    assert 'source_owned_full_boss_applicable_damage_semantics' not in normal_ehp['model_completion_blockers']
     runtime_fields = set(ScenarioRuntimeInputs.__dataclass_fields__)
     supported = set(tournament['explicit_runtime_overrides_supported'])
     assert supported <= runtime_fields
     assert {
+        'boss_time_to_contact_seconds',
+        'boss_hit_interval_seconds',
+        'effective_damage_reduction_pct',
+        'incoming_damage_multiplier',
+        'orb_boss_hit_pct',
+        'orb_boss_hit_count',
+        'orb_boss_total_damage_pct',
+        'electron_hit_count',
+        'electron_total_damage_pct',
+        'flame_bot_damage_reduction_pct',
+        'flame_bot_boss_hit_chance_pct',
+        'flame_bot_duration_seconds',
+        'flame_bot_cooldown_seconds',
+        'defense_field_damage_reduction_pct',
+        'defense_field_duration_seconds',
+        'defense_field_cooldown_seconds',
+        'black_hole_damage_reduction_pct',
+        'black_hole_duration_seconds',
+        'black_hole_cooldown_seconds',
+        'pbh_encounter_uptime_fraction',
+        'boss_applicable_damage_per_second',
+        'boss_applicable_damage_factor',
+        'boss_edamage_target_share',
+        'boss_edamage_cadence_uptime_factor',
+        'boss_edamage_reliability_factor',
+        'boss_edamage_semantic_normalizer',
+        'death_wave_health_max_multiplier',
+        'death_wave_health_max_wave',
+        'enemy_level_skip_reduction_pp',
+        'enemy_level_skip_decay_start_wave',
         'enemy_level_skip_decay_pct',
         'enemy_level_skip_decay_interval_waves',
+        'tower_damage_decay_start_wave',
         'tower_damage_decay_pct',
+        'tower_health_decay_start_wave',
         'tower_health_decay_pct',
+        'fleet_terminal_max_wave',
+        'elite_terminal_max_wave',
+        'protector_terminal_max_wave',
+        'armored_terminal_max_wave',
     } <= supported
+    assert 'boss_wave_interval' not in supported
+    assert 'orb_boss_hits_per_second' not in supported
+    assert 'electron_hits_per_second' not in supported
     assert 'enemy_skip_decay_pct_per_step' not in supported
     assert 'tower_damage_decay_pct_per_step' not in supported
     assert 'tower_health_decay_pct_per_step' not in supported
@@ -1595,14 +2362,25 @@ def test_boss_wave_dissonance_run_masks_are_visible_and_feed_max_wave_matrix():
     assert matrix[2]['mask_summary']['restricted_primitives']['wall_thorns_contact_damage_pct'] == pytest.approx(0.0)
     assert matrix[2]['mask_summary']['restricted_primitives']['wall_thorns_damage_increase_per_hit'] == pytest.approx(0.0)
     assert matrix[2]['mask_summary']['restricted_primitives']['orb_boss_total_damage_pct'] == pytest.approx(0.0)
+    assert matrix[2]['mask_summary']['restricted_primitives']['death_defy_chance_pct'] == pytest.approx(0.0)
+    assert matrix[2]['mask_summary']['restricted_primitives']['death_defy_effective_chance_pct'] == pytest.approx(0.0)
+    assert matrix[2]['mask_summary']['restricted_primitives']['energy_shield_enabled'] == pytest.approx(0.0)
+    assert matrix[2]['mask_summary']['restricted_primitives']['energy_shield_effective_charge_count'] == pytest.approx(0.0)
     assert 'Wall Health' in matrix[2]['mask_summary']['zeroed_workshop_tracks']
     assert 'Orbs' in matrix[2]['mask_summary']['zeroed_workshop_tracks']
+    assert 'death_defy_stochastic_survival_disabled' in matrix[2]['mask_summary']['disabled_runtime_systems']
+    assert 'energy_shield_contact_absorption_disabled' in matrix[2]['mask_summary']['disabled_runtime_systems']
     assert matrix[3]['mask_summary']['restricted_primitives']['free_attack_upgrade_chance'] == pytest.approx(0.0)
     assert matrix[3]['mask_summary']['restricted_primitives']['attack_skip_chance'] == pytest.approx(0.0)
     assert matrix[3]['mask_summary']['restricted_primitives']['attack_skip_workshop_track'] == ''
     assert 'Enemy Attack Level Skip' in matrix[3]['mask_summary']['zeroed_workshop_tracks']
     assert matrix[4]['mask_summary']['restricted_primitives']['chain_lightning_boss_damage_per_second'] == pytest.approx(0.0)
     assert matrix[4]['mask_summary']['restricted_primitives']['qe_boss_applicable_cl_only_damage_per_second'] == pytest.approx(0.0)
+    assert matrix[4]['mask_summary']['restricted_primitives']['chrono_field_slow_pct'] == pytest.approx(0.0)
+    assert matrix[4]['mask_summary']['restricted_primitives']['spotlight_bonus_multiplier'] == pytest.approx(1.0)
+    assert matrix[4]['mask_summary']['restricted_primitives']['spotlight_angle_degrees'] == pytest.approx(0.0)
+    assert matrix[4]['mask_summary']['restricted_primitives']['spotlight_count'] == pytest.approx(0.0)
+    assert 'energy_net_mastery_multiplier' not in matrix[4]['mask_summary']['restricted_primitives']
     assert 'death_wave_health_multiplier_disabled' in matrix[4]['mask_summary']['disabled_runtime_systems']
 
     attack_run = build_boss_wave_payload(
@@ -1624,7 +2402,9 @@ def test_boss_wave_dissonance_run_masks_are_visible_and_feed_max_wave_matrix():
     assert attack_primitives['tower_attack_speed'] == pytest.approx(1.0)
     assert attack_run['summary']['selected_model'] == 'unified_hit_by_hit_boss_survival_under_attack_dissonance'
     assert attack_run['summary']['selected_max_wave'] > 0
+    assert attack_run['summary']['pre_contact_boss_kill_max_wave'] == 0
     assert attack_run['summary']['gc_pre_contact_max_wave'] == 0
+    assert attack_run['summary']['gc_pre_contact_max_wave'] == attack_run['summary']['pre_contact_boss_kill_max_wave']
 
     request_level_attack_run = build_boss_wave_payload(
         PipelineRunRequest(
@@ -1646,7 +2426,9 @@ def test_boss_wave_dissonance_run_masks_are_visible_and_feed_max_wave_matrix():
     assert request_attack_primitives['dissonance_attack_run_active'] is True
     assert request_attack_summary['selected_model'] == 'unified_hit_by_hit_boss_survival_under_attack_dissonance'
     assert request_attack_summary['selected_loadout_type'] == 'gc'
+    assert request_attack_summary['pre_contact_boss_kill_max_wave'] == 0
     assert request_attack_summary['gc_pre_contact_max_wave'] == 0
+    assert request_attack_summary['gc_pre_contact_max_wave'] == request_attack_summary['pre_contact_boss_kill_max_wave']
 
     defense_run = build_boss_wave_payload(
         request,
@@ -1663,6 +2445,10 @@ def test_boss_wave_dissonance_run_masks_are_visible_and_feed_max_wave_matrix():
     assert defense_primitives['edamage_defense_dissonance_shockwave_restricted'] == pytest.approx(1.0)
     assert defense_primitives['tower_shockwave_size_m'] == pytest.approx(0.0)
     assert defense_primitives['tower_shockwave_interval_seconds'] == pytest.approx(0.0)
+    assert defense_primitives['death_defy_chance_pct'] == pytest.approx(0.0)
+    assert defense_primitives['death_defy_effective_chance_pct'] == pytest.approx(0.0)
+    assert defense_primitives['energy_shield_enabled'] == pytest.approx(0.0)
+    assert defense_primitives['energy_shield_effective_charge_count'] == pytest.approx(0.0)
 
     defense_gc_run = build_boss_wave_payload(
         PipelineRunRequest(
@@ -1681,14 +2467,18 @@ def test_boss_wave_dissonance_run_masks_are_visible_and_feed_max_wave_matrix():
     )
     assert defense_gc_run['diagnostics']['replacement_primitive_inputs']['values']['wall_hp'] == pytest.approx(0.0)
     assert (
-        defense_gc_run['diagnostics']['replacement_primitive_inputs']['values']['gc_boss_damage_source']
+        defense_gc_run['diagnostics']['replacement_primitive_inputs']['values']['boss_damage_source']
         == 'qe_derived_edamage_ep_boss_exposure_model'
+    )
+    assert (
+        defense_gc_run['diagnostics']['replacement_primitive_inputs']['values']['gc_boss_damage_source']
+        == defense_gc_run['diagnostics']['replacement_primitive_inputs']['values']['boss_damage_source']
     )
     assert defense_gc_run['summary']['selected_model'] == 'unified_hit_by_hit_boss_survival_under_defense_dissonance'
     assert defense_gc_run['summary']['selected_loadout_type'] == 'gc'
     assert defense_gc_run['summary']['selected_max_wave'] > 0
     assert (
-        'source_owned_full_gc_boss_applicable_damage_semantics'
+        'source_owned_full_boss_applicable_damage_semantics'
         not in defense_gc_run['diagnostics']['model_certification']['model_completion_blockers']
     )
 
@@ -1722,7 +2512,32 @@ def test_boss_wave_dissonance_run_masks_are_visible_and_feed_max_wave_matrix():
     assert uw_primitives['dissonance_defense_run_active'] is False
     assert uw_primitives['chain_lightning_boss_damage_per_second'] == pytest.approx(0.0)
     assert uw_primitives['qe_boss_applicable_cl_only_damage_per_second'] == pytest.approx(0.0)
+    assert uw_primitives['chrono_field_slow_pct'] == pytest.approx(0.0)
+    assert uw_primitives['spotlight_bonus_multiplier'] == pytest.approx(1.0)
+    assert uw_primitives['spotlight_angle_degrees'] == pytest.approx(0.0)
+    assert uw_primitives['spotlight_count'] == pytest.approx(0.0)
     assert uw_run['diagnostics']['replacement_primitive_semantics_ledger']['wall_hp_formula_check']['death_wave_health_max_multiplier'] == pytest.approx(1.0)
+
+    uw_energy_net_run = build_boss_wave_payload(
+        PipelineRunRequest(
+            ids=IDS_PATH,
+            out=ROOT / 'out',
+            perk_mode='max_progression_policy',
+            perk_policy_preset='GC Max Waves',
+        ),
+        preset_name='Farming',
+        tier_number=14,
+        end_wave=1000,
+        boss_wave_step=10,
+        stop_on_failure=False,
+        scenario_runtime_inputs={'boss_time_to_contact_seconds': 10.0, 'orb_boss_total_damage_pct': 6.0},
+        dissonance_run_category='uw',
+    )
+    uw_energy_net_primitives = uw_energy_net_run['diagnostics']['replacement_primitive_inputs']['values']
+    assert uw_energy_net_primitives['card_profile_preset'] == 'Tourney'
+    assert uw_energy_net_primitives['energy_net_duration_seconds'] == pytest.approx(4.3)
+    assert uw_energy_net_primitives['energy_net_mastery_multiplier'] == pytest.approx(8.0)
+    assert uw_energy_net_primitives['energy_net_damage_multiplier_duration_seconds'] == pytest.approx(14.3)
 
 
 @pytest.mark.live
@@ -1731,7 +2546,7 @@ def test_boss_wave_milestone_matrix_selects_best_loadout_by_tier_and_dissonance_
     from app.pipeline import build_boss_wave_milestone_matrix
 
     matrix = build_boss_wave_milestone_matrix(
-        PipelineRunRequest(ids=IDS_PATH, out=ROOT / 'out'),
+        PipelineRunRequest(ids=IDS_PATH, out=ROOT / 'out', runtime_state_overlay='disco_respec_2026_06_10'),
         tiers=(14,),
         end_wave=1000,
         boss_wave_step=10,
@@ -1774,7 +2589,7 @@ def test_boss_wave_milestone_matrix_selects_best_loadout_by_tier_and_dissonance_
     assert wide['attack_reference_wave'] == 5000
     assert wide['defense_reference_wave'] == 5000
     assert wide['utility_reference_wave'] == 3915
-    assert wide['ultimate_weapons_reference_wave'] == 4310
+    assert wide['ultimate_weapons_reference_wave'] == 4727
     assert wide['regular_best_loadout'] in {'eHP Farming', 'GC Max Waves'}
     assert wide['attack_best_loadout'] in {'eHP Farming', 'GC Max Waves'}
     if not str(wide['regular_best_loadout']).startswith('GC'):
@@ -1788,13 +2603,15 @@ def test_boss_wave_milestone_matrix_selects_best_loadout_by_tier_and_dissonance_
     assert ehp_attack_candidate['selected_model'] == 'unified_hit_by_hit_boss_survival_under_attack_dissonance'
     assert ehp_attack_candidate['selected_max_wave'] > 0
     assert ehp_attack_candidate['alignment']['calculated_selected_max_wave'] == ehp_attack_candidate['selected_max_wave']
-    assert 'source_owned_full_gc_boss_applicable_damage_semantics' not in ehp_attack_candidate['model_completion_blockers']
+    assert 'source_owned_full_boss_applicable_damage_semantics' not in ehp_attack_candidate['model_completion_blockers']
     gc_attack_candidate = next(row for row in attack_row['candidate_results'] if row['loadout_policy_preset'] == 'GC Max Waves')
     assert gc_attack_candidate['selected_model'] == 'unified_hit_by_hit_boss_survival_under_attack_dissonance'
     assert gc_attack_candidate['selected_loadout_type'] == 'gc'
-    assert gc_attack_candidate['gc_pre_contact_max_wave'] == 0
-    assert gc_attack_candidate['gc_boss_damage_source'] == 'qe_derived_edamage_ep_boss_exposure_model'
-    assert 'source_owned_full_gc_boss_applicable_damage_semantics' not in gc_attack_candidate['model_completion_blockers']
+    assert gc_attack_candidate['pre_contact_boss_kill_max_wave'] == 0
+    assert gc_attack_candidate['gc_pre_contact_max_wave'] == gc_attack_candidate['pre_contact_boss_kill_max_wave']
+    assert gc_attack_candidate['boss_damage_source'] == 'qe_derived_edamage_ep_boss_exposure_model'
+    assert gc_attack_candidate['gc_boss_damage_source'] == gc_attack_candidate['boss_damage_source']
+    assert 'source_owned_full_boss_applicable_damage_semantics' not in gc_attack_candidate['model_completion_blockers']
     assert attack_row['best_selected_max_wave'] == max(
         ehp_attack_candidate['selected_max_wave'],
         gc_attack_candidate['selected_max_wave'],
@@ -1805,6 +2622,7 @@ def test_boss_wave_milestone_matrix_selects_best_loadout_by_tier_and_dissonance_
     assert attack_row['delta_vs_reference_wave'] == attack_row['best_selected_max_wave'] - 5000
     defense_row = next(row for row in matrix['rows'] if row['dissonance_run_category'] == 'defense')
     if str(defense_row['best_selected_loadout_type']) == 'gc':
+        assert defense_row['best_boss_damage_source'] == 'qe_derived_edamage_ep_boss_exposure_model'
         assert defense_row['best_gc_boss_damage_source'] == 'qe_derived_edamage_ep_boss_exposure_model'
     else:
         assert defense_row['best_gc_boss_damage_source'] is None
@@ -1813,19 +2631,31 @@ def test_boss_wave_milestone_matrix_selects_best_loadout_by_tier_and_dissonance_
     assert ehp_defense_candidate['selected_max_wave'] >= 0
     gc_defense_candidate = next(row for row in defense_row['candidate_results'] if row['loadout_policy_preset'] == 'GC Max Waves')
     assert gc_defense_candidate['selected_model'] == 'unified_hit_by_hit_boss_survival_under_defense_dissonance'
-    assert gc_defense_candidate['gc_boss_damage_source'] == 'qe_derived_edamage_ep_boss_exposure_model'
+    assert gc_defense_candidate['boss_damage_source'] == 'qe_derived_edamage_ep_boss_exposure_model'
+    assert gc_defense_candidate['gc_boss_damage_source'] == gc_defense_candidate['boss_damage_source']
     assert gc_defense_candidate['selected_max_wave'] >= 0
-    assert 'source_owned_full_gc_boss_applicable_damage_semantics' not in gc_defense_candidate['model_completion_blockers']
+    assert 'source_owned_full_boss_applicable_damage_semantics' not in gc_defense_candidate['model_completion_blockers']
     regular_row = next(row for row in matrix['rows'] if row['dissonance_run_category'] == 'none')
     assert regular_row['reference_kind'] == 'ids_milestone_wave'
     assert regular_row['reference_wave'] == 5761
     for row in matrix['rows']:
+        category = row['dissonance_run_category']
+        expected_model = (
+            'unified_hit_by_hit_boss_survival'
+            if category == 'none'
+            else f'unified_hit_by_hit_boss_survival_under_{category}_dissonance'
+        )
         assert row['best_selected_max_wave'] >= 0
+        assert row['best_selected_model'] == expected_model
         assert row['best_model_certification_status'] == 'partial_boss_contact_model'
         assert row['certified_full_max_wave_model'] is False
         assert 'source_owned_v28_damage_health_decay_magnitudes' not in row['model_completion_blockers']
         assert row['best_loadout_policy_preset'] in {'eHP Farming', 'GC Max Waves'}
         assert len(row['candidate_results']) == 2
+        for candidate in row['candidate_results']:
+            assert candidate['selected_model'] == expected_model
+            assert candidate['selected_max_wave'] == candidate['hit_by_hit_max_wave']
+            assert candidate['alignment']['calculated_selected_max_wave'] == candidate['selected_max_wave']
         assert row['best_display'].endswith(f"({row['best_loadout_policy_preset']})")
         assert row['reference_wave'] is not None
         assert row['delta_vs_reference_wave'] == row['best_selected_max_wave'] - row['reference_wave']
@@ -2031,6 +2861,43 @@ def test_boss_wave_milestone_matrix_can_compare_default_to_bridge_assumptions():
     assert comparison_candidate['selected_model'] == 'unified_hit_by_hit_boss_survival_under_defense_dissonance'
 
 
+@pytest.mark.live
+def test_boss_wave_milestone_matrix_comparison_rows_keep_terminal_pressure_cap_metadata():
+    from app.models import PipelineRunRequest
+    from app.pipeline import build_boss_wave_milestone_matrix
+
+    matrix = build_boss_wave_milestone_matrix(
+        PipelineRunRequest(ids=IDS_PATH, out=ROOT / 'out', runtime_state_overlay='disco_respec_2026_06_10'),
+        tiers=(16,),
+        end_wave=1600,
+        boss_wave_step=10,
+        stop_on_failure=True,
+        scenario_runtime_inputs={'orb_boss_total_damage_pct': 6.0},
+        comparison_scenario_runtime_inputs={
+            'boss_edamage_target_share': 0.01,
+            'boss_edamage_cadence_uptime_factor': 1.0,
+            'boss_edamage_reliability_factor': 1.0,
+            'boss_edamage_semantic_normalizer': 1.0,
+        },
+        loadout_policy_presets=('eHP Max Waves',),
+        dissonance_run_categories=('ultimate_weapons',),
+    )
+
+    comparison_row = matrix['comparison']['wide_rows'][0]
+    assert comparison_row['ultimate_weapons_default_wave'] == 780
+    assert comparison_row['ultimate_weapons_comparison_wave'] == 780
+    assert comparison_row['ultimate_weapons_default_terminal_pressure_limiter'] == (
+        'unsupported_pressure_empirical_reference'
+    )
+    assert comparison_row['ultimate_weapons_comparison_terminal_pressure_limiter'] == (
+        'unsupported_pressure_empirical_reference'
+    )
+    assert comparison_row['ultimate_weapons_default_unsupported_pressure_reference_limited'] is True
+    assert comparison_row['ultimate_weapons_comparison_unsupported_pressure_reference_limited'] is True
+    assert comparison_row['ultimate_weapons_default_unsupported_pressure_uncapped_wave'] > 780
+    assert comparison_row['ultimate_weapons_comparison_unsupported_pressure_uncapped_wave'] > 780
+
+
 def test_boss_wave_matrix_comparison_inputs_from_cli_args():
     from types import SimpleNamespace
 
@@ -2056,11 +2923,27 @@ def test_boss_wave_matrix_comparison_inputs_from_cli_args():
         SimpleNamespace(
             boss_wave_contact_time_seconds=10.0,
             boss_wave_orb_boss_total_damage_pct=6.0,
+            boss_wave_flame_bot_boss_hit_chance_pct=50.0,
+            boss_wave_flame_bot_damage_reduction_pct=95.0,
+            boss_wave_flame_bot_duration_seconds=21.0,
+            boss_wave_flame_bot_cooldown_seconds=67.0,
+            boss_wave_fleet_terminal_max_wave=900.0,
+            boss_wave_elite_terminal_max_wave=901.0,
+            boss_wave_protector_terminal_max_wave=902.0,
+            boss_wave_armored_terminal_max_wave=903.0,
         )
     )
     assert runtime_payload == {
         'boss_time_to_contact_seconds': 10.0,
         'orb_boss_total_damage_pct': 6.0,
+        'flame_bot_boss_hit_chance_pct': 50.0,
+        'flame_bot_damage_reduction_pct': 95.0,
+        'flame_bot_duration_seconds': 21.0,
+        'flame_bot_cooldown_seconds': 67.0,
+        'fleet_terminal_max_wave': 900.0,
+        'elite_terminal_max_wave': 901.0,
+        'protector_terminal_max_wave': 902.0,
+        'armored_terminal_max_wave': 903.0,
     }
 
 
@@ -2086,7 +2969,8 @@ def test_boss_wave_explicit_gc_damage_bridge_enables_pre_contact_selection_witho
         dissonance_run_category='defense',
     )
     default_primitives = default_payload['diagnostics']['replacement_primitive_inputs']['values']
-    assert default_primitives['gc_boss_damage_source'] == 'qe_derived_edamage_ep_boss_exposure_model'
+    assert default_primitives['boss_damage_source'] == 'qe_derived_edamage_ep_boss_exposure_model'
+    assert default_primitives['gc_boss_damage_source'] == default_primitives['boss_damage_source']
     assert default_primitives['qe_boss_applicable_cl_only_damage_per_second'] == pytest.approx(
         default_primitives['chain_lightning_boss_damage_per_second']
     )
@@ -2095,11 +2979,13 @@ def test_boss_wave_explicit_gc_damage_bridge_enables_pre_contact_selection_witho
     )
     assert default_primitives['edamage_boss_spotlight_factor'] >= 1.0
     assert default_primitives['edamage_boss_acp_factor'] == pytest.approx(1.0)
-    assert default_primitives['gc_boss_damage_per_second'] == pytest.approx(
+    assert default_primitives['boss_damage_per_second'] == pytest.approx(
         default_primitives['edamage_ep'] * default_primitives['edamage_boss_runtime_factor']
     )
+    assert default_primitives['gc_boss_damage_per_second'] == pytest.approx(default_primitives['boss_damage_per_second'])
     assert default_payload['summary']['selected_model'] == 'unified_hit_by_hit_boss_survival_under_defense_dissonance'
-    assert default_payload['summary']['gc_pre_contact_max_wave'] >= 4500
+    assert default_payload['summary']['pre_contact_boss_kill_max_wave'] >= 4500
+    assert default_payload['summary']['gc_pre_contact_max_wave'] == default_payload['summary']['pre_contact_boss_kill_max_wave']
     assert default_payload['summary']['selected_max_wave'] >= 4500
 
     bridged_payload = build_boss_wave_payload(
@@ -2117,8 +3003,10 @@ def test_boss_wave_explicit_gc_damage_bridge_enables_pre_contact_selection_witho
         dissonance_run_category='defense',
     )
     bridged_primitives = bridged_payload['diagnostics']['replacement_primitive_inputs']['values']
-    assert bridged_primitives['gc_boss_damage_source'] == 'runtime_input_edamage_ep_times_boss_applicable_damage_factor'
-    assert bridged_primitives['gc_boss_damage_per_second'] > bridged_primitives['chain_lightning_boss_damage_per_second']
+    assert bridged_primitives['boss_damage_source'] == 'runtime_input_edamage_ep_times_boss_applicable_damage_factor'
+    assert bridged_primitives['gc_boss_damage_source'] == bridged_primitives['boss_damage_source']
+    assert bridged_primitives['boss_damage_per_second'] > bridged_primitives['chain_lightning_boss_damage_per_second']
+    assert bridged_primitives['gc_boss_damage_per_second'] == pytest.approx(bridged_primitives['boss_damage_per_second'])
     assert bridged_primitives['wall_thorns_contact_damage_pct'] == pytest.approx(0.0)
     assert bridged_payload['diagnostics']['replacement_primitive_semantics_ledger']['primitives'][
         'module::Sharp Fortitude.wall_thorns_damage_increase_per_hit'
@@ -2128,9 +3016,10 @@ def test_boss_wave_explicit_gc_damage_bridge_enables_pre_contact_selection_witho
         for row in bridged_payload['operator_rows']
     )
     assert (
-        'source_owned_full_gc_boss_applicable_damage_semantics'
+        'source_owned_full_boss_applicable_damage_semantics'
         not in bridged_payload['diagnostics']['model_certification']['model_completion_blockers']
     )
+    assert bridged_payload['diagnostics']['model_certification']['runtime_override_closure']['boss_applicable_damage_semantics'] is True
     assert bridged_payload['diagnostics']['model_certification']['runtime_override_closure']['gc_boss_applicable_damage_semantics'] is True
     assert bridged_payload['summary']['selected_model'] == 'unified_hit_by_hit_boss_survival_under_defense_dissonance'
     assert bridged_payload['summary']['selected_loadout_type'] == 'gc'
@@ -2154,11 +3043,13 @@ def test_boss_wave_explicit_gc_damage_bridge_enables_pre_contact_selection_witho
         dissonance_run_category='defense',
     )
     decomposed_primitives = decomposed_payload['diagnostics']['replacement_primitive_inputs']['values']
-    assert decomposed_primitives['gc_boss_damage_source'] == 'runtime_input_edamage_ep_times_decomposed_boss_bridge'
+    assert decomposed_primitives['boss_damage_source'] == 'runtime_input_edamage_ep_times_decomposed_boss_bridge'
+    assert decomposed_primitives['gc_boss_damage_source'] == decomposed_primitives['boss_damage_source']
     assert decomposed_primitives['boss_edamage_decomposed_bridge_factor'] == pytest.approx(0.005051405075429985)
-    assert decomposed_primitives['gc_boss_damage_per_second'] == pytest.approx(
-        bridged_primitives['gc_boss_damage_per_second']
+    assert decomposed_primitives['boss_damage_per_second'] == pytest.approx(
+        bridged_primitives['boss_damage_per_second']
     )
+    assert decomposed_primitives['gc_boss_damage_per_second'] == pytest.approx(decomposed_primitives['boss_damage_per_second'])
     assert decomposed_payload['summary']['selected_model'] == 'unified_hit_by_hit_boss_survival_under_defense_dissonance'
     assert decomposed_payload['summary']['selected_loadout_type'] == 'gc'
 
@@ -2193,11 +3084,12 @@ def test_boss_wave_explicit_gc_damage_bridge_enables_pre_contact_selection_witho
         dissonance_run_category='attack',
     )
     attack_summary = attack_bridged_payload['summary']
-    assert attack_summary['gc_pre_contact_max_wave'] == 0
+    assert attack_summary['pre_contact_boss_kill_max_wave'] == 0
+    assert attack_summary['gc_pre_contact_max_wave'] == attack_summary['pre_contact_boss_kill_max_wave']
     assert attack_summary['contact_envelope_max_wave'] > 0
     assert attack_summary['selected_model'] == 'unified_hit_by_hit_boss_survival_under_attack_dissonance'
     assert attack_summary['selected_loadout_type'] == 'gc'
-    assert attack_summary['selected_max_wave'] > attack_summary['gc_pre_contact_max_wave']
+    assert attack_summary['selected_max_wave'] > attack_summary['pre_contact_boss_kill_max_wave']
 
     long_horizon_defense_payload = build_boss_wave_payload(
         request,
@@ -2488,7 +3380,12 @@ def test_boss_wave_milestone_uses_default_workshop_levels_when_preset_lane_is_bl
     from app.pipeline import _boss_wave_workshop_level_inputs, build_runtime_state, load_inputs
 
     bundle = load_inputs(ids_path=IDS_PATH)
-    account_state = build_runtime_state(bundle.ids_raw, loadout_config=bundle.loadout_config, perk_config=bundle.perk_config)
+    account_state = build_runtime_state(
+        bundle.ids_raw,
+        loadout_config=bundle.loadout_config,
+        perk_config=bundle.perk_config,
+        manual_inputs=bundle.manual_inputs,
+    )
 
     levels, _max_levels = _boss_wave_workshop_level_inputs(account_state, preset_name='Milestone')
 
@@ -2854,7 +3751,8 @@ def test_boss_wave_gc_loadout_routes_tourney_loadout_and_energy_net_cl_primitive
     primitives = payload['diagnostics']['replacement_primitive_inputs']['values']
     assert payload['diagnostics']['loadout_profile_preset'] == 'Tourney'
     assert primitives['chain_lightning_boss_damage_per_second'] > 0.0
-    assert primitives['gc_boss_damage_source'] == 'qe_derived_edamage_ep_boss_exposure_model'
+    assert primitives['boss_damage_source'] == 'qe_derived_edamage_ep_boss_exposure_model'
+    assert primitives['gc_boss_damage_source'] == primitives['boss_damage_source']
     assert primitives['qe_boss_applicable_cl_only_damage_per_second'] == pytest.approx(
         primitives['chain_lightning_boss_damage_per_second']
     )
@@ -2868,13 +3766,14 @@ def test_boss_wave_gc_loadout_routes_tourney_loadout_and_energy_net_cl_primitive
         primitives['spotlight_bonus_multiplier']
     )
     assert primitives['edamage_boss_acp_factor'] > 1.0
-    assert primitives['gc_boss_damage_per_second'] == pytest.approx(
+    assert primitives['boss_damage_per_second'] == pytest.approx(
         primitives['edamage_ep'] * primitives['edamage_boss_runtime_factor']
     )
+    assert primitives['gc_boss_damage_per_second'] == pytest.approx(primitives['boss_damage_per_second'])
     assert primitives['edamage_boss_contact_time_exposure_factor'] == pytest.approx(5.0)
     assert primitives['edamage_boss_pre_contact_energy_net_boosted_seconds'] == pytest.approx(10.0)
     assert primitives['edamage_boss_pre_contact_timed_window_damage'] == pytest.approx(
-        primitives['gc_boss_damage_per_second']
+        primitives['boss_damage_per_second']
         * (
             primitives['boss_time_to_contact_seconds']
             + (
@@ -2886,11 +3785,13 @@ def test_boss_wave_gc_loadout_routes_tourney_loadout_and_energy_net_cl_primitive
     assert primitives['energy_net_duration_seconds'] == pytest.approx(4.3)
     assert primitives['energy_net_mastery_multiplier'] == pytest.approx(8.0)
     assert primitives['energy_net_damage_multiplier_duration_seconds'] == pytest.approx(14.3)
-    assert payload['rows'][0]['tower_damage_per_second'] == pytest.approx(primitives['gc_boss_damage_per_second'])
+    assert payload['rows'][0]['tower_damage_per_second'] == pytest.approx(primitives['boss_damage_per_second'])
     assert 'boss_killed_before_contact' in payload['rows'][0]
     assert payload['summary']['selected_model'] == 'unified_hit_by_hit_boss_survival'
     assert payload['summary']['selected_loadout_type'] == 'gc'
+    assert payload['summary']['pre_contact_boss_kill_max_wave'] >= 0
     assert payload['summary']['gc_pre_contact_max_wave'] >= 0
+    assert payload['summary']['gc_pre_contact_max_wave'] == payload['summary']['pre_contact_boss_kill_max_wave']
 
 
 def test_save_perk_policy_override_persists_to_manual_inputs(tmp_path):
@@ -3062,13 +3963,13 @@ def test_build_boss_wave_payload_tourney_fails_closed_without_tournament_wave(mo
         lambda ids_path=None, manual_inputs_path=None: type(
             'Bundle',
             (),
-            {'ids_raw': {}, 'loadout_config': {}, 'perk_config': {}, 'perk_policy': {}},
+                {'ids_raw': {}, 'loadout_config': {}, 'perk_config': {}, 'perk_policy': {}, 'manual_inputs': {}},
         )(),
     )
     monkeypatch.setattr(
         pipeline_mod,
         'build_runtime_state',
-        lambda ids_raw, loadout_config=None, perk_config=None: type(
+            lambda ids_raw, loadout_config=None, perk_config=None, manual_inputs=None: type(
             'State',
             (),
             {'player_meta': {'Tourney League': 'Legends'}},
@@ -3101,7 +4002,7 @@ def test_build_boss_wave_payload_tourney_fails_closed_without_tournament_wave(mo
     assert diagnostics['perk_mode'] == 'none'
     assert 'requires a resolved tournament wave' in str(diagnostics['context_error_message'] or '').lower()
     assert diagnostics['model_certification']['model_requirement_applicability']['gc_boss_applicable_damage_semantics'] is False
-    assert 'source_owned_full_gc_boss_applicable_damage_semantics' not in diagnostics['model_certification']['model_completion_blockers']
+    assert 'source_owned_full_boss_applicable_damage_semantics' not in diagnostics['model_certification']['model_completion_blockers']
 
 
 def test_build_boss_wave_payload_tourney_accepts_runtime_tournament_wave_override():
@@ -3138,6 +4039,72 @@ def test_build_boss_wave_payload_tourney_accepts_runtime_tournament_wave_overrid
     assert diagnostics['perks_enabled'] is False
     assert summary['status'] == 'complete'
     assert summary['selected_max_wave'] > 0
+
+
+def test_build_boss_wave_payload_tourney_forces_no_perks_and_applies_tournament_battle_conditions():
+    from app.models import PipelineRunRequest
+    from app.pipeline import build_boss_wave_payload
+
+    request = PipelineRunRequest(
+        ids=IDS_PATH,
+        out=ROOT / 'out',
+        preset='Tourney',
+        perk_mode='runtime_timeline',
+        perk_state='on',
+        perk_policy_preset='eHP Farming',
+    )
+    payload = build_boss_wave_payload(
+        request,
+        preset_name='Tourney',
+        tier_number=14,
+        end_wave=100,
+        boss_wave_step=1,
+        stop_on_failure=True,
+        scenario_runtime_inputs={
+            'tournament_wave': 100,
+            'orb_boss_total_damage_pct': 6.0,
+            'death_wave_health_max_wave': 1000,
+        },
+    )
+
+    diagnostics = payload['diagnostics']
+    surfaces = diagnostics['scenario_surfaces']
+    primitives = diagnostics['replacement_primitive_inputs']['values']
+
+    assert diagnostics['mode_id'] == 'tournament'
+    assert diagnostics['league'] == 'Legends'
+    assert diagnostics['tournament_wave'] == 100
+    assert diagnostics['requested_perk_mode'] == 'runtime_timeline'
+    assert diagnostics['requested_perk_state'] == 'on'
+    assert diagnostics['perks_enabled'] is False
+    assert diagnostics['perk_mode'] == 'none'
+    assert diagnostics['perk_state'] == 'off'
+    assert diagnostics['perk_request_resolution'] == 'scenario_policy_overrides_request'
+    assert diagnostics['perk_timeline_enabled'] is False
+    assert diagnostics['perk_timeline_rows'] == 0
+    assert diagnostics['perk_static_count'] == 0
+    assert diagnostics['perk_static_pick_count'] == 0
+    assert payload['contract']['perk_timeline_mode'] == 'disabled_by_perk_mode_or_state'
+
+    assert diagnostics['actual_boss_interval_waves'] == 6
+    assert surfaces['boss_wave_interval'] == 6
+    assert surfaces['bc_source'] == 'tournament_magnitudes:league=Legends:wave=100'
+    assert surfaces['bc_enemy_attack_speed_increase_pct'] == pytest.approx(125.0)
+    assert surfaces['boss_hit_interval_seconds'] == pytest.approx(2.0 / 2.25)
+    assert surfaces['bc_enemy_level_skip_reduction_pp'] == pytest.approx(-0.08)
+    assert surfaces['bc_death_defy_down_pp'] == pytest.approx(-0.06)
+    assert surfaces['bc_energy_shields_down_fraction'] == pytest.approx(0.25)
+
+    assert primitives['enemy_level_skip_reduction_raw'] == pytest.approx(-0.08)
+    assert primitives['enemy_level_skip_reduction_fraction'] == pytest.approx(0.08)
+    assert primitives['enemy_level_skip_chance_delta'] == pytest.approx(-0.08)
+    assert primitives['death_defy_down_percent_points'] == pytest.approx(-6.0)
+    assert primitives['death_defy_effective_chance_pct'] == pytest.approx(
+        max(0.0, primitives['death_defy_chance_pct'] - 6.0)
+    )
+    assert primitives['energy_shields_down_fraction'] == pytest.approx(0.25)
+    assert primitives['energy_shield_effective_charge_count'] == pytest.approx(2.0)
+    assert primitives['boss_hit_interval_scenario_base_seconds'] == pytest.approx(2.0 / 2.25)
 
 
 @pytest.mark.live
@@ -3393,6 +4360,14 @@ def test_run_stats_canonical_default_publishes_max_progression_perk_sensitive_uw
     assert diagnostics.get('perk_mode') == 'max_progression_policy'
     assert max_rows['state::uw.black_hole.duration_seconds']['final_value'] == pytest.approx(48.0)
     assert max_rows['state::uw.chrono_field.duration_seconds']['final_value'] == pytest.approx(55.0)
+    tourney_rows = run_stats_single_execution["parsed_outputs"][
+        _RUN_STATS_QUERY_OUTPUTS['max_progression_rows']
+    ]['Tourney']['rows']
+    assert tourney_rows['state::cards.super_tower.active']['final_value'] is True
+    assert tourney_rows['state::cards.super_tower.bonus_multiplier']['final_value'] == pytest.approx(5.0)
+    assert tourney_rows['state::cards.super_tower.cooldown_seconds']['final_value'] == pytest.approx(18.0)
+    assert tourney_rows['state::cards.super_tower.mastery_active']['final_value'] is True
+    assert tourney_rows['state::cards.super_tower.uw_mastery_multiplier']['final_value'] == pytest.approx(2.4)
 
     from qe.publication import _uw_track_surface_map
 
@@ -3512,6 +4487,28 @@ def test_run_stats_session_cache_key_differs_by_perk_mode(tmp_path):
     key_none = session._account_state_cache_key(ids_path=f, manual_inputs_path=None, perk_mode='none', perk_policy_preset=None)
     key_max = session._account_state_cache_key(ids_path=f, manual_inputs_path=None, perk_mode='max_progression_policy', perk_policy_preset=None)
     assert key_none != key_max
+
+
+def test_run_stats_session_cache_key_differs_by_runtime_state_overlay(tmp_path):
+    """RunStatsSession cache key must separate IDS-only and named overlay states."""
+    f = tmp_path / "ids.csv"
+    f.write_text("a,b\n1,2\n", encoding="utf-8")
+    session = RunStatsSession()
+    key_ids_only = session._account_state_cache_key(
+        ids_path=f,
+        manual_inputs_path=None,
+        runtime_state_overlay=None,
+        perk_mode='none',
+        perk_policy_preset=None,
+    )
+    key_overlay = session._account_state_cache_key(
+        ids_path=f,
+        manual_inputs_path=None,
+        runtime_state_overlay='disco_respec_2026_06_10',
+        perk_mode='none',
+        perk_policy_preset=None,
+    )
+    assert key_ids_only != key_overlay
 
 
 def test_run_stats_session_cache_key_differs_by_perk_policy_preset(tmp_path):

@@ -93,9 +93,25 @@ def require_canonical_preset_name(value: str | None, *, field_name: str) -> str:
     return normalized
 
 
-def build_runtime_state(ids_raw: IdsRaw, *, default_preset: str = "Farming", loadout_config: Optional[dict] = None, perk_config: Optional[dict] = None) -> AccountState:
+def build_runtime_state(
+    ids_raw: IdsRaw,
+    *,
+    default_preset: str = "Farming",
+    loadout_config: Optional[dict] = None,
+    perk_config: Optional[dict] = None,
+    manual_inputs: Optional[dict] = None,
+    runtime_state_overlay: Optional[str] = None,
+) -> AccountState:
     raw_sections = ids_raw.raw_sections
     labs = _parse_labs(raw_sections.get("Labs", []))
+    manual_override_sources: dict[str, dict[str, str]] = {}
+    runtime_overrides, runtime_overlay_source = _manual_runtime_state_overlay(
+        manual_inputs or {},
+        runtime_state_overlay,
+    )
+    if runtime_overlay_source is not None:
+        manual_override_sources.setdefault('runtime_state_overlay', {})['selected'] = runtime_overlay_source
+    _apply_manual_lab_overrides(runtime_overrides, runtime_overlay_source, labs, manual_override_sources)
     lab_adjusters = _parse_lab_adjusters(loadout_config or {})
     workshop = _parse_workshop(raw_sections.get("WS", []))
     workshop_enhancements = _parse_table(raw_sections.get("WS+", []))
@@ -104,9 +120,24 @@ def build_runtime_state(ids_raw: IdsRaw, *, default_preset: str = "Farming", loa
     relics = _parse_relics(raw_sections.get("Relics", []))
     vault = _parse_vault(raw_sections.get("Vault", []))
     bots, bot_unlocks, bot_upgrades, bot_upgrade_tracks = _parse_bots(raw_sections.get("Bots", []))
+    _apply_manual_bot_overrides(
+        runtime_overrides,
+        runtime_overlay_source,
+        bots,
+        bot_unlocks,
+        bot_upgrades,
+        bot_upgrade_tracks,
+        manual_override_sources,
+    )
     guardians = _parse_table(raw_sections.get("Guardians", []))
     guardian_tracks = _parse_guardians(raw_sections.get("Guardians", []))
     player_meta, tier_progression_waves, dissonance_pbs_by_tier, highest_tier_unlocked_number, highest_tier_unlocked_label = _parse_player_meta(raw_sections.get("Player & Stuff", []))
+    _apply_manual_dissonance_pb_overrides(
+        runtime_overrides,
+        runtime_overlay_source,
+        dissonance_pbs_by_tier,
+        manual_override_sources,
+    )
     theme_song_coin_multiplier = _parse_theme_song_coin_multiplier(raw_sections.get("Themes & Songs", []))
     cards_inventory, card_slots_unlocked, card_presets = _parse_cards(ids_raw.section_headers.get("Cards", []), raw_sections.get("Cards", []), labs)
     module_system_state, module_presets, modules_inventory = _parse_modules(raw_sections.get("Modules", []))
@@ -151,7 +182,212 @@ def build_runtime_state(ids_raw: IdsRaw, *, default_preset: str = "Farming", loa
         default_preset=default_preset,
         raw_sections=raw_sections,
         dissonance_pbs_by_tier=dissonance_pbs_by_tier,
+        manual_override_sources=manual_override_sources,
     )
+
+
+def _normalize_runtime_state_overlay_name(runtime_state_overlay: Optional[str]) -> str | None:
+    text = str(runtime_state_overlay or '').strip()
+    if not text or text.lower() in {'none', 'ids', 'ids_only', 'ids-only'}:
+        return None
+    return text
+
+
+def _manual_runtime_state_overlay(
+    manual_inputs: Dict[str, object],
+    runtime_state_overlay: Optional[str],
+) -> tuple[Dict[str, object], str | None]:
+    overlay_name = _normalize_runtime_state_overlay_name(runtime_state_overlay)
+    if overlay_name is None:
+        return {}, None
+    overlays = manual_inputs.get('runtime_state_overlays') if isinstance(manual_inputs, dict) else None
+    if isinstance(overlays, dict):
+        payload = overlays.get(overlay_name)
+        if isinstance(payload, dict):
+            return payload, f'manual_inputs.runtime_state_overlays.{overlay_name}'
+    if overlay_name == 'runtime_state_overrides' and isinstance(manual_inputs, dict):
+        legacy_payload = manual_inputs.get('runtime_state_overrides')
+        if isinstance(legacy_payload, dict):
+            return legacy_payload, 'manual_inputs.runtime_state_overrides'
+    available = sorted(str(name) for name in overlays.keys()) if isinstance(overlays, dict) else []
+    suffix = f"; available overlays: {', '.join(available)}" if available else ""
+    raise ValueError(
+        f"runtime_state_overlay {overlay_name!r} not found in manual_inputs.runtime_state_overlays{suffix}"
+    )
+
+
+def _manual_runtime_state_overrides(
+    manual_inputs: Dict[str, object],
+    runtime_state_overlay: Optional[str] = None,
+) -> Dict[str, object]:
+    payload, _source = _manual_runtime_state_overlay(manual_inputs, runtime_state_overlay)
+    return payload
+
+
+def _apply_manual_lab_overrides(
+    overrides: Dict[str, object],
+    source_prefix: str | None,
+    labs: Dict[str, Optional[int]],
+    manual_override_sources: dict[str, dict[str, str]],
+) -> None:
+    raw_labs = overrides.get('lab_levels') or overrides.get('labs') or {}
+    if not isinstance(raw_labs, dict) or not raw_labs:
+        return
+    source_prefix = source_prefix or 'manual_inputs.runtime_state_overlay'
+    lab_sources = manual_override_sources.setdefault('labs', {})
+    for raw_name, raw_level in raw_labs.items():
+        name = str(raw_name).strip()
+        if not name:
+            continue
+        level = _parse_optional_int(str(raw_level).strip())
+        if level is None or level < 0:
+            continue
+        labs[name] = level
+        lab_sources[name] = f'{source_prefix}.lab_levels'
+
+
+_DISSONANCE_PB_CATEGORY_ALIASES: dict[str, str] = {
+    'attack': 'attack',
+    'atk': 'attack',
+    'defense': 'defense',
+    'defence': 'defense',
+    'utility': 'utility',
+    'util': 'utility',
+    'uw': 'ultimate_weapons',
+    'ultimate': 'ultimate_weapons',
+    'ultimate_weapon': 'ultimate_weapons',
+    'ultimate_weapons': 'ultimate_weapons',
+    'ultimate weapons': 'ultimate_weapons',
+}
+
+
+def _normalize_manual_tier_label(raw_tier: object) -> str | None:
+    text = str(raw_tier or '').strip()
+    if not text:
+        return None
+    match = re.search(r'\d+', text)
+    if match:
+        return f'Tier {int(match.group(0))}'
+    return text
+
+
+def _normalize_manual_dissonance_category(raw_category: object) -> str | None:
+    text = str(raw_category or '').strip().lower().replace('-', '_').replace(' ', '_')
+    return _DISSONANCE_PB_CATEGORY_ALIASES.get(text)
+
+
+def _apply_manual_dissonance_pb_overrides(
+    overrides: Dict[str, object],
+    source_prefix: str | None,
+    dissonance_pbs_by_tier: Dict[str, Dict[str, int]],
+    manual_override_sources: dict[str, dict[str, str]],
+) -> None:
+    raw_pbs = (
+        overrides.get('dissonance_pbs_by_tier')
+        or overrides.get('dissonance_pbs')
+        or overrides.get('dissonant_pbs_by_tier')
+        or {}
+    )
+    if not isinstance(raw_pbs, dict) or not raw_pbs:
+        return
+    source_prefix = source_prefix or 'manual_inputs.runtime_state_overlay'
+    pb_sources = manual_override_sources.setdefault('dissonance_pbs_by_tier', {})
+    for raw_tier, raw_categories in raw_pbs.items():
+        tier_label = _normalize_manual_tier_label(raw_tier)
+        if tier_label is None or not isinstance(raw_categories, dict):
+            continue
+        target = dissonance_pbs_by_tier.setdefault(tier_label, {})
+        for raw_category, raw_wave in raw_categories.items():
+            category = _normalize_manual_dissonance_category(raw_category)
+            if category is None:
+                continue
+            wave = _parse_optional_int(str(raw_wave).strip())
+            if wave is None or wave < 0:
+                continue
+            target[category] = int(wave)
+            pb_sources[f'{tier_label}::{category}'] = (
+                f'{source_prefix}.dissonance_pbs_by_tier.{tier_label}.{category}'
+            )
+
+
+def _apply_manual_bot_overrides(
+    overrides: Dict[str, object],
+    source_prefix: str | None,
+    bots: List[str],
+    bot_unlocks: Dict[str, bool],
+    bot_upgrades: Dict[str, Dict[str, int]],
+    bot_upgrade_tracks: Dict[str, List[BotUpgradeSnapshot]],
+    manual_override_sources: dict[str, dict[str, str]],
+) -> None:
+    raw_bots = overrides.get('bots') or {}
+    if not isinstance(raw_bots, dict) or not raw_bots:
+        return
+    source_prefix = source_prefix or 'manual_inputs.runtime_state_overlay'
+    unlock_sources = manual_override_sources.setdefault('bot_unlocks', {})
+    track_sources = manual_override_sources.setdefault('bot_tracks', {})
+    for raw_bot_name, raw_payload in raw_bots.items():
+        bot_name = str(raw_bot_name).strip()
+        if not bot_name or not isinstance(raw_payload, dict):
+            continue
+        unlocked = _parse_manual_bool(raw_payload.get('unlocked'))
+        if unlocked is not None:
+            bot_unlocks[bot_name] = bool(unlocked)
+            unlock_sources[bot_name] = f'{source_prefix}.bots.{bot_name}.unlocked'
+            if unlocked and bot_name not in bots:
+                bots.append(bot_name)
+        raw_tracks = raw_payload.get('tracks') or raw_payload.get('final_values') or {}
+        if not isinstance(raw_tracks, dict):
+            continue
+        existing_tracks = {
+            track.track_name: track
+            for track in bot_upgrade_tracks.get(bot_name, [])
+        }
+        for raw_track_name, raw_track_payload in raw_tracks.items():
+            track_name = str(raw_track_name).strip()
+            if not track_name:
+                continue
+            level: Optional[int] = None
+            value: Optional[float] = None
+            unit: Optional[str] = None
+            if isinstance(raw_track_payload, dict):
+                level = _parse_optional_int(str(raw_track_payload.get('level')).strip())
+                value = _parse_optional_float(str(raw_track_payload.get('value')).strip())
+                raw_unit = raw_track_payload.get('unit')
+                unit = str(raw_unit).strip() if raw_unit is not None and str(raw_unit).strip() else None
+                raw_value_kind = raw_track_payload.get('value_kind') or raw_track_payload.get('kind')
+                value_kind = str(raw_value_kind).strip() if raw_value_kind is not None and str(raw_value_kind).strip() else None
+            else:
+                value = _parse_optional_float(str(raw_track_payload).strip())
+                value_kind = None
+            if level is None and value is None:
+                continue
+            source = f'{source_prefix}.bots.{bot_name}.tracks.{track_name}'
+            existing_tracks[track_name] = BotUpgradeSnapshot(
+                bot_name=bot_name,
+                track_name=track_name,
+                level=level,
+                resolved_value=value,
+                resolved_unit=unit,
+                source=source,
+                value_kind=value_kind,
+            )
+            track_sources[f'{bot_name}::{track_name}'] = source
+            if level is not None:
+                bot_upgrades.setdefault(bot_name, {})[track_name] = level
+        bot_upgrade_tracks[bot_name] = list(existing_tracks.values())
+
+
+def _parse_manual_bool(value: object) -> Optional[bool]:
+    if isinstance(value, bool):
+        return value
+    if value is None:
+        return None
+    normalized = str(value).strip().lower()
+    if normalized in {'true', '1', 'yes', 'y', 'on', 'unlocked'}:
+        return True
+    if normalized in {'false', '0', 'no', 'n', 'off', 'locked'}:
+        return False
+    return None
 
 
 def _normalize_preset_name(value: str) -> Optional[str]:

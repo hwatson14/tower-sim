@@ -222,3 +222,42 @@ def test_run_stats_main_threads_boss_wave_bridge_comparison_factors_to_pipeline(
         "reliability": 0.7,
         "normalizer": 0.8,
     }
+
+
+def test_run_stats_main_threads_boss_wave_terminal_pressure_closures_to_pipeline(monkeypatch):
+    import app.pipeline as pipeline_mod
+    import app.run_stats as run_stats_mod
+
+    captured = {}
+
+    def _pipeline(args):
+        captured["fleet"] = args.boss_wave_fleet_terminal_max_wave
+        captured["elite"] = args.boss_wave_elite_terminal_max_wave
+        captured["protector"] = args.boss_wave_protector_terminal_max_wave
+        captured["armored"] = args.boss_wave_armored_terminal_max_wave
+        return 0
+
+    monkeypatch.setattr(pipeline_mod, "run_stats_pipeline", _pipeline)
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        [
+            "app.run_stats",
+            "--boss-wave-fleet-terminal-max-wave",
+            "900",
+            "--boss-wave-elite-terminal-max-wave",
+            "901",
+            "--boss-wave-protector-terminal-max-wave",
+            "902",
+            "--boss-wave-armored-terminal-max-wave",
+            "903",
+        ],
+    )
+
+    assert run_stats_mod.main() == 0
+    assert captured == {
+        "fleet": 900.0,
+        "elite": 901.0,
+        "protector": 902.0,
+        "armored": 903.0,
+    }

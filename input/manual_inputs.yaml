@@ -20,6 +20,63 @@ loadout:
       Range: 44
       Shockwave Size: 20
 
+runtime_state_overlays:
+  disco_respec_2026_06_10:
+    source_note: "User screenshots 2026-06-10 disco respec; final in-game bot values with Singularity Harness primary. Apply only with --runtime-state-overlay disco_respec_2026_06_10."
+    lab_levels:
+      Second Wind Mastery: 3
+    dissonance_pbs_by_tier:
+      Tier 14:
+        ultimate_weapons: 4727
+      Tier 15:
+        ultimate_weapons: 3068
+      Tier 16:
+        ultimate_weapons: 780
+      Tier 17:
+        attack: 1545
+        ultimate_weapons: 230
+    bots:
+      Flame Bot:
+        unlocked: true
+        tracks:
+          Damage R.:
+            value: 95.0
+            unit: "%"
+            medal_marker: Max
+          Cooldown:
+            value: 5.0
+            unit: s
+            medal_marker: Max
+          Damage:
+            value: 50.0
+            unit: x
+            medal_marker: 100
+          Range:
+            value: 91.0
+            unit: m
+            value_kind: effective_range_m
+            medal_marker: 460
+      Bot Bot:
+        unlocked: true
+        tracks:
+          Duration:
+            value: 21.0
+            unit: s
+            medal_marker: 100
+          Cooldown:
+            value: 67.0
+            unit: s
+            medal_marker: 620
+          Bonus:
+            value: 1.5
+            unit: x
+            medal_marker: 460
+          Range:
+            value: 65.0
+            unit: m
+            value_kind: effective_range_m
+            medal_marker: 500
+
 # Perk selections: named presets of perk picks. Active preset drives perk materialization.
 # Replaces input/perks.json (demoted to archive/legacy/).
 perk_config:

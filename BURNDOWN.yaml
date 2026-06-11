@@ -292,20 +292,23 @@ remaining_max_wave_completion:
     - Streamlit Boss Waves now accepts both resolved and complete context statuses from the sanctioned payload path; the Streamlit AppTest harness verifies the T14 Farming summary, five-row Dissonant Run matrix, and 21-row all-tier milestone matrix render without false context errors
   completion_items:
     - id: MW-1
-      title: Keep max-wave model scoped to boss-contact proxy
-      status: deferred_out_of_scope_by_user_direction
+      title: Keep max-wave model scoped to boss-contact proxy with honest terminal-pressure caps
+      status: formula_deferred_reference_capped
       owner_path: simulators/evaluator_kernel.py + app/pipeline.py diagnostics
       work: >
-        Current user direction says not to push scope beyond bosses. Even when
-        stacked non-boss enemies are the real intuition, Boss Waves remains the
-        sanctioned proxy/test surface for now because stacked enemy pressure is
-        similar enough for current comparison work. Explicit terminal-pressure
-        max-wave inputs may still be used as optional scenario overrides, but
-        deriving separate fleet, elite, protector, or armored-hit formulas is
-        not part of current completion.
+        Current user direction says not to invent source-owned non-boss terminal
+        pressure formulas. Boss Waves remains the sanctioned proxy/test surface,
+        but unsupported high-tier terminal pressure must not be invisible to the
+        selected max-wave estimate. Explicit terminal-pressure max-wave inputs
+        may still be used as optional scenario overrides; otherwise unsupported
+        rows are capped to a positive active milestone/Dissonant PB reference
+        while retaining the uncapped boss-only value for diagnostics. Deriving
+        separate fleet, elite, protector, or armored-hit formulas is still not
+        part of current completion.
       acceptance:
-        - model certification does not list non-boss terminal pressure formulas as a current-scope blocker
-        - diagnostics do not advertise unsupported non-boss terminal pressures as if they must be solved before current completion
+        - model certification lists non-boss terminal pressure formulas as a blocker when unsupported terminal pressures are present and explicit terminal max-wave overrides do not close them
+        - selected max wave is empirically capped to a positive active milestone/Dissonant PB reference for unsupported terminal-pressure rows
+        - diagnostics retain the uncapped boss-only selected wave and the terminal-pressure limiter so capped estimates are auditable
       closure_note: >
         app.pipeline now accepts explicit fleet_terminal_max_wave,
         elite_terminal_max_wave, protector_terminal_max_wave, and
@@ -313,15 +316,19 @@ remaining_max_wave_completion:
         contract. The Boss Waves summary and diagnostics publish
         terminal_pressure_limits, terminal_pressure_limiter, and
         terminal_pressure_limited when a caller supplies those optional inputs.
-        Those inputs are no longer treated as required completion blockers or
-        advertised unsupported terminal pressures; the sanctioned current model
-        remains boss-contact survivability as the proxy/test surface. After
-        this scope correction, regenerated matrix certification marks
-        non_boss_terminal_pressure as not applicable and no longer carries
-        source_owned_non_boss_terminal_pressure_formulas as a blocker.
+        Unsupported high-tier pressure remains explicitly advertised through
+        unsupported_terminal_pressures and model_completion_blockers when source
+        formulas or full explicit closure are missing. The selected max-wave
+        value is now capped by unsupported_pressure_empirical_reference when a
+        positive active reference exists, and the uncapped boss-contact value is
+        retained in unsupported_pressure_reference_limit for audit/debug use.
+        Flame Bot all-or-nothing DR is no longer probability-weighted into
+        selected damage reduction: Boss Waves publishes the static tag chance
+        and miss/hit diagnostic lanes, while selected `avg` only assumes the
+        tag when the modeled chance is near-certain (>=95%).
       remaining: []
       validation:
-        - .venv\Scripts\python.exe -m pytest -q tests\input\test_scenario_runtime_inputs.py::test_contract_field_set__matches_expected_dataclass_fields tests\app\test_pipeline_functional.py::test_boss_wave_summary_can_be_limited_by_explicit_non_boss_terminal_pressure tests\app\test_pipeline_functional.py::test_boss_wave_payload_can_report_explicit_non_boss_terminal_limiter tests\app\test_pipeline_functional.py::test_boss_wave_summary_uses_sequential_not_independent_survival tests\app\test_pipeline_functional.py::test_boss_wave_summary_gc_policy_selects_fast_contact_envelope_lane
+        - .venv\Scripts\python.exe -m pytest -q tests\input\test_scenario_runtime_inputs.py::test_contract_field_set__matches_expected_dataclass_fields tests\app\test_pipeline_functional.py::test_boss_wave_summary_can_be_limited_by_explicit_non_boss_terminal_pressure tests\app\test_pipeline_functional.py::test_boss_wave_unsupported_terminal_pressure_reference_cap_limits_selected_wave tests\app\test_pipeline_functional.py::test_boss_wave_milestone_matrix_caps_unsupported_high_tier_to_manual_dissonance_reference tests\app\test_pipeline_functional.py::test_boss_wave_payload_can_report_explicit_non_boss_terminal_limiter tests\app\test_pipeline_functional.py::test_boss_wave_summary_uses_sequential_not_independent_survival tests\app\test_pipeline_functional.py::test_boss_wave_summary_gc_policy_selects_fast_contact_envelope_lane
     - id: MW-2
       title: Apply v28 Overheat effects to max-wave evolution
       status: partial_targeted

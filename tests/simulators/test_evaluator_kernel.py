@@ -972,6 +972,46 @@ def test_boss_hits_to_player_match_wall_thorns_contact_events():
     assert row.summary_combat.ttk_seconds == pytest.approx(7.0)
 
 
+def test_energy_shield_absorbs_player_hits_without_removing_wall_thorns_contacts():
+    from qe.run_plan import CommonTrajectoryInputs, SurvivabilityContributorBundle, build_common_trajectory
+    from simulators.evaluator_kernel import ScenarioOverlayInputs, build_scenario_overlay_table
+
+    table1 = build_common_trajectory(
+        CommonTrajectoryInputs(
+            start_wave=1,
+            end_wave=10,
+            tier_column="Tier 1",
+            survivability_contributors=SurvivabilityContributorBundle(
+                base_wall_hp=1_000_000_000.0,
+                base_wall_regen=0.0,
+                wall_fortification_multiplier=1.0,
+                tower_defense_pct=0.0,
+            ),
+        )
+    )
+
+    table2 = build_scenario_overlay_table(
+        table1,
+        scenario=ScenarioOverlayInputs("energy-shield-contact-hit-count", "Tier 1"),
+        combat=_combat(
+            plasma_cannon_effect_pct=54.0,
+            orb_boss_total_damage_pct=2.0,
+            electron_total_damage_pct=7.5,
+            tower_thorns_damage_pct=19.36,
+            boss_time_to_contact_seconds=1.0,
+            boss_hit_interval_seconds=2.0,
+            max_ttk_seconds=600.0,
+            wall_thorns_damage_increase_per_hit=0.01,
+            energy_shield_hit_charges=3.0,
+        ),
+    )
+
+    row = table2.rows[0]
+    assert row.boss_damage_breakdown.thorns_hits == 4
+    assert row.summary_combat.boss_hits_taken == 1
+    assert row.summary_combat.ttk_seconds == pytest.approx(7.0)
+
+
 def test_ttd_wall_regen_does_not_precharge_before_first_contact_hit():
     from simulators.evaluator_kernel import _evaluate_boss_ttd_lane
 
@@ -1122,6 +1162,17 @@ def test_scenario_overlay_fails_closed_on_ambiguous_survivability_perks_and_lane
     table1 = build_common_trajectory(
         CommonTrajectoryInputs(start_wave=1, end_wave=10, tier_column="Tier 1", perk_counts={"known_perk": 1}, survivability_contributors=_contributors())
     )
+    no_perk_table1 = build_common_trajectory(
+        CommonTrajectoryInputs(start_wave=1, end_wave=10, tier_column="Tier 1", survivability_contributors=_contributors())
+    )
+    no_perk_table2 = build_scenario_overlay_table(
+        no_perk_table1,
+        scenario=ScenarioOverlayInputs("full-no-perk", "Tier 1", tournament_perks_enabled=False),
+        combat=_combat(plasma_cannon_effect_pct=100.0),
+    )
+    assert no_perk_table2.rows[0].active_perk_counts == {}
+    assert no_perk_table2.rows[0].active_perk_contributions == {}
+
     with pytest.raises(KernelAmbiguityError, match="removed_perk_ids"):
         build_scenario_overlay_table(
             table1,

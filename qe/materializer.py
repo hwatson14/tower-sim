@@ -317,6 +317,7 @@ _SOURCE_CLASS_BY_FAMILY = {
     'relic': 'relics',
     'perk': 'perks',
     'card': 'cards',
+    'card_mastery': 'cards',
     'module_substat': 'module_substat',
     'uw': 'ultimate_weapons',
     'uw_plus': 'ultimate_weapons',

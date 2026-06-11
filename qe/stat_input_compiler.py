@@ -82,6 +82,27 @@ def _set_row_field(row: StatInput, field_name: str, value) -> None:
     object.__setattr__(row, field_name, value)
 
 
+def _normalize_card_ladder_runtime_units(
+    row: StatInput,
+    *,
+    ladder: Mapping[str, str] | None,
+    destination: Tuple[str, str] | None,
+) -> None:
+    if ladder is None or destination is None:
+        return
+    _, destination_id = destination
+    unit = str(ladder.get('unit') or '').strip().lower()
+    if unit == 'minutes' and str(destination_id).endswith('_seconds'):
+        raw_value = row.value
+        try:
+            seconds = float(raw_value) * 60.0
+        except (TypeError, ValueError):
+            return
+        _set_row_field(row, 'value', seconds)
+        _set_row_field(row, 'value_type', 'resolved_value')
+        _set_row_field(row, 'notes', f"{row.notes or ''}:kb_card_ladder_minutes_to_seconds".lstrip(':'))
+
+
 def _module_unique_effect_key(name: str) -> str:
     return slug_text(name).replace(' ', '_')
 
@@ -480,6 +501,18 @@ BOT_LAB_BINDINGS = {
     'Thunder Bot - Linger Time': ('thunder_bot_linger_time', 0.5),
 }
 
+BOT_LAB_FINAL_TRACK_OVERRIDE_KEYS = {
+    'Amp Bot - Cooldown': 'Amplify Bot::Cooldown',
+    'Amp Bot - Duration': 'Amplify Bot::Duration',
+    'Bot Bot - Cooldown': 'Bot Bot::Cooldown',
+    'Bot Bot - Duration': 'Bot Bot::Duration',
+    'Flame Bot - Cooldown': 'Flame Bot::Cooldown',
+    'Gold Bot - Cooldown': 'Golden Bot::Cooldown',
+    'Gold Bot - Duration': 'Golden Bot::Duration',
+    'Thunder Bot - Cooldown': 'Thunder Bot::Cooldown',
+    'Thunder Bot - Linger Time': 'Thunder Bot::Linger',
+}
+
 DISSONANT_ECHO_LAB_CATEGORIES = {
     'Dissonant Echo - Attack': 'attack',
     'Dissonant Echo - Defense': 'defense',
@@ -770,6 +803,30 @@ _CARD_MASTERY_NAME_ALIASES = {
 }
 
 
+def _card_name_for_mastery_lab(name: str) -> str | None:
+    if not name.endswith(' Mastery'):
+        return None
+    normalized = _CARD_MASTERY_NAME_ALIASES.get(name, name)
+    return normalized[: -len(' Mastery')].strip() or None
+
+
+def _card_mastery_runtime_gate(account_state: AccountState, *, card_preset: str, mastery_name: str) -> tuple[bool, str | None]:
+    card_name = _card_name_for_mastery_lab(mastery_name)
+    if card_name is None:
+        return True, None
+    equipped_cards = set((getattr(account_state, 'card_presets', {}) or {}).get(card_preset, []) or [])
+    if card_name not in equipped_cards:
+        return False, f'card_not_equipped:{card_name}'
+    snap = (getattr(account_state, 'cards_inventory', {}) or {}).get(card_name)
+    if snap is None:
+        return False, f'card_missing_inventory:{card_name}'
+    if getattr(snap, 'level', None) is None:
+        return False, f'card_missing_level:{card_name}'
+    if not bool(getattr(snap, 'mastery_unlocked', False)):
+        return False, f'mastery_not_unlocked:{card_name}'
+    return True, None
+
+
 def _coerce_level_bool(level: object) -> bool:
     try:
         return bool(level is not None and float(level) > 0)
@@ -1004,6 +1061,9 @@ def _bind_governed_numeric_row(
     lab_values: Dict[Tuple[str, int], float],
     lab_summary: Dict[str, Dict[str, float | str]],
     card_mastery_values: Dict[Tuple[str, int], Tuple[float, str]],
+    *,
+    mastery_active: bool = True,
+    mastery_gate_reason: str | None = None,
 ) -> bool:
     destination = _governed_numeric_destination(name)
     if destination is None:
@@ -1027,6 +1087,11 @@ def _bind_governed_numeric_row(
                 _set_row_field(row, 'value', numeric)
                 _set_row_field(row, 'value_type', 'level')
                 _set_row_field(row, 'notes', f'governed_numeric_pending_value:{name}')
+        if not mastery_active:
+            _set_row_field(row, 'active', False)
+            gate_reason = mastery_gate_reason or 'mastery_unlocked_and_card_equipped_gate_failed'
+            existing_note = str(row.notes or f'kb_card_mastery_resolved:{name}')
+            _set_row_field(row, 'notes', f'{existing_note};kb_card_mastery_gated_off:{gate_reason}')
         return True
     formula = _GOVERNED_NUMERIC_FORMULAS.get(name)
     if formula is not None and level is not None:
@@ -1072,6 +1137,31 @@ def _bind_governed_numeric_row(
             _set_row_field(row, 'value_type', 'level')
             _set_row_field(row, 'notes', f'governed_numeric_pending_value:{name}')
     return True
+
+
+def _card_mastery_value(
+    card_mastery_values: Dict[Tuple[str, int], Tuple[float, str]],
+    mastery_name: str,
+    mastery_level: Optional[int],
+) -> Tuple[float, str] | None:
+    if mastery_level is None:
+        return None
+    return card_mastery_values.get((mastery_name, int(mastery_level)))
+
+
+def _card_mastery_effect_multiplier(mastery_value: Tuple[float, str] | None) -> float | None:
+    if mastery_value is None:
+        return None
+    raw_value, value_type = mastery_value
+    try:
+        value = float(raw_value)
+    except (TypeError, ValueError):
+        return None
+    if value_type == 'multiplier':
+        return value
+    if value_type == 'resolved_value':
+        return value / 100.0
+    return None
 
 
 @lru_cache(maxsize=1)
@@ -1279,12 +1369,24 @@ def compile_stat_inputs(
     uw_plus_values = _load_uw_plus_values()
     guardian_scout_values = _load_guardian_scout_values()
     active_lab_adjusters = account_state.lab_adjusters.get(preset, {})
+    manual_override_sources = getattr(account_state, 'manual_override_sources', {}) or {}
+    manual_lab_sources = dict(manual_override_sources.get('labs') or {})
+    manual_bot_unlock_sources = dict(manual_override_sources.get('bot_unlocks') or {})
+    manual_bot_track_sources = dict(manual_override_sources.get('bot_tracks') or {})
     out: List[StatInput] = []
     _append_dissonant_run_scenario_rows(out, scenario_context=scenario_context)
 
     # Labs: exact KB ladders where available; otherwise use the bundled lab application registry.
     for name, level in account_state.labs.items():
-        row = StatInput(stat_name=name, source_family='lab', source_name=name, value=level, value_type='level', stage='account_state', provenance='IDS::Labs')
+        row = StatInput(
+            stat_name=name,
+            source_family='lab',
+            source_name=name,
+            value=level,
+            value_type='level',
+            stage='account_state',
+            provenance=manual_lab_sources.get(name, 'IDS::Labs'),
+        )
         contributor_id = LAB_IDS_TO_CONTRIBUTOR.get(name)
         if contributor_id is not None:
             bind_kb_fields(row, contributor_id, mapping_index, canonical_stats)
@@ -1500,14 +1602,24 @@ def compile_stat_inputs(
                             _set_row_field(row, 'value_type', 'resolved_value')
                             _set_row_field(row, 'notes', 'kb_lab_formula_verified:Max Rend Armor Multiplier:+0.25_per_level')
                         elif name in BOT_LAB_BINDINGS and level is not None:
-                            rule_key, fallback_step = BOT_LAB_BINDINGS[name]
-                            rule = bot_lab_rules.get(rule_key, {})
-                            per_level = rule.get('effect_per_level_seconds')
-                            if per_level is None:
-                                per_level = fallback_step
-                            _set_row_field(row, 'value', float(level) * float(per_level))
-                            _set_row_field(row, 'value_type', 'resolved_value')
-                            _set_row_field(row, 'notes', f'kb_bot_lab_formula_verified:{name}')
+                            manual_final_track_key = BOT_LAB_FINAL_TRACK_OVERRIDE_KEYS.get(name)
+                            if manual_final_track_key in manual_bot_track_sources:
+                                _set_row_field(row, 'value', 0.0)
+                                _set_row_field(row, 'value_type', 'resolved_value')
+                                _set_row_field(
+                                    row,
+                                    'notes',
+                                    f'manual_final_bot_track_override_suppressed_lab_delta:{manual_final_track_key}',
+                                )
+                            else:
+                                rule_key, fallback_step = BOT_LAB_BINDINGS[name]
+                                rule = bot_lab_rules.get(rule_key, {})
+                                per_level = rule.get('effect_per_level_seconds')
+                                if per_level is None:
+                                    per_level = fallback_step
+                                _set_row_field(row, 'value', float(level) * float(per_level))
+                                _set_row_field(row, 'value_type', 'resolved_value')
+                                _set_row_field(row, 'notes', f'kb_bot_lab_formula_verified:{name}')
                         else:
                             effective_level = _effective_lab_level_for_name(
                                 name,
@@ -1541,6 +1653,11 @@ def compile_stat_inputs(
                         if not _bind_capability_policy_row(row, canonical_stats, name, level):
                             _set_row_field(row, 'notes', f'capability_policy_pending_mapping:{name}')
                     elif name in GOVERNED_NUMERIC_ROWS:
+                        mastery_active, mastery_gate_reason = _card_mastery_runtime_gate(
+                            account_state,
+                            card_preset=card_preset,
+                            mastery_name=name,
+                        )
                         if not _bind_governed_numeric_row(
                             row,
                             canonical_stats,
@@ -1549,6 +1666,8 @@ def compile_stat_inputs(
                             lab_values,
                             lab_summary,
                             card_mastery_values,
+                            mastery_active=mastery_active,
+                            mastery_gate_reason=mastery_gate_reason,
                         ):
                             _set_row_field(row, 'notes', f'governed_numeric_pending_mapping:{name}')
                     else:
@@ -1840,15 +1959,21 @@ def compile_stat_inputs(
             owned_bot_aliases.add(key.replace('golden', 'gold'))
             owned_bot_aliases.add(key.replace('amplify', 'amp'))
     for source_name, bot_slug in bot_slug_map.items():
+        display_name = source_name.title()
+        unlock_provenance = manual_bot_unlock_sources.get(display_name, 'IDS::Bots')
         unlock_row = StatInput(
-            stat_name=f'{source_name.title()}::Unlocked',
+            stat_name=f'{display_name}::Unlocked',
             source_family='bot_unlock',
-            source_name=source_name.title(),
+            source_name=display_name,
             value=(source_name in owned_bot_aliases),
             value_type='bool',
             stage='account_state',
-            provenance='IDS::Bots',
-            notes='ids_bot_unlock_flag_preserved',
+            provenance=unlock_provenance,
+            notes=(
+                'manual_bot_unlock_override'
+                if display_name in manual_bot_unlock_sources
+                else 'ids_bot_unlock_flag_preserved'
+            ),
         )
         _set_row_field(unlock_row, 'destination_object_type', 'runtime_mechanic_param')
         _set_row_field(unlock_row, 'destination_id', f'bot.{bot_slug}.owned')
@@ -1860,17 +1985,25 @@ def compile_stat_inputs(
     typed_bot_tracks = getattr(account_state, 'bot_upgrade_tracks', {}) or {}
     if typed_bot_tracks:
         bot_track_rows = [
-            (bot_name, track.track_name, track.level, track.resolved_value, track.resolved_unit)
+            (
+                bot_name,
+                track.track_name,
+                track.level,
+                track.resolved_value,
+                track.resolved_unit,
+                getattr(track, 'source', None),
+                getattr(track, 'value_kind', None),
+            )
             for bot_name, tracks in typed_bot_tracks.items()
             for track in tracks
         ]
     else:
         bot_track_rows = [
-            (bot_name, attr, level, None, None)
+            (bot_name, attr, level, None, None, None, None)
             for bot_name, upgrades in account_state.bot_upgrades.items()
             for attr, level in upgrades.items()
         ]
-    for bot_name, attr, level, ids_resolved_value, ids_resolved_unit in bot_track_rows:
+    for bot_name, attr, level, ids_resolved_value, ids_resolved_unit, track_source, value_kind in bot_track_rows:
         if bot_name == 'Bot +':
             attr_slug = slug_text(attr).replace(' ', '_')
             row = StatInput(
@@ -1889,23 +2022,77 @@ def compile_stat_inputs(
             _set_row_field(row, 'kb_mapped', True)
             _append(out, row)
             continue
-        if level is None:
+        if level is None and ids_resolved_value is None:
             continue
         bot_is_owned = bool(bot_unlocks.get(bot_name, bot_name in account_state.bots if not bot_unlocks else False))
+        normalized_value_kind = str(value_kind or '').strip().lower()
+        if (
+            track_source is not None
+            and ids_resolved_value is not None
+            and slug_text(str(attr)).replace(' ', '_') == 'range'
+            and normalized_value_kind in {'effective', 'effective_range', 'effective_range_m'}
+        ):
+            effective_bot_slug = bot_slug_map.get(slug_text(str(bot_name)).replace('_', ' '))
+            if effective_bot_slug is None:
+                effective_bot_slug = slug_text(bot_name).replace(' ', '_')
+            effective_value = float(ids_resolved_value) if bot_is_owned else 0.0
+            row = StatInput(
+                stat_name=f'{bot_name}::Effective Range',
+                source_family='bot',
+                source_name=bot_name,
+                value=effective_value,
+                value_type='resolved_value',
+                stage='account_state',
+                provenance=track_source,
+                notes='manual_bot_effective_range_value_override',
+            )
+            _set_row_field(row, 'raw_level', level)
+            _set_row_field(row, 'resolved_value', effective_value)
+            _set_row_field(row, 'resolved_unit', ids_resolved_unit)
+            _set_row_field(row, 'destination_object_type', 'runtime_mechanic_param')
+            _set_row_field(row, 'destination_id', f'bot.{effective_bot_slug}.effective_range_m')
+            _set_row_field(row, 'resolver_id', 'standard_scalar_param')
+            _set_row_field(row, 'kb_mapped', True)
+            _append(out, row)
+            continue
         binding = BOT_UPGRADE_BINDINGS.get((bot_name, attr))
         contributor_id, track_name = binding if binding is not None else (None, None)
-        resolved = bot_track_values.get((bot_name, track_name, level)) if track_name is not None and level is not None else None
+        manual_value = track_source is not None and ids_resolved_value is not None
+        resolved = (
+            None
+            if manual_value
+            else bot_track_values.get((bot_name, track_name, level))
+            if track_name is not None and level is not None
+            else None
+        )
         if bot_is_owned:
             value = resolved if resolved is not None else (ids_resolved_value if ids_resolved_value is not None else level)
             value_type = 'resolved_value' if (resolved is not None or ids_resolved_value is not None) else 'level'
-            notes = 'kb_bot_track_resolved' if resolved is not None else ('ids_bot_track_value_preserved' if ids_resolved_value is not None else 'runtime_surface_preserved_pending_bot_track_lookup')
+            notes = (
+                'manual_bot_track_value_override'
+                if manual_value
+                else 'kb_bot_track_resolved'
+                if resolved is not None
+                else 'ids_bot_track_value_preserved'
+                if ids_resolved_value is not None
+                else 'runtime_surface_preserved_pending_bot_track_lookup'
+            )
             resolved_value = float(resolved if resolved is not None else ids_resolved_value) if (resolved is not None or ids_resolved_value is not None) else None
         else:
             value = 0.0
             value_type = 'resolved_value'
             notes = 'ids_bot_locked_zeroed'
             resolved_value = 0.0
-        row = StatInput(stat_name=f'{bot_name}::{attr}', source_family='bot', source_name=bot_name, value=value, value_type=value_type, stage='account_state', provenance='IDS::Bots', notes=notes)
+        row = StatInput(
+            stat_name=f'{bot_name}::{attr}',
+            source_family='bot',
+            source_name=bot_name,
+            value=value,
+            value_type=value_type,
+            stage='account_state',
+            provenance=track_source or manual_bot_track_sources.get(f'{bot_name}::{attr}', 'IDS::Bots'),
+            notes=notes,
+        )
         _set_row_field(row, 'raw_level', level)
         _set_row_field(row, 'resolved_value', resolved_value)
         _set_row_field(row, 'resolved_unit', ids_resolved_unit)
@@ -2098,6 +2285,7 @@ def compile_stat_inputs(
         if card_id is None and snap.level == 0:
             card_id = slug_text(card_name).replace(' ', '_').upper()
         destination = card_effect_targets.get(card_id or '')
+        _normalize_card_ladder_runtime_units(row, ladder=ladder, destination=destination)
         if card_id == 'AREA_OF_EFFECT':
             active_row = StatInput(**{field: getattr(row, field) for field in StatInput.__dataclass_fields__.keys()})
             bind_destination(active_row, ('runtime_mechanic_param', 'cards.aoe.active'), canonical_stats, note=f'kb_card_effect_registry_split_routed:{card_id}:active')
@@ -2139,12 +2327,65 @@ def compile_stat_inputs(
             _set_row_field(split_row, 'value', True)
             _set_row_field(split_row, 'value_type', 'bool')
             _append(out, split_row)
+            mastery_value = _card_mastery_value(
+                card_mastery_values,
+                'Second Wind Mastery',
+                getattr(snap, 'mastery_lab_level', None),
+            )
+            if (
+                resolved_projection_state.second_wind_mastery_regen
+                and bool(getattr(snap, 'mastery_unlocked', False))
+                and mastery_value is not None
+            ):
+                projected_row = StatInput(
+                    stat_name='Second Wind::Assumed Activated Mastery Regen',
+                    source_family='card',
+                    source_name=card_name,
+                    value=mastery_value[0],
+                    value_type=mastery_value[1],
+                    stage='scenario_projection',
+                    preset_name=card_preset,
+                    provenance='kb/cards/tables/card-masteries.csv',
+                    notes='projection_state=second_wind_mastery_regen:assumed_second_wind_triggered_for_max_progression',
+                )
+                bind_destination(
+                    projected_row,
+                    ('canonical_stat', 'tower_regen'),
+                    canonical_stats,
+                    note='projection_state=second_wind_mastery_regen:assumed_second_wind_triggered_for_max_progression',
+                )
+                _append(out, projected_row)
         if card_id == 'SUPER_TOWER':
             split_row = StatInput(**{field: getattr(row, field) for field in StatInput.__dataclass_fields__.keys()})
             bind_destination(split_row, ('runtime_mechanic_param', 'cards.super_tower.active'), canonical_stats, note=f'kb_card_effect_registry_split_routed:{card_id}:active')
             _set_row_field(split_row, 'value', True)
             _set_row_field(split_row, 'value_type', 'bool')
             _append(out, split_row)
+            mastery_value = _card_mastery_value(
+                card_mastery_values,
+                'Super Tower Mastery',
+                getattr(snap, 'mastery_lab_level', None),
+            )
+            mastery_active = bool(getattr(snap, 'mastery_unlocked', False)) and mastery_value is not None
+            cooldown_seconds = 30.0 + (float(mastery_value[0]) if mastery_active else 0.0)
+            cooldown_row = StatInput(**{field: getattr(row, field) for field in StatInput.__dataclass_fields__.keys()})
+            bind_destination(cooldown_row, ('runtime_mechanic_param', 'cards.super_tower.cooldown_seconds'), canonical_stats, note=f'kb_card_effect_registry_split_routed:{card_id}:cooldown_seconds')
+            _set_row_field(cooldown_row, 'value', max(0.0, cooldown_seconds))
+            _set_row_field(cooldown_row, 'value_type', 'resolved_value')
+            _append(out, cooldown_row)
+            if mastery_active and isinstance(value, (int, float)):
+                mastery_active_row = StatInput(**{field: getattr(row, field) for field in StatInput.__dataclass_fields__.keys()})
+                bind_destination(mastery_active_row, ('runtime_mechanic_param', 'cards.super_tower.mastery_active'), canonical_stats, note=f'kb_card_mastery_split_routed:{card_id}:active')
+                _set_row_field(mastery_active_row, 'value', True)
+                _set_row_field(mastery_active_row, 'value_type', 'bool')
+                _set_row_field(mastery_active_row, 'provenance', 'kb/cards/tables/card-masteries.csv')
+                _append(out, mastery_active_row)
+                uw_mastery_row = StatInput(**{field: getattr(row, field) for field in StatInput.__dataclass_fields__.keys()})
+                bind_destination(uw_mastery_row, ('runtime_mechanic_param', 'cards.super_tower.uw_mastery_multiplier'), canonical_stats, note=f'kb_card_mastery_split_routed:{card_id}:uw_mastery_multiplier')
+                _set_row_field(uw_mastery_row, 'value', 1.0 + (0.35 * max(0.0, float(value) - 1.0)))
+                _set_row_field(uw_mastery_row, 'value_type', 'multiplier')
+                _set_row_field(uw_mastery_row, 'provenance', 'kb/cards/tables/card-masteries.csv')
+                _append(out, uw_mastery_row)
         if destination is not None:
             bind_destination(row, destination, canonical_stats, note=f'kb_card_effect_registry_routed:{card_id}')
         else:
@@ -2160,6 +2401,44 @@ def compile_stat_inputs(
             _set_row_field(row, 'value', 1.0)
             _set_row_field(row, 'value_type', 'resolved_value')
             _set_row_field(row, 'notes', (row.notes or '') + ':extra_orb_card_count_bonus')
+        if row.destination_id == 'cards.wave_accelerator.wave_cooldown_reduction_pct' and value is not None:
+            mastery_value = _card_mastery_value(
+                card_mastery_values,
+                'Wave Accelerator Mastery',
+                getattr(snap, 'mastery_lab_level', None),
+            )
+            mastery_multiplier = _card_mastery_effect_multiplier(mastery_value)
+            if bool(getattr(snap, 'mastery_unlocked', False)) and mastery_multiplier is not None:
+                mastery_row = StatInput(**{field: getattr(row, field) for field in StatInput.__dataclass_fields__.keys()})
+                bind_destination(
+                    mastery_row,
+                    ('runtime_mechanic_param', 'cards.wave_accelerator.spawn_rate_acceleration'),
+                    canonical_stats,
+                    note='kb_card_mastery_split_routed:WAVE_ACCELERATOR:spawn_rate_acceleration',
+                )
+                _set_row_field(mastery_row, 'stat_name', 'Wave Accelerator Mastery Spawn Rate Acceleration')
+                _set_row_field(mastery_row, 'source_family', 'card')
+                _set_row_field(mastery_row, 'source_name', 'Wave Accelerator Mastery')
+                _set_row_field(mastery_row, 'value', mastery_multiplier)
+                _set_row_field(mastery_row, 'value_type', 'multiplier')
+                _set_row_field(mastery_row, 'provenance', 'kb/cards/tables/card-masteries.csv')
+                _append(out, mastery_row)
+        if row.destination_id == 'cards.intro_sprint.waves' and value is not None:
+            mastery_value = _card_mastery_value(
+                card_mastery_values,
+                'Intro Sprint Mastery',
+                getattr(snap, 'mastery_lab_level', None),
+            )
+            mastery_multiplier = _card_mastery_effect_multiplier(mastery_value)
+            if bool(getattr(snap, 'mastery_unlocked', False)) and mastery_multiplier is not None:
+                _set_row_field(row, 'value', float(value) * mastery_multiplier)
+                _set_row_field(row, 'value_type', 'resolved_value')
+                _set_row_field(
+                    row,
+                    'notes',
+                    f"{row.notes or 'kb_card_effect_registry_routed:INTRO_SPRINT'}:"
+                    f"kb_card_mastery_applied:Intro Sprint Mastery x{mastery_multiplier:g}",
+                )
         _append(out, row)
         if card_id == 'BERSERKER' and resolved_projection_state.berserker_damage_bonus:
             projected_row = StatInput(

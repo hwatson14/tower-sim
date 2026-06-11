@@ -340,7 +340,17 @@ surface_nodes:
   ownership_status: query_owned
   governed_by: canonical_query_engine
   downstream_policy: consume_only_no_rederivation
+- node_id: state::cards.wave_accelerator.wave_cooldown_reduction_pct
+  ownership_class: environment
+  ownership_status: query_owned
+  governed_by: canonical_query_engine
+  downstream_policy: consume_only_no_rederivation
 - node_id: state::cards.wave_accelerator.spawn_rate_acceleration
+  ownership_class: environment
+  ownership_status: query_owned
+  governed_by: canonical_query_engine
+  downstream_policy: consume_only_no_rederivation
+- node_id: state::cards.intro_sprint.waves
   ownership_class: environment
   ownership_status: query_owned
   governed_by: canonical_query_engine
@@ -725,12 +735,52 @@ surface_nodes:
   ownership_status: query_owned
   governed_by: canonical_query_engine
   downstream_policy: consume_only_no_rederivation
+- node_id: state::capability.energy_shield.enabled
+  ownership_class: surface
+  ownership_status: query_owned
+  governed_by: canonical_query_engine
+  downstream_policy: consume_only_no_rederivation
+- node_id: state::cards.energy_shield.recharge_cooldown_seconds
+  ownership_class: surface
+  ownership_status: query_owned
+  governed_by: canonical_query_engine
+  downstream_policy: consume_only_no_rederivation
+- node_id: state::cards.energy_shield.extra_charge_count
+  ownership_class: surface
+  ownership_status: query_owned
+  governed_by: canonical_query_engine
+  downstream_policy: consume_only_no_rederivation
 - node_id: state::cards.slow_aura.enemy_speed_pct
   ownership_class: surface
   ownership_status: query_owned
   governed_by: canonical_query_engine
   downstream_policy: consume_only_no_rederivation
 - node_id: state::cards.slow_aura.mastery_effect
+  ownership_class: surface
+  ownership_status: query_owned
+  governed_by: canonical_query_engine
+  downstream_policy: consume_only_no_rederivation
+- node_id: state::cards.super_tower.active
+  ownership_class: surface
+  ownership_status: query_owned
+  governed_by: canonical_query_engine
+  downstream_policy: consume_only_no_rederivation
+- node_id: state::cards.super_tower.bonus_multiplier
+  ownership_class: surface
+  ownership_status: query_owned
+  governed_by: canonical_query_engine
+  downstream_policy: consume_only_no_rederivation
+- node_id: state::cards.super_tower.cooldown_seconds
+  ownership_class: surface
+  ownership_status: query_owned
+  governed_by: canonical_query_engine
+  downstream_policy: consume_only_no_rederivation
+- node_id: state::cards.super_tower.mastery_active
+  ownership_class: surface
+  ownership_status: query_owned
+  governed_by: canonical_query_engine
+  downstream_policy: consume_only_no_rederivation
+- node_id: state::cards.super_tower.uw_mastery_multiplier
   ownership_class: surface
   ownership_status: query_owned
   governed_by: canonical_query_engine

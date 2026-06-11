@@ -220,7 +220,7 @@ def _destination_type_schema(destination_id: str, meta: dict[str, str]) -> dict[
     }
     if destination_id in overrides:
         expected_semantics = overrides[destination_id]
-    if destination_id.endswith('.owned'):
+    if destination_id.endswith('.owned') or destination_id.endswith('.active'):
         expected_semantics = ['bool']
     explicit_caps = {}
     if destination_id in CANONICAL_PCT_CAPS:
@@ -636,6 +636,10 @@ def _resolve_bucket(
     meta: dict[str, str],
 ) -> tuple[float | None, str, str, dict[str, object]]:
     schema = _destination_type_schema(destination_id, meta)
+    active_contributors = [row for row in contributors if row.active]
+    if not active_contributors:
+        return None, 'gated_off', 'All contributors are inactive, so QE gated this surface off.', schema
+    contributors = active_contributors
     dissonance_override = next(
         (
             row
@@ -1037,6 +1041,7 @@ _TIMING_V1_SURFACE_IDS: tuple[str, ...] = (
     'state::tower.package_chance_pct',
     'support_surface::timing.gcomp_cooldown_reduction_seconds',
     'support_surface::timing.wave_duration_seconds_effective',
+    'state::cards.wave_accelerator.wave_cooldown_reduction_pct',
     'state::cards.wave_accelerator.spawn_rate_acceleration',
     'state::cards.wave_skip.chance_pct',
 )
