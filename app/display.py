@@ -561,6 +561,8 @@ def render_workshop_stat_table_html(payload: dict) -> str:
         "<th colspan='2'>Start of Run</th>"
         "<th colspan='4'>Max Workshop</th>"
         "<th colspan='2'>Perks</th>"
+        "<th rowspan='2'>Cap</th>"
+        "<th rowspan='2'>Recon</th>"
         "</tr>"
         "<tr>"
         "<th>Lab</th>"
@@ -577,8 +579,6 @@ def render_workshop_stat_table_html(payload: dict) -> str:
         "<th><strong>Value</strong></th>"
         "<th>Modifier</th>"
         "<th>Value</th>"
-        "<th rowspan='2'>Cap</th>"
-        "<th rowspan='2'>Recon</th>"
         "</tr>"
         "</thead>"
     )

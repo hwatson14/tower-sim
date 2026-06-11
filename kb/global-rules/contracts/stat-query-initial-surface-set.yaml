@@ -113,6 +113,24 @@ families:
       scenario_scoped: false
       semantics: Galaxy Compressor unique-effect cooldown reduction seconds consumed
         by timing mechanics.
+    - surface_id: state::cards.wave_accelerator.wave_cooldown_reduction_pct
+      surface_kind: runtime_mechanic_surface
+      surface_class: environment
+      domain: cards
+      owning_families:
+      - timing_tournament_no_perks
+      - timing_farm_with_perks
+      - timing_scenario_probe
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: false
+      debug_only: false
+      scenario_scoped: true
+      semantics: Wave Accelerator base-card wave cooldown reduction percentage consumed
+        by wave-duration timing. Applies only to cooldown phase; mastery does not
+        change this percentage.
     - surface_id: state::cards.wave_accelerator.spawn_rate_acceleration
       surface_kind: runtime_mechanic_surface
       surface_class: environment
@@ -128,8 +146,8 @@ families:
       publish_default: false
       debug_only: false
       scenario_scoped: true
-      semantics: Wave Accelerator spawn-rate acceleration scalar consumed by effective
-        wave-duration timing.
+      semantics: Wave Accelerator Mastery spawn-rate acceleration multiplier after
+        equip/unlock gating. Not consumed by wave-duration timing.
     - surface_id: state::cards.wave_skip.chance_pct
       surface_kind: runtime_mechanic_surface
       surface_class: environment
@@ -178,6 +196,7 @@ families:
       - support_surface::timing.gcomp_cooldown_reduction_seconds
     - bundle_id: timing_wave_duration
       surface_ids:
+      - state::cards.wave_accelerator.wave_cooldown_reduction_pct
       - state::cards.wave_accelerator.spawn_rate_acceleration
       - state::cards.wave_skip.chance_pct
       - support_surface::timing.wave_duration_seconds_effective
@@ -1258,6 +1277,58 @@ families:
       scenario_scoped: true
       semantics: Energy Net Mastery boss damage multiplier routed from IDS labs
         and consumed by Boss Waves continuous boss-damage timing.
+    - surface_id: state::capability.energy_shield.enabled
+      surface_kind: runtime_mechanic_surface
+      surface_class: surface
+      domain: cards
+      owning_families:
+      - progression_start_of_run
+      - progression_runtime_no_perks
+      - progression_runtime_with_perks
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: false
+      debug_only: true
+      scenario_scoped: true
+      semantics: Energy Shield equipped capability flag routed from the active
+        card loadout and consumed by Boss Waves contact-hit absorption.
+    - surface_id: state::cards.energy_shield.recharge_cooldown_seconds
+      surface_kind: runtime_mechanic_surface
+      surface_class: surface
+      domain: cards
+      owning_families:
+      - progression_start_of_run
+      - progression_runtime_no_perks
+      - progression_runtime_with_perks
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: false
+      debug_only: true
+      scenario_scoped: true
+      semantics: Energy Shield card recharge cooldown seconds carried as Boss
+        Waves provenance for the contact-hit absorption primitive.
+    - surface_id: state::cards.energy_shield.extra_charge_count
+      surface_kind: mechanic_surface
+      surface_class: surface
+      domain: cards
+      owning_families:
+      - progression_start_of_run
+      - progression_runtime_no_perks
+      - progression_runtime_with_perks
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: false
+      debug_only: true
+      scenario_scoped: true
+      semantics: Energy Shield Extra Hit lab count bonus routed as extra charges;
+        Boss Waves adds the base equipped-card charge before applying contact-hit
+        absorption.
     - surface_id: state::cards.slow_aura.enemy_speed_pct
       surface_kind: runtime_mechanic_surface
       surface_class: surface
@@ -1292,6 +1363,91 @@ families:
       scenario_scoped: true
       semantics: Slow Aura Mastery attack-interval multiplier routed from IDS labs
         and consumed by Boss Waves boss-hit interval derivation.
+    - surface_id: state::cards.super_tower.active
+      surface_kind: runtime_mechanic_surface
+      surface_class: surface
+      domain: cards
+      owning_families:
+      - progression_start_of_run
+      - progression_runtime_no_perks
+      - progression_runtime_with_perks
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: false
+      debug_only: true
+      scenario_scoped: true
+      semantics: Super Tower active-card flag routed from the active card loadout
+        and consumed by eDamage Super Tower uptime helpers.
+    - surface_id: state::cards.super_tower.bonus_multiplier
+      surface_kind: runtime_mechanic_surface
+      surface_class: surface
+      domain: cards
+      owning_families:
+      - progression_start_of_run
+      - progression_runtime_no_perks
+      - progression_runtime_with_perks
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: false
+      debug_only: true
+      scenario_scoped: true
+      semantics: Super Tower base-card damage multiplier routed from the active
+        card loadout and consumed by eDamage Super Tower uptime helpers.
+    - surface_id: state::cards.super_tower.cooldown_seconds
+      surface_kind: runtime_mechanic_surface
+      surface_class: surface
+      domain: cards
+      owning_families:
+      - progression_start_of_run
+      - progression_runtime_no_perks
+      - progression_runtime_with_perks
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: false
+      debug_only: true
+      scenario_scoped: true
+      semantics: Super Tower effective cooldown seconds from the base card,
+        reduced when Super Tower Mastery is unlocked and equipped.
+    - surface_id: state::cards.super_tower.mastery_active
+      surface_kind: runtime_mechanic_surface
+      surface_class: surface
+      domain: cards
+      owning_families:
+      - progression_start_of_run
+      - progression_runtime_no_perks
+      - progression_runtime_with_perks
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: false
+      debug_only: true
+      scenario_scoped: true
+      semantics: Super Tower Mastery active flag gated by mastered and equipped
+        card state for eDamage Super Tower helpers.
+    - surface_id: state::cards.super_tower.uw_mastery_multiplier
+      surface_kind: runtime_mechanic_surface
+      surface_class: surface
+      domain: cards
+      owning_families:
+      - progression_start_of_run
+      - progression_runtime_no_perks
+      - progression_runtime_with_perks
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: false
+      debug_only: true
+      scenario_scoped: true
+      semantics: Super Tower Mastery Ultimate Weapon multiplier derived from
+        35% of the equipped Super Tower base-card bonus.
     - surface_id: state::cards.ultimate_crit.chance_pct
       surface_kind: runtime_mechanic_surface
       surface_class: surface
@@ -3161,6 +3317,9 @@ families:
       - state::cards.plasma_cannon.effect_pct
       - state::cards.energy_net.duration_seconds
       - state::cards.energy_net.mastery_effect
+      - state::capability.energy_shield.enabled
+      - state::cards.energy_shield.recharge_cooldown_seconds
+      - state::cards.energy_shield.extra_charge_count
       - state::cards.slow_aura.enemy_speed_pct
       - state::cards.slow_aura.mastery_effect
       - state::module.orbital_augment.electron_count
@@ -3173,6 +3332,11 @@ families:
       - state::shock.damage_multiplier
       - state::cards.damage.mastery_effect
       - state::cards.berserker.assumed_bonus_multiplier
+      - state::cards.super_tower.active
+      - state::cards.super_tower.bonus_multiplier
+      - state::cards.super_tower.cooldown_seconds
+      - state::cards.super_tower.mastery_active
+      - state::cards.super_tower.uw_mastery_multiplier
       - state::cards.ultimate_crit.chance_pct
       - state::uw.golden_tower.bonus_multiplier
       - state::uw.black_hole.base_duration_seconds

@@ -398,7 +398,7 @@ sections:
       - label: Ultimate Crit
         surface_id: state::cards.ultimate_crit.chance_pct
       - label: Wave Accelerator
-        surface_id: state::cards.wave_accelerator.spawn_rate_acceleration
+        surface_id: state::cards.wave_accelerator.wave_cooldown_reduction_pct
     bot_surfaces:
       - label: Amplify Bonus
         surface_id: state::bot.amplify.bonus_multiplier

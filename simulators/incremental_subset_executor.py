@@ -240,7 +240,7 @@ class IncrementalSubsetExecutor:
         family_id: str | None,
         scenario_mode_id: str | None,
     ) -> StatInput:
-        from simulators.timing import _load_wave_timing_baselines
+        from simulators.timing import wave_duration_seconds_after_cooldown_reduction
 
         inferred_mode_id = scenario_mode_id
         if inferred_mode_id is None:
@@ -253,16 +253,18 @@ class IncrementalSubsetExecutor:
                 'support_surface::timing.wave_duration_seconds_effective requires scenario_mode_id '
                 'for native bounded resolution when family_id does not imply tournament/farming.'
             )
-        base_wave_duration_seconds = _load_wave_timing_baselines()[str(inferred_mode_id)]
-        wave_acceleration_pct = 0.0
+        wave_cooldown_reduction_pct = 0.0
         for row in stat_inputs:
-            if row.destination_object_type == 'runtime_mechanic_param' and row.destination_id == 'cards.wave_accelerator.spawn_rate_acceleration' and row.active:
+            if row.destination_object_type == 'runtime_mechanic_param' and row.destination_id == 'cards.wave_accelerator.wave_cooldown_reduction_pct' and row.active:
                 try:
-                    wave_acceleration_pct = float(row.value)
+                    wave_cooldown_reduction_pct = float(row.value)
                 except (TypeError, ValueError):
-                    wave_acceleration_pct = 0.0
+                    wave_cooldown_reduction_pct = 0.0
                 break
-        effective_wave_duration_seconds = max(0.0, base_wave_duration_seconds * (1.0 - (max(0.0, wave_acceleration_pct) / 100.0)))
+        effective_wave_duration_seconds = wave_duration_seconds_after_cooldown_reduction(
+            str(inferred_mode_id),
+            wave_cooldown_reduction_pct,
+        )
         return StatInput(
             stat_name='Wave Duration Effective',
             source_family='scenario_rules',

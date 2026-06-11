@@ -86,6 +86,8 @@ from app.inspector_data import (
     verification_rows_frame,
 )
 from app.pipeline import (
+    BOSS_WAVE_DISSONANCE_RUN_CATEGORIES,
+    BOSS_WAVE_DISSONANCE_RUN_LABELS,
     BOSS_WAVE_PERK_POLICY_PRESETS,
     FastCheckpointRequest,
     PipelineRunRequest,
@@ -102,6 +104,71 @@ from qe.contracts import normalize_surface_id_to_contract
 
 DEFAULT_OUT = ROOT / 'out'
 DEFAULT_IDS = ROOT / 'input' / 'imports' / 'ids.csv'
+BOSS_WAVE_RECOMMENDED_MODEL_RUNTIME_INPUTS = {
+    'flame_bot_damage_reduction_pct': 95.0,
+    'boss_edamage_target_share': 0.005051405075429985,
+    'boss_edamage_cadence_uptime_factor': 1.0,
+    'boss_edamage_reliability_factor': 1.0,
+    'boss_edamage_semantic_normalizer': 1.0,
+}
+BOSS_WAVE_RECOMMENDED_MODEL_ASSUMPTIONS = (
+    {
+        'group': 'Defense',
+        'assumption': 'Flame Bot DR override',
+        'value': '95%',
+        'runtime_input': 'flame_bot_damage_reduction_pct',
+        'source': 'session-local disco-run bot respec override',
+    },
+    {
+        'group': 'Damage',
+        'assumption': 'Boss target share',
+        'value': '0.005051405075429985',
+        'runtime_input': 'boss_edamage_target_share',
+        'source': 'explicit decomposed eDamage bridge',
+    },
+    {
+        'group': 'Damage',
+        'assumption': 'Boss cadence uptime',
+        'value': '1',
+        'runtime_input': 'boss_edamage_cadence_uptime_factor',
+        'source': 'explicit decomposed eDamage bridge',
+    },
+    {
+        'group': 'Damage',
+        'assumption': 'Boss reliability',
+        'value': '1',
+        'runtime_input': 'boss_edamage_reliability_factor',
+        'source': 'explicit decomposed eDamage bridge',
+    },
+    {
+        'group': 'Damage',
+        'assumption': 'Boss semantic normalizer',
+        'value': '1',
+        'runtime_input': 'boss_edamage_semantic_normalizer',
+        'source': 'explicit decomposed eDamage bridge',
+    },
+    {
+        'group': 'Timing',
+        'assumption': 'Boss contact time',
+        'value': 'derived',
+        'runtime_input': 'none',
+        'source': 'simulators.timing contact-time contract',
+    },
+    {
+        'group': 'Timing',
+        'assumption': 'Energy Net hold',
+        'value': 'derived',
+        'runtime_input': 'none',
+        'source': 'QE card duration plus timing engine',
+    },
+    {
+        'group': 'Defense',
+        'assumption': 'Flame Bot hit chance',
+        'value': 'derived all-or-nothing tag chance',
+        'runtime_input': 'none',
+        'source': 'timing/geometry-derived Flame Bot source semantics',
+    },
+)
 
 
 def _friendly_recompute_mode(value: object) -> str:
@@ -236,6 +303,14 @@ def _boss_wave_assumption_text(value: object) -> str:
     return text or 'n/a'
 
 
+def _boss_wave_recommended_model_runtime_inputs() -> dict[str, float]:
+    return dict(BOSS_WAVE_RECOMMENDED_MODEL_RUNTIME_INPUTS)
+
+
+def _boss_wave_recommended_model_assumption_frame() -> pd.DataFrame:
+    return pd.DataFrame(list(BOSS_WAVE_RECOMMENDED_MODEL_ASSUMPTIONS))
+
+
 def _boss_wave_assumption_frame(
     *,
     diagnostics: dict[str, object],
@@ -247,6 +322,11 @@ def _boss_wave_assumption_frame(
     certification = dict(payload_diagnostics.get('model_certification') or {})
     contact_contract = dict((payload_diagnostics.get('contact_time_contract') or {}).get('boss_time_to_contact_seconds') or {})
     replacement_model = dict(payload_diagnostics.get('replacement_model') or {})
+    timed_sources = dict(
+        ((payload_diagnostics.get('replacement_primitive_semantics_ledger') or {}).get('timed_dr_semantic_contract') or {}).get('sources') or {}
+    )
+    flame_bot_source = dict(timed_sources.get('flame_bot') or {})
+    flame_bot_static_model = dict(flame_bot_source.get('static_hit_chance_model') or {})
     rows = [
         {'group': 'Result', 'assumption': 'Selected model', 'value': diagnostics.get('selected_model'), 'source': 'payload summary'},
         {'group': 'Result', 'assumption': 'Certification status', 'value': certification.get('model_certification_status'), 'source': 'model certification'},
@@ -263,7 +343,7 @@ def _boss_wave_assumption_frame(
         {'group': 'Contact', 'assumption': 'Slow Aura slow', 'value': contact_contract.get('slow_aura_fraction'), 'source': 'contact-time contract'},
         {'group': 'Contact', 'assumption': 'Energy Net hold', 'value': contact_contract.get('energy_net_hold_seconds'), 'source': 'contact-time contract'},
         {'group': 'Damage', 'assumption': 'Boss damage source', 'value': boss_damage_source, 'source': 'replacement primitives'},
-        {'group': 'Damage', 'assumption': 'Final boss DPS', 'value': primitive_values.get('gc_boss_damage_per_second'), 'source': 'replacement primitives'},
+        {'group': 'Damage', 'assumption': 'Final boss DPS', 'value': primitive_values.get('boss_damage_per_second') or primitive_values.get('gc_boss_damage_per_second'), 'source': 'replacement primitives'},
         {'group': 'Damage', 'assumption': 'EP eDamage base', 'value': primitive_values.get('edamage_ep'), 'source': 'QE derived::edamage_ep'},
         {'group': 'Damage', 'assumption': 'Chain Lightning DPS', 'value': primitive_values.get('chain_lightning_boss_damage_per_second'), 'source': 'QE CL DPS diagnostic'},
         {'group': 'Damage', 'assumption': 'Boss runtime factor', 'value': primitive_values.get('edamage_boss_runtime_factor'), 'source': 'Boss Waves exposure replacement'},
@@ -275,6 +355,11 @@ def _boss_wave_assumption_frame(
         {'group': 'Damage', 'assumption': 'ACP factor', 'value': primitive_values.get('edamage_boss_acp_factor'), 'source': 'Boss Waves exposure replacement'},
         {'group': 'Damage', 'assumption': 'EN mastery multiplier', 'value': primitive_values.get('energy_net_mastery_multiplier'), 'source': 'combat primitives'},
         {'group': 'Damage', 'assumption': 'EN boosted seconds', 'value': primitive_values.get('edamage_boss_pre_contact_energy_net_boosted_seconds'), 'source': 'combat primitives'},
+        {'group': 'Defense', 'assumption': 'Flame Bot hit chance', 'value': flame_bot_source.get('uptime_fraction'), 'source': flame_bot_source.get('uptime_source')},
+        {'group': 'Defense', 'assumption': 'Flame Bot all-or-nothing', 'value': flame_bot_source.get('binary_outcome'), 'source': flame_bot_source.get('primitive_status')},
+        {'group': 'Defense', 'assumption': 'Flame Bot hit model', 'value': flame_bot_static_model.get('model') or flame_bot_source.get('primitive_status'), 'source': flame_bot_source.get('primitive_status')},
+        {'group': 'Defense', 'assumption': 'Flame Bot spatial coverage', 'value': flame_bot_static_model.get('average_spatial_fraction'), 'source': 'static hit model'},
+        {'group': 'Defense', 'assumption': 'Death Defy effective chance', 'value': primitive_values.get('death_defy_effective_chance_pct'), 'source': primitive_values.get('death_defy_model_policy')},
         {'group': 'Model', 'assumption': 'Boss kill sources', 'value': replacement_model.get('boss_kill_sources'), 'source': 'replacement model'},
         {'group': 'Model', 'assumption': 'Contact resolution sources', 'value': replacement_model.get('contact_resolution_sources'), 'source': 'replacement model'},
         {'group': 'Model', 'assumption': 'Survival model', 'value': replacement_model.get('boss_survival_model'), 'source': 'replacement model'},
@@ -306,13 +391,16 @@ def _boss_wave_preset_matrix_frame(matrix_payload: dict[str, object]) -> pd.Data
             'Reference': matrix_row.get('reference_wave') or '',
             'Best': matrix_row.get('best_display') or '',
             'Delta': matrix_row.get('delta_vs_reference_wave') if matrix_row.get('delta_vs_reference_wave') is not None else '',
+            'Status': matrix_row.get('best_model_certification_status') or '',
+            'Limiter': matrix_row.get('terminal_pressure_limiter') or '',
+            'Unsupported': ', '.join(str(item) for item in (matrix_row.get('unsupported_terminal_pressures') or ())),
         }
         for candidate in matrix_row.get('candidate_results') or []:
             preset = str(candidate.get('loadout_policy_preset') or '').strip()
             if preset:
                 row[preset] = candidate.get('selected_max_wave') or 0
         rows.append(row)
-    columns = ['Tier', *BOSS_WAVE_PERK_POLICY_PRESETS, 'Best', 'Reference', 'Delta']
+    columns = ['Tier', *BOSS_WAVE_PERK_POLICY_PRESETS, 'Best', 'Reference', 'Delta', 'Status', 'Limiter', 'Unsupported']
     return _arrow_safe_frame(pd.DataFrame(rows), columns=columns)
 
 
@@ -720,6 +808,11 @@ def _request_from_active_snapshot(active_out_dir: Path, active_artifacts: dict[s
             if trace_request.get('manual_inputs') in {None, '', 'None', 'none'}
             else _artifact_path(trace_request.get('manual_inputs'), default=ROOT / 'input' / ('manual_inputs' + '.yaml'))
         ),
+        runtime_state_overlay=(
+            str(trace_request.get('runtime_state_overlay'))
+            if trace_request.get('runtime_state_overlay') not in {None, '', 'None', 'none'}
+            else None
+        ),
         perk_mode=str(trace_request.get('perk_mode') or 'max_progression_policy'),
         include_slow_audits=bool(trace_request.get('include_slow_audits') or False),
         perk_state=str(perk_support.get('perk_state') or trace_request.get('perk_state') or 'auto'),
@@ -749,7 +842,7 @@ def _snapshot_sidebar() -> None:
 
 def _render_pipeline_run_controls(default_request: PipelineRunRequest) -> None:
     with st.expander('Run a new snapshot', expanded=False):
-        path_cols = st.columns(3)
+        path_cols = st.columns(4)
         ids_path = Path(path_cols[0].text_input('Run IDS path', value=str(default_request.ids), key='pipeline_ids_path'))
         out_dir = Path(path_cols[1].text_input('Run output dir', value=str(default_request.out), key='pipeline_out_dir'))
         manual_inputs_raw = path_cols[2].text_input(
@@ -758,6 +851,12 @@ def _render_pipeline_run_controls(default_request: PipelineRunRequest) -> None:
             key='pipeline_manual_inputs',
         )
         manual_inputs = Path(manual_inputs_raw) if manual_inputs_raw.strip() else None
+        runtime_state_overlay_raw = path_cols[3].text_input(
+            'Run runtime overlay',
+            value='' if default_request.runtime_state_overlay is None else str(default_request.runtime_state_overlay),
+            key='pipeline_runtime_state_overlay',
+        )
+        runtime_state_overlay = runtime_state_overlay_raw.strip() or None
         config_cols = st.columns(4)
         preset_options = ['Farming', 'Tourney', 'Milestone']
         preset = config_cols[0].selectbox(
@@ -796,6 +895,7 @@ def _render_pipeline_run_controls(default_request: PipelineRunRequest) -> None:
                     preset=preset,
                     state_mode=state_mode,
                     manual_inputs=manual_inputs,
+                    runtime_state_overlay=runtime_state_overlay,
                     perk_mode='max_progression_policy',
                     include_slow_audits=include_slow_audits,
                     perk_state='auto',
@@ -809,7 +909,7 @@ def _render_pipeline_run_controls(default_request: PipelineRunRequest) -> None:
 
 def _render_verification_snapshot_controls(default_request: PipelineRunRequest) -> None:
     with st.expander('Build verification snapshots', expanded=False):
-        path_cols = st.columns(3)
+        path_cols = st.columns(4)
         ids_path = Path(path_cols[0].text_input('Verification IDS path', value=str(default_request.ids), key='verification_ids_path'))
         out_dir = Path(path_cols[1].text_input('Verification output dir', value=str(default_request.out), key='verification_out_dir'))
         manual_inputs_raw = path_cols[2].text_input(
@@ -818,6 +918,12 @@ def _render_verification_snapshot_controls(default_request: PipelineRunRequest) 
             key='verification_manual_inputs',
         )
         manual_inputs = Path(manual_inputs_raw) if manual_inputs_raw.strip() else None
+        runtime_state_overlay_raw = path_cols[3].text_input(
+            'Verification runtime overlay',
+            value='' if default_request.runtime_state_overlay is None else str(default_request.runtime_state_overlay),
+            key='verification_runtime_state_overlay',
+        )
+        runtime_state_overlay = runtime_state_overlay_raw.strip() or None
         config_cols = st.columns(2)
         perk_policy_preset = config_cols[0].selectbox(
             'Verification perk plan',
@@ -842,6 +948,7 @@ def _render_verification_snapshot_controls(default_request: PipelineRunRequest) 
                     preset=default_request.preset,
                     state_mode=default_request.state_mode,
                     manual_inputs=manual_inputs,
+                    runtime_state_overlay=runtime_state_overlay,
                     perk_mode='max_progression_policy',
                     include_slow_audits=include_slow_audits,
                     perk_state='auto',
@@ -1595,6 +1702,7 @@ def _render_stats_debug_tools(active_artifacts, comparison_artifacts: list[tuple
             FastCheckpointRequest(
                 ids=request.ids,
                 manual_inputs=request.manual_inputs,
+                runtime_state_overlay=request.runtime_state_overlay,
                 preset=preset,
                 state_mode=verification_state_mode,
                 perk_mode=request.perk_mode,
@@ -2024,7 +2132,7 @@ def _require_boss_wave_payload_rows(boss_payload: dict, field_name: str) -> list
 
 def _render_boss_waves(request: PipelineRunRequest) -> None:
     st.subheader('Boss Waves')
-    control_cols = st.columns(5)
+    control_cols = st.columns(6)
     preset_name = control_cols[0].selectbox('Boss loadout', options=['Farming', 'Tourney', 'Milestone'], index=['Farming', 'Tourney', 'Milestone'].index(request.preset) if request.preset in {'Farming', 'Tourney', 'Milestone'} else 0)
     perk_policy_preset = control_cols[1].selectbox(
         'Perk plan',
@@ -2036,23 +2144,44 @@ def _render_boss_waves(request: PipelineRunRequest) -> None:
         ),
         key='boss_waves_perk_plan',
     )
-    tier_number = control_cols[2].number_input('Tier', min_value=1, max_value=21, value=14, step=1)
-    end_wave = control_cols[3].number_input('End wave', min_value=10, value=10000, step=10)
-    boss_wave_step = control_cols[4].number_input('Checkpoint cadence (bosses)', min_value=1, max_value=1000, value=1, step=1)
-    scenario_request = replace(request, preset=preset_name, perk_policy_preset=perk_policy_preset)
+    run_type_options = ('none', *BOSS_WAVE_DISSONANCE_RUN_CATEGORIES)
+    requested_run_type = str(request.dissonance_run_category or 'none')
+    dissonance_run_category = control_cols[2].selectbox(
+        'Run type',
+        options=run_type_options,
+        index=run_type_options.index(requested_run_type) if requested_run_type in run_type_options else 0,
+        format_func=lambda value: BOSS_WAVE_DISSONANCE_RUN_LABELS.get(str(value), str(value)),
+        key='boss_waves_run_type',
+    )
+    tier_number = control_cols[3].number_input('Tier', min_value=1, max_value=21, value=14, step=1)
+    end_wave = control_cols[4].number_input('End wave', min_value=10, value=10000, step=10)
+    boss_wave_step = control_cols[5].number_input('Checkpoint cadence (bosses)', min_value=1, max_value=1000, value=1, step=1)
+    scenario_request = replace(
+        request,
+        preset=preset_name,
+        perk_policy_preset=perk_policy_preset,
+        dissonance_run_category=dissonance_run_category,
+    )
     stop_on_failure = True
     tournament_wave_override = 0
     if preset_name == 'Tourney':
         tournament_wave_override = st.number_input('Legends tournament wave', min_value=1, value=100, step=10)
 
+    with st.expander('Recommended model assumptions', expanded=False):
+        st.caption(
+            'Optional session-local overrides for this Boss Waves run. These do not change IDS, KB, or QE truth; '
+            'nonzero manual combat fields override the recommended values.'
+        )
+        use_recommended_model_assumptions = st.toggle('Use recommended model assumptions', value=False)
+        st.dataframe(_boss_wave_recommended_model_assumption_frame(), width='stretch', hide_index=True)
+
     with st.expander('Combat assumptions', expanded=False):
-        runtime_cols = st.columns(6)
+        runtime_cols = st.columns(5)
         orb_boss_total_damage_pct = runtime_cols[0].number_input('Orb damage to boss (total %)', min_value=0.0, max_value=100.0, value=6.0, step=0.1)
         electron_total_damage_pct = runtime_cols[1].number_input('Electron damage override (total %)', min_value=0.0, max_value=100.0, value=0.0, step=0.1)
-        flame_bot_boss_hit_chance_pct = runtime_cols[2].number_input('Flame Bot boss hit chance (%)', min_value=0.0, max_value=100.0, value=50.0, step=1.0)
-        flame_bot_damage_reduction_pct = runtime_cols[3].number_input('Flame Bot DR override (%)', min_value=0.0, max_value=100.0, value=0.0, step=1.0)
-        boss_time_to_contact_seconds = runtime_cols[4].number_input('Boss time to contact override (s)', min_value=0.0, max_value=120.0, value=0.0, step=0.1)
-        death_wave_health_max_wave = runtime_cols[5].number_input('Death Wave maxed wave', min_value=1, value=1000, step=10)
+        flame_bot_damage_reduction_pct = runtime_cols[2].number_input('Flame Bot DR override (%)', min_value=0.0, max_value=100.0, value=0.0, step=1.0)
+        boss_time_to_contact_seconds = runtime_cols[3].number_input('Boss time to contact override (s)', min_value=0.0, max_value=120.0, value=0.0, step=0.1)
+        death_wave_health_max_wave = runtime_cols[4].number_input('Death Wave maxed wave', min_value=1, value=1000, step=10)
         use_manual_damage_calibration = st.toggle('Override boss damage calibration', value=False)
         boss_applicable_damage_factor = 0.0
         boss_edamage_target_share = 0.0
@@ -2067,6 +2196,11 @@ def _render_boss_waves(request: PipelineRunRequest) -> None:
             boss_edamage_cadence_uptime_factor = bridge_cols[1].number_input('Boss cadence uptime', min_value=0.0, value=0.0, step=0.0001, format='%.6f')
             boss_edamage_reliability_factor = bridge_cols[2].number_input('Boss reliability', min_value=0.0, value=0.0, step=0.0001, format='%.6f')
             boss_edamage_semantic_normalizer = bridge_cols[3].number_input('Boss semantic normalizer', min_value=0.0, value=0.0, step=0.0001, format='%.6f')
+        terminal_cols = st.columns(4)
+        fleet_terminal_max_wave = terminal_cols[0].number_input('Fleet terminal wave', min_value=0, value=0, step=10)
+        elite_terminal_max_wave = terminal_cols[1].number_input('Elite terminal wave', min_value=0, value=0, step=10)
+        protector_terminal_max_wave = terminal_cols[2].number_input('Protector terminal wave', min_value=0, value=0, step=10)
+        armored_terminal_max_wave = terminal_cols[3].number_input('Armored terminal wave', min_value=0, value=0, step=10)
     decomposed_bridge_inputs = {
         **({'boss_edamage_target_share': boss_edamage_target_share} if boss_edamage_target_share > 0.0 else {}),
         **({'boss_edamage_cadence_uptime_factor': boss_edamage_cadence_uptime_factor} if boss_edamage_cadence_uptime_factor > 0.0 else {}),
@@ -2076,14 +2210,22 @@ def _render_boss_waves(request: PipelineRunRequest) -> None:
     scenario_runtime_inputs = {
         'orb_boss_total_damage_pct': orb_boss_total_damage_pct,
         **({'electron_total_damage_pct': electron_total_damage_pct} if electron_total_damage_pct > 0.0 else {}),
-        **({'flame_bot_boss_hit_chance_pct': flame_bot_boss_hit_chance_pct} if flame_bot_boss_hit_chance_pct > 0.0 else {}),
         **({'flame_bot_damage_reduction_pct': flame_bot_damage_reduction_pct} if flame_bot_damage_reduction_pct > 0.0 else {}),
         **({'boss_applicable_damage_factor': boss_applicable_damage_factor} if boss_applicable_damage_factor > 0.0 else {}),
         **decomposed_bridge_inputs,
         **({'boss_time_to_contact_seconds': boss_time_to_contact_seconds} if boss_time_to_contact_seconds > 0.0 else {}),
+        **({'fleet_terminal_max_wave': fleet_terminal_max_wave} if fleet_terminal_max_wave > 0 else {}),
+        **({'elite_terminal_max_wave': elite_terminal_max_wave} if elite_terminal_max_wave > 0 else {}),
+        **({'protector_terminal_max_wave': protector_terminal_max_wave} if protector_terminal_max_wave > 0 else {}),
+        **({'armored_terminal_max_wave': armored_terminal_max_wave} if armored_terminal_max_wave > 0 else {}),
         **({'tournament_wave': int(tournament_wave_override)} if preset_name == 'Tourney' and int(tournament_wave_override) > 0 else {}),
         'death_wave_health_max_wave': death_wave_health_max_wave,
     }
+    if use_recommended_model_assumptions:
+        scenario_runtime_inputs = {
+            **_boss_wave_recommended_model_runtime_inputs(),
+            **scenario_runtime_inputs,
+        }
     try:
         boss_calc_start = time.perf_counter()
         boss_payload = build_boss_wave_payload(
@@ -2094,6 +2236,7 @@ def _render_boss_waves(request: PipelineRunRequest) -> None:
             boss_wave_step=int(boss_wave_step),
             stop_on_failure=stop_on_failure,
             scenario_runtime_inputs=scenario_runtime_inputs,
+            dissonance_run_category=dissonance_run_category,
         )
         boss_calc_elapsed = time.perf_counter() - boss_calc_start
     except Exception as exc:
@@ -2114,7 +2257,7 @@ def _render_boss_waves(request: PipelineRunRequest) -> None:
     payload_diagnostics = dict(boss_payload.get('diagnostics') or {})
     primitive_inputs = dict(payload_diagnostics.get('replacement_primitive_inputs') or {})
     primitive_values = dict(primitive_inputs.get('values') or {})
-    boss_damage_source = primitive_values.get('gc_boss_damage_source') or 'unknown'
+    boss_damage_source = primitive_values.get('boss_damage_source') or primitive_values.get('gc_boss_damage_source') or 'unknown'
     payload_download = dict(boss_payload.get('download') or {})
     diagnostics = {
         'preset_name': payload_diagnostics.get('preset_name') or preset_name,
@@ -2139,6 +2282,8 @@ def _render_boss_waves(request: PipelineRunRequest) -> None:
         'selected_first_failed_wave': int(payload_summary.get('selected_first_failed_wave') or 0),
         'selected_model': payload_summary.get('selected_model') or 'unified_hit_by_hit_boss_survival',
         'first_failed_wave': int(payload_summary.get('first_failed_wave') or 0),
+        'pre_contact_boss_kill_max_wave': int(payload_summary.get('pre_contact_boss_kill_max_wave') or 0),
+        'pre_contact_boss_kill_first_failed_wave': int(payload_summary.get('pre_contact_boss_kill_first_failed_wave') or 0),
         'gc_pre_contact_max_wave': int(payload_summary.get('gc_pre_contact_max_wave') or 0),
         'gc_pre_contact_first_failed_wave': int(payload_summary.get('gc_pre_contact_first_failed_wave') or 0),
         'contact_envelope_max_wave': int(payload_summary.get('contact_envelope_max_wave') or 0),
@@ -2151,6 +2296,20 @@ def _render_boss_waves(request: PipelineRunRequest) -> None:
         'checkpoint_mode': payload_diagnostics.get('checkpoint_mode') or 'actual_boss_cadence_with_sampling',
         'stop_on_failure': bool(payload_diagnostics.get('stop_on_failure')),
         'scenario_runtime_inputs': dict(payload_diagnostics.get('scenario_runtime_inputs') or {}),
+        'dissonance_run_category': payload_summary.get('dissonance_run_category') or payload_diagnostics.get('dissonance_run_category') or dissonance_run_category,
+        'dissonance_run_label': payload_summary.get('dissonance_run_label') or BOSS_WAVE_DISSONANCE_RUN_LABELS.get(dissonance_run_category, str(dissonance_run_category)),
+        'terminal_pressure_limiter': payload_summary.get('terminal_pressure_limiter') or payload_diagnostics.get('terminal_pressure_limiter'),
+        'terminal_pressure_limited': bool(payload_summary.get('terminal_pressure_limited') or payload_diagnostics.get('terminal_pressure_limited')),
+        'unsupported_pressure_missing_reference_blocked': bool(
+            payload_summary.get('unsupported_pressure_missing_reference_blocked')
+            or payload_diagnostics.get('unsupported_pressure_missing_reference_blocked')
+        ),
+        'unsupported_pressure_reference_limit': dict(
+            payload_summary.get('unsupported_pressure_reference_limit')
+            or payload_diagnostics.get('unsupported_pressure_reference_limit')
+            or {}
+        ),
+        'unsupported_terminal_pressures': list(payload_diagnostics.get('unsupported_terminal_pressures') or []),
         'execution_mode': payload_diagnostics.get('execution_mode'),
         'checkpoint_resolution_mode': payload_diagnostics.get('checkpoint_resolution_mode'),
         'qe_resolution_count': int(payload_diagnostics.get('qe_resolution_count') or 0),
@@ -2162,10 +2321,23 @@ def _render_boss_waves(request: PipelineRunRequest) -> None:
     }
 
     st.metric('Max Boss Wave', diagnostics['selected_max_wave'])
+    if diagnostics['terminal_pressure_limited']:
+        cap = diagnostics['unsupported_pressure_reference_limit']
+        if diagnostics['unsupported_pressure_missing_reference_blocked']:
+            st.caption(
+                f"Blocked by `{diagnostics['terminal_pressure_limiter']}`; "
+                f"uncapped boss-only wave `{cap.get('uncapped_selected_max_wave') or '—'}`."
+            )
+        else:
+            st.caption(
+                f"Capped by `{diagnostics['terminal_pressure_limiter']}`; "
+                f"uncapped boss-only wave `{cap.get('uncapped_selected_max_wave') or '—'}`."
+            )
     st.caption(f"Result uses `{diagnostics['selected_model']}`. Calculated in `{boss_calc_elapsed:.2f}s`.")
     st.caption(
         f"`{diagnostics['preset_name']}` loadout; `{perk_policy_preset}` perk plan; "
-        f"`{diagnostics['tier_column']}`; boss cadence `{diagnostics['actual_boss_interval_waves'] or '—'}` waves; "
+        f"`{diagnostics['tier_column']}`; `{diagnostics['dissonance_run_label']}`; "
+        f"boss cadence `{diagnostics['actual_boss_interval_waves'] or '—'}` waves; "
         f"perks `{'on' if diagnostics['perks_enabled'] else 'off'}`; "
         f"damage source `{boss_damage_source}`."
     )
@@ -2174,8 +2346,13 @@ def _render_boss_waves(request: PipelineRunRequest) -> None:
     milestone_alignment = diagnostics['milestone_alignment']
     milestone_reference = milestone_alignment.get('reference_wave')
     if milestone_reference:
+        reference_label = (
+            'IDS Dissonant PB'
+            if milestone_alignment.get('active_reference_kind') == 'ids_dissonant_pb_wave'
+            else 'IDS milestone'
+        )
         st.caption(
-            f"IDS milestone reference: `{milestone_alignment.get('tier_column')}` wave `{milestone_reference}`; "
+            f"{reference_label} reference: `{milestone_alignment.get('tier_column')}` wave `{milestone_reference}`; "
             f"solver delta `{milestone_alignment.get('delta_waves')}` waves."
         )
     contract = dict(boss_payload.get('contract') or {})
@@ -2243,7 +2420,7 @@ def _render_boss_waves(request: PipelineRunRequest) -> None:
                 stop_on_failure=True,
                 scenario_runtime_inputs=scenario_runtime_inputs,
                 loadout_policy_presets=BOSS_WAVE_PERK_POLICY_PRESETS,
-                dissonance_run_categories=('none',),
+                dissonance_run_categories=(dissonance_run_category,),
             )
             matrix_elapsed = time.perf_counter() - matrix_start
             matrix_rows = matrix_payload.get('rows') or []

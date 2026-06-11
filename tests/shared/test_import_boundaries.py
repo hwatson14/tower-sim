@@ -95,6 +95,10 @@ _APP_NON_ORCHESTRATION_OWNERSHIP_MARKERS = re.compile(
     r"^\s*(?:def|class)\s+("
     r"StatQueryKernel|DependencyRegistry|FamilyBaselineMaterializer|"
     r"compute_(?:ehp|edamage|eecon)|"
+    r"_timed_dr_source|_circle_overlap_area|"
+    r"_boss_wave_(?:contact_time_seconds|hit_interval_seconds|acp_active_fraction|"
+    r"timed_dr_by_lane_from_sources|flame_bot_static_hit_chance|"
+    r"flame_bot_hit_timing_weighted_boss_hit_chance)|"
     r"(?:build_)?(?:recommendation|advisor|scor(?:e|er)|objective|ranker|simulate|materialize|resolve_stats)"
     r")\b",
     re.MULTILINE,

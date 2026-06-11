@@ -26,6 +26,12 @@ def main() -> int:
     parser.add_argument('--manual-inputs', type=Path, default=None,
                         help='Optional path to manual_inputs.yaml override (default: input/manual_inputs.yaml)')
     parser.add_argument(
+        '--runtime-state-overlay',
+        type=str,
+        default=None,
+        help='Optional named manual_inputs.yaml:runtime_state_overlays entry to apply for this calculation only.',
+    )
+    parser.add_argument(
         '--perk-mode',
         type=str,
         default='max_progression_policy',
@@ -67,6 +73,54 @@ def main() -> int:
         type=float,
         default=None,
         help='Optional matrix runtime input: total orb damage to boss percent.',
+    )
+    parser.add_argument(
+        '--boss-wave-flame-bot-boss-hit-chance-pct',
+        type=float,
+        default=None,
+        help='Optional matrix runtime override: average chance that Flame Bot DR applies to boss hits. Omit to use the static Boss Waves path-overlap estimate.',
+    )
+    parser.add_argument(
+        '--boss-wave-flame-bot-damage-reduction-pct',
+        type=float,
+        default=None,
+        help='Optional matrix runtime override: Flame Bot damage reduction percent.',
+    )
+    parser.add_argument(
+        '--boss-wave-flame-bot-duration-seconds',
+        type=float,
+        default=None,
+        help='Optional matrix runtime input: Flame Bot active duration in seconds.',
+    )
+    parser.add_argument(
+        '--boss-wave-flame-bot-cooldown-seconds',
+        type=float,
+        default=None,
+        help='Optional matrix runtime input: Flame Bot cooldown in seconds.',
+    )
+    parser.add_argument(
+        '--boss-wave-fleet-terminal-max-wave',
+        type=float,
+        default=None,
+        help='Optional matrix runtime closure: max wave before fleet non-boss pressure ends the run.',
+    )
+    parser.add_argument(
+        '--boss-wave-elite-terminal-max-wave',
+        type=float,
+        default=None,
+        help='Optional matrix runtime closure: max wave before elite non-boss pressure ends the run.',
+    )
+    parser.add_argument(
+        '--boss-wave-protector-terminal-max-wave',
+        type=float,
+        default=None,
+        help='Optional matrix runtime closure: max wave before protector non-boss pressure ends the run.',
+    )
+    parser.add_argument(
+        '--boss-wave-armored-terminal-max-wave',
+        type=float,
+        default=None,
+        help='Optional matrix runtime closure: max wave before armored non-boss pressure ends the run.',
     )
     parser.add_argument(
         '--boss-wave-bridge-target-share',

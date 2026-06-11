@@ -6,7 +6,7 @@ Date: 2026-04-09
 Owner: Harry  
 Primary execution agents: ChatGPT, Codex, other AI tooling  
 Primary human operator: Harry  
-Repo baseline covered here: `tower-sim-src.zip` extracted as latest uploaded repo snapshot on 2026-04-09  
+Repo baseline covered here: current live local repo, truth-synced from the original `tower-sim-src.zip` baseline through the active v49 worktree  
 Supersedes for active execution scope:
 - `TowerSim_bible_v47.md`
 - `TowerSim_bible_v48.md`
@@ -24,14 +24,14 @@ It is the single active build constitution for the current TowerSim handoff stat
 It exists so a coding agent can answer, without improvising:
 
 1. What TowerSim is currently trying to become.
-2. What is true in the latest uploaded repo baseline.
+2. What is true in the current live repo baseline.
 3. What counts as in scope right now.
 4. What architecture and ownership rules must not be violated.
 5. What must happen next, in what order, and what counts as done.
 
 ### Evidence labels used in this document
 
-- **Verified-live**: directly confirmed from the uploaded v47/v48 bibles, the latest uploaded repo, extracted repo files, current committed artifacts, or current tests inspected in this pass.
+- **Verified-live**: directly confirmed from the uploaded v47/v48 bibles, current live repo files, current committed/generated artifacts, or current tests inspected in this pass.
 - **Verified-imported**: preserved from earlier audited bible content and retained because it still expresses a useful contract, but not freshly re-proven from live code in this pass.
 - **Decision**: active execution choice or governance rule locked for the current scope.
 - **Inference**: reasoned conclusion consistent with inspected evidence, but not yet proven by implementation or benchmark rerun.
@@ -74,10 +74,10 @@ This is broader than “finish Workshop” and narrower than “finish the whole
 
 Bible v48 was a strong staged continuation document, but it was still anchored to the older `tower-sim-src v11.zip` baseline and a visible-stat-first program that deferred simulator delivery and preserved a separate future evaluator-kernel design asset.
 
-The latest uploaded repo plus the current thread instructions materially change that operating frame:
+The live repo plus the current thread instructions materially change that operating frame:
 
-- the uploaded repo is newer than the v48 baseline
-- repo governance files still describe a maintenance-stabilization / hygiene-complete state rather than the actual next implementation program
+- the live repo is newer than the v48 baseline
+- repo governance files contain active v49 Streamlit-first simulator/stat program records, while historical maintenance-stabilization notes remain preserved as context
 - the repo already moved beyond at least part of the old Workshop completeness gap, specifically `Interest / Wave` and `Wall Rebuild`
 - the user has now locked the active product target as Streamlit-first, with every canonical stat visible and the max-waves simulator delivered, and has explicitly asked for the old kernel document to be consolidated into the bible rather than retained as a second authority
 
@@ -91,8 +91,7 @@ This document has been built against:
 
 - `TowerSim_bible_v47.md`
 - `TowerSim_bible_v48.md`
-- latest uploaded repo `tower-sim-src.zip`
-- extracted latest repo snapshot under `/mnt/data/tower_repo`
+- latest live local repo snapshot
 - current root governance files inspected from that repo:
   - `ACTIVE_TRANCHE.md`
   - `BURNDOWN.yaml`
@@ -102,9 +101,15 @@ This document has been built against:
 - current implementation files inspected directly:
   - `app/pipeline.py`
   - `app/streamlit_inspector.py`
-  - `simulators/run_executor.py`
+  - `qe/run_plan.py`
+  - `simulators/evaluator_kernel.py`
+  - `simulators/timing.py`
+  - `simulators/scenario.py`
   - `tests/app/test_stats_dashboard_contract.py`
-  - `tests/simulators/test_run_executor.py`
+  - `tests/app/test_pipeline_functional.py`
+  - `tests/simulators/test_evaluator_kernel.py`
+  - `tests/simulators/test_core_smoke.py`
+  - `tests/shared/test_import_boundaries.py`
 - current committed artifacts inspected directly:
   - `out/run_stats_query_rows_start_of_run.json`
   - `out/run_stats_query_rows_max_progression.json`
@@ -124,6 +129,7 @@ v49 makes these material changes:
 4. Removes separate live authority for any companion kernel spec.
 5. Preserves the visible-stat contract, performance contract, migration discipline, and deletion-gated cutover rules from v48.
 6. Explicitly records that the latest repo appears to have closed part of the old Workshop gap, so Codex must not reopen already-fixed issues.
+7. Truth-syncs the simulator authority from the removed `simulators/run_executor.py` row-engine to the current Boss Waves replacement path centered on `qe.run_plan`, `simulators.evaluator_kernel`, `simulators.timing`, `simulators.scenario`, and sanctioned app orchestration.
 
 ---
 
@@ -238,7 +244,7 @@ Therefore:
 For the current scope, authority order is:
 
 1. this bible
-2. live repo code, tests, and committed artifacts in the latest uploaded repo
+2. live repo code, tests, and committed artifacts in the current local repo
 3. repo root governance files, only where they do not conflict with this bible
 4. earlier bibles, only for preserved context
 5. any older companion spec, only insofar as its useful clauses have been explicitly absorbed here
@@ -279,6 +285,39 @@ Ownership remains:
 - `app/streamlit_inspector.py` owns UI presentation only
 - `tests/` own regression protection and contract enforcement
 
+### 3.2A Simulator timing and geometry ownership
+
+**Verified-live + Decision**
+
+Timing is an active simulator owner surface.
+
+`simulators/timing.py` owns time-based mechanics and reusable timing calculations, including:
+
+- wave duration and Wave Accelerator timing
+- cooldown/duration uptime fractions
+- boss contact time and boss hit interval calculations
+- Energy Net hold and mastery damage-window timing
+- timed damage-reduction source construction and lane composition
+- time-limited damage windows used by Boss Waves diagnostics and kernel consumers
+
+`app/` may pass inputs into these helpers and publish their outputs, but must not own duplicate timing math.
+
+Geometry is a separate simulator concern, but it is not yet a formal direct file in the live architecture.
+
+Current live contracts already anticipate geometry state via `geometry_dirty`, `geometry_recompute_count`, and `geometry_context`. A future geometry tranche may add `simulators/geometry.py`, but doing so must update:
+
+- `ARCHITECTURE.md`
+- `REPO_INDEX.yaml`
+- matching import/inventory boundary tests
+- call sites that currently hold spatial calculations in the timing/Boss Waves path
+
+Expected split:
+
+- timing owns **when** something is active, how long it lasts, and how timing windows overlap
+- geometry owns **where** things are, range/radius normalization, area/path overlap, and spatial hit probability
+
+Until the geometry tranche is explicitly implemented, no code may invent a second geometry authority or add a new simulator file without the architecture inventory update.
+
 ### 3.3 Current repo truth snapshot
 
 **Verified-live**
@@ -290,8 +329,7 @@ The latest extracted repo currently contains, at top level:
 
 Current truth that matters most:
 
-- repo governance still frames the active state as maintenance stabilization / hygiene complete
-- that governance state is stale relative to the product target locked in this thread
+- root governance contains active v49 Streamlit-first canonical stat and simulator program records, while some historical entries still preserve earlier cutover notes and stale maintenance wording
 - current Streamlit tab order is:
   - Input
   - QE
@@ -301,15 +339,14 @@ Current truth that matters most:
   - Checks
 - current Streamlit already has an interactive Boss Waves surface
 - `app/pipeline.py` wires `build_boss_wave_payload(...)`
-- that payload currently uses:
-  - `simulators.run_executor.RunToMaxConfig`
-  - `build_start_of_run_state(...)`
-  - `build_boss_wave_table(...)`
-- `simulators/run_executor.py` already contains:
-  - `run_to_max(...)`
-  - `build_boss_wave_table(...)`
-  - `RunToMaxConfig`
-- `tests/simulators/test_run_executor.py` already exercises max-wave stepping and benchmark-shape smoke
+- `build_boss_wave_payload(...)` is the sanctioned product orchestration surface for Boss Waves payload assembly
+- Boss Waves replacement product behavior is centered on:
+  - `qe.run_plan` for compiled RunPlan/common-trajectory primitives and staged contributor bundles
+  - `simulators.evaluator_kernel.build_scenario_overlay_table(...)` for Table 2 scenario overlays, boss TTK/TTD, lane evaluation, and selected survival semantics
+  - `simulators.timing` for boss contact time, hit interval, timed DR source/lane semantics, Energy Net timing, Flame Bot timing-weighted hit chance, and time-limited damage windows
+  - `simulators.scenario`, `simulators.progression`, `simulators.perk_timeline_generator`, `simulators.perk_timeline_state`, and `simulators.wave_progression_policy` for scenario, progression, and perk/run-state behavior
+- `simulators/run_executor.py` has been removed from the live repo and must not be recreated as a compatibility shim
+- replacement-era simulator verification is through `tests/simulators/test_evaluator_kernel.py`, `tests/simulators/test_core_smoke.py`, `tests/simulators/test_boss_waves_parity_shadow.py`, and product-facing app tests
 - current committed query-row artifacts include:
   - `state::economy.interest_per_wave_pct`
   - `state::wall.rebuild_seconds`
@@ -319,16 +356,12 @@ Current truth that matters most:
 
 **Verified-live + Decision**
 
-The root repo governance is currently behind the real program.
-
-Examples:
-
-- `ACTIVE_TRANCHE.md` says the maintenance stabilization / hygiene tranche is complete and warns against widening into new mechanic work.
-- `BURNDOWN.yaml` still declares maintenance stabilization as the active mode and baseline.
-- that is no longer the correct active instruction for this handoff
+Earlier root governance lagged behind the v49 product program. The live governance files have since been partly truth-synced, but historical completion notes still appear in them.
 
 Rule:
-- Codex must not follow the stale maintenance-tranche framing over this bible.
+- Codex must treat this bible as the active product scope.
+- root governance files are execution-control companions only where they agree with this bible and live implementation reality.
+- stale historical notes must not be used to revive removed code paths or older completion claims.
 - v49 is the scope reset and active build constitution.
 
 ---
@@ -540,19 +573,20 @@ The simulator program for the current scope is:
 
 **Verified-live + Decision**
 
-The active simulator implementation authority for the current stage is the live repo path centered on:
+The active simulator implementation authority for the current stage is the live replacement path centered on:
 
-- `simulators/run_executor.py`
-- `simulators/progression.py`
-- `simulators/timing.py`
-- `simulators/perk_timeline_generator.py`
-- `simulators/perk_timeline_state.py`
-- `simulators/wave_progression_policy.py`
-- sanctioned app wiring in `app/pipeline.py`
+- sanctioned app wiring in `app/pipeline.py`, especially `build_boss_wave_payload(...)`
+- `qe/run_plan.py` for compiled RunPlan/common-trajectory inputs and staged contributor bundles
+- `simulators/evaluator_kernel.py` for Boss Waves Table 2 overlay rows, boss TTK/TTD, lane evaluation, and selected survivability semantics
+- `simulators/timing.py` for timing/wave projection and reusable timing mechanics
+- `simulators/scenario.py` for scenario projection and tier battle-condition surfaces
+- `simulators/progression.py` and `simulators/wave_progression_policy.py` for progression and skip mechanics
+- `simulators/perk_timeline_generator.py` and `simulators/perk_timeline_state.py` for perk timeline generation and perk state application
 
 Important implication:
 - there is no separate active kernel spec
 - the useful clauses from the old companion spec are consolidated here
+- `simulators/run_executor.py` has been removed and must not be recreated as a compatibility shim
 - future simulator work must improve or replace the active path only by parity-proven cutover and deletion, not by leaving dual primary authorities
 
 ### 5.3 Current live simulator shape
@@ -561,13 +595,12 @@ Important implication:
 
 The current repo already exposes:
 
-- `build_boss_wave_table(...)`
-- `run_to_max(...)`
-- `RunToMaxConfig`
 - a Streamlit “Boss Waves” surface that currently routes through `build_boss_wave_payload(...)`
-- current sanctioned Streamlit wiring visibly exposes the boss-wave table path, while `run_to_max(...)` exists as live simulator code but is not yet clearly a first-class Streamlit product surface
-- max-wave tests that step boss waves and stop when survival margin goes negative
-- warm-path benchmark-shape smoke in simulator tests
+- replacement-backed operator rows, summary rows, diagnostics, and optional all-tier milestone matrix output through sanctioned app orchestration
+- `qe.run_plan` compiled common-trajectory and survivability contributor inputs
+- `simulators.evaluator_kernel.build_scenario_overlay_table(...)` as the replacement Boss Waves kernel
+- `simulators.timing` helpers for contact time, hit interval, timed DR, Flame Bot timing/hit chance, Energy Net timing, and wave duration
+- replacement-era tests that cover evaluator-kernel rows, Boss Waves product payloads, timing engine helpers, import boundaries, and parity/certification behavior
 
 ### 5.4 What the max-waves simulator must mean
 
@@ -1015,7 +1048,7 @@ Performance is complete for this stage only when:
 
 Truthful completion also requires:
 
-- stale root governance no longer misstates the active program
+- active root governance records no longer misstate the active program, and any preserved historical wording is clearly subordinate to this bible and live implementation reality
 - duplicate authority has been removed or explicitly demoted
 - no old doc or old execution seam still looks like the primary path for the current scope
 - tests and docs materially agree about the completed scope
@@ -1029,7 +1062,9 @@ Minimum command set to use during this program:
 - `python -m app.run_stats`
 - targeted pytest for touched surfaces
 - `pytest tests/app/test_stats_dashboard_contract.py -q`
-- `pytest tests/simulators/test_run_executor.py -q`
+- `pytest tests/simulators/test_evaluator_kernel.py -q`
+- `pytest tests/simulators/test_core_smoke.py -q`
+- `pytest tests/simulators/test_boss_waves_parity_shadow.py -q` when Boss Waves product/parity behavior is touched
 - broader pytest when a stage claims closure
 - inspection of committed outputs relevant to visible query rows and run results
 
@@ -1046,7 +1081,7 @@ Rule:
 
 **Decision**
 
-Do not infer from the current repo’s root governance that the active work is still only maintenance stabilization.
+Do not infer from historical governance notes or old completion records that the active work is still only maintenance stabilization. Current root governance is an execution-control companion, not product authority over this Bible.
 
 ### 10.2 Do not infer from v48 that the old Workshop gap list is still current truth
 
@@ -1096,11 +1131,12 @@ The active TowerSim program is now: finish the Streamlit-first canonical stat pr
 
 Most important delta items confirmed in the latest repo:
 
-- root governance still describes maintenance stabilization / hygiene as the active completed tranche
+- root governance contains active v49 Streamlit-first canonical stat and simulator program records, with historical completion notes and stale maintenance wording still present as context
 - current Streamlit already has an operational Boss Waves surface
-- `app/pipeline.py` currently wires boss-wave payloads through `simulators/run_executor.py`
-- `run_to_max(...)` already exists in the active simulator surface
-- simulator tests already cover boss-wave stepping and warm-path benchmark shape
+- `app/pipeline.py` currently wires Boss Waves payloads through `build_boss_wave_payload(...)`
+- Boss Waves product behavior uses the replacement path centered on `qe.run_plan`, `simulators.evaluator_kernel`, and `simulators.timing`
+- `simulators/run_executor.py` has been removed from the live repo and is not an active compatibility fallback
+- simulator tests now cover replacement-kernel rows, timing ownership, Boss Waves product behavior, and parity/certification behavior
 - committed query-row artifacts include:
   - `state::economy.interest_per_wave_pct`
   - `state::wall.rebuild_seconds`

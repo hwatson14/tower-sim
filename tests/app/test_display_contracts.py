@@ -183,6 +183,12 @@ def test_workshop_stats_renderer_uses_grouped_phase_headers_and_totals():
     assert "colspan='20'" in html
     assert '250' in html
     assert '300' in html
+    top_header_row = html.split('</tr>', 1)[0]
+    second_header_row = html.split('</tr>', 2)[1]
+    assert '>Cap<' in top_header_row
+    assert '>Recon<' in top_header_row
+    assert '>Cap<' not in second_header_row
+    assert '>Recon<' not in second_header_row
     assert html.index('>Relics<') < html.index('>Subtotal<') < html.index('>Module<')
     assert html.index('>Start of Run<') < html.index('>Max Workshop<') < html.index('>Perks<')
     assert html.index('>Perks<') < html.index('>Cap<') < html.index('>Recon<')

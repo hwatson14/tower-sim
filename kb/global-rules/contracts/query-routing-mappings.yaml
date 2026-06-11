@@ -385,6 +385,9 @@ card_target_surface_to_destination:
   waves.spawn_rate_acceleration:
   - runtime_mechanic_param
   - cards.wave_accelerator.spawn_rate_acceleration
+  waves.wave_cooldown_reduction_pct:
+  - runtime_mechanic_param
+  - cards.wave_accelerator.wave_cooldown_reduction_pct
   waves.skip_chance:
   - runtime_mechanic_param
   - cards.wave_skip.chance_pct
@@ -664,7 +667,7 @@ card_name_fallback_destination:
   - package_chance_pct
   wave accelerator:
   - runtime_mechanic_param
-  - cards.wave_accelerator.spawn_rate_acceleration
+  - cards.wave_accelerator.wave_cooldown_reduction_pct
   second wind:
   - capability
   - capability.second_wind.enabled

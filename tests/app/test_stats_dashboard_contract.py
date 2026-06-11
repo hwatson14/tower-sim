@@ -357,7 +357,7 @@ def test_stats_dashboard_live_guardian_scout_rows_publish_cumulative_bits_and_gr
     assert scout_rows['Range Bonus']['start_of_run_value'] == 'x2'
     assert scout_rows['Range Bonus']['reconciliation_status'] == 'green'
     totals_rows = {row.get('name'): row for row in (sections['Totals'].get('rows') or [])}
-    assert totals_rows['Total']['bits_spent'] == '692'
+    assert totals_rows['Total']['bits_spent'] == '921'
 
 
 def test_stats_dashboard_primary_bot_operator_table_uses_start_of_run_only_surface():
@@ -3330,10 +3330,10 @@ def test_stats_dashboard_primary_bot_operator_table_uses_start_of_run_only_surfa
     assert amplify_rows['Range']['start_of_run_value'] == '0m'
     assert amplify_rows['Range']['module_effects'] == '+ 15'
     assert amplify_rows['Range']['reconciliation_status'] == 'green'
-    assert golden_rows['Range']['start_of_run_value'] == '69m'
+    assert golden_rows['Range']['start_of_run_value'] == '70m'
     assert golden_rows['Range']['module_effects'] == '+ 15'
     assert golden_rows['Range']['reconciliation_status'] == 'green'
-    assert totals_rows['Total']['medals_spent'] == '1940'
+    assert totals_rows['Total']['medals_spent'] == '1980'
 
 
 def test_stats_dashboard_primary_modules_panel_publishes_grouped_summary_rows():
@@ -3362,7 +3362,7 @@ def test_stats_dashboard_primary_modules_panel_publishes_grouped_summary_rows():
     assert by_key[('', 'Assist %')]['armor'] == '1%'
     assert by_key[('Primary', 'Module')]['generator'] == 'Singularity Harness'
     assert by_key[('Assist', 'Module')]['cannon'] == '—'
-    assert by_key[('Current', 'Multiplier')]['core'] == 'x12.54'
+    assert by_key[('Current', 'Multiplier')]['core'] == 'x13.53'
     assert ('Recon', 'Recon') not in by_key
 
 
@@ -3561,5 +3561,5 @@ def test_stats_dashboard_primary_uw_operator_table_wires_module_other_and_recon_
     assert chrono_rows['Cooldown']['reconciliation_status'] == 'green'
     assert chrono_rows['Speed Reduction']['stone_value'] == '70%'
     assert chrono_rows['Speed Reduction']['module_effects'] == '2.25%'
-    assert chrono_rows['Speed Reduction']['start_of_run_value'] == '72.25%'
+    assert chrono_rows['Speed Reduction']['start_of_run_value'] == '72.85%'
     assert chrono_rows['Speed Reduction']['reconciliation_status'] == 'green'

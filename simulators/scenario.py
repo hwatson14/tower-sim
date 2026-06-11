@@ -40,9 +40,10 @@ def normalize_els_reduction_to_fraction(value: float | None) -> float:
     """Return an absolute EALS/EHLS probability subtraction.
 
     KB tables store late-tier reductions as fractions of 1, while older
-    user-facing inputs may provide display percentage points.
+    user-facing inputs may provide display percentage points. Tournament
+    magnitudes are signed penalties, so normalize them by magnitude.
     """
-    v = max(0.0, float(value or 0.0))
+    v = abs(float(value or 0.0))
     if v > 1.0:
         return v / 100.0
     return v
@@ -215,6 +216,7 @@ class ScenarioSurfaces:
     #   Not boss-v1-relevant for wall survival model. Deferred to v2.
     # mass_enforcement: T17+ tier BC, mostly MISSING in KB. Deferred.
     deferred_bc_note: str = "group3_enemy_ultimates_and_mass_enforcement_deferred_to_v2"
+    unsupported_terminal_pressures: tuple[str, ...] = field(default_factory=tuple)
 
     # ── Diagnostics ──
     bc_source: str = ""
@@ -278,6 +280,63 @@ def _load_boss_enemy_class_resistances() -> Dict[str, float]:
                     except ValueError:
                         pass
     return out
+
+
+_TIER_BC_UNSUPPORTED_TERMINAL_PRESSURE_IDS: Dict[str, str] = {
+    "protectors_ultimate": "protector_ultimate_deferred",
+    "boss_ultimate": "boss_ultimate_deferred",
+    "basics_ultimate": "basic_ultimate_deferred",
+    "fasts_ultimate": "fast_ultimate_deferred",
+    "scatter_ultimate": "scatter_ultimate_deferred",
+    "ray_ultimate": "ray_ultimate_deferred",
+    "vampire_ultimate": "vampire_ultimate_deferred",
+    "mass_enforcement": "mass_enforcement_deferred",
+}
+
+
+def _tier_bc_entry_is_present(entry: Dict[str, str] | None) -> bool:
+    if not entry:
+        return False
+    return bool(str(entry.get("kind") or "").strip() or str(entry.get("value") or "").strip())
+
+
+def _append_unique(values: list[str], value: str) -> None:
+    if value not in values:
+        values.append(value)
+
+
+def _unsupported_terminal_pressures_for_scenario(
+    *,
+    config: ScenarioConfig,
+    scenario: ScenarioSurfaces,
+    tier_bcs: Dict[int, Dict[str, Dict[str, str]]],
+    is_tournament: bool,
+) -> tuple[str, ...]:
+    pressures: list[str] = []
+    if scenario.bc_armored_enemies_blocked_hits > 0.0:
+        _append_unique(pressures, "armored_enemies_blocked_hits")
+    if 0.0 < scenario.bc_knockback_resistance < 1.0:
+        _append_unique(pressures, "knockback_resistance_non_boss_pressure")
+    if scenario.bc_enemy_speed_increase_pct > 0.0:
+        _append_unique(pressures, "enemy_speed_non_boss_pressure")
+    if scenario.bc_enemy_attack_speed_increase_pct > 0.0:
+        _append_unique(pressures, "enemy_attack_speed_non_boss_pressure")
+    if scenario.bc_more_enemies_pct > 0.0:
+        _append_unique(pressures, "more_enemies_non_boss_pressure")
+    if scenario.bc_death_defy_down_pp != 0.0:
+        _append_unique(pressures, "death_defy_down_terminal_pressure")
+    if scenario.bc_energy_shields_down_fraction > 0.0:
+        _append_unique(pressures, "energy_shields_down_terminal_pressure")
+    if scenario.overheat_more_fleets_active:
+        _append_unique(pressures, "overheat_more_fleets_terminal_pressure")
+    if scenario.overheat_more_elites_active:
+        _append_unique(pressures, "overheat_more_elites_terminal_pressure")
+    if not is_tournament:
+        tier_conditions = tier_bcs.get(int(config.tier), {})
+        for bc_id, pressure_id in _TIER_BC_UNSUPPORTED_TERMINAL_PRESSURE_IDS.items():
+            if _tier_bc_entry_is_present(tier_conditions.get(bc_id)):
+                _append_unique(pressures, pressure_id)
+    return tuple(pressures)
 
 
 # ═══════════════════════════════════════════════════════════════════════
@@ -624,6 +683,12 @@ def compute_scenario_surfaces(config: ScenarioConfig) -> ScenarioSurfaces:
     s.tower_orb_speed_rpm = config.tower_orb_speed_rpm
     s.electron_count = config.electron_count
 
+    s.unsupported_terminal_pressures = _unsupported_terminal_pressures_for_scenario(
+        config=config,
+        scenario=s,
+        tier_bcs=tier_bcs,
+        is_tournament=is_tournament,
+    )
     s.surfaces_status = "complete"
     return s
 

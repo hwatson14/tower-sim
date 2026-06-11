@@ -72,21 +72,57 @@ def test_uw_contributor_id_is_sourced_from_kb_mapping_surface() -> None:
 
 
 def test_audited_base_cards_have_kb_effect_registry_rows_with_explicit_target_surfaces() -> None:
-    path = Path(__file__).resolve().parents[2] / 'kb' / 'cards' / 'tables' / 'card-effect-registry.csv'
+    root = Path(__file__).resolve().parents[2]
+    path = root / 'kb' / 'cards' / 'tables' / 'card-effect-registry.csv'
+    entity_path = root / 'kb' / 'cards' / 'tables' / 'card-entity-registry.csv'
+    ladder_path = root / 'kb' / 'cards' / 'tables' / 'card-base-ladders.csv'
+    mastery_path = root / 'kb' / 'cards' / 'tables' / 'card-masteries.csv'
     rows = {}
+    mastery_rows = set()
     with path.open(newline='', encoding='utf-8') as fh:
         for row in csv.DictReader(fh):
             if row.get('layer') == 'base_card':
                 rows[row['card_id']] = row['target_surface']
+            if row.get('layer') == 'mastery':
+                mastery_rows.add(row['card_id'])
+    active_card_ids = set()
+    mastery_card_ids = set()
+    mastery_card_names = set()
+    with entity_path.open(newline='', encoding='utf-8') as fh:
+        for row in csv.DictReader(fh):
+            if row.get('status') == 'active_base_ladder_surface':
+                active_card_ids.add(row['card_id'])
+                if row.get('mastery_available') == 'yes':
+                    mastery_card_ids.add(row['card_id'])
+                    mastery_card_names.add(row['canonical_name'])
+    ladder_card_ids = set()
+    with ladder_path.open(newline='', encoding='utf-8') as fh:
+        for row in csv.DictReader(fh):
+            ladder_card_ids.add(row['card_id'])
+    mastery_ladder_names = set()
+    with mastery_path.open(newline='', encoding='utf-8') as fh:
+        for row in csv.DictReader(fh):
+            mastery_name = row.get('card_mastery')
+            if mastery_name == 'Package Chance':
+                mastery_name = 'Recovery Package Chance'
+            mastery_ladder_names.add(mastery_name)
+
+    assert sorted(active_card_ids - set(rows)) == []
+    assert sorted(active_card_ids - ladder_card_ids) == []
+    assert sorted(mastery_card_ids - mastery_rows) == []
+    assert sorted(mastery_card_names - mastery_ladder_names) == []
+    assert sorted(mastery_ladder_names - mastery_card_names) == []
 
     assert rows['AREA_OF_EFFECT'] == 'cards.aoe.level'
     assert rows['BERSERKER'] == 'cards.berserker.absorbed_damage_pct'
+    assert rows['CASH'] == 'economy.cash_multiplier'
     assert rows['DEATH_RAY'] == 'cards.death_ray.duration_seconds'
     assert rows['DEMON_MODE'] == 'cards.demon_mode.duration_seconds'
     assert rows['ENEMY_BALANCE'] == 'enemy_balance.runtime_bonus'
     assert rows['ENERGY_NET'] == 'cards.energy_net.duration_seconds'
     assert rows['ENERGY_SHIELD'] == 'cards.energy_shield.recharge_cooldown_seconds'
     assert rows['FORTRESS'] == 'tower.defense_absolute_multiplier'
+    assert rows['HEALTH_REGEN'] == 'tower.health_regen_multiplier'
     assert rows['LAND_MINE_STUN'] == 'cards.land_mine_stun.duration_seconds'
     assert rows['NUKE'] == 'cards.nuke.enemy_fraction_pct'
     assert rows['RANGE'] == 'tower.range_multiplier'
@@ -95,5 +131,5 @@ def test_audited_base_cards_have_kb_effect_registry_rows_with_explicit_target_su
     assert rows['SLOW_AURA'] == 'cards.slow_aura.enemy_speed_pct'
     assert rows['SUPER_TOWER'] == 'cards.super_tower.bonus_multiplier'
     assert rows['ULTIMATE_CRIT'] == 'cards.ultimate_crit.chance_pct'
-    assert rows['WAVE_ACCELERATOR'] == 'waves.spawn_rate_acceleration'
+    assert rows['WAVE_ACCELERATOR'] == 'waves.wave_cooldown_reduction_pct'
     assert rows['WAVE_SKIP'] == 'waves.skip_chance'

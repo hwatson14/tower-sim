@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import csv
+import math
 from dataclasses import dataclass, field, replace
 from fractions import Fraction
 from math import gcd
@@ -26,6 +27,10 @@ from qe.models import StatInput
 ROOT = Path(__file__).resolve().parents[1]
 ORB_BOSS_HIT_LEVELS_TABLE = ROOT / "kb" / "global-rules" / "tables" / "note-derived-orb-boss-hit-levels-1-10.csv"
 WAVE_TIMING_BASELINES_TABLE = ROOT / "kb" / "global-rules" / "tables" / "wave-timing-baselines.csv"
+BOSS_CONTACT_REFERENCE_TOWER_RANGE_M = 69.5
+BOSS_CONTACT_WALL_RADIUS_M = 20.0
+FLAME_BOT_HIT_INTEGRATION_STEPS = 64
+FLAME_BOT_HIT_TIMING_SAMPLE_CAP = 64
 
 
 def _sid(surface_id: str) -> str:
@@ -48,6 +53,580 @@ def _uptime(duration: float, cooldown: float) -> float:
     return min(1.0, max(0.0, duration) / total)
 
 
+def bounded_fraction(value: object) -> float:
+    try:
+        raw = float(value or 0.0)
+    except (TypeError, ValueError):
+        return 0.0
+    return max(0.0, min(1.0, raw))
+
+
+def bounded_percent_fraction(value: object) -> float:
+    try:
+        raw = float(value or 0.0)
+    except (TypeError, ValueError):
+        return 0.0
+    if raw <= 0.0:
+        return 0.0
+    return min(100.0, raw) / 100.0
+
+
+def positive_factor(value: object, *, default: float = 1.0) -> float:
+    try:
+        factor = float(value or 0.0)
+    except (TypeError, ValueError):
+        return default
+    return factor if factor > 0.0 else default
+
+
+def duration_over_cooldown_uptime_fraction(duration_seconds: object, cooldown_seconds: object) -> float:
+    duration = max(0.0, float(duration_seconds or 0.0))
+    cooldown = max(0.0, float(cooldown_seconds or 0.0))
+    if duration <= 0.0 or cooldown <= 0.0:
+        return 0.0
+    return min(1.0, duration / cooldown)
+
+
+def timed_effect_lane_fractions(
+    *,
+    effect_fraction: object,
+    duration_seconds: object = 0.0,
+    cooldown_seconds: object = 0.0,
+    explicit_uptime_fraction: object | None = None,
+) -> dict[str, float]:
+    effect = bounded_fraction(effect_fraction)
+    if explicit_uptime_fraction is None:
+        uptime = duration_over_cooldown_uptime_fraction(duration_seconds, cooldown_seconds)
+    else:
+        uptime = bounded_fraction(explicit_uptime_fraction)
+    if effect <= 0.0 or uptime <= 0.0:
+        return {"min": 0.0, "avg": 0.0, "max": 0.0}
+    if uptime >= 1.0:
+        return {"min": effect, "avg": effect, "max": effect}
+    return {"min": 0.0, "avg": bounded_fraction(effect * uptime), "max": effect}
+
+
+def timed_dr_source_by_lane(
+    source: Mapping[str, object],
+    *,
+    binary_avg_hit_threshold: float,
+) -> dict[str, float]:
+    dr_fraction = bounded_percent_fraction(source.get('damage_reduction_pct'))
+    uptime_fraction = bounded_fraction(source.get('uptime_fraction'))
+    if bool(source.get('binary_outcome')):
+        hit_dr = dr_fraction if uptime_fraction > 0.0 else 0.0
+        avg_dr = hit_dr if uptime_fraction >= binary_avg_hit_threshold else 0.0
+        return {'min': 0.0, 'avg': avg_dr, 'max': hit_dr}
+    if uptime_fraction >= 1.0:
+        return {'min': dr_fraction, 'avg': dr_fraction, 'max': dr_fraction}
+    return {'min': 0.0, 'avg': dr_fraction * uptime_fraction, 'max': dr_fraction}
+
+
+def timed_dr_source(
+    *,
+    damage_reduction_pct: object,
+    duration_seconds: object | None,
+    cooldown_seconds: object | None,
+    explicit_uptime_fraction: object | None = None,
+    explicit_uptime_source: str = 'explicit_uptime_fraction',
+    primitive_status: str = 'runtime_primitives',
+    binary_outcome: bool = False,
+    binary_avg_hit_threshold: float = 1.0,
+) -> dict[str, float | str | bool]:
+    dr_fraction = bounded_percent_fraction(damage_reduction_pct)
+    try:
+        reported_dr_pct = float(damage_reduction_pct or 0.0)
+    except (TypeError, ValueError):
+        reported_dr_pct = 0.0
+    if explicit_uptime_fraction is not None:
+        uptime = bounded_fraction(explicit_uptime_fraction)
+        source = str(explicit_uptime_source)
+    elif duration_seconds is None or cooldown_seconds is None:
+        uptime = 0.0
+        source = 'not_provided'
+    else:
+        try:
+            cooldown = float(cooldown_seconds or 0.0)
+        except (TypeError, ValueError):
+            cooldown = 0.0
+        if cooldown <= 0.0:
+            uptime = 0.0
+            source = 'not_provided'
+        else:
+            uptime = duration_over_cooldown_uptime_fraction(duration_seconds, cooldown_seconds)
+            source = 'duration_over_cooldown'
+    probability_weighted_dr = dr_fraction * uptime
+    return {
+        'damage_reduction_pct': reported_dr_pct,
+        'duration_seconds': float(duration_seconds or 0.0),
+        'cooldown_seconds': float(cooldown_seconds or 0.0),
+        'uptime_fraction': uptime,
+        'uptime_source': source,
+        'effective_dr_fraction': probability_weighted_dr,
+        'probability_weighted_dr_fraction': probability_weighted_dr,
+        'binary_outcome': bool(binary_outcome),
+        'encounter_hit_chance_fraction': uptime if binary_outcome else 0.0,
+        'deterministic_hit_dr_fraction': (
+            dr_fraction
+            if binary_outcome and uptime >= float(binary_avg_hit_threshold)
+            else 0.0
+        ),
+        'binary_avg_hit_threshold': (
+            float(binary_avg_hit_threshold)
+            if binary_outcome
+            else 0.0
+        ),
+        'lane_policy': (
+            'binary_outcome_min_miss_avg_near_certain_hit_max_hit_probability_reported_separately'
+            if binary_outcome
+            else 'timed_uptime_min_miss_avg_probability_weighted_max_full'
+        ),
+        'primitive_status': str(primitive_status),
+    }
+
+
+def timed_dr_lanes_from_sources(
+    sources: Mapping[str, Mapping[str, object]],
+    *,
+    binary_avg_hit_threshold: float,
+    excluded_source_names: Iterable[str] = (),
+) -> dict[str, float]:
+    excluded = {str(name) for name in excluded_source_names}
+    lane_products = {'min': 1.0, 'avg': 1.0, 'max': 1.0}
+    for source_name, source in sources.items():
+        if str(source_name) in excluded:
+            continue
+        lane_dr = timed_dr_source_by_lane(
+            dict(source),
+            binary_avg_hit_threshold=binary_avg_hit_threshold,
+        )
+        for lane_id, lane_fraction in lane_dr.items():
+            lane_products[lane_id] *= 1.0 - float(lane_fraction)
+    return {
+        lane_id: max(0.0, min(1.0, 1.0 - product))
+        for lane_id, product in lane_products.items()
+    }
+
+
+def boss_contact_time_seconds(
+    *,
+    explicit_contact_time_seconds: object | None = None,
+    chrono_field_duration_seconds: object = 0.0,
+    chrono_field_cooldown_seconds: object = 0.0,
+    chrono_field_slow_pct: object = 0.0,
+    slow_aura_enemy_speed_pct: object = 0.0,
+    energy_net_duration_seconds: object = 0.0,
+    base_seconds: float = 2.0,
+) -> tuple[float, str, dict[str, float]]:
+    if explicit_contact_time_seconds is not None:
+        contact_time = max(0.0, float(explicit_contact_time_seconds))
+        return (
+            contact_time,
+            'runtime_input_boss_time_to_contact_seconds',
+            {
+                'base_seconds': float(base_seconds),
+                'chrono_field_average_slow_fraction': 0.0,
+                'slow_aura_fraction': 0.0,
+                'speed_remaining_fraction': 1.0,
+                'energy_net_hold_seconds': 0.0,
+            },
+        )
+    cf_uptime = duration_over_cooldown_uptime_fraction(
+        chrono_field_duration_seconds,
+        chrono_field_cooldown_seconds,
+    )
+    cf_average_slow = bounded_percent_fraction(chrono_field_slow_pct) * cf_uptime
+    slow_aura = bounded_percent_fraction(slow_aura_enemy_speed_pct)
+    speed_remaining = max(0.01, (1.0 - cf_average_slow) * (1.0 - slow_aura))
+    energy_net_hold = max(0.0, float(energy_net_duration_seconds or 0.0))
+    contact_time = (float(base_seconds) / speed_remaining) + energy_net_hold
+    return (
+        contact_time,
+        'derived_base_2s_cf_slow_aura_energy_net',
+        {
+            'base_seconds': float(base_seconds),
+            'chrono_field_average_slow_fraction': cf_average_slow,
+            'slow_aura_fraction': slow_aura,
+            'speed_remaining_fraction': speed_remaining,
+            'energy_net_hold_seconds': energy_net_hold,
+        },
+    )
+
+
+def boss_hit_interval_seconds(
+    *,
+    explicit_hit_interval_seconds: object | None = None,
+    scenario_base_seconds: object = 2.0,
+    slow_aura_mastery_attack_interval_multiplier: object = 1.0,
+) -> tuple[float, str, dict[str, float]]:
+    scenario_base = max(0.0, float(scenario_base_seconds or 2.0))
+    if explicit_hit_interval_seconds is not None:
+        return (
+            max(0.0, float(explicit_hit_interval_seconds)),
+            'runtime_input_boss_hit_interval_seconds',
+            {
+                'scenario_base_seconds': scenario_base,
+                'slow_aura_mastery_attack_interval_multiplier': 1.0,
+            },
+        )
+    slow_aura_mastery_multiplier = positive_factor(
+        slow_aura_mastery_attack_interval_multiplier,
+        default=1.0,
+    )
+    return (
+        scenario_base * slow_aura_mastery_multiplier,
+        'scenario_boss_hit_interval_plus_slow_aura_mastery',
+        {
+            'scenario_base_seconds': scenario_base,
+            'slow_aura_mastery_attack_interval_multiplier': slow_aura_mastery_multiplier,
+        },
+    )
+
+
+def energy_net_mastery_damage_window_seconds(
+    *,
+    energy_net_duration_seconds: object,
+    energy_net_mastery_multiplier: object,
+) -> float:
+    duration = max(0.0, float(energy_net_duration_seconds or 0.0))
+    mastery_multiplier = positive_factor(energy_net_mastery_multiplier)
+    return duration + 10.0 if duration > 0.0 and mastery_multiplier > 1.0 else 0.0
+
+
+def shockwave_active_fraction(
+    *,
+    contact_time_seconds: object,
+    shockwave_interval_seconds: object,
+    effect_duration_seconds: float = 7.0,
+) -> tuple[float, float]:
+    try:
+        contact_time = max(0.0, float(contact_time_seconds or 0.0))
+        shockwave_interval = max(0.0, float(shockwave_interval_seconds or 0.0))
+    except (TypeError, ValueError):
+        return 0.0, 0.0
+    if contact_time <= 0.0 or shockwave_interval <= 0.0:
+        return 0.0, 0.0
+    hit_probability = min(1.0, contact_time / shockwave_interval)
+    active_fraction = min(1.0, hit_probability * min(1.0, float(effect_duration_seconds) / contact_time))
+    return hit_probability, active_fraction
+
+
+def circle_overlap_area(radius_a: float, radius_b: float, center_distance: float) -> float:
+    a = max(0.0, float(radius_a))
+    b = max(0.0, float(radius_b))
+    d = max(0.0, float(center_distance))
+    if a <= 0.0 or b <= 0.0:
+        return 0.0
+    if d >= a + b:
+        return 0.0
+    if d <= abs(a - b):
+        return math.pi * min(a, b) ** 2
+    a_sq = a * a
+    b_sq = b * b
+    d_sq = d * d
+    a_term = (d_sq + a_sq - b_sq) / (2.0 * d * a)
+    b_term = (d_sq + b_sq - a_sq) / (2.0 * d * b)
+    a_angle = math.acos(max(-1.0, min(1.0, a_term)))
+    b_angle = math.acos(max(-1.0, min(1.0, b_term)))
+    triangle = 0.5 * math.sqrt(
+        max(0.0, (-d + a + b) * (d + a - b) * (d - a + b) * (d + a + b))
+    )
+    return (a_sq * a_angle) + (b_sq * b_angle) - triangle
+
+
+def flame_bot_static_boss_hit_chance(
+    *,
+    tower_range_m: object,
+    flame_bot_effective_range_m: object,
+    flame_bot_cooldown_seconds: object,
+    boss_time_to_contact_seconds: object,
+    energy_net_hold_seconds: object,
+    boss_lifetime_seconds: object | None = None,
+    reference_tower_range_m: float = BOSS_CONTACT_REFERENCE_TOWER_RANGE_M,
+    wall_radius_m: float = BOSS_CONTACT_WALL_RADIUS_M,
+    integration_steps: int = FLAME_BOT_HIT_INTEGRATION_STEPS,
+) -> tuple[float, dict[str, object]]:
+    try:
+        actual_tower_range = max(0.0, float(tower_range_m or 0.0))
+        effective_range = max(0.0, float(flame_bot_effective_range_m or 0.0))
+        cooldown = max(0.0, float(flame_bot_cooldown_seconds or 0.0))
+        contact_time = max(0.0, float(boss_time_to_contact_seconds or 0.0))
+        net_hold = max(0.0, float(energy_net_hold_seconds or 0.0))
+        has_explicit_lifetime = boss_lifetime_seconds not in (None, '')
+        lifetime = (
+            max(0.0, float(boss_lifetime_seconds or 0.0))
+            if has_explicit_lifetime
+            else contact_time
+        )
+    except (TypeError, ValueError):
+        return 0.0, {'status': 'blocked_invalid_numeric_input'}
+    if actual_tower_range <= 0.0 or effective_range <= 0.0 or cooldown <= 0.0 or contact_time <= 0.0:
+        return 0.0, {
+            'status': 'blocked_missing_static_hit_primitives',
+            'tower_range_m': actual_tower_range,
+            'flame_bot_effective_range_m': effective_range,
+            'flame_bot_cooldown_seconds': cooldown,
+            'boss_time_to_contact_seconds': contact_time,
+        }
+
+    normalized_bot_radius = effective_range * (float(reference_tower_range_m) / actual_tower_range)
+    tower_area = math.pi * float(reference_tower_range_m) * float(reference_tower_range_m)
+
+    def spatial_fraction_at_radius(boss_radius: float) -> float:
+        overlap = circle_overlap_area(float(reference_tower_range_m), normalized_bot_radius, boss_radius)
+        return max(0.0, min(1.0, overlap / tower_area)) if tower_area > 0.0 else 0.0
+
+    movement_path_seconds = max(0.0, contact_time - min(net_hold, contact_time))
+    movement_seconds = min(lifetime, movement_path_seconds)
+    remaining_lifetime = max(0.0, lifetime - movement_seconds)
+    hold_seconds = min(remaining_lifetime, max(0.0, min(net_hold, contact_time)))
+    post_contact_seconds = max(0.0, remaining_lifetime - hold_seconds)
+    total_exposure_seconds = movement_seconds + hold_seconds + post_contact_seconds
+    steps = max(1, int(integration_steps))
+    movement_spatial = 0.0
+    if movement_seconds > 0.0:
+        movement_total = 0.0
+        integrated_path_fraction = (
+            max(0.0, min(1.0, movement_seconds / movement_path_seconds))
+            if movement_path_seconds > 0.0
+            else 0.0
+        )
+        for index in range(steps):
+            fraction = ((index + 0.5) / steps) * integrated_path_fraction
+            boss_radius = float(reference_tower_range_m) - (
+                (float(reference_tower_range_m) - float(wall_radius_m)) * fraction
+            )
+            movement_total += spatial_fraction_at_radius(boss_radius)
+        movement_spatial = movement_total / steps
+    wall_spatial = spatial_fraction_at_radius(float(wall_radius_m))
+    hold_spatial = wall_spatial if hold_seconds > 0.0 else 0.0
+    post_contact_spatial = wall_spatial if post_contact_seconds > 0.0 else 0.0
+    spatial_fraction = (
+        (
+            (movement_spatial * movement_seconds)
+            + (hold_spatial * hold_seconds)
+            + (post_contact_spatial * post_contact_seconds)
+        )
+        / total_exposure_seconds
+        if total_exposure_seconds > 0.0
+        else 0.0
+    )
+
+    activation_windows = total_exposure_seconds / cooldown
+    guaranteed_activations = int(math.floor(activation_windows))
+    partial_activation_fraction = activation_windows - guaranteed_activations
+    miss_fraction = (1.0 - spatial_fraction) ** guaranteed_activations
+    miss_fraction *= 1.0 - (spatial_fraction * partial_activation_fraction)
+    hit_fraction = max(0.0, min(1.0, 1.0 - miss_fraction))
+    return hit_fraction, {
+        'status': 'resolved',
+        'model': 'static_uniform_flame_bot_center_vs_boss_path',
+        'tower_range_reference_m': float(reference_tower_range_m),
+        'wall_radius_m': float(wall_radius_m),
+        'tower_range_m': actual_tower_range,
+        'flame_bot_effective_range_m': effective_range,
+        'normalized_flame_bot_radius_m': normalized_bot_radius,
+        'flame_bot_cooldown_seconds': cooldown,
+        'boss_time_to_contact_seconds': contact_time,
+        'boss_lifetime_seconds': lifetime,
+        'boss_lifetime_source': (
+            'explicit_boss_lifetime_seconds'
+            if has_explicit_lifetime
+            else 'boss_time_to_contact_seconds_fallback'
+        ),
+        'energy_net_hold_seconds': hold_seconds,
+        'movement_path_seconds': movement_path_seconds,
+        'movement_seconds': movement_seconds,
+        'movement_spatial_fraction': movement_spatial,
+        'energy_net_hold_spatial_fraction': hold_spatial,
+        'post_contact_seconds': post_contact_seconds,
+        'post_contact_spatial_fraction': post_contact_spatial,
+        'total_exposure_seconds': total_exposure_seconds,
+        'average_spatial_fraction': spatial_fraction,
+        'activation_windows': activation_windows,
+        'guaranteed_activations': guaranteed_activations,
+        'partial_activation_fraction': partial_activation_fraction,
+        'hit_fraction': hit_fraction,
+        'hit_chance_pct': hit_fraction * 100.0,
+        'hit_state_semantics': 'persistent_until_boss_death_after_first_flame_bot_hit',
+    }
+
+
+def flame_bot_hit_timing_weighted_boss_hit_chance(
+    *,
+    tower_range_m: object,
+    flame_bot_effective_range_m: object,
+    flame_bot_cooldown_seconds: object,
+    boss_time_to_contact_seconds: object,
+    energy_net_hold_seconds: object,
+    boss_lifetime_seconds: object,
+    boss_hits_to_player: object,
+    boss_hit_interval_seconds: object,
+    contact_window_hit_fraction: object,
+    boss_heat_up_damage_per_hit_pct: object,
+    sample_cap: int = FLAME_BOT_HIT_TIMING_SAMPLE_CAP,
+) -> tuple[float, dict[str, object]]:
+    lifetime_hit_chance, lifetime_components = flame_bot_static_boss_hit_chance(
+        tower_range_m=tower_range_m,
+        flame_bot_effective_range_m=flame_bot_effective_range_m,
+        flame_bot_cooldown_seconds=flame_bot_cooldown_seconds,
+        boss_time_to_contact_seconds=boss_time_to_contact_seconds,
+        energy_net_hold_seconds=energy_net_hold_seconds,
+        boss_lifetime_seconds=boss_lifetime_seconds,
+    )
+    if lifetime_components.get('status') != 'resolved':
+        return 0.0, lifetime_components
+    try:
+        hit_count = max(0, int(boss_hits_to_player or 0))
+        contact_time = max(0.0, float(boss_time_to_contact_seconds or 0.0))
+        hit_interval = max(0.0, float(boss_hit_interval_seconds or 0.0))
+        heat_pct = max(0.0, float(boss_heat_up_damage_per_hit_pct or 0.0))
+    except (TypeError, ValueError):
+        return 0.0, {'status': 'blocked_invalid_numeric_input'}
+    contact_hit_chance = bounded_fraction(contact_window_hit_fraction)
+    hit_weighted_chance = contact_hit_chance
+    sample_count = 0
+    if hit_count > 0 and contact_time > 0.0:
+        sample_count = min(hit_count, max(1, int(sample_cap)))
+        weighted_hit_chance_total = 0.0
+        hit_weight_total = 0.0
+        for sample_index in range(sample_count):
+            block_start = int(math.floor(sample_index * hit_count / sample_count))
+            block_end = int(math.floor((sample_index + 1) * hit_count / sample_count))
+            block_end = max(block_start + 1, block_end)
+            block_midpoint = (block_start + block_end - 1) / 2.0
+            block_weight = 0.0
+            for hit_index in range(block_start, block_end):
+                block_weight += 1.0 + heat_pct * hit_index
+            hit_time = contact_time + (block_midpoint * hit_interval)
+            hit_chance, hit_components = flame_bot_static_boss_hit_chance(
+                tower_range_m=tower_range_m,
+                flame_bot_effective_range_m=flame_bot_effective_range_m,
+                flame_bot_cooldown_seconds=flame_bot_cooldown_seconds,
+                boss_time_to_contact_seconds=boss_time_to_contact_seconds,
+                energy_net_hold_seconds=energy_net_hold_seconds,
+                boss_lifetime_seconds=hit_time,
+            )
+            if hit_components.get('status') != 'resolved':
+                continue
+            weighted_hit_chance_total += block_weight * hit_chance
+            hit_weight_total += block_weight
+        if hit_weight_total > 0.0:
+            hit_weighted_chance = max(0.0, min(1.0, weighted_hit_chance_total / hit_weight_total))
+    lifetime_components['contact_window_hit_fraction'] = contact_hit_chance
+    lifetime_components['lifetime_hit_fraction'] = lifetime_hit_chance
+    lifetime_components['hit_timing_weighted_hit_fraction'] = hit_weighted_chance
+    lifetime_components['hit_timing_weighted_hit_chance_pct'] = hit_weighted_chance * 100.0
+    lifetime_components['hit_timing_sample_count'] = sample_count
+    lifetime_components['boss_hits_to_player'] = hit_count
+    lifetime_components['boss_hit_interval_seconds'] = hit_interval
+    lifetime_components['damage_weight_source'] = 'boss_heat_up_damage_per_hit'
+    lifetime_components['hit_timing_semantics'] = (
+        'flame_bot_dr_counts_only_for_modeled_boss_hits_after_the_first_successful_tag'
+    )
+    return hit_weighted_chance, lifetime_components
+
+
+def time_limited_multiplier_boosted_seconds(
+    *,
+    start_seconds: object,
+    end_seconds: object,
+    multiplier_duration_seconds: object,
+) -> float:
+    start = max(0.0, float(start_seconds or 0.0))
+    end = max(start, float(end_seconds or 0.0))
+    multiplier_until = max(0.0, float(multiplier_duration_seconds or 0.0))
+    boosted_end = min(end, max(start, multiplier_until))
+    return max(0.0, boosted_end - start)
+
+
+def time_limited_multiplier_damage(
+    *,
+    start_seconds: object,
+    end_seconds: object,
+    damage_per_second: object,
+    multiplier: object,
+    multiplier_duration_seconds: object,
+) -> float:
+    start = max(0.0, float(start_seconds or 0.0))
+    end = max(start, float(end_seconds or 0.0))
+    dps = max(0.0, float(damage_per_second or 0.0))
+    if dps <= 0.0 or end <= start:
+        return 0.0
+    effect_multiplier = max(1.0, float(multiplier or 1.0))
+    boosted_seconds = time_limited_multiplier_boosted_seconds(
+        start_seconds=start,
+        end_seconds=end,
+        multiplier_duration_seconds=multiplier_duration_seconds,
+    )
+    base_seconds = max(0.0, end - start - boosted_seconds)
+    return dps * ((boosted_seconds * effect_multiplier) + base_seconds)
+
+
+def time_limited_multiplier_kill_seconds(
+    *,
+    start_seconds: object,
+    end_seconds: object,
+    hp_to_kill: object,
+    damage_per_second: object,
+    multiplier: object,
+    multiplier_duration_seconds: object,
+) -> float | None:
+    remaining = max(0.0, float(hp_to_kill or 0.0))
+    if remaining <= 0.0:
+        return max(0.0, float(start_seconds or 0.0))
+    start = max(0.0, float(start_seconds or 0.0))
+    end = max(start, float(end_seconds or 0.0))
+    dps = max(0.0, float(damage_per_second or 0.0))
+    if dps <= 0.0 or end <= start:
+        return None
+    effect_multiplier = max(1.0, float(multiplier or 1.0))
+    boosted_seconds = time_limited_multiplier_boosted_seconds(
+        start_seconds=start,
+        end_seconds=end,
+        multiplier_duration_seconds=multiplier_duration_seconds,
+    )
+    boosted_rate = dps * effect_multiplier
+    if boosted_rate > 0.0 and boosted_seconds > 0.0:
+        boosted_capacity = boosted_rate * boosted_seconds
+        if remaining <= boosted_capacity:
+            return start + (remaining / boosted_rate)
+        remaining -= boosted_capacity
+    base_seconds = max(0.0, end - start - boosted_seconds)
+    if dps > 0.0 and base_seconds > 0.0 and remaining <= dps * base_seconds:
+        return start + boosted_seconds + (remaining / dps)
+    return None
+
+
+def boss_pre_contact_damage_window(
+    *,
+    damage_per_second: object,
+    contact_seconds: object,
+    base_contact_seconds: object,
+    energy_net_hold_seconds: object,
+    energy_net_mastery_multiplier: object,
+    energy_net_damage_multiplier_duration_seconds: object,
+) -> dict[str, float]:
+    dps = max(0.0, float(damage_per_second or 0.0))
+    contact = max(0.0, float(contact_seconds or 0.0))
+    base_contact = max(0.0, float(base_contact_seconds or 0.0))
+    net_hold = max(0.0, float(energy_net_hold_seconds or 0.0))
+    movement_seconds = max(0.0, contact - net_hold)
+    mastery_multiplier = positive_factor(energy_net_mastery_multiplier)
+    mastery_window = max(0.0, float(energy_net_damage_multiplier_duration_seconds or 0.0))
+    boosted_seconds = min(contact, mastery_window) if mastery_multiplier > 1.0 else 0.0
+    base_window_damage = dps * contact
+    energy_net_incremental_damage = dps * max(0.0, mastery_multiplier - 1.0) * boosted_seconds
+    return {
+        'contact_time_exposure_factor': contact / base_contact if base_contact > 0.0 else 1.0,
+        'movement_time_exposure_factor': movement_seconds / base_contact if base_contact > 0.0 else 1.0,
+        'base_window_damage': base_window_damage,
+        'energy_net_boosted_seconds': boosted_seconds,
+        'energy_net_incremental_damage': energy_net_incremental_damage,
+        'timed_window_damage': base_window_damage + energy_net_incremental_damage,
+    }
+
+
 def _lcm(a: int, b: int) -> int:
     if a == 0 or b == 0:
         return max(a, b)
@@ -59,20 +638,42 @@ def _fraction_from_float(value: float) -> Fraction:
 
 
 @lru_cache(maxsize=1)
-def _load_wave_timing_baselines() -> Dict[str, float]:
-    out: Dict[str, float] = {}
+def _load_wave_timing_baseline_components() -> Dict[str, Dict[str, float]]:
+    out: Dict[str, Dict[str, float]] = {}
     with WAVE_TIMING_BASELINES_TABLE.open(newline='') as fh:
         for row in csv.DictReader(fh):
             mode_id = str(row.get('mode_id') or '').strip()
             if not mode_id:
                 continue
             try:
-                out[mode_id] = float(row['total_wave_duration_seconds'])
+                spawn_seconds = float(row['spawn_phase_seconds'])
+                cooldown_seconds = float(row['cooldown_phase_seconds'])
+                total_seconds = float(row['total_wave_duration_seconds'])
             except (TypeError, ValueError, KeyError):
-                raise ValueError(f'Invalid total_wave_duration_seconds row in {WAVE_TIMING_BASELINES_TABLE}: {row!r}.')
+                raise ValueError(f'Invalid wave timing baseline row in {WAVE_TIMING_BASELINES_TABLE}: {row!r}.')
+            out[mode_id] = {
+                'spawn_phase_seconds': spawn_seconds,
+                'cooldown_phase_seconds': cooldown_seconds,
+                'total_wave_duration_seconds': total_seconds,
+            }
     if 'farming' not in out or 'tournament' not in out:
         raise ValueError(f'{WAVE_TIMING_BASELINES_TABLE} must define farming and tournament base wave durations.')
     return out
+
+
+def _load_wave_timing_baselines() -> Dict[str, float]:
+    return {
+        mode_id: float(row['total_wave_duration_seconds'])
+        for mode_id, row in _load_wave_timing_baseline_components().items()
+    }
+
+
+def wave_duration_seconds_after_cooldown_reduction(mode_id: str, wave_cooldown_reduction_pct: float) -> float:
+    components = _load_wave_timing_baseline_components()[str(mode_id)]
+    spawn_seconds = max(0.0, float(components['spawn_phase_seconds']))
+    cooldown_seconds = max(0.0, float(components['cooldown_phase_seconds']))
+    cooldown_reduction = max(0.0, min(100.0, float(wave_cooldown_reduction_pct or 0.0))) / 100.0
+    return max(0.0, spawn_seconds + cooldown_seconds * (1.0 - cooldown_reduction))
 
 
 def shared_cycle_seconds(periods: Iterable[float]) -> float:
@@ -549,8 +1150,8 @@ def compile_timing_family_rows(
     )
     scenario = compute_scenario_surfaces(scenario_config)
     timing = compute_timing_surfaces(scenario_config, scenario)
-    wave_acceleration_pct = _wave_acceleration_pct_from_rows(bound.stat_inputs)
-    derived_rows = tuple(_timing_family_derived_rows(scenario_config, scenario, timing, wave_acceleration_pct))
+    wave_cooldown_reduction_pct = _wave_cooldown_reduction_pct_from_rows(bound.stat_inputs)
+    derived_rows = tuple(_timing_family_derived_rows(scenario_config, scenario, timing, wave_cooldown_reduction_pct))
     replaced_surface_keys = {
         (row.destination_object_type, row.destination_id)
         for row in derived_rows
@@ -733,10 +1334,10 @@ def _timing_family_derived_rows(
     config: ScenarioConfig,
     scenario: ScenarioSurfaces,
     timing: TimingSurfaces,
-    wave_acceleration_pct: float,
+    wave_cooldown_reduction_pct: float,
 ) -> tuple[StatInput, ...]:
-    base_wave_duration_seconds = _load_wave_timing_baselines()['tournament' if config.mode_id == 'tournament' else 'farming']
-    effective_wave_duration_seconds = max(0.0, base_wave_duration_seconds * (1.0 - (max(0.0, wave_acceleration_pct) / 100.0)))
+    mode_id = 'tournament' if config.mode_id == 'tournament' else 'farming'
+    effective_wave_duration_seconds = wave_duration_seconds_after_cooldown_reduction(mode_id, wave_cooldown_reduction_pct)
     return (
         StatInput(
             stat_name='Black Hole Effective Duration',
@@ -806,11 +1407,11 @@ def _timing_family_derived_rows(
     )
 
 
-def _wave_acceleration_pct_from_rows(rows: Sequence[StatInput]) -> float:
+def _wave_cooldown_reduction_pct_from_rows(rows: Sequence[StatInput]) -> float:
     for row in rows:
         if (
             row.destination_object_type == 'runtime_mechanic_param'
-            and row.destination_id == 'cards.wave_accelerator.spawn_rate_acceleration'
+            and row.destination_id == 'cards.wave_accelerator.wave_cooldown_reduction_pct'
             and row.active
         ):
             try:

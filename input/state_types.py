@@ -69,6 +69,8 @@ class BotUpgradeSnapshot:
     level: Optional[int]
     resolved_value: Optional[float]
     resolved_unit: Optional[str]
+    source: Optional[str] = None
+    value_kind: Optional[str] = None
 
 
 @dataclass(frozen=True)
@@ -134,6 +136,7 @@ class ScenarioProjectionState:
     projected_perks: bool = False
     death_wave_health: bool = False
     berserker_damage_bonus: bool = False
+    second_wind_mastery_regen: bool = False
 
     def to_debug_dict(self) -> Dict[str, bool]:
         return {
@@ -141,6 +144,7 @@ class ScenarioProjectionState:
             'projected_perks': bool(self.projected_perks),
             'death_wave_health': bool(self.death_wave_health),
             'berserker_damage_bonus': bool(self.berserker_damage_bonus),
+            'second_wind_mastery_regen': bool(self.second_wind_mastery_regen),
         }
 
 
@@ -182,6 +186,7 @@ class AccountState:
     default_preset: str
     raw_sections: Dict[str, List[List[str]]]
     dissonance_pbs_by_tier: Dict[str, Dict[str, int]] = field(default_factory=dict)
+    manual_override_sources: Dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
         return asdict(self)
@@ -281,6 +286,7 @@ def projection_state_for_mode(state_mode: str) -> ScenarioProjectionState:
             projected_perks=True,
             death_wave_health=True,
             berserker_damage_bonus=True,
+            second_wind_mastery_regen=True,
         )
     return ScenarioProjectionState()
 

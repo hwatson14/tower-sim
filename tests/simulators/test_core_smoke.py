@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import sys
+from dataclasses import replace
 from functools import lru_cache
 from pathlib import Path
 
@@ -72,16 +73,115 @@ def test_timing_public_api_is_importable__query_callables_exposed():
     assert callable(resolve_timing_consumer_bundle)
 
 
+def test_timing_engine_owns_boss_contact_dr_and_damage_windows():
+    from simulators.timing import (
+        boss_contact_time_seconds,
+        energy_net_mastery_damage_window_seconds,
+        flame_bot_static_boss_hit_chance,
+        shockwave_active_fraction,
+        time_limited_multiplier_damage,
+        time_limited_multiplier_kill_seconds,
+        timed_dr_lanes_from_sources,
+        timed_dr_source,
+        timed_effect_lane_fractions,
+    )
+
+    contact_time, source, components = boss_contact_time_seconds(
+        chrono_field_duration_seconds=50.0,
+        chrono_field_cooldown_seconds=60.0,
+        chrono_field_slow_pct=30.0,
+        slow_aura_enemy_speed_pct=0.0,
+        energy_net_duration_seconds=4.3,
+    )
+    assert source == 'derived_base_2s_cf_slow_aura_energy_net'
+    assert components['chrono_field_average_slow_fraction'] == pytest.approx(0.25)
+    assert components['energy_net_hold_seconds'] == pytest.approx(4.3)
+    assert contact_time == pytest.approx((2.0 / 0.75) + 4.3)
+
+    assert energy_net_mastery_damage_window_seconds(
+        energy_net_duration_seconds=4.3,
+        energy_net_mastery_multiplier=8.0,
+    ) == pytest.approx(14.3)
+    assert energy_net_mastery_damage_window_seconds(
+        energy_net_duration_seconds=4.3,
+        energy_net_mastery_multiplier=1.0,
+    ) == pytest.approx(0.0)
+
+    hit_probability, active_fraction = shockwave_active_fraction(
+        contact_time_seconds=10.0,
+        shockwave_interval_seconds=14.0,
+    )
+    assert hit_probability == pytest.approx(10.0 / 14.0)
+    assert active_fraction == pytest.approx(0.5)
+
+    dr_lanes = timed_effect_lane_fractions(
+        effect_fraction=0.8,
+        duration_seconds=36.0,
+        cooldown_seconds=46.0,
+    )
+    assert dr_lanes == pytest.approx({'min': 0.0, 'avg': 0.8 * (36.0 / 46.0), 'max': 0.8})
+
+    flame_dr_source = timed_dr_source(
+        damage_reduction_pct=95.0,
+        duration_seconds=None,
+        cooldown_seconds=5.0,
+        explicit_uptime_fraction=0.97,
+        primitive_status='test_binary_hit_model',
+        binary_outcome=True,
+        binary_avg_hit_threshold=0.95,
+    )
+    assert flame_dr_source['deterministic_hit_dr_fraction'] == pytest.approx(0.95)
+    assert flame_dr_source['probability_weighted_dr_fraction'] == pytest.approx(0.95 * 0.97)
+    assert timed_dr_lanes_from_sources(
+        {'flame_bot': flame_dr_source, 'black_hole_pbh': {'damage_reduction_pct': 80.0, 'uptime_fraction': 1.0}},
+        binary_avg_hit_threshold=0.95,
+        excluded_source_names=('black_hole_pbh',),
+    ) == pytest.approx({'min': 0.0, 'avg': 0.95, 'max': 0.95})
+
+    assert time_limited_multiplier_damage(
+        start_seconds=0.0,
+        end_seconds=10.0,
+        damage_per_second=100.0,
+        multiplier=2.0,
+        multiplier_duration_seconds=3.0,
+    ) == pytest.approx(1300.0)
+    assert time_limited_multiplier_kill_seconds(
+        start_seconds=0.0,
+        end_seconds=10.0,
+        hp_to_kill=1000.0,
+        damage_per_second=100.0,
+        multiplier=2.0,
+        multiplier_duration_seconds=3.0,
+    ) == pytest.approx(7.0)
+
+    flame_hit_chance, flame_components = flame_bot_static_boss_hit_chance(
+        tower_range_m=69.5,
+        flame_bot_effective_range_m=91.0,
+        flame_bot_cooldown_seconds=5.0,
+        boss_time_to_contact_seconds=6.3,
+        energy_net_hold_seconds=4.3,
+    )
+    assert flame_components['status'] == 'resolved'
+    assert flame_components['model'] == 'static_uniform_flame_bot_center_vs_boss_path'
+    assert flame_hit_chance == pytest.approx(flame_components['hit_fraction'])
+    assert flame_components['energy_net_hold_seconds'] == pytest.approx(4.3)
+
+
 def test_tier_enemy_level_skip_reduction_continues_expected_late_tier_pattern():
     from simulators.scenario import ScenarioConfig, _load_tier_battle_conditions, compute_scenario_surfaces, normalize_els_reduction_to_fraction
 
     tier_bcs = _load_tier_battle_conditions()
 
     assert normalize_els_reduction_to_fraction(0.025) == pytest.approx(0.025)
+    assert normalize_els_reduction_to_fraction(-0.08) == pytest.approx(0.08)
     assert normalize_els_reduction_to_fraction(2.5) == pytest.approx(0.025)
     assert 0.35 - normalize_els_reduction_to_fraction(0.025) == pytest.approx(0.325)
     assert compute_scenario_surfaces(ScenarioConfig(mode_id='farming', tier=14)).bc_enemy_level_skip_reduction_pp == pytest.approx(0.025)
     assert compute_scenario_surfaces(ScenarioConfig(mode_id='farming', tier=15)).bc_enemy_level_skip_reduction_pp == pytest.approx(0.05)
+    tournament = compute_scenario_surfaces(ScenarioConfig(mode_id='tournament', league='Legends', tournament_wave=100))
+    assert tournament.boss_wave_interval == 6
+    assert tournament.bc_enemy_level_skip_reduction_pp == pytest.approx(-0.08)
+    assert normalize_els_reduction_to_fraction(tournament.bc_enemy_level_skip_reduction_pp) == pytest.approx(0.08)
     assert float(tier_bcs[19]['enemy_level_skip_reduction']['value']) == pytest.approx(0.15)
     assert float(tier_bcs[20]['enemy_level_skip_reduction']['value']) == pytest.approx(0.175)
     assert float(tier_bcs[21]['enemy_level_skip_reduction']['value']) == pytest.approx(0.2)
@@ -104,6 +204,29 @@ def test_scenario_surface_owns_boss_interval_by_tier():
     assert compute_scenario_surfaces(ScenarioConfig(mode_id='farming', tier=14)).boss_wave_interval == 9
     assert compute_scenario_surfaces(ScenarioConfig(mode_id='farming', tier=15)).boss_wave_interval == 8
     assert compute_scenario_surfaces(ScenarioConfig(mode_id='farming', tier=16)).boss_wave_interval == 7
+
+
+def test_scenario_surface_flags_unsupported_terminal_pressure_by_tier():
+    from simulators.scenario import ScenarioConfig, compute_scenario_surfaces
+
+    t14 = compute_scenario_surfaces(ScenarioConfig(mode_id='farming', tier=14))
+    assert t14.unsupported_terminal_pressures == ()
+
+    t16 = compute_scenario_surfaces(ScenarioConfig(mode_id='farming', tier=16))
+    assert {
+        'armored_enemies_blocked_hits',
+        'knockback_resistance_non_boss_pressure',
+        'protector_ultimate_deferred',
+    } <= set(t16.unsupported_terminal_pressures)
+
+    t17 = compute_scenario_surfaces(ScenarioConfig(mode_id='farming', tier=17))
+    assert {
+        'armored_enemies_blocked_hits',
+        'knockback_resistance_non_boss_pressure',
+        'protector_ultimate_deferred',
+        'boss_ultimate_deferred',
+        'mass_enforcement_deferred',
+    } <= set(t17.unsupported_terminal_pressures)
 
 
 def test_simulator_modules_reference_qe_imports__expected_qe_strings_present():
@@ -194,6 +317,51 @@ def test_timing_family_statbook_is_native_family_backed():
     assert statbook.diagnostics["qe_resolution_backend"] == "native_family_query"
     assert statbook.diagnostics["qe_native_family_id"] == "timing_farm_with_perks"
     assert statbook.rows["support_surface::timing.wave_duration_seconds_effective"].status == "resolved"
+
+
+def test_timing_wave_duration_consumes_wave_accelerator_cooldown_not_mastery_spawn_rate():
+    from qe.routing import QEResolutionPlanner
+    from simulators.scenario import ScenarioConfig
+    from simulators.timing import wave_duration_seconds_after_cooldown_reduction, compile_timing_family_rows
+
+    state = _base_account_state()
+    wave_accelerator = replace(
+        state.cards_inventory["Wave Accelerator"],
+        mastery_unlocked=True,
+        mastery_lab_level=7,
+    )
+    mutated = replace(
+        state,
+        labs={**state.labs, "Wave Accelerator Mastery": 7},
+        cards_inventory={**state.cards_inventory, "Wave Accelerator": wave_accelerator},
+        card_presets={**state.card_presets, state.default_preset: ["Wave Accelerator"]},
+    )
+
+    bound, rows = compile_timing_family_rows(
+        account_state=mutated,
+        family_id="timing_farm_with_perks",
+        preset_name="Farming",
+        scenario_config=ScenarioConfig(mode_id="farming", tier=14),
+        perks_enabled=True,
+    )
+    statbook = QEResolutionPlanner().resolve_rows_declared_family_statbook(
+        identity=bound.binding.identity,
+        stat_inputs=rows,
+        family_id="timing_farm_with_perks",
+        requested_surface_ids=(
+            "state::cards.wave_accelerator.wave_cooldown_reduction_pct",
+            "state::cards.wave_accelerator.spawn_rate_acceleration",
+            "support_surface::timing.wave_duration_seconds_effective",
+        ),
+        notes="wave accelerator cooldown-only timing regression",
+        diagnostics={"source": "test"},
+    )
+
+    expected_duration = wave_duration_seconds_after_cooldown_reduction("farming", 54.0)
+    assert expected_duration == pytest.approx(30.14)
+    assert statbook.rows["state::cards.wave_accelerator.wave_cooldown_reduction_pct"].final_value == pytest.approx(54.0)
+    assert statbook.rows["state::cards.wave_accelerator.spawn_rate_acceleration"].final_value == pytest.approx(1.8)
+    assert statbook.rows["support_surface::timing.wave_duration_seconds_effective"].final_value == pytest.approx(expected_duration)
 
 
 def test_progression_native_family_statbook_does_not_touch_report_fallback(monkeypatch):
@@ -308,7 +476,29 @@ def test_scenario_farming_throughput_publication_is_importable_and_emits_scenari
         farming_hours_per_day=23.5,
     )
 
+    intro_sprint_waves = next(
+        row.value
+        for row in bound.stat_inputs
+        if row.destination_object_type == "runtime_mechanic_param"
+        and row.destination_id == "cards.intro_sprint.waves"
+        and row.active
+    )
+    wave_skip_pct = next(
+        row.value
+        for row in bound.stat_inputs
+        if row.destination_object_type == "runtime_mechanic_param"
+        and row.destination_id == "cards.wave_skip.chance_pct"
+        and row.active
+    )
+    target_farming_wave = timing_statbook.rows["support_surface::scenario.target_farming_wave"].final_value
+    expected_waves_per_run = (
+        target_farming_wave * (1.0 + (wave_skip_pct / 100.0))
+        + min(intro_sprint_waves, target_farming_wave)
+    )
+
+    assert intro_sprint_waves == pytest.approx(1440.0)
     assert timing_statbook.rows["support_surface::scenario.bosses_per_day_effective"].status == "resolved"
+    assert timing_statbook.rows["support_surface::scenario.waves_per_run_effective"].final_value == pytest.approx(expected_waves_per_run)
 
 
 def test_runtime_consumer_bundles_stay_within_declared_native_family_surfaces():

@@ -795,6 +795,7 @@ def test_scenario_projection_state__debug_payload_is_explicit():
         "projected_perks": True,
         "death_wave_health": True,
         "berserker_damage_bonus": False,
+        "second_wind_mastery_regen": False,
     }
 
 

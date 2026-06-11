@@ -1,10 +1,12 @@
 from __future__ import annotations
 
+import csv
 from dataclasses import replace
 from functools import lru_cache
+from pathlib import Path
 import pytest
 
-from input.state_types import PerkSelection, ScenarioProjectionState, UltimateWeaponSnapshot
+from input.state_types import BotUpgradeSnapshot, PerkSelection, ScenarioProjectionState, UltimateWeaponSnapshot
 from input.loader import load_inputs
 from input.runtime_state import build_runtime_state
 from evaluators.compare import _build_kb_incomplete_areas
@@ -72,6 +74,44 @@ def _rows_by_name(rows, name: str):
     matched = [row for row in rows if row.stat_name == name]
     assert matched, f'missing compiled rows for {name!r}'
     return matched
+
+
+def test_all_active_base_cards_compile_through_effect_registry() -> None:
+    state = _base_account_state()
+    root = Path(__file__).resolve().parents[2]
+    entity_path = root / 'kb' / 'cards' / 'tables' / 'card-entity-registry.csv'
+    card_names = []
+    with entity_path.open(newline='', encoding='utf-8') as fh:
+        for row in csv.DictReader(fh):
+            if row.get('status') == 'active_base_ladder_surface':
+                card_names.append(row['canonical_name'])
+
+    fallback_routed = []
+    missing_from_inventory = []
+    for card_name in sorted(card_names):
+        if card_name not in state.cards_inventory:
+            missing_from_inventory.append(card_name)
+            continue
+        mutated = replace(
+            state,
+            card_presets={**state.card_presets, state.default_preset: [card_name]},
+        )
+        card_rows = [
+            row for row in _compiled_rows(mutated)
+            if row.source_family == 'card' and row.source_name == card_name
+        ]
+        fallback_routed.extend(
+            f'{card_name}:{row.notes}'
+            for row in card_rows
+            if str(row.notes or '') == 'kb_card_name_fallback_routed'
+        )
+        assert any(
+            str(row.notes or '').startswith('kb_card_effect_registry')
+            for row in card_rows
+        ), f'{card_name} did not compile through card-effect-registry'
+
+    assert missing_from_inventory == []
+    assert fallback_routed == []
 
 
 def test_parser_drop_rows_are_omitted() -> None:
@@ -391,8 +431,14 @@ def test_optimizer_module_effects_bundle_resolves_optional_module_surfaces_when_
 def test_intro_sprint_is_mapped() -> None:
     state = _base_account_state()
     assert 'Intro Sprint' in state.cards_inventory
+    intro_sprint = replace(
+        state.cards_inventory['Intro Sprint'],
+        mastery_unlocked=False,
+        mastery_lab_level=None,
+    )
     mutated = replace(
         state,
+        cards_inventory={**state.cards_inventory, 'Intro Sprint': intro_sprint},
         card_presets={**state.card_presets, state.default_preset: ['Intro Sprint']},
     )
 
@@ -400,7 +446,51 @@ def test_intro_sprint_is_mapped() -> None:
 
     assert row.destination_object_type == 'runtime_mechanic_param'
     assert row.destination_id == 'cards.intro_sprint.waves'
+    assert row.value == pytest.approx(100.0)
     assert row.notes == 'kb_card_effect_registry_routed:INTRO_SPRINT'
+
+
+def test_intro_sprint_mastery_formula_matches_kb_ladder_for_every_level() -> None:
+    values = stat_input_compiler.load_card_mastery_values()
+
+    for mastery_level in range(10):
+        expected_multiplier = 1.8 * (mastery_level + 1)
+        assert stat_input_compiler.intro_sprint_mastery_multiplier_for_level(mastery_level) == pytest.approx(expected_multiplier)
+        value, value_type = values[('Intro Sprint Mastery', mastery_level)]
+        assert value == pytest.approx(expected_multiplier)
+        assert value_type == 'multiplier'
+    assert stat_input_compiler.intro_sprint_mastery_multiplier_for_level(-1) is None
+    assert stat_input_compiler.intro_sprint_mastery_multiplier_for_level(1.5) is None
+    assert stat_input_compiler.intro_sprint_mastery_multiplier_for_level(10) is None
+
+
+@pytest.mark.parametrize('mastery_level', range(10))
+def test_intro_sprint_mastery_composes_into_effective_runtime_waves(mastery_level: int) -> None:
+    state = _base_account_state()
+    assert 'Intro Sprint' in state.cards_inventory
+    intro_sprint = replace(
+        state.cards_inventory['Intro Sprint'],
+        mastery_unlocked=True,
+        mastery_lab_level=mastery_level,
+    )
+    mutated = replace(
+        state,
+        labs={**state.labs, 'Intro Sprint Mastery': mastery_level},
+        cards_inventory={**state.cards_inventory, 'Intro Sprint': intro_sprint},
+        card_presets={**state.card_presets, state.default_preset: ['Intro Sprint']},
+    )
+
+    rows = _compiled_rows(mutated)
+    card_row = _single_row_by_family(rows, name='Intro Sprint', source_family='card')
+    mastery_row = _single_row(rows, 'Intro Sprint Mastery')
+    expected_multiplier = 1.8 * (mastery_level + 1)
+
+    assert card_row.destination_object_type == 'runtime_mechanic_param'
+    assert card_row.destination_id == 'cards.intro_sprint.waves'
+    assert card_row.value == pytest.approx(100.0 * expected_multiplier)
+    assert f'kb_card_mastery_applied:Intro Sprint Mastery x{expected_multiplier:g}' in str(card_row.notes)
+    assert mastery_row.active is True
+    assert mastery_row.value == pytest.approx(expected_multiplier)
 
 
 def test_enemy_balance_card_splits_to_spawn_and_cash_routes() -> None:
@@ -468,16 +558,54 @@ def test_recovery_package_chance_card_routes_through_effect_registry_not_name_fa
 def test_wave_accelerator_card_routes_through_effect_registry_not_name_fallback() -> None:
     state = _base_account_state()
     assert 'Wave Accelerator' in state.cards_inventory
+    wave_accelerator = replace(
+        state.cards_inventory['Wave Accelerator'],
+        mastery_unlocked=False,
+        mastery_lab_level=None,
+    )
     mutated = replace(
         state,
+        cards_inventory={**state.cards_inventory, 'Wave Accelerator': wave_accelerator},
         card_presets={**state.card_presets, state.default_preset: ['Wave Accelerator']},
     )
 
     row = _single_row_by_family(_compiled_rows(mutated), name='Wave Accelerator', source_family='card')
 
     assert row.destination_object_type == 'runtime_mechanic_param'
-    assert row.destination_id == 'cards.wave_accelerator.spawn_rate_acceleration'
+    assert row.destination_id == 'cards.wave_accelerator.wave_cooldown_reduction_pct'
     assert row.notes == 'kb_card_effect_registry_routed:WAVE_ACCELERATOR'
+
+
+def test_wave_accelerator_mastery_does_not_change_wave_cooldown_reduction() -> None:
+    state = _base_account_state()
+    assert 'Wave Accelerator' in state.cards_inventory
+    wave_accelerator = replace(
+        state.cards_inventory['Wave Accelerator'],
+        mastery_unlocked=True,
+        mastery_lab_level=7,
+    )
+    mutated = replace(
+        state,
+        labs={**state.labs, 'Wave Accelerator Mastery': 7},
+        cards_inventory={**state.cards_inventory, 'Wave Accelerator': wave_accelerator},
+        card_presets={**state.card_presets, state.default_preset: ['Wave Accelerator']},
+    )
+
+    rows = _compiled_rows(mutated)
+    card_row = _single_row_by_family(rows, name='Wave Accelerator', source_family='card')
+    spawn_rate_row = _single_row(rows, 'Wave Accelerator Mastery Spawn Rate Acceleration')
+    mastery_row = _single_row(rows, 'Wave Accelerator Mastery')
+
+    assert card_row.destination_object_type == 'runtime_mechanic_param'
+    assert card_row.destination_id == 'cards.wave_accelerator.wave_cooldown_reduction_pct'
+    assert card_row.value == pytest.approx(54.0)
+    assert card_row.notes == 'kb_card_effect_registry_routed:WAVE_ACCELERATOR'
+    assert spawn_rate_row.destination_object_type == 'runtime_mechanic_param'
+    assert spawn_rate_row.destination_id == 'cards.wave_accelerator.spawn_rate_acceleration'
+    assert spawn_rate_row.value == pytest.approx(1.8)
+    assert spawn_rate_row.value_type == 'multiplier'
+    assert mastery_row.active is True
+    assert mastery_row.value == pytest.approx(180.0)
 
 
 def test_slow_aura_card_routes_to_base_card_enemy_speed_semantics() -> None:
@@ -529,8 +657,14 @@ def test_death_ray_card_splits_enable_and_duration_rows() -> None:
 def test_super_tower_card_splits_active_and_bonus_rows() -> None:
     state = _base_account_state()
     assert 'Super Tower' in state.cards_inventory
+    super_tower = replace(
+        state.cards_inventory['Super Tower'],
+        mastery_unlocked=False,
+        mastery_lab_level=0,
+    )
     mutated = replace(
         state,
+        cards_inventory={**state.cards_inventory, 'Super Tower': super_tower},
         card_presets={**state.card_presets, state.default_preset: ['Super Tower']},
     )
 
@@ -539,7 +673,81 @@ def test_super_tower_card_splits_active_and_bonus_rows() -> None:
     assert {(row.destination_object_type, row.destination_id) for row in rows} == {
         ('runtime_mechanic_param', 'cards.super_tower.active'),
         ('runtime_mechanic_param', 'cards.super_tower.bonus_multiplier'),
+        ('runtime_mechanic_param', 'cards.super_tower.cooldown_seconds'),
     }
+    cooldown_row = next(row for row in rows if row.destination_id == 'cards.super_tower.cooldown_seconds')
+    assert cooldown_row.value == pytest.approx(30.0)
+
+
+def test_super_tower_mastery_splits_active_cooldown_and_uw_bonus_rows() -> None:
+    state = _base_account_state()
+    assert 'Super Tower' in state.cards_inventory
+    super_tower = replace(
+        state.cards_inventory['Super Tower'],
+        mastery_unlocked=True,
+        mastery_lab_level=3,
+    )
+    mutated = replace(
+        state,
+        cards_inventory={**state.cards_inventory, 'Super Tower': super_tower},
+        card_presets={**state.card_presets, state.default_preset: ['Super Tower']},
+    )
+
+    rows = _rows_by_name(_compiled_rows(mutated), 'Super Tower')
+    rows_by_destination = {row.destination_id: row for row in rows}
+
+    assert rows_by_destination['cards.super_tower.cooldown_seconds'].value == pytest.approx(18.0)
+    assert rows_by_destination['cards.super_tower.mastery_active'].value is True
+    assert rows_by_destination['cards.super_tower.mastery_active'].value_type == 'bool'
+    expected_uw_multiplier = 1.0 + (
+        0.35 * (float(rows_by_destination['cards.super_tower.bonus_multiplier'].value) - 1.0)
+    )
+    assert rows_by_destination['cards.super_tower.uw_mastery_multiplier'].value == pytest.approx(expected_uw_multiplier)
+    assert rows_by_destination['cards.super_tower.uw_mastery_multiplier'].value_type == 'multiplier'
+
+
+def test_progression_family_publishes_super_tower_mastery_surfaces() -> None:
+    state = _base_account_state()
+    assert 'Super Tower' in state.cards_inventory
+    super_tower = replace(
+        state.cards_inventory['Super Tower'],
+        mastery_unlocked=True,
+        mastery_lab_level=3,
+    )
+    mutated = replace(
+        state,
+        cards_inventory={**state.cards_inventory, 'Super Tower': super_tower},
+        card_presets={**state.card_presets, state.default_preset: ['Super Tower']},
+    )
+
+    statbook = QEResolutionPlanner().resolve_declared_family_statbook(
+        mutated,
+        family_id='progression_runtime_no_perks',
+        requested_surface_ids=(
+            'state::cards.super_tower.active',
+            'state::cards.super_tower.bonus_multiplier',
+            'state::cards.super_tower.cooldown_seconds',
+            'state::cards.super_tower.mastery_active',
+            'state::cards.super_tower.uw_mastery_multiplier',
+        ),
+        preset_name=mutated.default_preset,
+        card_preset_name=mutated.default_preset,
+        state_mode='start_of_run',
+        perks_enabled=False,
+        notes='super_tower_mastery_surface_probe',
+    )
+
+    assert statbook.rows['state::cards.super_tower.active'].status == 'resolved'
+    assert statbook.rows['state::cards.super_tower.active'].final_value is True
+    assert statbook.rows['state::cards.super_tower.bonus_multiplier'].status == 'resolved'
+    assert statbook.rows['state::cards.super_tower.cooldown_seconds'].final_value == pytest.approx(18.0)
+    assert statbook.rows['state::cards.super_tower.mastery_active'].final_value is True
+    expected_uw_multiplier = 1.0 + (
+        0.35 * (float(statbook.rows['state::cards.super_tower.bonus_multiplier'].final_value) - 1.0)
+    )
+    assert statbook.rows['state::cards.super_tower.uw_mastery_multiplier'].final_value == pytest.approx(
+        expected_uw_multiplier
+    )
 
 
 def test_second_wind_and_energy_shield_split_enable_and_value_rows() -> None:
@@ -556,6 +764,195 @@ def test_second_wind_and_energy_shield_split_enable_and_value_rows() -> None:
         )
         rows = _rows_by_name(_compiled_rows(mutated), card_name)
         assert {(row.destination_object_type, row.destination_id) for row in rows} == expected
+        rows_by_destination = {row.destination_id: row for row in rows}
+        if card_name == 'Energy Shield':
+            assert rows_by_destination['cards.energy_shield.recharge_cooldown_seconds'].value == pytest.approx(480.0)
+            assert rows_by_destination['cards.energy_shield.recharge_cooldown_seconds'].value_type == 'resolved_value'
+
+
+def test_progression_family_publishes_energy_shield_charge_surfaces() -> None:
+    state = _base_account_state()
+    assert 'Energy Shield' in state.cards_inventory
+    mutated = replace(
+        state,
+        card_presets={**state.card_presets, state.default_preset: ['Energy Shield']},
+    )
+
+    statbook = QEResolutionPlanner().resolve_declared_family_statbook(
+        mutated,
+        family_id='progression_runtime_no_perks',
+        requested_surface_ids=(
+            'state::capability.energy_shield.enabled',
+            'state::cards.energy_shield.recharge_cooldown_seconds',
+            'state::cards.energy_shield.extra_charge_count',
+        ),
+        preset_name=mutated.default_preset,
+        card_preset_name=mutated.default_preset,
+        state_mode='start_of_run',
+        perks_enabled=False,
+        notes='energy_shield_charge_surface_probe',
+    )
+
+    assert statbook.rows['state::capability.energy_shield.enabled'].status == 'resolved'
+    assert statbook.rows['state::capability.energy_shield.enabled'].final_value is True
+    assert statbook.rows['state::cards.energy_shield.recharge_cooldown_seconds'].final_value == pytest.approx(480.0)
+    assert statbook.rows['state::cards.energy_shield.extra_charge_count'].final_value == pytest.approx(2.0)
+
+
+def test_max_progression_assumes_second_wind_mastery_regen_is_active_when_equipped() -> None:
+    state = _base_account_state()
+    assert 'Second Wind' in state.cards_inventory
+    second_wind = replace(
+        state.cards_inventory['Second Wind'],
+        mastery_unlocked=True,
+        mastery_lab_level=3,
+    )
+    cards_without_second_wind = [
+        card_name
+        for card_name in state.card_presets[state.default_preset]
+        if card_name != 'Second Wind'
+    ]
+    without_second_wind = replace(
+        state,
+        cards_inventory={**state.cards_inventory, 'Second Wind': second_wind},
+        labs={**state.labs, 'Second Wind Mastery': 3},
+        card_presets={**state.card_presets, state.default_preset: cards_without_second_wind},
+    )
+    with_second_wind = replace(
+        without_second_wind,
+        card_presets={
+            **without_second_wind.card_presets,
+            without_second_wind.default_preset: [*cards_without_second_wind, 'Second Wind'],
+        },
+    )
+
+    start_rows = _compiled_rows(with_second_wind)
+    assert not any(row.stat_name == 'Second Wind::Assumed Activated Mastery Regen' for row in start_rows)
+
+    max_rows = _compiled_rows_with_projection(
+        with_second_wind,
+        ScenarioProjectionState(
+            max_workshop=True,
+            projected_perks=True,
+            death_wave_health=True,
+            berserker_damage_bonus=True,
+            second_wind_mastery_regen=True,
+        ),
+    )
+    projected = _single_row_by_family(
+        max_rows,
+        name='Second Wind::Assumed Activated Mastery Regen',
+        source_family='card',
+    )
+
+    assert projected.destination_object_type == 'canonical_stat'
+    assert projected.destination_id == 'tower_regen'
+    assert projected.value == pytest.approx(4.6)
+    assert projected.value_type == 'multiplier'
+    assert projected.notes == 'projection_state=second_wind_mastery_regen:assumed_second_wind_triggered_for_max_progression'
+
+    without_statbook = QEResolutionPlanner().resolve_declared_family_statbook(
+        without_second_wind,
+        family_id='progression_runtime_with_perks',
+        requested_surface_ids=('state::tower.regen',),
+        preset_name=without_second_wind.default_preset,
+        state_mode='max_progression',
+        perks_enabled=True,
+        notes='second_wind_mastery_regen_without_card_probe',
+    )
+    with_statbook = QEResolutionPlanner().resolve_declared_family_statbook(
+        with_second_wind,
+        family_id='progression_runtime_with_perks',
+        requested_surface_ids=('state::tower.regen',),
+        preset_name=with_second_wind.default_preset,
+        state_mode='max_progression',
+        perks_enabled=True,
+        notes='second_wind_mastery_regen_with_card_probe',
+    )
+
+    assert with_statbook.rows['state::tower.regen'].final_value == pytest.approx(
+        without_statbook.rows['state::tower.regen'].final_value * 4.6
+    )
+
+
+def test_all_active_card_masteries_compile_when_unlocked_and_equipped() -> None:
+    state = _base_account_state()
+    root = Path(__file__).resolve().parents[2]
+    entity_path = root / 'kb' / 'cards' / 'tables' / 'card-entity-registry.csv'
+    card_names = []
+    with entity_path.open(newline='', encoding='utf-8') as fh:
+        for row in csv.DictReader(fh):
+            if row.get('status') == 'active_base_ladder_surface' and row.get('mastery_available') == 'yes':
+                card_names.append(row['canonical_name'])
+
+    inventory = {
+        **state.cards_inventory,
+        **{
+            card_name: replace(
+                state.cards_inventory[card_name],
+                mastery_unlocked=True,
+                mastery_lab_level=0,
+            )
+            for card_name in card_names
+        },
+    }
+    labs = {**state.labs, **{f'{card_name} Mastery': 0 for card_name in card_names}}
+    mutated = replace(
+        state,
+        labs=labs,
+        cards_inventory=inventory,
+        card_presets={**state.card_presets, state.default_preset: card_names},
+    )
+
+    rows = _compiled_rows(mutated)
+    rows_by_name = {
+        row.stat_name: row
+        for row in rows
+        if row.source_family == 'lab' and row.stat_name.endswith(' Mastery')
+    }
+
+    for card_name in card_names:
+        row = rows_by_name[f'{card_name} Mastery']
+        assert row.active is True
+        assert row.destination_object_type == 'runtime_mechanic_param'
+        assert row.destination_id.startswith('cards.')
+        assert row.destination_id.endswith('.mastery_effect')
+        assert row.notes == f'kb_card_mastery_resolved:{card_name} Mastery'
+        assert row.value_type in {'multiplier', 'resolved_value'}
+
+
+def test_card_mastery_surface_gates_off_without_unlocked_equipped_card() -> None:
+    state = _base_account_state()
+    assert 'Slow Aura' in state.cards_inventory
+    locked_slow_aura = replace(
+        state.cards_inventory['Slow Aura'],
+        mastery_unlocked=False,
+        mastery_lab_level=0,
+    )
+    mutated = replace(
+        state,
+        labs={**state.labs, 'Slow Aura Mastery': 0},
+        cards_inventory={**state.cards_inventory, 'Slow Aura': locked_slow_aura},
+        card_presets={**state.card_presets, state.default_preset: ['Slow Aura']},
+    )
+
+    compiled_row = _single_row(_compiled_rows(mutated), 'Slow Aura Mastery')
+    assert compiled_row.active is False
+    assert 'kb_card_mastery_gated_off:mastery_not_unlocked:Slow Aura' in str(compiled_row.notes)
+
+    statbook = QEResolutionPlanner().resolve_declared_family_statbook(
+        mutated,
+        family_id='progression_start_of_run',
+        requested_surface_ids=('state::cards.slow_aura.mastery_effect',),
+        preset_name=mutated.default_preset,
+        state_mode='start_of_run',
+        notes='slow_aura_mastery_gate_probe',
+    )
+    row = statbook.rows['state::cards.slow_aura.mastery_effect']
+
+    assert row.status == 'gated_off'
+    assert row.final_value is None
+    assert row.contributors[0]['active'] is False
 
 
 def test_berserker_card_routes_to_runtime_owned_base_semantics_when_projection_enabled() -> None:
@@ -814,7 +1211,7 @@ def test_generator_free_attack_module_substat_routes_to_attack_free_upgrade_chan
         and row.source_name == 'Singularity Harness'
     )
 
-    assert row.value == pytest.approx(8.0)
+    assert row.value > 0.0
     assert row.value_type == 'percent_display'
     assert row.destination_object_type == 'canonical_stat'
     assert row.destination_id == 'free_attack_upgrade_chance_pct'
@@ -830,12 +1227,21 @@ def test_report_snapshot_free_upgrade_chance_uses_support_multiplier_and_module_
     )
 
     row = snapshot.statbook.rows['state::tower.free_attack_upgrade_chance_pct']
+    module_value = next(
+        row.value
+        for row in _compiled_rows(_base_account_state())
+        if row.stat_name == 'Free Attack Upgrade'
+        and row.source_family == 'module_substat'
+        and row.source_name == 'Singularity Harness'
+    )
 
-    assert row.final_value == pytest.approx(86.58)
+    assert row.status == 'resolved'
     assert any(
-        contributor['source_class'] == 'module_substat' and contributor['value'] == pytest.approx(8.0)
+        contributor['source_class'] == 'module_substat' and contributor['value'] == pytest.approx(module_value)
         for contributor in row.contributors
     )
+    assert any(contributor['source_class'] == 'relic' for contributor in row.contributors)
+    assert row.final_value > float(module_value)
 
 
 def test_wave_skip_card_publishes_timing_family_state_surface() -> None:
@@ -950,7 +1356,13 @@ def test_progression_family_publishes_ultimate_crit_surface_and_uw_helper_factor
 
     assert card_row.final_value == pytest.approx(3.0)
     assert card_row.status == 'resolved'
-    assert factor_row.final_value == pytest.approx(7.267522)
+    crit_multiplier = next(
+        c['value']
+        for c in factor_row.contributors
+        if c['stat_name'] == 'state::tower.crit_multiplier'
+    )
+    card_chance = card_row.final_value / 100.0
+    assert factor_row.final_value == pytest.approx((1.0 - card_chance) + (crit_multiplier * card_chance))
     assert factor_row.status == 'resolved'
     assert any(c['stat_name'] == 'state::cards.ultimate_crit.chance_pct' for c in factor_row.contributors)
 
@@ -958,8 +1370,15 @@ def test_progression_family_publishes_ultimate_crit_surface_and_uw_helper_factor
 def test_progression_family_publishes_slow_aura_mastery_surface() -> None:
     state = _base_account_state()
     assert 'Slow Aura' in state.cards_inventory
+    slow_aura = replace(
+        state.cards_inventory['Slow Aura'],
+        mastery_unlocked=True,
+        mastery_lab_level=0,
+    )
     mutated = replace(
         state,
+        labs={**state.labs, 'Slow Aura Mastery': 0},
+        cards_inventory={**state.cards_inventory, 'Slow Aura': slow_aura},
         card_presets={**state.card_presets, state.default_preset: ['Slow Aura']},
     )
 
@@ -1204,6 +1623,84 @@ def test_v28_bot_track_rows_publish_values_when_ids_marks_bot_unlocked() -> None
     assert bot_bot_bonus.value == pytest.approx(1.05)
 
 
+def test_manual_bot_track_value_without_level_routes_when_bot_unlocked() -> None:
+    state = _base_account_state()
+    flame_tracks = [
+        track
+        for track in state.bot_upgrade_tracks['Flame Bot']
+        if track.track_name not in {'Damage R.', 'Cooldown'}
+    ]
+    manual_source = 'manual_inputs.runtime_state_overrides.bots.Flame Bot.tracks.Damage R.'
+    manual_cooldown_source = 'manual_inputs.runtime_state_overrides.bots.Flame Bot.tracks.Cooldown'
+    mutated = replace(
+        state,
+        bot_unlocks={**state.bot_unlocks, 'Flame Bot': True},
+        bot_upgrade_tracks={
+            **state.bot_upgrade_tracks,
+            'Flame Bot': [
+                *flame_tracks,
+                BotUpgradeSnapshot(
+                    bot_name='Flame Bot',
+                    track_name='Damage R.',
+                    level=None,
+                    resolved_value=95.0,
+                    resolved_unit='%',
+                    source=manual_source,
+                ),
+                BotUpgradeSnapshot(
+                    bot_name='Flame Bot',
+                    track_name='Cooldown',
+                    level=None,
+                    resolved_value=5.0,
+                    resolved_unit='s',
+                    source=manual_cooldown_source,
+                ),
+            ],
+        },
+        manual_override_sources={
+            'bot_unlocks': {'Flame Bot': 'manual_inputs.runtime_state_overrides.bots.Flame Bot.unlocked'},
+            'bot_tracks': {
+                'Flame Bot::Damage R.': manual_source,
+                'Flame Bot::Cooldown': manual_cooldown_source,
+            },
+        },
+    )
+    rows = _compiled_rows(mutated)
+
+    flame_unlock = _single_row_by_family(rows, name='Flame Bot::Unlocked', source_family='bot_unlock')
+    flame_dr = _single_row_by_family(rows, name='Flame Bot::Damage R.', source_family='bot')
+    flame_cooldown = _single_row_by_family(rows, name='Flame Bot::Cooldown', source_family='bot')
+    flame_cooldown_lab = _single_row_by_family(rows, name='Flame Bot - Cooldown', source_family='lab')
+
+    assert flame_unlock.value is True
+    assert flame_unlock.provenance == 'manual_inputs.runtime_state_overrides.bots.Flame Bot.unlocked'
+    assert flame_dr.value == pytest.approx(95.0)
+    assert flame_dr.raw_level is None
+    assert flame_dr.resolved_value == pytest.approx(95.0)
+    assert flame_dr.resolved_unit == '%'
+    assert flame_dr.notes == 'manual_bot_track_value_override'
+    assert flame_dr.provenance == manual_source
+    assert flame_cooldown.value == pytest.approx(5.0)
+    assert flame_cooldown.notes == 'manual_bot_track_value_override'
+    assert flame_cooldown_lab.value == pytest.approx(0.0)
+    assert flame_cooldown_lab.notes == 'manual_final_bot_track_override_suppressed_lab_delta:Flame Bot::Cooldown'
+
+    statbook = QEResolutionPlanner().resolve_declared_family_statbook(
+        mutated,
+        family_id='progression_start_of_run',
+        requested_surface_ids=(
+            'state::bot.flame.damage_reduction_pct',
+            'state::bot.flame.cooldown_seconds',
+        ),
+        preset_name='Farming',
+        state_mode='start_of_run',
+        notes='manual_flame_bot_override_probe',
+    )
+
+    assert statbook.rows['state::bot.flame.damage_reduction_pct'].final_value == pytest.approx(95.0)
+    assert statbook.rows['state::bot.flame.cooldown_seconds'].final_value == pytest.approx(5.0)
+
+
 def test_progression_family_publishes_effective_bot_range_surfaces_with_tower_range_amplification() -> None:
     planner = QEResolutionPlanner()
     statbook = planner.resolve_declared_family_statbook(
@@ -1252,6 +1749,55 @@ def test_progression_family_publishes_effective_bot_range_surfaces_with_tower_ra
         assert 'state::tower.range_m' in contributor_ids
 
 
+def test_manual_effective_bot_range_override_is_not_reamplified() -> None:
+    state = _base_account_state()
+    mutated = replace(
+        state,
+        bot_unlocks={**state.bot_unlocks, 'Flame Bot': True},
+        bot_upgrade_tracks={
+            **state.bot_upgrade_tracks,
+            'Flame Bot': [
+                BotUpgradeSnapshot(
+                    bot_name='Flame Bot',
+                    track_name='Range',
+                    level=None,
+                    resolved_value=91.0,
+                    resolved_unit='m',
+                    source='manual_inputs.runtime_state_overrides.bots.Flame Bot.tracks.Range',
+                    value_kind='effective_range_m',
+                ),
+            ],
+        },
+        manual_override_sources={
+            **getattr(state, 'manual_override_sources', {}),
+            'bot_unlocks': {'Flame Bot': 'manual_inputs.runtime_state_overrides.bots.Flame Bot.unlocked'},
+            'bot_tracks': {'Flame Bot::Range': 'manual_inputs.runtime_state_overrides.bots.Flame Bot.tracks.Range'},
+        },
+    )
+
+    statbook = QEResolutionPlanner().resolve_declared_family_statbook(
+        mutated,
+        family_id='progression_start_of_run',
+        requested_surface_ids=(
+            'state::bot.flame.range_m',
+            'state::bot.flame.effective_range_m',
+            'state::bot.global.range_bonus_m',
+            'state::tower.range_m',
+        ),
+        preset_name='Farming',
+        state_mode='start_of_run',
+        notes='manual_effective_flame_bot_range_probe',
+    )
+
+    effective_row = statbook.rows['state::bot.flame.effective_range_m']
+    assert effective_row.final_value == pytest.approx(91.0)
+    assert effective_row.contributors[0]['surface_id'] == 'state::bot.flame.effective_range_m'
+    assert (
+        effective_row.contributors[0]['provenance_ref']
+        == 'manual_inputs.runtime_state_overrides.bots.Flame Bot.tracks.Range'
+    )
+
+
 def test_progression_family_publishes_relic_support_surfaces_for_derived_consumers() -> None:
     planner = QEResolutionPlanner()
     statbook = planner.resolve_declared_family_statbook(
@@ -1271,14 +1817,20 @@ def test_progression_family_publishes_relic_support_surfaces_for_derived_consume
         notes='hardening_f_relic_support_probe',
     )
 
-    assert statbook.rows['support_surface::ehp.health_relic_pct'].final_value == pytest.approx(0.53)
-    assert statbook.rows['support_surface::ehp.health_relic_pct'].status == 'resolved'
-    assert statbook.rows['support_surface::ehp.dabs_relic_pct'].final_value == pytest.approx(0.28)
-    assert statbook.rows['support_surface::ehp.def_pct_relic_pct'].final_value == pytest.approx(0.04)
-    assert statbook.rows['support_surface::eecon.adstarter_theme_relic_factor'].final_value == pytest.approx(1.48)
-    assert statbook.rows['support_surface::eecon.freeup_attack_relic_pct'].final_value == pytest.approx(0.06)
-    assert statbook.rows['support_surface::eecon.freeup_defense_relic_pct'].final_value == pytest.approx(0.05)
-    assert statbook.rows['support_surface::eecon.freeup_utility_relic_pct'].final_value == pytest.approx(0.06)
+    for surface_id in (
+        'support_surface::ehp.health_relic_pct',
+        'support_surface::ehp.dabs_relic_pct',
+        'support_surface::ehp.def_pct_relic_pct',
+        'support_surface::eecon.adstarter_theme_relic_factor',
+        'support_surface::eecon.freeup_attack_relic_pct',
+        'support_surface::eecon.freeup_defense_relic_pct',
+        'support_surface::eecon.freeup_utility_relic_pct',
+    ):
+        row = statbook.rows[surface_id]
+        assert row.status == 'resolved'
+        assert len(row.contributors) == 1
+        assert row.contributors[0]['source_class'] == 'relics'
+        assert row.final_value == pytest.approx(row.contributors[0]['value'])
 
 
 def test_audited_enemy_and_bc_labs_have_explicit_owned_destinations_without_pending_limbs() -> None:

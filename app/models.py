@@ -16,6 +16,7 @@ class PipelineRunRequest:
     preset: str = 'Farming'
     state_mode: str = 'max_progression'
     manual_inputs: Path | None = None
+    runtime_state_overlay: str | None = None
     perk_mode: str = 'max_progression_policy'
     include_slow_audits: bool = False
     perk_state: str = 'auto'
@@ -30,6 +31,11 @@ def _run_stats_args_from_payload(payload: dict[str, object]):
         ids=Path(str(payload['ids'])),
         out=Path(str(payload['out'])),
         manual_inputs=Path(str(payload['manual_inputs'])) if payload.get('manual_inputs') else None,
+        runtime_state_overlay=(
+            str(payload['runtime_state_overlay'])
+            if payload.get('runtime_state_overlay') not in {None, '', 'None', 'none'}
+            else None
+        ),
         perk_mode=str(payload.get('perk_mode', 'max_progression_policy')),
         perk_state=str(payload.get('perk_state', 'auto')),
         perk_policy_preset=str(payload['perk_policy_preset']) if payload.get('perk_policy_preset') else None,
@@ -102,6 +108,7 @@ class FastCheckpointRequest:
     preset: str = 'Farming'
     state_mode: str = 'start_of_run'
     manual_inputs: Path | None = None
+    runtime_state_overlay: str | None = None
     perk_mode: str = 'max_progression_policy'
     perk_state: str = 'auto'
     perk_policy_preset: str | None = None
