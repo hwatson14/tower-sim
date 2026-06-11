@@ -338,14 +338,14 @@
             "stat_name": "derived::dissonance.attack.echo_bonus_multiplier",
             "changed_in_max_progression": false,
             "start_of_run": {
-              "final_value": 0.8719042949207426,
-              "display_value": "x0.872",
+              "final_value": 0.890671548620001,
+              "display_value": "x0.891",
               "value_type": "multiplier",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 0.8719042949207426,
-              "display_value": "x0.872",
+              "final_value": 0.890671548620001,
+              "display_value": "x0.891",
               "value_type": "multiplier",
               "status": "resolved"
             }
@@ -370,14 +370,14 @@
             "stat_name": "derived::dissonance.attack.total_multiplier",
             "changed_in_max_progression": false,
             "start_of_run": {
-              "final_value": 5.871904294920743,
-              "display_value": "x5.872",
+              "final_value": 5.890671548620001,
+              "display_value": "x5.891",
               "value_type": "multiplier",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 5.871904294920743,
-              "display_value": "x5.872",
+              "final_value": 5.890671548620001,
+              "display_value": "x5.891",
               "value_type": "multiplier",
               "status": "resolved"
             }
@@ -386,14 +386,14 @@
             "stat_name": "derived::dissonance.defense.echo_bonus_multiplier",
             "changed_in_max_progression": false,
             "start_of_run": {
-              "final_value": 0.10878221575948327,
-              "display_value": "x0.109",
+              "final_value": 0.12028580042206916,
+              "display_value": "x0.12",
               "value_type": "multiplier",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 0.10878221575948327,
-              "display_value": "x0.109",
+              "final_value": 0.12028580042206916,
+              "display_value": "x0.12",
               "value_type": "multiplier",
               "status": "resolved"
             }
@@ -418,14 +418,14 @@
             "stat_name": "derived::dissonance.defense.total_multiplier",
             "changed_in_max_progression": false,
             "start_of_run": {
-              "final_value": 5.108782215759483,
-              "display_value": "x5.109",
+              "final_value": 5.120285800422069,
+              "display_value": "x5.12",
               "value_type": "multiplier",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 5.108782215759483,
-              "display_value": "x5.109",
+              "final_value": 5.120285800422069,
+              "display_value": "x5.12",
               "value_type": "multiplier",
               "status": "resolved"
             }
@@ -434,14 +434,14 @@
             "stat_name": "derived::dissonance.ultimate_weapons.echo_bonus_multiplier",
             "changed_in_max_progression": false,
             "start_of_run": {
-              "final_value": 1.044213166304547,
-              "display_value": "x1.044",
+              "final_value": 1.0774955046872232,
+              "display_value": "x1.077",
               "value_type": "multiplier",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 1.044213166304547,
-              "display_value": "x1.044",
+              "final_value": 1.0774955046872232,
+              "display_value": "x1.077",
               "value_type": "multiplier",
               "status": "resolved"
             }
@@ -466,14 +466,14 @@
             "stat_name": "derived::dissonance.ultimate_weapons.total_multiplier",
             "changed_in_max_progression": false,
             "start_of_run": {
-              "final_value": 5.128805014504822,
-              "display_value": "x5.129",
+              "final_value": 5.70315727883196,
+              "display_value": "x5.703",
               "value_type": "multiplier",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 5.128805014504822,
-              "display_value": "x5.129",
+              "final_value": 5.70315727883196,
+              "display_value": "x5.703",
               "value_type": "multiplier",
               "status": "resolved"
             }
@@ -482,14 +482,14 @@
             "stat_name": "derived::dissonance.utility.echo_bonus_multiplier",
             "changed_in_max_progression": false,
             "start_of_run": {
-              "final_value": 0.5280807271236583,
-              "display_value": "x0.528",
+              "final_value": 0.5316359829892541,
+              "display_value": "x0.532",
               "value_type": "multiplier",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 0.5280807271236583,
-              "display_value": "x0.528",
+              "final_value": 0.5316359829892541,
+              "display_value": "x0.532",
               "value_type": "multiplier",
               "status": "resolved"
             }
@@ -514,14 +514,14 @@
             "stat_name": "derived::dissonance.utility.total_multiplier",
             "changed_in_max_progression": false,
             "start_of_run": {
-              "final_value": 2.831586861322659,
-              "display_value": "x2.832",
+              "final_value": 3.1320047054482667,
+              "display_value": "x3.132",
               "value_type": "multiplier",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 2.831586861322659,
-              "display_value": "x2.832",
+              "final_value": 3.1320047054482667,
+              "display_value": "x3.132",
               "value_type": "multiplier",
               "status": "resolved"
             }
@@ -530,14 +530,14 @@
             "stat_name": "derived::economy.income.coins",
             "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 43795342.79081076,
-              "display_value": "43.8M",
+              "final_value": 48691841.816477634,
+              "display_value": "48.7M",
               "value_type": "per_week",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 342180313.08658797,
-              "display_value": "342M",
+              "final_value": 380437476.128646,
+              "display_value": "380M",
               "value_type": "per_week",
               "status": "resolved"
             }
@@ -610,14 +610,14 @@
             "stat_name": "derived::edamage",
             "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 3.9530946109847495e+25,
-              "display_value": "39.5S",
+              "final_value": 4.995680086759844e+25,
+              "display_value": "50S",
               "value_type": "scalar",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 2.4616776161234678e+26,
-              "display_value": "246S",
+              "final_value": 3.1130595266480444e+26,
+              "display_value": "311S",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -642,14 +642,14 @@
             "stat_name": "derived::edamage.attack_dissonance_factor",
             "changed_in_max_progression": false,
             "start_of_run": {
-              "final_value": 5.871904294920743,
-              "display_value": "x5.872",
+              "final_value": 5.890671548620001,
+              "display_value": "x5.891",
               "value_type": "multiplier",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 5.871904294920743,
-              "display_value": "x5.872",
+              "final_value": 5.890671548620001,
+              "display_value": "x5.891",
               "value_type": "multiplier",
               "status": "resolved"
             }
@@ -674,14 +674,14 @@
             "stat_name": "derived::edamage.base_damage_stack",
             "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 44479891870.51885,
-              "display_value": "44.5B",
+              "final_value": 43900349997.09083,
+              "display_value": "43.9B",
               "value_type": "scalar",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 80272304860.07698,
-              "display_value": "80.3B",
+              "final_value": 79226412885.37485,
+              "display_value": "79.2B",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -722,14 +722,14 @@
             "stat_name": "derived::edamage.boss_applicable_dps_cl_only",
             "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 31064053.15655429,
-              "display_value": "31.1M",
+              "final_value": 31448350.721377645,
+              "display_value": "31.4M",
               "value_type": "scalar",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 69234690.80158485,
-              "display_value": "69.2M",
+              "final_value": 70091202.44036736,
+              "display_value": "70.1M",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -930,14 +930,14 @@
             "stat_name": "derived::edamage.slow_factor",
             "changed_in_max_progression": false,
             "start_of_run": {
-              "final_value": 3.603603603603604,
-              "display_value": "x3.604",
+              "final_value": 3.683241252302025,
+              "display_value": "x3.683",
               "value_type": "multiplier",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 3.603603603603604,
-              "display_value": "x3.604",
+              "final_value": 3.683241252302025,
+              "display_value": "x3.683",
               "value_type": "multiplier",
               "status": "resolved"
             }
@@ -946,14 +946,14 @@
             "stat_name": "derived::edamage.spotlight_bonus_term",
             "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 22.849999999999998,
-              "display_value": "x22.85",
+              "final_value": 23.45,
+              "display_value": "x23.45",
               "value_type": "multiplier",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 34.275,
-              "display_value": "x34.275",
+              "final_value": 35.175,
+              "display_value": "x35.175",
               "value_type": "multiplier",
               "status": "resolved"
             }
@@ -962,14 +962,14 @@
             "stat_name": "derived::edamage.spotlight_coverage",
             "changed_in_max_progression": false,
             "start_of_run": {
-              "final_value": 0.46875,
-              "display_value": "0.469",
+              "final_value": 0.47375,
+              "display_value": "0.474",
               "value_type": "ratio",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 0.46875,
-              "display_value": "0.469",
+              "final_value": 0.47375,
+              "display_value": "0.474",
               "value_type": "ratio",
               "status": "resolved"
             }
@@ -978,14 +978,14 @@
             "stat_name": "derived::edamage.spotlight_factor",
             "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 11.242187499999998,
-              "display_value": "x11.242",
+              "final_value": 11.6356875,
+              "display_value": "x11.636",
               "value_type": "multiplier",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 16.59765625,
-              "display_value": "x16.598",
+              "final_value": 17.19040625,
+              "display_value": "x17.19",
               "value_type": "multiplier",
               "status": "resolved"
             }
@@ -1026,14 +1026,14 @@
             "stat_name": "derived::edamage.uw.chain_lightning_dps",
             "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 31064053.15655429,
-              "display_value": "31.1M",
+              "final_value": 31448350.721377645,
+              "display_value": "31.4M",
               "value_type": "scalar",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 69234690.80158485,
-              "display_value": "69.2M",
+              "final_value": 70091202.44036736,
+              "display_value": "70.1M",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -1202,14 +1202,14 @@
             "stat_name": "derived::edamage.uw_dissonance_factor",
             "changed_in_max_progression": false,
             "start_of_run": {
-              "final_value": 5.128805014504822,
-              "display_value": "x5.129",
+              "final_value": 5.70315727883196,
+              "display_value": "x5.703",
               "value_type": "multiplier",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 5.128805014504822,
-              "display_value": "x5.129",
+              "final_value": 5.70315727883196,
+              "display_value": "x5.703",
               "value_type": "multiplier",
               "status": "resolved"
             }
@@ -1218,14 +1218,14 @@
             "stat_name": "derived::edamage.uw_total_damage",
             "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 76733836623.36545,
-              "display_value": "76.7B",
+              "final_value": 96127677678.37015,
+              "display_value": "96.1B",
               "value_type": "scalar",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 252492472084.56055,
-              "display_value": "252B",
+              "final_value": 316525076421.5605,
+              "display_value": "317B",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -1234,14 +1234,14 @@
             "stat_name": "derived::edamage_boss",
             "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 31064053.15655429,
-              "display_value": "31.1M",
+              "final_value": 31448350.721377645,
+              "display_value": "31.4M",
               "value_type": "scalar",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 69234690.80158485,
-              "display_value": "69.2M",
+              "final_value": 70091202.44036736,
+              "display_value": "70.1M",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -1250,14 +1250,14 @@
             "stat_name": "derived::edamage_ep",
             "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 3.9530946109847495e+25,
-              "display_value": "39.5S",
+              "final_value": 4.995680086759844e+25,
+              "display_value": "50S",
               "value_type": "scalar",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 2.4616776161234678e+26,
-              "display_value": "246S",
+              "final_value": 3.1130595266480444e+26,
+              "display_value": "311S",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -1266,14 +1266,14 @@
             "stat_name": "derived::edamage_ep_helper.dc_base_damage_stack",
             "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 44479891870.51885,
-              "display_value": "44.5B",
+              "final_value": 43900349997.09083,
+              "display_value": "43.9B",
               "value_type": "scalar",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 80272304860.07698,
-              "display_value": "80.3B",
+              "final_value": 79226412885.37485,
+              "display_value": "79.2B",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -1346,14 +1346,14 @@
             "stat_name": "derived::edamage_ep_helper.dx_spotlight_bonus_term",
             "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 22.849999999999998,
-              "display_value": "x22.85",
+              "final_value": 23.45,
+              "display_value": "x23.45",
               "value_type": "multiplier",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 34.275,
-              "display_value": "x34.275",
+              "final_value": 35.175,
+              "display_value": "x35.175",
               "value_type": "multiplier",
               "status": "resolved"
             }
@@ -1362,14 +1362,14 @@
             "stat_name": "derived::edamage_ep_helper.dx_spotlight_coverage",
             "changed_in_max_progression": false,
             "start_of_run": {
-              "final_value": 0.46875,
-              "display_value": "0.469",
+              "final_value": 0.47375,
+              "display_value": "0.474",
               "value_type": "ratio",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 0.46875,
-              "display_value": "0.469",
+              "final_value": 0.47375,
+              "display_value": "0.474",
               "value_type": "ratio",
               "status": "resolved"
             }
@@ -1394,14 +1394,14 @@
             "stat_name": "derived::edamage_ep_helper.ei_uw_total_damage",
             "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 76733836623.36545,
-              "display_value": "76.7B",
+              "final_value": 96127677678.37015,
+              "display_value": "96.1B",
               "value_type": "scalar",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 252492472084.56055,
-              "display_value": "252B",
+              "final_value": 316525076421.5605,
+              "display_value": "317B",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -1410,14 +1410,14 @@
             "stat_name": "derived::edamage_ep_helper.el_slow_factor",
             "changed_in_max_progression": false,
             "start_of_run": {
-              "final_value": 3.603603603603604,
-              "display_value": "x3.604",
+              "final_value": 3.683241252302025,
+              "display_value": "x3.683",
               "value_type": "multiplier",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 3.603603603603604,
-              "display_value": "x3.604",
+              "final_value": 3.683241252302025,
+              "display_value": "x3.683",
               "value_type": "multiplier",
               "status": "resolved"
             }
@@ -1426,14 +1426,14 @@
             "stat_name": "derived::eecon",
             "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 57757983.20915895,
-              "display_value": "57.8M",
+              "final_value": 64215562.7252958,
+              "display_value": "64.2M",
               "value_type": "scalar",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 453088857.6792872,
-              "display_value": "453M",
+              "final_value": 503746051.088278,
+              "display_value": "504M",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -1474,14 +1474,14 @@
             "stat_name": "derived::eecon.base_coin_income",
             "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 57757983.20915895,
-              "display_value": "57.8M",
+              "final_value": 64215562.7252958,
+              "display_value": "64.2M",
               "value_type": "scalar",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 453088857.6792872,
-              "display_value": "453M",
+              "final_value": 503746051.088278,
+              "display_value": "504M",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -1794,14 +1794,14 @@
             "stat_name": "derived::eecon.raw_factor",
             "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 57757.98320915895,
-              "display_value": "57.8k",
+              "final_value": 64215.5627252958,
+              "display_value": "64.2k",
               "value_type": "scalar",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 453088.8576792872,
-              "display_value": "453k",
+              "final_value": 503746.051088278,
+              "display_value": "504k",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -1826,14 +1826,14 @@
             "stat_name": "derived::eecon.spotlight_coin_coverage",
             "changed_in_max_progression": false,
             "start_of_run": {
-              "final_value": 0.46875,
-              "display_value": "0.469",
+              "final_value": 0.47375,
+              "display_value": "0.474",
               "value_type": "ratio",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 0.46875,
-              "display_value": "0.469",
+              "final_value": 0.47375,
+              "display_value": "0.474",
               "value_type": "ratio",
               "status": "resolved"
             }
@@ -1842,14 +1842,14 @@
             "stat_name": "derived::eecon.spotlight_coin_factor",
             "changed_in_max_progression": false,
             "start_of_run": {
-              "final_value": 1.9375,
-              "display_value": "x1.938",
+              "final_value": 1.9475,
+              "display_value": "x1.948",
               "value_type": "multiplier",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 1.9375,
-              "display_value": "x1.938",
+              "final_value": 1.9475,
+              "display_value": "x1.948",
               "value_type": "multiplier",
               "status": "resolved"
             }
@@ -1890,14 +1890,14 @@
             "stat_name": "derived::eecon.utility_dissonance_factor",
             "changed_in_max_progression": false,
             "start_of_run": {
-              "final_value": 2.831586861322659,
-              "display_value": "x2.832",
+              "final_value": 3.1320047054482667,
+              "display_value": "x3.132",
               "value_type": "multiplier",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 2.831586861322659,
-              "display_value": "x2.832",
+              "final_value": 3.1320047054482667,
+              "display_value": "x3.132",
               "value_type": "multiplier",
               "status": "resolved"
             }
@@ -1922,14 +1922,14 @@
             "stat_name": "derived::eecon_ep",
             "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 57757983.20915895,
-              "display_value": "57.8M",
+              "final_value": 64215562.7252958,
+              "display_value": "64.2M",
               "value_type": "scalar",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 453088857.6792872,
-              "display_value": "453M",
+              "final_value": 503746051.088278,
+              "display_value": "504M",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -2002,14 +2002,14 @@
             "stat_name": "derived::eecon_ep_helper.dg_spotlight_coin_coverage",
             "changed_in_max_progression": false,
             "start_of_run": {
-              "final_value": 0.46875,
-              "display_value": "0.469",
+              "final_value": 0.47375,
+              "display_value": "0.474",
               "value_type": "ratio",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 0.46875,
-              "display_value": "0.469",
+              "final_value": 0.47375,
+              "display_value": "0.474",
               "value_type": "ratio",
               "status": "resolved"
             }
@@ -2018,14 +2018,14 @@
             "stat_name": "derived::eecon_ep_helper.dg_spotlight_coin_factor",
             "changed_in_max_progression": false,
             "start_of_run": {
-              "final_value": 1.9375,
-              "display_value": "x1.938",
+              "final_value": 1.9475,
+              "display_value": "x1.948",
               "value_type": "multiplier",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 1.9375,
-              "display_value": "x1.938",
+              "final_value": 1.9475,
+              "display_value": "x1.948",
               "value_type": "multiplier",
               "status": "resolved"
             }
@@ -2034,14 +2034,14 @@
             "stat_name": "derived::ehp",
             "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 2.625610518294426e+17,
-              "display_value": "263q",
+              "final_value": 2.6942125862091133e+17,
+              "display_value": "269q",
               "value_type": "scalar",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 9.895934708746359e+17,
-              "display_value": "990q",
+              "final_value": 1.0154496134480552e+18,
+              "display_value": "1.02Q",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -2098,14 +2098,14 @@
             "stat_name": "derived::ehp.base_pool",
             "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 2022616591985337.0,
-              "display_value": "2.02q",
+              "final_value": 2075463609376007.0,
+              "display_value": "2.08q",
               "value_type": "scalar",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 7584812219945014.0,
-              "display_value": "7.58q",
+              "final_value": 7782988535160022.0,
+              "display_value": "7.78q",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -2498,14 +2498,14 @@
             "stat_name": "derived::ehp.defense_dissonance_factor",
             "changed_in_max_progression": false,
             "start_of_run": {
-              "final_value": 5.108782215759483,
-              "display_value": "x5.109",
+              "final_value": 5.120285800422069,
+              "display_value": "x5.12",
               "value_type": "multiplier",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 5.108782215759483,
-              "display_value": "x5.109",
+              "final_value": 5.120285800422069,
+              "display_value": "x5.12",
               "value_type": "multiplier",
               "status": "resolved"
             }
@@ -2578,14 +2578,14 @@
             "stat_name": "derived::ehp.health_factor",
             "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 10015055595755.428,
-              "display_value": "10T",
+              "final_value": 10161527841635.07,
+              "display_value": "10.2T",
               "value_type": "scalar",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 37556458484082.85,
-              "display_value": "37.6T",
+              "final_value": 38105729406131.5,
+              "display_value": "38.1T",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -2626,14 +2626,14 @@
             "stat_name": "derived::ehp.health_raw_factor",
             "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 1060071813486.8488,
-              "display_value": "1.06T",
+              "final_value": 1075575581571.8638,
+              "display_value": "1.08T",
               "value_type": "scalar",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 3975269300575.6826,
-              "display_value": "3.98T",
+              "final_value": 4033408430894.488,
+              "display_value": "4.03T",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -2770,14 +2770,14 @@
             "stat_name": "derived::ehp.pre_defense_pool",
             "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 5251220888513096.0,
-              "display_value": "5.25q",
+              "final_value": 5388425024342471.0,
+              "display_value": "5.39q",
               "value_type": "scalar",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 1.9791869269416976e+16,
-              "display_value": "19.8q",
+              "final_value": 2.030899212088536e+16,
+              "display_value": "20.3q",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -2786,14 +2786,14 @@
             "stat_name": "derived::ehp.pre_tradeoff_ehp",
             "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 2.625610518294426e+17,
-              "display_value": "263q",
+              "final_value": 2.6942125862091133e+17,
+              "display_value": "269q",
               "value_type": "scalar",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 9.895934708746359e+17,
-              "display_value": "990q",
+              "final_value": 1.0154496134480552e+18,
+              "display_value": "1.02Q",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -2880,16 +2880,16 @@
           },
           "derived::ehp.wall_factor": {
             "stat_name": "derived::ehp.wall_factor",
-            "changed_in_max_progression": false,
+            "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 185.45760000000007,
-              "display_value": "185.458",
+              "final_value": 187.74720000000005,
+              "display_value": "187.747",
               "value_type": "scalar",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 185.45760000000007,
-              "display_value": "185.458",
+              "final_value": 187.74720000000002,
+              "display_value": "187.747",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -3008,32 +3008,32 @@
           },
           "derived::ehp.wall_or_recovery_factor": {
             "stat_name": "derived::ehp.wall_or_recovery_factor",
-            "changed_in_max_progression": false,
+            "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 201.95760000000007,
-              "display_value": "201.958",
+              "final_value": 204.24720000000005,
+              "display_value": "204.247",
               "value_type": "scalar",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 201.95760000000007,
-              "display_value": "201.958",
+              "final_value": 204.24720000000002,
+              "display_value": "204.247",
               "value_type": "scalar",
               "status": "resolved"
             }
           },
           "derived::ehp.wall_pkg_factor": {
             "stat_name": "derived::ehp.wall_pkg_factor",
-            "changed_in_max_progression": false,
+            "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 201.95760000000007,
-              "display_value": "201.958",
+              "final_value": 204.24720000000005,
+              "display_value": "204.247",
               "value_type": "scalar",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 201.95760000000007,
-              "display_value": "201.958",
+              "final_value": 204.24720000000002,
+              "display_value": "204.247",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -3042,14 +3042,14 @@
             "stat_name": "derived::ehp_ep",
             "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 2.625610518294426e+17,
-              "display_value": "263q",
+              "final_value": 2.6942125862091133e+17,
+              "display_value": "269q",
               "value_type": "scalar",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 9.895934708746359e+17,
-              "display_value": "990q",
+              "final_value": 1.0154496134480552e+18,
+              "display_value": "1.02Q",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -3058,14 +3058,14 @@
             "stat_name": "derived::ehp_ep_helper.ce_pool_factor",
             "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 10015055595755.428,
-              "display_value": "10T",
+              "final_value": 10161527841635.07,
+              "display_value": "10.2T",
               "value_type": "scalar",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 37556458484082.85,
-              "display_value": "37.6T",
+              "final_value": 38105729406131.5,
+              "display_value": "38.1T",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -3120,16 +3120,16 @@
           },
           "derived::ehp_ep_helper.ci_wall_factor": {
             "stat_name": "derived::ehp_ep_helper.ci_wall_factor",
-            "changed_in_max_progression": false,
+            "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 185.45760000000007,
-              "display_value": "185.458",
+              "final_value": 187.74720000000005,
+              "display_value": "187.747",
               "value_type": "scalar",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 185.45760000000007,
-              "display_value": "185.458",
+              "final_value": 187.74720000000002,
+              "display_value": "187.747",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -3426,14 +3426,14 @@
             "stat_name": "derived::wall.hp_final",
             "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 1857368174655372.5,
-              "display_value": "1.86q",
+              "final_value": 1907798399989028.2,
+              "display_value": "1.91q",
               "value_type": "hp",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 6965130654957646.0,
-              "display_value": "6.97q",
+              "final_value": 7154243999958853.0,
+              "display_value": "7.15q",
               "value_type": "hp",
               "status": "resolved"
             }
@@ -3442,14 +3442,14 @@
             "stat_name": "derived::wall.hp_pre_fort",
             "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 175223412703337.03,
-              "display_value": "175T",
+              "final_value": 179980981131040.4,
+              "display_value": "180T",
               "value_type": "hp",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 657087797637513.8,
-              "display_value": "657T",
+              "final_value": 674928679241401.2,
+              "display_value": "675T",
               "value_type": "hp",
               "status": "resolved"
             }
@@ -3458,14 +3458,14 @@
             "stat_name": "derived::wall.regen_hp_per_second",
             "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 5471804764698.91,
-              "display_value": "5.47T",
+              "final_value": 5536945297611.992,
+              "display_value": "5.54T",
               "value_type": "hp_per_second",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 1057836656135416.8,
-              "display_value": "1.06q",
+              "final_value": 1330804802281042.2,
+              "display_value": "1.33q",
               "value_type": "hp_per_second",
               "status": "resolved"
             }
@@ -4322,14 +4322,14 @@
             "stat_name": "state::dissonance.attack.echo_source_bonus",
             "changed_in_max_progression": false,
             "start_of_run": {
-              "final_value": 62.12695299471618,
-              "display_value": "62.127",
+              "final_value": 63.3781032413334,
+              "display_value": "63.378",
               "value_type": "scalar",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 62.12695299471618,
-              "display_value": "62.127",
+              "final_value": 63.3781032413334,
+              "display_value": "63.378",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -4370,14 +4370,14 @@
             "stat_name": "state::dissonance.defense.echo_source_bonus",
             "changed_in_max_progression": false,
             "start_of_run": {
-              "final_value": 14.878221575948327,
-              "display_value": "14.878",
+              "final_value": 16.028580042206915,
+              "display_value": "16.029",
               "value_type": "scalar",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 14.878221575948327,
-              "display_value": "14.878",
+              "final_value": 16.028580042206915,
+              "display_value": "16.029",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -4402,14 +4402,14 @@
             "stat_name": "state::dissonance.ultimate_weapons.active_boost_multiplier",
             "changed_in_max_progression": false,
             "start_of_run": {
-              "final_value": 4.084591848200275,
-              "display_value": "4.085",
+              "final_value": 4.625661774144737,
+              "display_value": "4.626",
               "value_type": "scalar",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 4.084591848200275,
-              "display_value": "4.085",
+              "final_value": 4.625661774144737,
+              "display_value": "4.626",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -4418,14 +4418,14 @@
             "stat_name": "state::dissonance.ultimate_weapons.echo_source_bonus",
             "changed_in_max_progression": false,
             "start_of_run": {
-              "final_value": 55.295250163427625,
-              "display_value": "55.295",
+              "final_value": 57.5004370085059,
+              "display_value": "57.5",
               "value_type": "scalar",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 55.295250163427625,
-              "display_value": "55.295",
+              "final_value": 57.5004370085059,
+              "display_value": "57.5",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -4434,14 +4434,14 @@
             "stat_name": "state::dissonance.ultimate_weapons.pb",
             "changed_in_max_progression": false,
             "start_of_run": {
-              "final_value": 4310,
-              "display_value": "4.31k",
+              "final_value": 4727,
+              "display_value": "4.73k",
               "value_type": "count",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 4310,
-              "display_value": "4.31k",
+              "final_value": 4727,
+              "display_value": "4.73k",
               "value_type": "count",
               "status": "resolved"
             }
@@ -4450,14 +4450,14 @@
             "stat_name": "state::dissonance.utility.active_boost_multiplier",
             "changed_in_max_progression": false,
             "start_of_run": {
-              "final_value": 2.303506134199001,
-              "display_value": "2.304",
+              "final_value": 2.6003687224590126,
+              "display_value": "2.6",
               "value_type": "scalar",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 2.303506134199001,
-              "display_value": "2.304",
+              "final_value": 2.6003687224590126,
+              "display_value": "2.6",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -4466,14 +4466,14 @@
             "stat_name": "state::dissonance.utility.echo_source_bonus",
             "changed_in_max_progression": false,
             "start_of_run": {
-              "final_value": 27.707542490381915,
-              "display_value": "27.708",
+              "final_value": 28.182167871921717,
+              "display_value": "28.182",
               "value_type": "scalar",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 27.707542490381915,
-              "display_value": "27.708",
+              "final_value": 28.182167871921717,
+              "display_value": "28.182",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -4482,14 +4482,14 @@
             "stat_name": "state::dissonance.utility.pb",
             "changed_in_max_progression": false,
             "start_of_run": {
-              "final_value": 3915,
-              "display_value": "3.92k",
+              "final_value": 4402,
+              "display_value": "4.4k",
               "value_type": "count",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 3915,
-              "display_value": "3.92k",
+              "final_value": 4402,
+              "display_value": "4.4k",
               "value_type": "count",
               "status": "resolved"
             }
@@ -5234,14 +5234,14 @@
             "stat_name": "state::tower.damage",
             "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 6886397207.088865,
-              "display_value": "6.89B",
+              "final_value": 6775018562.6312685,
+              "display_value": "6.78B",
               "value_type": "damage",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 12427794959.668184,
-              "display_value": "12.4B",
+              "final_value": 12226791312.248615,
+              "display_value": "12.2B",
               "value_type": "damage",
               "status": "resolved"
             }
@@ -5314,14 +5314,14 @@
             "stat_name": "state::tower.enemy_attack_level_skip_pct",
             "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 35.860499999999995,
-              "display_value": "35.86%",
+              "final_value": 36.166999999999994,
+              "display_value": "36.167%",
               "value_type": "pct",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 55.692,
-              "display_value": "55.692%",
+              "final_value": 56.168,
+              "display_value": "56.168%",
               "value_type": "pct",
               "status": "resolved"
             }
@@ -5330,14 +5330,14 @@
             "stat_name": "state::tower.enemy_health_level_skip_pct",
             "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 35.860499999999995,
-              "display_value": "35.86%",
+              "final_value": 36.166999999999994,
+              "display_value": "36.167%",
               "value_type": "pct",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 55.692,
-              "display_value": "55.692%",
+              "final_value": 56.168,
+              "display_value": "56.168%",
               "value_type": "pct",
               "status": "resolved"
             }
@@ -5394,14 +5394,14 @@
             "stat_name": "state::tower.hp",
             "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 1960360644237.5166,
-              "display_value": "1.96T",
+              "final_value": 1984562627499.7085,
+              "display_value": "1.98T",
               "value_type": "hp",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 7351352415890.687,
-              "display_value": "7.35T",
+              "final_value": 7442109853123.904,
+              "display_value": "7.44T",
               "value_type": "hp",
               "status": "resolved"
             }
@@ -5698,14 +5698,14 @@
             "stat_name": "state::tower.recovery_package_multiplier",
             "changed_in_max_progression": false,
             "start_of_run": {
-              "final_value": 1.0,
-              "display_value": "x1",
+              "final_value": 1.45,
+              "display_value": "x1.45",
               "value_type": "multiplier",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 1.0,
-              "display_value": "x1",
+              "final_value": 1.45,
+              "display_value": "x1.45",
               "value_type": "multiplier",
               "status": "resolved"
             }
@@ -5714,14 +5714,14 @@
             "stat_name": "state::tower.regen",
             "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 994873593581.6201,
-              "display_value": "995B",
+              "final_value": 1006717326838.544,
+              "display_value": "1.01T",
               "value_type": "hp_per_second",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 192333937479166.7,
-              "display_value": "192T",
+              "final_value": 241964509505644.06,
+              "display_value": "242T",
               "value_type": "hp_per_second",
               "status": "resolved"
             }
@@ -5842,14 +5842,14 @@
             "stat_name": "state::tower.ultimate_damage_multiplier",
             "changed_in_max_progression": false,
             "start_of_run": {
-              "final_value": 42.841202976000005,
-              "display_value": "x42.841",
+              "final_value": 46.06202832,
+              "display_value": "x46.062",
               "value_type": "multiplier",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 42.841202976000005,
-              "display_value": "x42.841",
+              "final_value": 46.06202832,
+              "display_value": "x46.062",
               "value_type": "multiplier",
               "status": "resolved"
             }
@@ -5954,14 +5954,14 @@
             "stat_name": "state::uw.chain_lightning.chance_pct",
             "changed_in_max_progression": false,
             "start_of_run": {
-              "final_value": 19.4,
-              "display_value": "19.4%",
+              "final_value": 19.64,
+              "display_value": "19.64%",
               "value_type": "pct",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 19.4,
-              "display_value": "19.4%",
+              "final_value": 19.64,
+              "display_value": "19.64%",
               "value_type": "pct",
               "status": "resolved"
             }
@@ -6098,14 +6098,14 @@
             "stat_name": "state::uw.chrono_field.slow_pct",
             "changed_in_max_progression": false,
             "start_of_run": {
-              "final_value": 72.25,
-              "display_value": "72.25%",
+              "final_value": 72.85,
+              "display_value": "72.85%",
               "value_type": "pct",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 72.25,
-              "display_value": "72.25%",
+              "final_value": 72.85,
+              "display_value": "72.85%",
               "value_type": "pct",
               "status": "resolved"
             }
@@ -6338,14 +6338,14 @@
             "stat_name": "state::uw.spotlight.angle_degrees",
             "changed_in_max_progression": false,
             "start_of_run": {
-              "final_value": 56.25,
-              "display_value": "56.25",
+              "final_value": 56.85,
+              "display_value": "56.85",
               "value_type": "degrees",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 56.25,
-              "display_value": "56.25",
+              "final_value": 56.85,
+              "display_value": "56.85",
               "value_type": "degrees",
               "status": "resolved"
             }
@@ -6354,14 +6354,14 @@
             "stat_name": "state::uw.spotlight.bonus_multiplier",
             "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 22.849999999999998,
-              "display_value": "x22.85",
+              "final_value": 23.45,
+              "display_value": "x23.45",
               "value_type": "multiplier",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 34.275,
-              "display_value": "x34.275",
+              "final_value": 35.175,
+              "display_value": "x35.175",
               "value_type": "multiplier",
               "status": "resolved"
             }
@@ -6434,14 +6434,14 @@
             "stat_name": "state::wall.hp",
             "changed_in_max_progression": false,
             "start_of_run": {
-              "final_value": 191600640.00000003,
-              "display_value": "192M",
+              "final_value": 193966080.00000006,
+              "display_value": "194M",
               "value_type": "hp",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 191600640.00000003,
-              "display_value": "192M",
+              "final_value": 193966080.00000006,
+              "display_value": "194M",
               "value_type": "hp",
               "status": "resolved"
             }
@@ -6705,7 +6705,7 @@
         },
         "diagnostics": {
           "row_count": 401,
-          "changed_in_max_progression_count": 80
+          "changed_in_max_progression_count": 84
         }
       }
     },
@@ -6946,14 +6946,14 @@
             "stat_name": "derived::dissonance.attack.echo_bonus_multiplier",
             "changed_in_max_progression": false,
             "start_of_run": {
-              "final_value": 0.9319042949207427,
-              "display_value": "x0.932",
+              "final_value": 0.9506715486200009,
+              "display_value": "x0.951",
               "value_type": "multiplier",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 0.9319042949207427,
-              "display_value": "x0.932",
+              "final_value": 0.9506715486200009,
+              "display_value": "x0.951",
               "value_type": "multiplier",
               "status": "resolved"
             }
@@ -6978,14 +6978,14 @@
             "stat_name": "derived::dissonance.attack.total_multiplier",
             "changed_in_max_progression": false,
             "start_of_run": {
-              "final_value": 1.9319042949207428,
-              "display_value": "x1.932",
+              "final_value": 1.9506715486200008,
+              "display_value": "x1.951",
               "value_type": "multiplier",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 1.9319042949207428,
-              "display_value": "x1.932",
+              "final_value": 1.9506715486200008,
+              "display_value": "x1.951",
               "value_type": "multiplier",
               "status": "resolved"
             }
@@ -6994,14 +6994,14 @@
             "stat_name": "derived::dissonance.defense.echo_bonus_multiplier",
             "changed_in_max_progression": false,
             "start_of_run": {
-              "final_value": 0.14878221575948328,
-              "display_value": "x0.149",
+              "final_value": 0.16028580042206916,
+              "display_value": "x0.16",
               "value_type": "multiplier",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 0.14878221575948328,
-              "display_value": "x0.149",
+              "final_value": 0.16028580042206916,
+              "display_value": "x0.16",
               "value_type": "multiplier",
               "status": "resolved"
             }
@@ -7026,14 +7026,14 @@
             "stat_name": "derived::dissonance.defense.total_multiplier",
             "changed_in_max_progression": false,
             "start_of_run": {
-              "final_value": 1.1487822157594834,
-              "display_value": "x1.149",
+              "final_value": 1.160285800422069,
+              "display_value": "x1.16",
               "value_type": "multiplier",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 1.1487822157594834,
-              "display_value": "x1.149",
+              "final_value": 1.160285800422069,
+              "display_value": "x1.16",
               "value_type": "multiplier",
               "status": "resolved"
             }
@@ -7042,14 +7042,14 @@
             "stat_name": "derived::dissonance.ultimate_weapons.echo_bonus_multiplier",
             "changed_in_max_progression": false,
             "start_of_run": {
-              "final_value": 1.1059050032685525,
-              "display_value": "x1.106",
+              "final_value": 1.150008740170118,
+              "display_value": "x1.15",
               "value_type": "multiplier",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 1.1059050032685525,
-              "display_value": "x1.106",
+              "final_value": 1.150008740170118,
+              "display_value": "x1.15",
               "value_type": "multiplier",
               "status": "resolved"
             }
@@ -7074,14 +7074,14 @@
             "stat_name": "derived::dissonance.ultimate_weapons.total_multiplier",
             "changed_in_max_progression": false,
             "start_of_run": {
-              "final_value": 2.1059050032685525,
-              "display_value": "x2.106",
+              "final_value": 2.150008740170118,
+              "display_value": "x2.15",
               "value_type": "multiplier",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 2.1059050032685525,
-              "display_value": "x2.106",
+              "final_value": 2.150008740170118,
+              "display_value": "x2.15",
               "value_type": "multiplier",
               "status": "resolved"
             }
@@ -7090,14 +7090,14 @@
             "stat_name": "derived::dissonance.utility.echo_bonus_multiplier",
             "changed_in_max_progression": false,
             "start_of_run": {
-              "final_value": 0.5541508498076383,
-              "display_value": "x0.554",
+              "final_value": 0.5636433574384343,
+              "display_value": "x0.564",
               "value_type": "multiplier",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 0.5541508498076383,
-              "display_value": "x0.554",
+              "final_value": 0.5636433574384343,
+              "display_value": "x0.564",
               "value_type": "multiplier",
               "status": "resolved"
             }
@@ -7122,14 +7122,14 @@
             "stat_name": "derived::dissonance.utility.total_multiplier",
             "changed_in_max_progression": false,
             "start_of_run": {
-              "final_value": 1.5541508498076384,
-              "display_value": "x1.554",
+              "final_value": 1.5636433574384343,
+              "display_value": "x1.564",
               "value_type": "multiplier",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 1.5541508498076384,
-              "display_value": "x1.554",
+              "final_value": 1.5636433574384343,
+              "display_value": "x1.564",
               "value_type": "multiplier",
               "status": "resolved"
             }
@@ -7138,14 +7138,14 @@
             "stat_name": "derived::economy.income.coins",
             "changed_in_max_progression": false,
             "start_of_run": {
-              "final_value": 11342217.496227723,
-              "display_value": "11.3M",
+              "final_value": 11470392.000514323,
+              "display_value": "11.5M",
               "value_type": "per_week",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 11342217.496227723,
-              "display_value": "11.3M",
+              "final_value": 11470392.000514323,
+              "display_value": "11.5M",
               "value_type": "per_week",
               "status": "resolved"
             }
@@ -7218,14 +7218,14 @@
             "stat_name": "derived::edamage",
             "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 1.8792501988788682e+32,
-              "display_value": "187925020S",
+              "final_value": 2.217537005135173e+32,
+              "display_value": "221753701S",
               "value_type": "scalar",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 1.7741638112131596e+33,
-              "display_value": "1774163811S",
+              "final_value": 2.093533916855096e+33,
+              "display_value": "2093533917S",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -7250,14 +7250,14 @@
             "stat_name": "derived::edamage.attack_dissonance_factor",
             "changed_in_max_progression": false,
             "start_of_run": {
-              "final_value": 1.9319042949207428,
-              "display_value": "x1.932",
+              "final_value": 1.9506715486200008,
+              "display_value": "x1.951",
               "value_type": "multiplier",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 1.9319042949207428,
-              "display_value": "x1.932",
+              "final_value": 1.9506715486200008,
+              "display_value": "x1.951",
               "value_type": "multiplier",
               "status": "resolved"
             }
@@ -7282,14 +7282,14 @@
             "stat_name": "derived::edamage.base_damage_stack",
             "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 2702603735257.237,
-              "display_value": "2.7T",
+              "final_value": 2684722080045.002,
+              "display_value": "2.68T",
               "value_type": "scalar",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 24323433617315.13,
-              "display_value": "24.3T",
+              "final_value": 24162498720405.016,
+              "display_value": "24.2T",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -7330,14 +7330,14 @@
             "stat_name": "derived::edamage.boss_applicable_dps_cl_only",
             "changed_in_max_progression": false,
             "start_of_run": {
-              "final_value": 102237559.83545676,
-              "display_value": "102M",
+              "final_value": 103018993.41381694,
+              "display_value": "103M",
               "value_type": "scalar",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 102237559.83545676,
-              "display_value": "102M",
+              "final_value": 103018993.41381694,
+              "display_value": "103M",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -7394,14 +7394,14 @@
             "stat_name": "derived::edamage.bullet_pipeline_factor",
             "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 1553840.4496672966,
-              "display_value": "1.55M",
+              "final_value": 1828333.1781818469,
+              "display_value": "1.83M",
               "value_type": "scalar",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 1748158.3355849881,
-              "display_value": "1.75M",
+              "final_value": 2056978.1706671056,
+              "display_value": "2.06M",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -7538,14 +7538,14 @@
             "stat_name": "derived::edamage.slow_factor",
             "changed_in_max_progression": false,
             "start_of_run": {
-              "final_value": 7.843137254901964,
-              "display_value": "x7.843",
+              "final_value": 8.230452674897116,
+              "display_value": "x8.23",
               "value_type": "multiplier",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 7.843137254901964,
-              "display_value": "x7.843",
+              "final_value": 8.230452674897116,
+              "display_value": "x8.23",
               "value_type": "multiplier",
               "status": "resolved"
             }
@@ -7554,14 +7554,14 @@
             "stat_name": "derived::edamage.spotlight_bonus_term",
             "changed_in_max_progression": false,
             "start_of_run": {
-              "final_value": 42.849999999999994,
-              "display_value": "x42.85",
+              "final_value": 43.45,
+              "display_value": "x43.45",
               "value_type": "multiplier",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 42.849999999999994,
-              "display_value": "x42.85",
+              "final_value": 43.45,
+              "display_value": "x43.45",
               "value_type": "multiplier",
               "status": "resolved"
             }
@@ -7570,14 +7570,14 @@
             "stat_name": "derived::edamage.spotlight_coverage",
             "changed_in_max_progression": false,
             "start_of_run": {
-              "final_value": 0.46875,
-              "display_value": "0.469",
+              "final_value": 0.47375,
+              "display_value": "0.474",
               "value_type": "ratio",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 0.46875,
-              "display_value": "0.469",
+              "final_value": 0.47375,
+              "display_value": "0.474",
               "value_type": "ratio",
               "status": "resolved"
             }
@@ -7586,14 +7586,14 @@
             "stat_name": "derived::edamage.spotlight_factor",
             "changed_in_max_progression": false,
             "start_of_run": {
-              "final_value": 20.617187499999996,
-              "display_value": "x20.617",
+              "final_value": 21.1106875,
+              "display_value": "x21.111",
               "value_type": "multiplier",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 20.617187499999996,
-              "display_value": "x20.617",
+              "final_value": 21.1106875,
+              "display_value": "x21.111",
               "value_type": "multiplier",
               "status": "resolved"
             }
@@ -7618,14 +7618,14 @@
             "stat_name": "derived::edamage.super_tower_factor",
             "changed_in_max_progression": false,
             "start_of_run": {
-              "final_value": 7.067708333333333,
-              "display_value": "x7.068",
+              "final_value": 8.31625,
+              "display_value": "x8.316",
               "value_type": "multiplier",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 7.067708333333333,
-              "display_value": "x7.068",
+              "final_value": 8.31625,
+              "display_value": "x8.316",
               "value_type": "multiplier",
               "status": "resolved"
             }
@@ -7634,14 +7634,14 @@
             "stat_name": "derived::edamage.uw.chain_lightning_dps",
             "changed_in_max_progression": false,
             "start_of_run": {
-              "final_value": 102237559.83545676,
-              "display_value": "102M",
+              "final_value": 103018993.41381694,
+              "display_value": "103M",
               "value_type": "scalar",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 102237559.83545676,
-              "display_value": "102M",
+              "final_value": 103018993.41381694,
+              "display_value": "103M",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -7810,14 +7810,14 @@
             "stat_name": "derived::edamage.uw_dissonance_factor",
             "changed_in_max_progression": false,
             "start_of_run": {
-              "final_value": 2.1059050032685525,
-              "display_value": "x2.106",
+              "final_value": 2.150008740170118,
+              "display_value": "x2.15",
               "value_type": "multiplier",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 2.1059050032685525,
-              "display_value": "x2.106",
+              "final_value": 2.150008740170118,
+              "display_value": "x2.15",
               "value_type": "multiplier",
               "status": "resolved"
             }
@@ -7826,14 +7826,14 @@
             "stat_name": "derived::edamage.uw_total_damage",
             "changed_in_max_progression": false,
             "start_of_run": {
-              "final_value": 6975928792392.651,
-              "display_value": "6.98T",
+              "final_value": 7896548943545.127,
+              "display_value": "7.9T",
               "value_type": "scalar",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 6975928792392.651,
-              "display_value": "6.98T",
+              "final_value": 7896548943545.127,
+              "display_value": "7.9T",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -7842,14 +7842,14 @@
             "stat_name": "derived::edamage_boss",
             "changed_in_max_progression": false,
             "start_of_run": {
-              "final_value": 102237559.83545676,
-              "display_value": "102M",
+              "final_value": 103018993.41381694,
+              "display_value": "103M",
               "value_type": "scalar",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 102237559.83545676,
-              "display_value": "102M",
+              "final_value": 103018993.41381694,
+              "display_value": "103M",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -7858,14 +7858,14 @@
             "stat_name": "derived::edamage_ep",
             "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 1.8792501988788682e+32,
-              "display_value": "187925020S",
+              "final_value": 2.217537005135173e+32,
+              "display_value": "221753701S",
               "value_type": "scalar",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 1.7741638112131596e+33,
-              "display_value": "1774163811S",
+              "final_value": 2.093533916855096e+33,
+              "display_value": "2093533917S",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -7874,14 +7874,14 @@
             "stat_name": "derived::edamage_ep_helper.dc_base_damage_stack",
             "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 2702603735257.237,
-              "display_value": "2.7T",
+              "final_value": 2684722080045.002,
+              "display_value": "2.68T",
               "value_type": "scalar",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 24323433617315.13,
-              "display_value": "24.3T",
+              "final_value": 24162498720405.016,
+              "display_value": "24.2T",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -7938,14 +7938,14 @@
             "stat_name": "derived::edamage_ep_helper.dv_bullet_pipeline_factor",
             "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 1553840.4496672966,
-              "display_value": "1.55M",
+              "final_value": 1828333.1781818469,
+              "display_value": "1.83M",
               "value_type": "scalar",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 1748158.3355849881,
-              "display_value": "1.75M",
+              "final_value": 2056978.1706671056,
+              "display_value": "2.06M",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -7954,14 +7954,14 @@
             "stat_name": "derived::edamage_ep_helper.dx_spotlight_bonus_term",
             "changed_in_max_progression": false,
             "start_of_run": {
-              "final_value": 42.849999999999994,
-              "display_value": "x42.85",
+              "final_value": 43.45,
+              "display_value": "x43.45",
               "value_type": "multiplier",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 42.849999999999994,
-              "display_value": "x42.85",
+              "final_value": 43.45,
+              "display_value": "x43.45",
               "value_type": "multiplier",
               "status": "resolved"
             }
@@ -7970,14 +7970,14 @@
             "stat_name": "derived::edamage_ep_helper.dx_spotlight_coverage",
             "changed_in_max_progression": false,
             "start_of_run": {
-              "final_value": 0.46875,
-              "display_value": "0.469",
+              "final_value": 0.47375,
+              "display_value": "0.474",
               "value_type": "ratio",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 0.46875,
-              "display_value": "0.469",
+              "final_value": 0.47375,
+              "display_value": "0.474",
               "value_type": "ratio",
               "status": "resolved"
             }
@@ -8002,14 +8002,14 @@
             "stat_name": "derived::edamage_ep_helper.ei_uw_total_damage",
             "changed_in_max_progression": false,
             "start_of_run": {
-              "final_value": 6975928792392.651,
-              "display_value": "6.98T",
+              "final_value": 7896548943545.127,
+              "display_value": "7.9T",
               "value_type": "scalar",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 6975928792392.651,
-              "display_value": "6.98T",
+              "final_value": 7896548943545.127,
+              "display_value": "7.9T",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -8018,14 +8018,14 @@
             "stat_name": "derived::edamage_ep_helper.el_slow_factor",
             "changed_in_max_progression": false,
             "start_of_run": {
-              "final_value": 7.843137254901964,
-              "display_value": "x7.843",
+              "final_value": 8.230452674897116,
+              "display_value": "x8.23",
               "value_type": "multiplier",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 7.843137254901964,
-              "display_value": "x7.843",
+              "final_value": 8.230452674897116,
+              "display_value": "x8.23",
               "value_type": "multiplier",
               "status": "resolved"
             }
@@ -8034,14 +8034,14 @@
             "stat_name": "derived::eecon",
             "changed_in_max_progression": false,
             "start_of_run": {
-              "final_value": 14142290.162361002,
-              "display_value": "14.1M",
+              "final_value": 14302107.32612468,
+              "display_value": "14.3M",
               "value_type": "scalar",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 14142290.162361002,
-              "display_value": "14.1M",
+              "final_value": 14302107.32612468,
+              "display_value": "14.3M",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -8082,14 +8082,14 @@
             "stat_name": "derived::eecon.base_coin_income",
             "changed_in_max_progression": false,
             "start_of_run": {
-              "final_value": 14142290.162361002,
-              "display_value": "14.1M",
+              "final_value": 14302107.32612468,
+              "display_value": "14.3M",
               "value_type": "scalar",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 14142290.162361002,
-              "display_value": "14.1M",
+              "final_value": 14302107.32612468,
+              "display_value": "14.3M",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -8402,14 +8402,14 @@
             "stat_name": "derived::eecon.raw_factor",
             "changed_in_max_progression": false,
             "start_of_run": {
-              "final_value": 14142.290162361001,
-              "display_value": "14.1k",
+              "final_value": 14302.10732612468,
+              "display_value": "14.3k",
               "value_type": "scalar",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 14142.290162361001,
-              "display_value": "14.1k",
+              "final_value": 14302.10732612468,
+              "display_value": "14.3k",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -8434,14 +8434,14 @@
             "stat_name": "derived::eecon.spotlight_coin_coverage",
             "changed_in_max_progression": false,
             "start_of_run": {
-              "final_value": 0.46875,
-              "display_value": "0.469",
+              "final_value": 0.47375,
+              "display_value": "0.474",
               "value_type": "ratio",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 0.46875,
-              "display_value": "0.469",
+              "final_value": 0.47375,
+              "display_value": "0.474",
               "value_type": "ratio",
               "status": "resolved"
             }
@@ -8450,14 +8450,14 @@
             "stat_name": "derived::eecon.spotlight_coin_factor",
             "changed_in_max_progression": false,
             "start_of_run": {
-              "final_value": 1.9375,
-              "display_value": "x1.938",
+              "final_value": 1.9475,
+              "display_value": "x1.948",
               "value_type": "multiplier",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 1.9375,
-              "display_value": "x1.938",
+              "final_value": 1.9475,
+              "display_value": "x1.948",
               "value_type": "multiplier",
               "status": "resolved"
             }
@@ -8498,14 +8498,14 @@
             "stat_name": "derived::eecon.utility_dissonance_factor",
             "changed_in_max_progression": false,
             "start_of_run": {
-              "final_value": 1.5541508498076384,
-              "display_value": "x1.554",
+              "final_value": 1.5636433574384343,
+              "display_value": "x1.564",
               "value_type": "multiplier",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 1.5541508498076384,
-              "display_value": "x1.554",
+              "final_value": 1.5636433574384343,
+              "display_value": "x1.564",
               "value_type": "multiplier",
               "status": "resolved"
             }
@@ -8530,14 +8530,14 @@
             "stat_name": "derived::eecon_ep",
             "changed_in_max_progression": false,
             "start_of_run": {
-              "final_value": 14142290.162361002,
-              "display_value": "14.1M",
+              "final_value": 14302107.32612468,
+              "display_value": "14.3M",
               "value_type": "scalar",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 14142290.162361002,
-              "display_value": "14.1M",
+              "final_value": 14302107.32612468,
+              "display_value": "14.3M",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -8610,14 +8610,14 @@
             "stat_name": "derived::eecon_ep_helper.dg_spotlight_coin_coverage",
             "changed_in_max_progression": false,
             "start_of_run": {
-              "final_value": 0.46875,
-              "display_value": "0.469",
+              "final_value": 0.47375,
+              "display_value": "0.474",
               "value_type": "ratio",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 0.46875,
-              "display_value": "0.469",
+              "final_value": 0.47375,
+              "display_value": "0.474",
               "value_type": "ratio",
               "status": "resolved"
             }
@@ -8626,14 +8626,14 @@
             "stat_name": "derived::eecon_ep_helper.dg_spotlight_coin_factor",
             "changed_in_max_progression": false,
             "start_of_run": {
-              "final_value": 1.9375,
-              "display_value": "x1.938",
+              "final_value": 1.9475,
+              "display_value": "x1.948",
               "value_type": "multiplier",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 1.9375,
-              "display_value": "x1.938",
+              "final_value": 1.9475,
+              "display_value": "x1.948",
               "value_type": "multiplier",
               "status": "resolved"
             }
@@ -8642,14 +8642,14 @@
             "stat_name": "derived::ehp",
             "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 1.456952066084625e+16,
-              "display_value": "14.6q",
+              "final_value": 1.5037698098429844e+16,
+              "display_value": "15q",
               "value_type": "scalar",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 1.8211892311701587e+17,
-              "display_value": "182q",
+              "final_value": 1.8797114108681066e+17,
+              "display_value": "188q",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -8706,14 +8706,14 @@
             "stat_name": "derived::ehp.base_pool",
             "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 163178548479052.34,
-              "display_value": "163T",
+              "final_value": 168422135779988.56,
+              "display_value": "168T",
               "value_type": "scalar",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 2039731855988153.8,
-              "display_value": "2.04q",
+              "final_value": 2105276697249855.8,
+              "display_value": "2.11q",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -9106,14 +9106,14 @@
             "stat_name": "derived::ehp.defense_dissonance_factor",
             "changed_in_max_progression": false,
             "start_of_run": {
-              "final_value": 1.1487822157594834,
-              "display_value": "x1.149",
+              "final_value": 1.160285800422069,
+              "display_value": "x1.16",
               "value_type": "multiplier",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 1.1487822157594834,
-              "display_value": "x1.149",
+              "final_value": 1.160285800422069,
+              "display_value": "x1.16",
               "value_type": "multiplier",
               "status": "resolved"
             }
@@ -9186,14 +9186,14 @@
             "stat_name": "derived::ehp.health_factor",
             "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 2328572666712.5073,
-              "display_value": "2.33T",
+              "final_value": 2380926027112.816,
+              "display_value": "2.38T",
               "value_type": "scalar",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 29107158333906.332,
-              "display_value": "29.1T",
+              "final_value": 29761575338910.188,
+              "display_value": "29.8T",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -9234,14 +9234,14 @@
             "stat_name": "derived::ehp.health_raw_factor",
             "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 238372198173.7592,
-              "display_value": "238B",
+              "final_value": 243731526563.5506,
+              "display_value": "244B",
               "value_type": "scalar",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 2979652477171.989,
-              "display_value": "2.98T",
+              "final_value": 3046644082044.3813,
+              "display_value": "3.05T",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -9378,14 +9378,14 @@
             "stat_name": "derived::ehp.pre_defense_pool",
             "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 291390265141164.9,
-              "display_value": "291T",
+              "final_value": 300753813892836.75,
+              "display_value": "301T",
               "value_type": "scalar",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 3642378314264560.0,
-              "display_value": "3.64q",
+              "final_value": 3759422673660456.0,
+              "display_value": "3.76q",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -9394,14 +9394,14 @@
             "stat_name": "derived::ehp.pre_tradeoff_ehp",
             "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 1.456952066084625e+16,
-              "display_value": "14.6q",
+              "final_value": 1.5037698098429844e+16,
+              "display_value": "15q",
               "value_type": "scalar",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 1.8211892311701587e+17,
-              "display_value": "182q",
+              "final_value": 1.8797114108681066e+17,
+              "display_value": "188q",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -9488,16 +9488,16 @@
           },
           "derived::ehp.wall_factor": {
             "stat_name": "derived::ehp.wall_factor",
-            "changed_in_max_progression": false,
+            "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 53.576640000000005,
-              "display_value": "53.577",
+              "final_value": 54.23808000000001,
+              "display_value": "54.238",
               "value_type": "scalar",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 53.576640000000005,
-              "display_value": "53.577",
+              "final_value": 54.238080000000004,
+              "display_value": "54.238",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -9616,32 +9616,32 @@
           },
           "derived::ehp.wall_or_recovery_factor": {
             "stat_name": "derived::ehp.wall_or_recovery_factor",
-            "changed_in_max_progression": false,
+            "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 70.07664,
-              "display_value": "70.077",
+              "final_value": 70.73808000000001,
+              "display_value": "70.738",
               "value_type": "scalar",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 70.07664,
-              "display_value": "70.077",
+              "final_value": 70.73808,
+              "display_value": "70.738",
               "value_type": "scalar",
               "status": "resolved"
             }
           },
           "derived::ehp.wall_pkg_factor": {
             "stat_name": "derived::ehp.wall_pkg_factor",
-            "changed_in_max_progression": false,
+            "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 70.07664,
-              "display_value": "70.077",
+              "final_value": 70.73808000000001,
+              "display_value": "70.738",
               "value_type": "scalar",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 70.07664,
-              "display_value": "70.077",
+              "final_value": 70.73808,
+              "display_value": "70.738",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -9650,14 +9650,14 @@
             "stat_name": "derived::ehp_ep",
             "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 1.456952066084625e+16,
-              "display_value": "14.6q",
+              "final_value": 1.5037698098429844e+16,
+              "display_value": "15q",
               "value_type": "scalar",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 1.8211892311701587e+17,
-              "display_value": "182q",
+              "final_value": 1.8797114108681066e+17,
+              "display_value": "188q",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -9666,14 +9666,14 @@
             "stat_name": "derived::ehp_ep_helper.ce_pool_factor",
             "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 2328572666712.5073,
-              "display_value": "2.33T",
+              "final_value": 2380926027112.816,
+              "display_value": "2.38T",
               "value_type": "scalar",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 29107158333906.332,
-              "display_value": "29.1T",
+              "final_value": 29761575338910.188,
+              "display_value": "29.8T",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -9728,16 +9728,16 @@
           },
           "derived::ehp_ep_helper.ci_wall_factor": {
             "stat_name": "derived::ehp_ep_helper.ci_wall_factor",
-            "changed_in_max_progression": false,
+            "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 53.576640000000005,
-              "display_value": "53.577",
+              "final_value": 54.23808000000001,
+              "display_value": "54.238",
               "value_type": "scalar",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 53.576640000000005,
-              "display_value": "53.577",
+              "final_value": 54.238080000000004,
+              "display_value": "54.238",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -10034,14 +10034,14 @@
             "stat_name": "derived::wall.hp_final",
             "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 124757099478296.0,
-              "display_value": "125T",
+              "final_value": 129136856332627.11,
+              "display_value": "129T",
               "value_type": "hp",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 1559463743478699.5,
-              "display_value": "1.56q",
+              "final_value": 1614210704157838.0,
+              "display_value": "1.61q",
               "value_type": "hp",
               "status": "resolved"
             }
@@ -10050,14 +10050,14 @@
             "stat_name": "derived::wall.hp_pre_fort",
             "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 11769537686631.7,
-              "display_value": "11.8T",
+              "final_value": 12182722295530.86,
+              "display_value": "12.2T",
               "value_type": "hp",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 147119221082896.2,
-              "display_value": "147T",
+              "final_value": 152284028694135.66,
+              "display_value": "152T",
               "value_type": "hp",
               "status": "resolved"
             }
@@ -10066,14 +10066,14 @@
             "stat_name": "derived::wall.regen_hp_per_second",
             "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 567446420042.85,
-              "display_value": "567B",
+              "final_value": 574201734567.1694,
+              "display_value": "574B",
               "value_type": "hp_per_second",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 2099551754158.5447,
-              "display_value": "2.1T",
+              "final_value": 2641327979008.98,
+              "display_value": "2.64T",
               "value_type": "hp_per_second",
               "status": "resolved"
             }
@@ -10802,14 +10802,14 @@
             "stat_name": "state::cards.super_tower.cooldown_seconds",
             "changed_in_max_progression": false,
             "start_of_run": {
-              "final_value": 18,
-              "display_value": "18",
+              "final_value": 15,
+              "display_value": "15",
               "value_type": "scalar",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 18,
-              "display_value": "18",
+              "final_value": 15,
+              "display_value": "15",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -10930,14 +10930,14 @@
             "stat_name": "state::dissonance.attack.echo_source_bonus",
             "changed_in_max_progression": false,
             "start_of_run": {
-              "final_value": 62.12695299471618,
-              "display_value": "62.127",
+              "final_value": 63.3781032413334,
+              "display_value": "63.378",
               "value_type": "scalar",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 62.12695299471618,
-              "display_value": "62.127",
+              "final_value": 63.3781032413334,
+              "display_value": "63.378",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -10978,14 +10978,14 @@
             "stat_name": "state::dissonance.defense.echo_source_bonus",
             "changed_in_max_progression": false,
             "start_of_run": {
-              "final_value": 14.878221575948327,
-              "display_value": "14.878",
+              "final_value": 16.028580042206915,
+              "display_value": "16.029",
               "value_type": "scalar",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 14.878221575948327,
-              "display_value": "14.878",
+              "final_value": 16.028580042206915,
+              "display_value": "16.029",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -11026,14 +11026,14 @@
             "stat_name": "state::dissonance.ultimate_weapons.echo_source_bonus",
             "changed_in_max_progression": false,
             "start_of_run": {
-              "final_value": 55.295250163427625,
-              "display_value": "55.295",
+              "final_value": 57.5004370085059,
+              "display_value": "57.5",
               "value_type": "scalar",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 55.295250163427625,
-              "display_value": "55.295",
+              "final_value": 57.5004370085059,
+              "display_value": "57.5",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -11074,14 +11074,14 @@
             "stat_name": "state::dissonance.utility.echo_source_bonus",
             "changed_in_max_progression": false,
             "start_of_run": {
-              "final_value": 27.707542490381915,
-              "display_value": "27.708",
+              "final_value": 28.182167871921717,
+              "display_value": "28.182",
               "value_type": "scalar",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 27.707542490381915,
-              "display_value": "27.708",
+              "final_value": 28.182167871921717,
+              "display_value": "28.182",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -11842,14 +11842,14 @@
             "stat_name": "state::tower.damage",
             "changed_in_max_progression": false,
             "start_of_run": {
-              "final_value": 27545588828.35546,
-              "display_value": "27.5B",
+              "final_value": 27100074250.525074,
+              "display_value": "27.1B",
               "value_type": "damage",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 27545588828.35546,
-              "display_value": "27.5B",
+              "final_value": 27100074250.525074,
+              "display_value": "27.1B",
               "value_type": "damage",
               "status": "resolved"
             }
@@ -11922,14 +11922,14 @@
             "stat_name": "state::tower.enemy_attack_level_skip_pct",
             "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 26.500499999999995,
-              "display_value": "26.5%",
+              "final_value": 26.726999999999997,
+              "display_value": "26.727%",
               "value_type": "pct",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 46.332,
-              "display_value": "46.332%",
+              "final_value": 46.728,
+              "display_value": "46.728%",
               "value_type": "pct",
               "status": "resolved"
             }
@@ -11938,14 +11938,14 @@
             "stat_name": "state::tower.enemy_health_level_skip_pct",
             "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 35.860499999999995,
-              "display_value": "35.86%",
+              "final_value": 36.166999999999994,
+              "display_value": "36.167%",
               "value_type": "pct",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 55.692,
-              "display_value": "55.692%",
+              "final_value": 56.168,
+              "display_value": "56.168%",
               "value_type": "pct",
               "status": "resolved"
             }
@@ -12002,14 +12002,14 @@
             "stat_name": "state::tower.hp",
             "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 2026992266043.2556,
-              "display_value": "2.03T",
+              "final_value": 2052016861920.3328,
+              "display_value": "2.05T",
               "value_type": "hp",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 25337403325540.688,
-              "display_value": "25.3T",
+              "final_value": 25650210774004.152,
+              "display_value": "25.7T",
               "value_type": "hp",
               "status": "resolved"
             }
@@ -12306,14 +12306,14 @@
             "stat_name": "state::tower.recovery_package_multiplier",
             "changed_in_max_progression": false,
             "start_of_run": {
-              "final_value": 1.0,
-              "display_value": "x1",
+              "final_value": 1.45,
+              "display_value": "x1.45",
               "value_type": "multiplier",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 1.0,
-              "display_value": "x1",
+              "final_value": 1.45,
+              "display_value": "x1.45",
               "value_type": "multiplier",
               "status": "resolved"
             }
@@ -12322,14 +12322,14 @@
             "stat_name": "state::tower.regen",
             "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 257930190928.56815,
-              "display_value": "258B",
+              "final_value": 261000788439.62247,
+              "display_value": "261B",
               "value_type": "hp_per_second",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 954341706435.702,
-              "display_value": "954B",
+              "final_value": 1200603626822.2634,
+              "display_value": "1.2T",
               "value_type": "hp_per_second",
               "status": "resolved"
             }
@@ -12450,14 +12450,14 @@
             "stat_name": "state::tower.ultimate_damage_multiplier",
             "changed_in_max_progression": false,
             "start_of_run": {
-              "final_value": 37.3884456,
-              "display_value": "x37.388",
+              "final_value": 40.178292000000006,
+              "display_value": "x40.178",
               "value_type": "multiplier",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 37.3884456,
-              "display_value": "x37.388",
+              "final_value": 40.178292000000006,
+              "display_value": "x40.178",
               "value_type": "multiplier",
               "status": "resolved"
             }
@@ -12562,14 +12562,14 @@
             "stat_name": "state::uw.chain_lightning.chance_pct",
             "changed_in_max_progression": false,
             "start_of_run": {
-              "final_value": 31.4,
-              "display_value": "31.4%",
+              "final_value": 31.64,
+              "display_value": "31.64%",
               "value_type": "pct",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 31.4,
-              "display_value": "31.4%",
+              "final_value": 31.64,
+              "display_value": "31.64%",
               "value_type": "pct",
               "status": "resolved"
             }
@@ -12706,14 +12706,14 @@
             "stat_name": "state::uw.chrono_field.slow_pct",
             "changed_in_max_progression": false,
             "start_of_run": {
-              "final_value": 87.25,
-              "display_value": "87.25%",
+              "final_value": 87.85,
+              "display_value": "87.85%",
               "value_type": "pct",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 87.25,
-              "display_value": "87.25%",
+              "final_value": 87.85,
+              "display_value": "87.85%",
               "value_type": "pct",
               "status": "resolved"
             }
@@ -12946,14 +12946,14 @@
             "stat_name": "state::uw.spotlight.angle_degrees",
             "changed_in_max_progression": false,
             "start_of_run": {
-              "final_value": 56.25,
-              "display_value": "56.25",
+              "final_value": 56.85,
+              "display_value": "56.85",
               "value_type": "degrees",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 56.25,
-              "display_value": "56.25",
+              "final_value": 56.85,
+              "display_value": "56.85",
               "value_type": "degrees",
               "status": "resolved"
             }
@@ -12962,14 +12962,14 @@
             "stat_name": "state::uw.spotlight.bonus_multiplier",
             "changed_in_max_progression": false,
             "start_of_run": {
-              "final_value": 42.849999999999994,
-              "display_value": "x42.85",
+              "final_value": 43.45,
+              "display_value": "x43.45",
               "value_type": "multiplier",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 42.849999999999994,
-              "display_value": "x42.85",
+              "final_value": 43.45,
+              "display_value": "x43.45",
               "value_type": "multiplier",
               "status": "resolved"
             }
@@ -13042,14 +13042,14 @@
             "stat_name": "state::wall.hp",
             "changed_in_max_progression": false,
             "start_of_run": {
-              "final_value": 34836480.00000001,
-              "display_value": "34.8M",
+              "final_value": 35266560.0,
+              "display_value": "35.3M",
               "value_type": "hp",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 34836480.00000001,
-              "display_value": "34.8M",
+              "final_value": 35266560.0,
+              "display_value": "35.3M",
               "value_type": "hp",
               "status": "resolved"
             }
@@ -13313,7 +13313,7 @@
         },
         "diagnostics": {
           "row_count": 401,
-          "changed_in_max_progression_count": 35
+          "changed_in_max_progression_count": 39
         }
       }
     }
@@ -13449,7 +13449,7 @@
         },
         "dual_state_stats": {
           "row_count": 401,
-          "changed_in_max_progression_count": 80
+          "changed_in_max_progression_count": 84
         }
       },
       "Tourney": {
@@ -13491,7 +13491,7 @@
         },
         "dual_state_stats": {
           "row_count": 401,
-          "changed_in_max_progression_count": 35
+          "changed_in_max_progression_count": 39
         }
       }
     },

@@ -1282,10 +1282,10 @@ def test_boss_wave_gc_damage_primitives_include_card_and_module_damage_support()
     assert primitives['card_profile_preset'] == 'Tourney'
     assert primitives['super_tower_active'] is True
     assert primitives['super_tower_bonus_multiplier'] == pytest.approx(5.0)
-    assert primitives['super_tower_cooldown_seconds'] == pytest.approx(18.0)
+    assert primitives['super_tower_cooldown_seconds'] == pytest.approx(15.0)
     assert primitives['super_tower_mastery_active'] is True
     assert primitives['super_tower_uw_mastery_multiplier'] == pytest.approx(2.4)
-    assert primitives['edamage_super_tower_factor'] == pytest.approx(7.067708333333333)
+    assert primitives['edamage_super_tower_factor'] == pytest.approx(8.31625)
     assert primitives['energy_shield_enabled'] is True
     assert primitives['energy_shield_recharge_cooldown_seconds'] == pytest.approx(480.0)
     assert primitives['energy_shield_base_charge_count'] == pytest.approx(1.0)
@@ -2647,7 +2647,7 @@ def test_boss_wave_milestone_matrix_selects_best_loadout_by_tier_and_dissonance_
     assert wide['attack_reference_kind'] == 'ids_dissonant_pb_wave'
     assert wide['attack_reference_wave'] == 5000
     assert wide['defense_reference_wave'] == 5000
-    assert wide['utility_reference_wave'] == 3915
+    assert wide['utility_reference_wave'] == 4402
     assert wide['ultimate_weapons_reference_wave'] == 4727
     assert wide['regular_best_loadout'] in {'eHP Farming', 'GC Max Waves'}
     assert wide['attack_best_loadout'] in {'eHP Farming', 'GC Max Waves'}
@@ -4424,7 +4424,7 @@ def test_run_stats_canonical_default_publishes_max_progression_perk_sensitive_uw
     ]['Tourney']['rows']
     assert tourney_rows['state::cards.super_tower.active']['final_value'] is True
     assert tourney_rows['state::cards.super_tower.bonus_multiplier']['final_value'] == pytest.approx(5.0)
-    assert tourney_rows['state::cards.super_tower.cooldown_seconds']['final_value'] == pytest.approx(18.0)
+    assert tourney_rows['state::cards.super_tower.cooldown_seconds']['final_value'] == pytest.approx(15.0)
     assert tourney_rows['state::cards.super_tower.mastery_active']['final_value'] is True
     assert tourney_rows['state::cards.super_tower.uw_mastery_multiplier']['final_value'] == pytest.approx(2.4)
 

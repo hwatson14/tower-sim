@@ -851,8 +851,7 @@ def test_max_progression_assumes_second_wind_mastery_regen_is_active_when_equipp
     assert projected.value_type == 'multiplier'
     assert projected.notes == 'projection_state=second_wind_mastery_regen:assumed_second_wind_triggered_for_max_progression'
 
-    planner = QEResolutionPlanner()
-    without_statbook = planner.resolve_declared_family_statbook(
+    without_statbook = QEResolutionPlanner().resolve_declared_family_statbook(
         without_second_wind,
         family_id='progression_runtime_with_perks',
         requested_surface_ids=('state::tower.regen',),
@@ -861,7 +860,7 @@ def test_max_progression_assumes_second_wind_mastery_regen_is_active_when_equipp
         perks_enabled=True,
         notes='second_wind_mastery_regen_without_card_probe',
     )
-    with_statbook = planner.resolve_declared_family_statbook(
+    with_statbook = QEResolutionPlanner().resolve_declared_family_statbook(
         with_second_wind,
         family_id='progression_runtime_with_perks',
         requested_surface_ids=('state::tower.regen',),

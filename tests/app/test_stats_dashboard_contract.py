@@ -3362,7 +3362,7 @@ def test_stats_dashboard_primary_modules_panel_publishes_grouped_summary_rows():
     assert by_key[('', 'Assist %')]['armor'] == '1%'
     assert by_key[('Primary', 'Module')]['generator'] == 'Singularity Harness'
     assert by_key[('Assist', 'Module')]['cannon'] == '—'
-    assert by_key[('Current', 'Multiplier')]['core'] == 'x12.95'
+    assert by_key[('Current', 'Multiplier')]['core'] == 'x13.53'
     assert ('Recon', 'Recon') not in by_key
 
 
@@ -3561,5 +3561,5 @@ def test_stats_dashboard_primary_uw_operator_table_wires_module_other_and_recon_
     assert chrono_rows['Cooldown']['reconciliation_status'] == 'green'
     assert chrono_rows['Speed Reduction']['stone_value'] == '70%'
     assert chrono_rows['Speed Reduction']['module_effects'] == '2.25%'
-    assert chrono_rows['Speed Reduction']['start_of_run_value'] == '72.25%'
+    assert chrono_rows['Speed Reduction']['start_of_run_value'] == '72.85%'
     assert chrono_rows['Speed Reduction']['reconciliation_status'] == 'green'

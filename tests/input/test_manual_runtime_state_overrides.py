@@ -70,7 +70,7 @@ def test_runtime_state_overlays_do_not_apply_without_explicit_selector() -> None
     )
 
     assert state.manual_override_sources == {}
-    assert state.labs['Second Wind Mastery'] != 3
+    assert _track_by_name(state, 'Flame Bot', 'Damage R.').resolved_value != pytest.approx(95.0)
 
 
 def test_manual_runtime_state_overlay_applies_lab_and_exact_bot_values_when_selected() -> None:

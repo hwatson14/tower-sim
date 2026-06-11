@@ -765,16 +765,16 @@ def test_pipeline_tier_scoped_dissonance_reconciles_t14_ep_panels(tmp_path):
     assert result.exit_code == 0
     rows = json.loads((out_dir / 'run_stats_query_rows_max_progression.json').read_text(encoding='utf-8'))['Farming']['rows']
 
-    assert rows['derived::dissonance.defense.total_multiplier']['final_value'] == pytest.approx(5.108782215759483)
-    assert rows['derived::ehp.health_factor']['final_value'] == pytest.approx(37.55645848408285e12)
+    assert rows['derived::dissonance.defense.total_multiplier']['final_value'] == pytest.approx(5.120285800422069)
+    assert rows['derived::ehp.health_factor']['final_value'] == pytest.approx(38.1057294061315e12)
     assert rows['state::uw.chain_lightning.max_enemy_damage_reduction_pct']['final_value'] == pytest.approx(36.0)
     assert rows['derived::ehp.chain_thunder_factor']['final_value'] == pytest.approx(1.5625)
-    assert rows['derived::ehp']['final_value'] == pytest.approx(9.895934708746359e17)
-    assert rows['state::tower.regen']['final_value'] == pytest.approx(239.1178682173424e12)
+    assert rows['derived::ehp']['final_value'] == pytest.approx(1.0154496134480552e18)
+    assert rows['state::tower.regen']['final_value'] == pytest.approx(241.96450950564406e12)
     assert rows['state::wall.fortification_multiplier']['final_value'] == pytest.approx(10.6)
-    assert rows['derived::wall.hp_pre_fort']['final_value'] == pytest.approx(657.0877976375138e12)
-    assert rows['derived::wall.hp_final']['final_value'] == pytest.approx(6.965130654957646e15)
-    assert rows['derived::wall.regen_hp_per_second']['final_value'] == pytest.approx(1315.1482751953832e12)
+    assert rows['derived::wall.hp_pre_fort']['final_value'] == pytest.approx(674.9286792414012e12)
+    assert rows['derived::wall.hp_final']['final_value'] == pytest.approx(7.154243999958853e15)
+    assert rows['derived::wall.regen_hp_per_second']['final_value'] == pytest.approx(1330.8048022810422e12)
     assert rows['state::tower.defense_absolute']['status'] == 'resolved'
     assert rows['derived::ehp.dabs_perk_factor']['final_value'] == pytest.approx(1.0)
     assert rows['state::tower.defense_absolute']['final_value'] == pytest.approx(148.07576034428293e6)
@@ -785,7 +785,7 @@ def test_pipeline_tier_scoped_dissonance_reconciles_t14_ep_panels(tmp_path):
     assert rows['derived::eecon.wave_factor']['final_value'] == pytest.approx(1.3064513895292529)
     assert rows['derived::eecon.utility_dissonance_factor']['final_value'] > 1.0
     assert rows['derived::eecon.unit_scale_factor']['final_value'] == pytest.approx(1000.0)
-    assert rows['derived::eecon']['final_value'] == pytest.approx(453088857.6792872)
+    assert rows['derived::eecon']['final_value'] == pytest.approx(503746051.088278)
 
 
 def test_pipeline_cards_payload_publishes_selected_rows_by_preset(canonical_pipeline_artifacts):
