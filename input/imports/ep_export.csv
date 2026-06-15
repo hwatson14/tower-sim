@@ -78,8 +78,8 @@ ehp,wall_health_raw,Wall health raw,parsed_raw,hp,926570000000000,eHP,,
 ehp,wall_fortification_raw,Wall fortification raw,parsed_raw,hp,9820000000000000,eHP,,
 ehp,wall_regen_raw_per_sec,Wall regen per sec raw,raw,hp/sec,1330804802281042.2,eRegen,,
 ,,,,,,,,
-eecon,cpk_average_raw,Average CpK raw,raw,coins/kill,2078278596.8138864,eEcon,,
-eecon,coins_per_kill_bonus,Coins per kill bonus,bonus,x,47.937737925,eEcon,,
+eecon,cpk_average_raw,Average CpK raw,raw,coins/kill,2218591674.160149,eEcon,,
+eecon,coins_per_kill_bonus,Coins per kill bonus,bonus,x,48.63248775000002,eEcon,,
 eecon,free_attack_upgrade,Free attack upgrade,chance,ratio,1.222533,eEcon,,
 eecon,free_defense_upgrade,Free defense upgrade,chance,ratio,1.13609925,eEcon,,
 eecon,free_utility_upgrade,Free utility upgrade,chance,ratio,1.28996595,eEcon,,
@@ -227,7 +227,7 @@ eecon,eecon_perk_black_hole_duration_active,eEcon perk Black Hole duration activ
 eecon,eecon_perk_death_wave_quantity_value,eEcon perk Death Wave quantity value,guess,count,1,eEcon,active,Parsed numeric perk value from EP text.
 eecon,eecon_perk_death_wave_quantity_active,eEcon perk Death Wave quantity active,guess,boolean,true,eEcon,active,eEcon perk active flag from EP.
 ,,,,,,,,
-uw,uw_gt_coin_bonus,Golden Tower coin bonus,uw_stat,x,31.525000000000002,eEcon,active,eEcon final UW/econ summary.
+uw,uw_gt_coin_bonus,Golden Tower coin bonus,uw_stat,x,32.724999999999994,eEcon,active,eEcon final UW/econ summary.
 uw,uw_gt_duration,Golden Tower duration,uw_stat,seconds,42,eEcon,active,eEcon final Golden Tower duration.
 uw,uw_gt_cooldown,Golden Tower cooldown,uw_stat,seconds,180,eEcon,active,eEcon final Golden Tower cooldown.
 uw,uw_gt_uptime,Golden Tower uptime,uw_stat,ratio,0.23333333333333334,eEcon,active,eEcon final uptime summary.
