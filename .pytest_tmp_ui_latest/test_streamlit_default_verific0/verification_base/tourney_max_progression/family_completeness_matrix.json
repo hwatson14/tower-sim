@@ -1,0 +1,323 @@
+{
+  "version": 1,
+  "canonical_output_preset": "Tourney",
+  "canonical_presets": [
+    "Tourney",
+    "Farming",
+    "Milestone",
+    "Preset 4",
+    "Preset 5"
+  ],
+  "synthetic_preset_names_present": [
+    "ProjectedMaxPolicy_AllExceptManualBans"
+  ],
+  "preset_lane_completeness": {
+    "Tourney": {
+      "cards_explicit": true,
+      "cards_empty": false,
+      "modules_explicit": true,
+      "modules_empty": false,
+      "perks_explicit": false,
+      "perks_empty": false
+    },
+    "Farming": {
+      "cards_explicit": true,
+      "cards_empty": false,
+      "modules_explicit": true,
+      "modules_empty": false,
+      "perks_explicit": false,
+      "perks_empty": false
+    },
+    "Milestone": {
+      "cards_explicit": true,
+      "cards_empty": true,
+      "modules_explicit": true,
+      "modules_empty": false,
+      "perks_explicit": false,
+      "perks_empty": false
+    },
+    "Preset 4": {
+      "cards_explicit": true,
+      "cards_empty": true,
+      "modules_explicit": true,
+      "modules_empty": false,
+      "perks_explicit": false,
+      "perks_empty": false
+    },
+    "Preset 5": {
+      "cards_explicit": true,
+      "cards_empty": true,
+      "modules_explicit": true,
+      "modules_empty": false,
+      "perks_explicit": false,
+      "perks_empty": false
+    }
+  },
+  "requested_effect_route_closure": {
+    "source_family_count": 6,
+    "closed_source_family_count": 6,
+    "open_source_families": [],
+    "status": "closed",
+    "ledger_sources": {
+      "route_summary": "kb/ledgers/tables/contributor-routing-family-summary.csv",
+      "surface_registry": "kb/ledgers/tables/source-family-surface-registry.csv"
+    },
+    "matrix_family_map": {
+      "bot": {
+        "source_family": "bot_upgrade",
+        "effect_scope": "bot upgrade effects",
+        "closed": true
+      },
+      "card": {
+        "source_family": "card",
+        "effect_scope": "card base and mastery effects",
+        "closed": true
+      },
+      "enhancement": {
+        "source_family": "enhancements",
+        "effect_scope": "workshop enhancement effects",
+        "closed": true
+      },
+      "module": {
+        "source_family": "module",
+        "effect_scope": "module main and unique effects",
+        "closed": true
+      },
+      "module_substat": {
+        "source_family": "module",
+        "effect_scope": "module substat effects",
+        "closed": true
+      },
+      "relic": {
+        "source_family": "relic",
+        "effect_scope": "relic effects",
+        "closed": true
+      },
+      "workshop": {
+        "source_family": "workshop",
+        "effect_scope": "workshop effects",
+        "closed": true
+      }
+    },
+    "source_families": {
+      "bot_upgrade": {
+        "source_family": "bot_upgrade",
+        "effect_scopes": [
+          "bot upgrade effects"
+        ],
+        "route_count": 22,
+        "registered_routes": 22,
+        "dangling_routes": 0,
+        "status": "closed",
+        "routing_status": "closed",
+        "dedicated_active_surface_present": "yes",
+        "primary_surface": "kb/bots/tables/bot-entity-registry.csv",
+        "content_gap_flag": "no",
+        "closed": true
+      },
+      "card": {
+        "source_family": "card",
+        "effect_scopes": [
+          "card base and mastery effects"
+        ],
+        "route_count": 7,
+        "registered_routes": 7,
+        "dangling_routes": 0,
+        "status": "closed",
+        "routing_status": "closed",
+        "dedicated_active_surface_present": "yes",
+        "primary_surface": "kb/cards/tables/card-base-ladders.csv",
+        "content_gap_flag": "no",
+        "closed": true
+      },
+      "enhancements": {
+        "source_family": "enhancements",
+        "effect_scopes": [
+          "workshop enhancement effects"
+        ],
+        "route_count": 17,
+        "registered_routes": 17,
+        "dangling_routes": 0,
+        "status": "closed",
+        "routing_status": "closed",
+        "dedicated_active_surface_present": "yes",
+        "primary_surface": "kb/workshop/tables/enhancements-values.csv",
+        "content_gap_flag": "no",
+        "closed": true
+      },
+      "module": {
+        "source_family": "module",
+        "effect_scopes": [
+          "module main and unique effects",
+          "module substat effects"
+        ],
+        "route_count": 42,
+        "registered_routes": 42,
+        "dangling_routes": 0,
+        "status": "closed",
+        "routing_status": "closed",
+        "dedicated_active_surface_present": "yes",
+        "primary_surface": "kb/modules/tables/module-main-effect-bases.csv",
+        "content_gap_flag": "no",
+        "closed": true
+      },
+      "relic": {
+        "source_family": "relic",
+        "effect_scopes": [
+          "relic effects"
+        ],
+        "route_count": 27,
+        "registered_routes": 27,
+        "dangling_routes": 0,
+        "status": "closed",
+        "routing_status": "closed",
+        "dedicated_active_surface_present": "yes",
+        "primary_surface": "kb/global-rules/tables/relic-input-registry.csv",
+        "content_gap_flag": "no",
+        "closed": true
+      },
+      "workshop": {
+        "source_family": "workshop",
+        "effect_scopes": [
+          "workshop effects"
+        ],
+        "route_count": 48,
+        "registered_routes": 48,
+        "dangling_routes": 0,
+        "status": "closed",
+        "routing_status": "closed",
+        "dedicated_active_surface_present": "yes",
+        "primary_surface": "kb/workshop/tables/workshop-values.csv",
+        "content_gap_flag": "no",
+        "closed": true
+      }
+    }
+  },
+  "families": {
+    "bot": {
+      "total_rows": 21,
+      "mapped_rows": 21,
+      "unmapped_rows": 0,
+      "requested_effect_route_closure": {
+        "source_family": "bot_upgrade",
+        "effect_scope": "bot upgrade effects",
+        "closed": true
+      }
+    },
+    "bot_plus": {
+      "total_rows": 5,
+      "mapped_rows": 5,
+      "unmapped_rows": 0
+    },
+    "bot_unlock": {
+      "total_rows": 7,
+      "mapped_rows": 7,
+      "unmapped_rows": 0
+    },
+    "card": {
+      "total_rows": 27,
+      "mapped_rows": 27,
+      "unmapped_rows": 0,
+      "requested_effect_route_closure": {
+        "source_family": "card",
+        "effect_scope": "card base and mastery effects",
+        "closed": true
+      }
+    },
+    "enhancement": {
+      "total_rows": 22,
+      "mapped_rows": 22,
+      "unmapped_rows": 0,
+      "requested_effect_route_closure": {
+        "source_family": "enhancements",
+        "effect_scope": "workshop enhancement effects",
+        "closed": true
+      }
+    },
+    "guardian": {
+      "total_rows": 18,
+      "mapped_rows": 18,
+      "unmapped_rows": 0
+    },
+    "lab": {
+      "total_rows": 220,
+      "mapped_rows": 220,
+      "unmapped_rows": 0
+    },
+    "module": {
+      "total_rows": 17,
+      "mapped_rows": 17,
+      "unmapped_rows": 0,
+      "requested_effect_route_closure": {
+        "source_family": "module",
+        "effect_scope": "module main and unique effects",
+        "closed": true
+      }
+    },
+    "module_substat": {
+      "total_rows": 39,
+      "mapped_rows": 39,
+      "unmapped_rows": 0,
+      "requested_effect_route_closure": {
+        "source_family": "module",
+        "effect_scope": "module substat effects",
+        "closed": true
+      }
+    },
+    "player_stuff": {
+      "total_rows": 9,
+      "mapped_rows": 9,
+      "unmapped_rows": 0
+    },
+    "relic": {
+      "total_rows": 43,
+      "mapped_rows": 43,
+      "unmapped_rows": 0,
+      "requested_effect_route_closure": {
+        "source_family": "relic",
+        "effect_scope": "relic effects",
+        "closed": true
+      }
+    },
+    "scenario_rules": {
+      "total_rows": 4,
+      "mapped_rows": 4,
+      "unmapped_rows": 0
+    },
+    "theme_song": {
+      "total_rows": 1,
+      "mapped_rows": 1,
+      "unmapped_rows": 0
+    },
+    "uw": {
+      "total_rows": 29,
+      "mapped_rows": 29,
+      "unmapped_rows": 0
+    },
+    "uw_plus": {
+      "total_rows": 9,
+      "mapped_rows": 9,
+      "unmapped_rows": 0
+    },
+    "uw_unlock": {
+      "total_rows": 9,
+      "mapped_rows": 9,
+      "unmapped_rows": 0
+    },
+    "vault": {
+      "total_rows": 66,
+      "mapped_rows": 66,
+      "unmapped_rows": 0
+    },
+    "workshop": {
+      "total_rows": 48,
+      "mapped_rows": 48,
+      "unmapped_rows": 0,
+      "requested_effect_route_closure": {
+        "source_family": "workshop",
+        "effect_scope": "workshop effects",
+        "closed": true
+      }
+    }
+  }
+}

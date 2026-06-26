@@ -88,6 +88,9 @@ kb/enemies/tables/note-derived-enemy-spawn-caps.csv,enemies.table.wiki_enemy_spa
 kb/enemies/tables/note-derived-enemy-spawn-structure.csv,enemies.table.wiki_enemy_spawn_structure,enemies,table,canonical_table
 kb/enemies/tables/note-derived-enemy-types.csv,enemies.table.wiki_enemy_types,enemies,table,canonical_table
 kb/enemies/tables/note-derived-fleet-enemy-resistances.csv,enemies.table.wiki_fleet_enemy_resistances,enemies,table,canonical_table
+kb/enemies/tables/wiki-advanced-analysis-spawn-rate-wave-thresholds.csv,enemies.table.wiki_advanced_analysis_spawn_rate_wave_thresholds,enemies,table,canonical_table
+kb/enemies/tables/wiki-verified-elite-spawn-thresholds.csv,enemies.table.wiki_verified_elite_spawn_thresholds,enemies,table,canonical_table
+kb/enemies/tables/wiki-verified-fleet-spawn-thresholds.csv,enemies.table.wiki_verified_fleet_spawn_thresholds,enemies,table,canonical_table
 kb/global-rules/contracts/aliases.yaml,global_rules.contract.aliases,global-rules,contract,canonical_runtime_doc
 kb/global-rules/contracts/canonical-stats.yaml,global_rules.contract.canonical_stats,global-rules,contract,canonical_runtime_doc
 kb/global-rules/contracts/capabilities.yaml,global_rules.contract.capabilities,global-rules,contract,canonical_runtime_doc

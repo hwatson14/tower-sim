@@ -11,10 +11,13 @@ Primary enemy tables prioritise raw scaling tables and concrete spawn/special-en
 - `note-derived-enemy-types.csv`
 - `note-derived-enemy-spawn-structure.csv`
 - `note-derived-enemy-spawn-caps.csv`
+- `wiki-advanced-analysis-spawn-rate-wave-thresholds.csv`
 - `note-derived-boss-properties.csv`
 - `note-derived-elite-spawn-rules.csv`
 - `note-derived-elite-cells-t14-t21.csv`
 - `note-derived-fleet-enemy-resistances.csv`
+- `wiki-verified-elite-spawn-thresholds.csv`
+- `wiki-verified-fleet-spawn-thresholds.csv`
 - `boss-hit-interval.csv`
 
 ## Archived from active tables

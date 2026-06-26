@@ -587,40 +587,49 @@ def _perk_contribution_pair(
     flat_effect_id: str,
     multiplier_effect_id: str,
 ) -> tuple[float, float]:
-    _validate_perk_contributions(contributions)
-    flat = 0.0
-    multiplier = 1.0
-    for contribution_id, value in contributions.items():
-        effect_id = _perk_contribution_effect_id(contribution_id)
-        if effect_id == flat_effect_id:
-            flat += float(value)
-        elif effect_id == multiplier_effect_id:
-            multiplier *= max(0.0, float(value))
+    summary = _perk_contribution_summary(contributions)
+    flat = summary.get(flat_effect_id, (0.0, 1.0))[0]
+    multiplier = summary.get(multiplier_effect_id, (0.0, 1.0))[1]
     return flat, multiplier
 
 
 def _perk_contribution_sum(contributions: Mapping[str, float], effect_id: str) -> float:
-    _validate_perk_contributions(contributions)
-    total = 0.0
-    for contribution_id, value in contributions.items():
-        if _perk_contribution_effect_id(contribution_id) == effect_id:
-            total += float(value)
-    return total
+    return _perk_contribution_summary(contributions).get(effect_id, (0.0, 1.0))[0]
 
 
 def _validate_perk_contributions(contributions: Mapping[str, float]) -> None:
-    for contribution_id, value in contributions.items():
+    _validated_perk_contribution_summary(_perk_contribution_key(contributions))
+
+
+def _perk_contribution_summary(contributions: Mapping[str, float]) -> dict[str, tuple[float, float]]:
+    return dict(_validated_perk_contribution_summary(_perk_contribution_key(contributions)))
+
+
+def _perk_contribution_key(contributions: Mapping[str, float]) -> tuple[tuple[str, float], ...]:
+    return tuple(sorted((str(contribution_id), float(value)) for contribution_id, value in contributions.items()))
+
+
+@lru_cache(maxsize=4096)
+def _validated_perk_contribution_summary(contribution_key: tuple[tuple[str, float], ...]) -> tuple[tuple[str, tuple[float, float]], ...]:
+    totals: dict[str, float] = {}
+    multiplier_products: dict[str, float] = {}
+    for contribution_id, value in contribution_key:
         effect_id = _perk_contribution_effect_id(contribution_id)
         if effect_id not in PERK_CONTRIBUTION_EFFECT_IDS:
             raise KernelAmbiguityError(f"unsupported perk contribution effect {effect_id!r}")
-        if effect_id.endswith("_multiplier") and float(value) < 0.0:
+        if effect_id.endswith("_multiplier") and value < 0.0:
             raise KernelAmbiguityError(f"perk contribution {contribution_id!r} multiplier cannot be negative")
+        totals[effect_id] = totals.get(effect_id, 0.0) + value
+        multiplier_products[effect_id] = multiplier_products.get(effect_id, 1.0) * max(0.0, value)
+    return tuple((effect_id, (totals[effect_id], multiplier_products[effect_id])) for effect_id in sorted(totals))
 
 
+@lru_cache(maxsize=4096)
 def _perk_contribution_owner(contribution_id: str) -> str | None:
     return str(contribution_id).split(":", 1)[0] if ":" in str(contribution_id) else None
 
 
+@lru_cache(maxsize=4096)
 def _perk_contribution_effect_id(contribution_id: str) -> str:
     return str(contribution_id).split(":", 1)[1] if ":" in str(contribution_id) else str(contribution_id)
 

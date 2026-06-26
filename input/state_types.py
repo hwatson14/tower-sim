@@ -228,6 +228,8 @@ class ScenarioRuntimeInputs:
     boss_hit_interval_seconds: Optional[float] = None
     effective_damage_reduction_pct: Optional[float] = None
     incoming_damage_multiplier: Optional[float] = None
+    boss_wave_pressure_factor: Optional[float] = None
+    approve_boss_wave_empirical_pressure_transform: Optional[float] = None
     flame_bot_damage_reduction_pct: Optional[float] = None
     flame_bot_boss_hit_chance_pct: Optional[float] = None
     flame_bot_duration_seconds: Optional[float] = None
@@ -260,6 +262,7 @@ class ScenarioRuntimeInputs:
     elite_terminal_max_wave: Optional[float] = None
     protector_terminal_max_wave: Optional[float] = None
     armored_terminal_max_wave: Optional[float] = None
+    boss_terminal_max_wave: Optional[float] = None
 
     @classmethod
     def from_mapping(cls, raw: Mapping[str, Any]) -> 'ScenarioRuntimeInputs':

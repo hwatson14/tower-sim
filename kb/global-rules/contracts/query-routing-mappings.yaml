@@ -226,10 +226,10 @@ uw_lab_direct_destination:
   - bot.thunder.linger_duration_seconds
   Bot Bot - Cooldown:
   - mechanic_param
-  - bot.bot.cooldown_seconds
+  - bot.bot_bot.cooldown_seconds
   Bot Bot - Duration:
   - mechanic_param
-  - bot.bot.duration_seconds
+  - bot.bot_bot.duration_seconds
 workshop_ids_to_contributor:
   Damage: workshop__tower__damage__flat
   Attack Speed: workshop__tower__attack_speed__flat
@@ -678,18 +678,96 @@ card_name_fallback_destination:
   - runtime_mechanic_param
   - cards.land_mine_stun.miss_attack_chance_pct
 module_substat_name_to_destination:
+  attack range:
+  - canonical_stat
+  - tower_range_m
+  attack speed:
+  - canonical_stat
+  - tower_attack_speed
   bounce shot chance:
   - canonical_stat
   - tower_bounce_shot_chance_pct
+  bounce shot range:
+  - canonical_stat
+  - tower_bounce_shot_range_m
+  bounce shot targets:
+  - canonical_stat
+  - tower_bounce_shot_targets
+  black hole size:
+  - mechanic_param
+  - uw.black_hole.size_m
+  cash bonus:
+  - canonical_stat
+  - cash_kill_multiplier
+  cash wave:
+  - canonical_stat
+  - cash_per_wave
+  chrono field duration:
+  - mechanic_param
+  - uw.chrono_field.duration_seconds
   crit chance:
   - canonical_stat
   - tower_crit_chance_pct
+  crit factor:
+  - canonical_stat
+  - tower_crit_multiplier
   critical chance:
   - canonical_stat
   - tower_crit_chance_pct
+  damage meter:
+  - canonical_stat
+  - tower_damage_per_meter_multiplier
+  death defy:
+  - canonical_stat
+  - tower_death_defy_chance_pct
+  death wave cooldown:
+  - mechanic_param
+  - uw.death_wave.cooldown_seconds
+  death wave damage:
+  - mechanic_param
+  - uw.death_wave.damage_multiplier
+  defense absolute:
+  - canonical_stat
+  - tower_defense_absolute
+  defense:
+  - canonical_stat
+  - tower_defense_pct
+  coins wave:
+  - canonical_stat
+  - coins_per_wave
+  golden tower bonus:
+  - mechanic_param
+  - uw.golden_tower.bonus_multiplier
+  golden tower cooldown:
+  - mechanic_param
+  - uw.golden_tower.cooldown_seconds
+  golden tower duration:
+  - mechanic_param
+  - uw.golden_tower.duration_seconds
+  health regen:
+  - canonical_stat
+  - tower_regen
+  interest wave:
+  - canonical_stat
+  - interest_per_wave_pct
+  inner land mines cooldown:
+  - mechanic_param
+  - uw.inner_land_mines.cooldown_seconds
+  inner land mines quantity:
+  - mechanic_param
+  - uw.inner_land_mines.quantity
+  knockback chance:
+  - canonical_stat
+  - tower_knockback_chance_pct
   multishot targets:
   - canonical_stat
   - tower_multishot_targets
+  land mine chance:
+  - canonical_stat
+  - tower_land_mine_chance_pct
+  land mine damage:
+  - canonical_stat
+  - tower_land_mine_damage
   super crit chance:
   - canonical_stat
   - tower_supercrit_chance_pct
@@ -705,6 +783,15 @@ module_substat_name_to_destination:
   knockback force:
   - canonical_stat
   - tower_knockback_force
+  lifesteal:
+  - canonical_stat
+  - tower_lifesteal_pct
+  max recovery:
+  - canonical_stat
+  - max_recovery_multiplier
+  multishot chance:
+  - canonical_stat
+  - tower_multishot_chance_pct
   thorns damage:
   - canonical_stat
   - tower_thorns_damage_pct
@@ -717,6 +804,33 @@ module_substat_name_to_destination:
   orbs speed:
   - canonical_stat
   - tower_orb_speed_rpm
+  orbs:
+  - canonical_stat
+  - tower_orb_count
+  poison swamp cooldown:
+  - mechanic_param
+  - uw.poison_swamp.cooldown_seconds
+  poison swamp damage:
+  - mechanic_param
+  - uw.poison_swamp.damage_multiplier
+  poison swamp duration:
+  - mechanic_param
+  - uw.poison_swamp.duration_seconds
+  rapid fire chance:
+  - canonical_stat
+  - tower_rapid_fire_chance_pct
+  rapid fire duration:
+  - canonical_stat
+  - tower_rapid_fire_duration_seconds
+  recovery amount:
+  - canonical_stat
+  - recovery_amount_pct
+  rend armor chance:
+  - canonical_stat
+  - tower_rend_armor_chance_pct
+  rend armor multi:
+  - canonical_stat
+  - tower_rend_armor_multiplier
   free attack upgrade:
   - canonical_stat
   - free_attack_upgrade_chance_pct
@@ -744,6 +858,21 @@ module_substat_name_to_destination:
   shockwave frequency:
   - canonical_stat
   - tower_shockwave_interval_seconds
+  land mine radius:
+  - canonical_stat
+  - tower_land_mine_radius_m
+  shockwave size:
+  - canonical_stat
+  - tower_shockwave_size_m
+  smart missiles cooldown:
+  - mechanic_param
+  - uw.smart_missiles.cooldown_seconds
+  smart missiles damage:
+  - mechanic_param
+  - uw.smart_missiles.damage_multiplier
+  smart missiles quantity:
+  - mechanic_param
+  - uw.smart_missiles.quantity
   max rend armor multi:
   - canonical_stat
   - max_rend_mult
@@ -777,6 +906,15 @@ module_substat_name_to_destination:
   chrono field speed reduction:
   - mechanic_param
   - uw.chrono_field.slow_pct
+  inner land mines damage:
+  - mechanic_param
+  - uw.inner_land_mines.damage_multiplier
+  wall rebuild:
+  - canonical_stat
+  - wall_rebuild_seconds
+  wall health:
+  - canonical_stat
+  - wall_hp
 enhancement_alias_overrides:
   damage: tower_damage
   health: tower_hp

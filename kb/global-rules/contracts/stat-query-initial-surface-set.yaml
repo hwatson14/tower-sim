@@ -165,6 +165,75 @@ families:
       scenario_scoped: true
       semantics: Wave Skip chance percentage consumed by deterministic timing and economy
         wave-skip mechanics.
+    - surface_id: state::cards.wave_skip.mastery_effect
+      surface_kind: runtime_mechanic_surface
+      surface_class: environment
+      domain: cards
+      owning_families:
+      - timing_tournament_no_perks
+      - timing_farm_with_perks
+      - timing_scenario_probe
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: false
+      debug_only: false
+      scenario_scoped: true
+      semantics: Wave Skip Mastery chance to double a wave skip after equip/unlock
+        gating; consumed by farming timing/economy diagnostics and not by base
+        wave-duration timing.
+    - surface_id: state::cards.intro_sprint.waves
+      surface_kind: runtime_mechanic_surface
+      surface_class: environment
+      domain: cards
+      owning_families:
+      - timing_farm_with_perks
+      - timing_scenario_probe
+      - progression_start_of_run
+      - progression_runtime_with_perks
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: false
+      debug_only: false
+      scenario_scoped: true
+      semantics: Intro Sprint active wave count after card level and mastery gating;
+        consumed by run-duration and economy diagnostics, with no coin income
+        during active Intro Sprint waves.
+    - surface_id: state::meta.game_speed_multiplier
+      surface_kind: runtime_mechanic_surface
+      surface_class: environment
+      domain: meta
+      owning_families:
+      - timing_farm_with_perks
+      - timing_scenario_probe
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: false
+      debug_only: false
+      scenario_scoped: true
+      semantics: runtime game speed multiplier consumed by real elapsed run-duration
+        and economy-throughput calculations.
+    - surface_id: state::perk.max_game_speed
+      surface_kind: runtime_mechanic_surface
+      surface_class: environment
+      domain: perks
+      owning_families:
+      - timing_farm_with_perks
+      - timing_scenario_probe
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: false
+      debug_only: false
+      scenario_scoped: true
+      semantics: selected Max Game Speed perk contribution consumed by real elapsed
+        run-duration and economy-throughput calculations.
     - surface_id: support_surface::timing.wave_duration_seconds_effective
       surface_kind: support_surface
       surface_class: surface
@@ -199,10 +268,29 @@ families:
       - state::cards.wave_accelerator.wave_cooldown_reduction_pct
       - state::cards.wave_accelerator.spawn_rate_acceleration
       - state::cards.wave_skip.chance_pct
+      - state::cards.wave_skip.mastery_effect
       - support_surface::timing.wave_duration_seconds_effective
       - state::tower.package_chance_pct
   progression_v1:
     surfaces:
+    - surface_id: state::cards.enemy_balance.mastery_effect
+      surface_kind: runtime_mechanic_surface
+      surface_class: environment
+      domain: cards
+      owning_families:
+      - progression_start_of_run
+      - progression_runtime_no_perks
+      - progression_runtime_with_perks
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: false
+      debug_only: false
+      scenario_scoped: true
+      semantics: Enemy Balance Mastery chance for double elite spawn after equip/unlock
+        gating; consumed by Boss Waves non-boss pressure diagnostics only until a
+        source-owned terminal-pressure transform exists.
     - surface_id: state::tower.hp
       surface_kind: canonical_surface
       surface_class: surface
@@ -1142,6 +1230,23 @@ families:
       debug_only: true
       scenario_scoped: true
       semantics: Anti-Cube Portal shockwave damage-taken multiplier consumed by eDamage.
+    - surface_id: state::module.being_annihilator.guaranteed_supercrits_after_supercrit_attacks
+      surface_kind: runtime_mechanic_surface
+      surface_class: surface
+      domain: modules
+      owning_families:
+      - progression_start_of_run
+      - progression_runtime_no_perks
+      - progression_runtime_with_perks
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: false
+      debug_only: true
+      scenario_scoped: true
+      semantics: Being Annihilator guaranteed future super-crit attack count consumed
+        by eDamage critical-factor helpers.
     - surface_id: state::module.dimension_core.max_shock_stacks
       surface_kind: runtime_mechanic_surface
       surface_class: surface
@@ -3326,11 +3431,13 @@ families:
       - state::module.black_hole_digestor.extra_coin_kill_bonus_per_free_upgrade_pct
       - state::module.primordial_collapse.bh_damage_reduction_pct
       - state::module.anti_cube_portal.shockwave_damage_taken_mult_x
+      - state::module.being_annihilator.guaranteed_supercrits_after_supercrit_attacks
       - state::module.dimension_core.max_shock_stacks
       - state::module.project_funding.cash_digit_multiplier_pct
       - support_surface::module.project_funding.current_cash
       - state::shock.damage_multiplier
       - state::cards.damage.mastery_effect
+      - state::cards.enemy_balance.mastery_effect
       - state::cards.berserker.assumed_bonus_multiplier
       - state::cards.super_tower.active
       - state::cards.super_tower.bonus_multiplier

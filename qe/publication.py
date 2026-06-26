@@ -48,8 +48,8 @@ def _sid(surface_id: str) -> str:
     return normalize_surface_id_to_contract(surface_id)
 
 
-def _normalize_display_text(value: object) -> str:
-    text = '' if value is None else str(value)
+@lru_cache(maxsize=8192)
+def _normalize_display_text_from_string(text: str) -> str:
     for bad, good in _DISPLAY_REPLACEMENTS.items():
         text = text.replace(bad, good)
     text = re.sub(r'\s*·\s*', ' · ', text).strip()
@@ -65,6 +65,11 @@ def _normalize_display_text(value: object) -> str:
             return f'{prefix} {number_text}{suffix}'
         return f'{prefix}{number_text}{suffix}'
     return text
+
+
+def _normalize_display_text(value: object) -> str:
+    text = '' if value is None else str(value)
+    return _normalize_display_text_from_string(text)
 
 
 def _normalize_identity(value: object) -> str:
@@ -2633,8 +2638,60 @@ def _stats_surface_specs(layout: dict[str, object], key: str) -> list[dict[str, 
         label = str(entry.get('label') or '').strip()
         canonical_row_id = str(entry.get('canonical_row_id') or surface_id).strip()
         if surface_id and label:
-            specs.append({'surface_id': surface_id, 'label': label, 'canonical_row_id': canonical_row_id})
+            spec = {'surface_id': surface_id, 'label': label, 'canonical_row_id': canonical_row_id}
+            source_surface_id = normalize_surface_id_to_contract(str(entry.get('source_surface_id') or surface_id).strip())
+            contributor_source_class = str(entry.get('contributor_source_class') or '').strip()
+            contributor_id = str(entry.get('contributor_id') or '').strip()
+            if source_surface_id and source_surface_id != surface_id:
+                spec['source_surface_id'] = source_surface_id
+            if contributor_source_class:
+                spec['contributor_source_class'] = contributor_source_class
+            if contributor_id:
+                spec['contributor_id'] = contributor_id
+            specs.append(spec)
     return specs
+
+
+def _stats_contributor_projection_row(
+    *,
+    source_row: dict[str, object],
+    surface_id: str,
+    source_surface_id: str,
+    contributor_source_class: str,
+    contributor_id: str,
+) -> dict[str, object]:
+    if not source_row:
+        return {}
+    contributors: list[dict[str, object]] = []
+    for contributor in source_row.get('contributors') or []:
+        if not isinstance(contributor, dict):
+            continue
+        if contributor_source_class and str(contributor.get('source_class') or contributor.get('source_family') or '').strip() != contributor_source_class:
+            continue
+        if contributor_id and str(contributor.get('contributor_id') or contributor.get('stat_name') or '').strip() != contributor_id:
+            continue
+        contributors.append(dict(contributor))
+    if not contributors:
+        source_status = str(source_row.get('status') or '').strip()
+        return {
+            'status': 'gated_off' if source_status == 'resolved' else source_status or 'missing',
+            'source_surface_id': source_surface_id,
+            'contributors': [],
+            'value_type': source_row.get('value_type'),
+        }
+    displays = [
+        _normalize_effect_text_for_surface(surface_id, contributor.get('display_value') if contributor.get('display_value') not in (None, '') else contributor.get('value'))
+        for contributor in contributors
+    ]
+    value = contributors[0].get('value') if len(contributors) == 1 else None
+    return {
+        'display_value': _join_display_tokens(*[display for display in displays if display]),
+        'final_value': value,
+        'value_type': source_row.get('value_type') or contributors[0].get('value_type') or contributors[0].get('input_value_type'),
+        'status': 'resolved',
+        'contributors': contributors,
+        'source_surface_id': source_surface_id,
+    }
 
 
 def _stats_row_payload(
@@ -2646,12 +2703,32 @@ def _stats_row_payload(
     surface_id: str,
     label: str,
     canonical_row_id: str,
+    source_surface_id: str | None = None,
+    contributor_source_class: str | None = None,
+    contributor_id: str | None = None,
 ) -> dict[str, object]:
-    start_row = dict(rows_start.get(surface_id) or {})
-    max_row = dict(rows_max.get(surface_id) or {})
+    source_surface_id = source_surface_id or surface_id
+    if source_surface_id != surface_id or contributor_source_class or contributor_id:
+        start_row = _stats_contributor_projection_row(
+            source_row=dict(rows_start.get(source_surface_id) or {}),
+            surface_id=surface_id,
+            source_surface_id=source_surface_id,
+            contributor_source_class=str(contributor_source_class or ''),
+            contributor_id=str(contributor_id or ''),
+        )
+        max_row = _stats_contributor_projection_row(
+            source_row=dict(rows_max.get(source_surface_id) or {}),
+            surface_id=surface_id,
+            source_surface_id=source_surface_id,
+            contributor_source_class=str(contributor_source_class or ''),
+            contributor_id=str(contributor_id or ''),
+        )
+    else:
+        start_row = dict(rows_start.get(surface_id) or {})
+        max_row = dict(rows_max.get(surface_id) or {})
     row = start_row if selected_state_mode == 'start_of_run' else max_row
     ep = dict(ep_compare.get(surface_id) or {})
-    return {
+    payload = {
         'canonical_row_id': canonical_row_id,
         'display_label': label,
         'label': label,
@@ -2665,6 +2742,9 @@ def _stats_row_payload(
         'ep_delta': ep.get('delta_display'),
         'contributors_available': bool(row.get('contributors') or start_row.get('contributors') or max_row.get('contributors')),
     }
+    if source_surface_id != surface_id:
+        payload['source_surface_id'] = source_surface_id
+    return payload
 
 
 def _resolved_stat_section_panel(
@@ -2693,6 +2773,9 @@ def _resolved_stat_section_panel(
                     surface_id=spec['surface_id'],
                     label=spec['label'],
                     canonical_row_id=spec['canonical_row_id'],
+                    source_surface_id=spec.get('source_surface_id'),
+                    contributor_source_class=spec.get('contributor_source_class'),
+                    contributor_id=spec.get('contributor_id'),
                 )
                 for spec in surface_specs
             ],
@@ -2781,19 +2864,19 @@ def build_stats_dashboard_payload(
         max_rows_hydrated = _rows_with_qe_derived_values(_stats_rows_by_surface(query_rows_max_progression, preset_name), annotate_display_fields=annotate_display_fields)
         variants[preset_name] = {}
         secondary_variants[preset_name] = {}
+        workshop_payload = publish_workshop_reconciliation_payload(
+            stats_layout=stats_layout,
+            rows_start=start_rows_hydrated,
+            rows_max=max_rows_hydrated,
+            account_state_payload=account_state_payload,
+            selected_preset=preset_name,
+            surface_specs=_stats_surface_specs,
+        )
         for state_mode in state_mode_options:
             rows_start = start_rows_hydrated
             rows_max = max_rows_hydrated
             primary_panels: list[dict[str, object]] = []
             secondary_panels: list[dict[str, object]] = []
-            workshop_payload = publish_workshop_reconciliation_payload(
-                stats_layout=stats_layout,
-                rows_start=rows_start,
-                rows_max=rows_max,
-                account_state_payload=account_state_payload,
-                selected_preset=preset_name,
-                surface_specs=_stats_surface_specs,
-            )
             primary_panels.append({'panel_id': 'workshop', 'panel_type': 'workshop_stat_table', 'title': 'Workshop', 'payload': workshop_payload})
             derived_wall_payload = publish_derived_wall_economy_operator_payload(
                 stats_layout=stats_layout,

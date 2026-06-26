@@ -77,6 +77,11 @@ ROOT = Path(__file__).resolve().parents[1]
 KB = ROOT / 'kb'
 KB_TABLES = KB / 'global-rules' / 'tables'
 
+_ZERO_WHEN_MISSING_WORKSHOP_FORMULA_ROWS: frozenset[str] = frozenset({
+    'Rend Armor Chance',
+    'Rend Armor Mult',
+})
+
 
 def _set_row_field(row: StatInput, field_name: str, value) -> None:
     object.__setattr__(row, field_name, value)
@@ -1063,7 +1068,7 @@ def _bind_account_metadata_row(row: StatInput, canonical_stats: Dict[str, Dict[s
         numeric = _coerce_level_number(level)
         if numeric is not None:
             _set_row_field(row, 'value', numeric)
-            _set_row_field(row, 'value_type', 'resolved_value')
+            _set_row_field(row, 'value_type', 'count' if destination[1].endswith('_count') else 'resolved_value')
     return True
 
 
@@ -1358,6 +1363,30 @@ def _make_instance_contributor_id(base_id: str | None, *, source_name: str, role
 
 def _append(out: List[StatInput], row: StatInput) -> None:
     out.append(row)
+
+
+MODULE_UNIQUE_ADDITIONAL_CONTRIBUTORS: dict[str, tuple[str, ...]] = {
+    'Anti-Cube Portal': (
+        'module__armor__anti_cube_portal__damage_multiplier',
+        'module__armor__anti_cube_portal__shockwave_damage_taken_mult_x',
+    ),
+    'Galaxy Compressor': (
+        'module__generator__galaxy_compressor__uw_cooldown_reduction_on_package_s',
+        'module__generator__galaxy_compressor__uw_cooldown_reduction_seconds',
+    ),
+    'Om Chip': (
+        'module__core__om_chip__boss_spotlight_reflection_multiplier',
+        'module__core__om_chip__reflected_damage_taken_mult_x',
+    ),
+    'Sharp Fortitude': (
+        'module__armor__sharp_fortitude__wall_bonus_multiplier',
+        'module__armor__sharp_fortitude__wall_health_regen_mult_x',
+    ),
+}
+
+
+def _module_unique_additional_contributor_ids(module_name: str) -> tuple[str, ...]:
+    return MODULE_UNIQUE_ADDITIONAL_CONTRIBUTORS.get(module_name, ())
 
 
 
@@ -1742,6 +1771,10 @@ def compile_stat_inputs(
                 _set_row_field(row, 'value', WORKSHOP_FORMULA_VALUES[name](level))
                 _set_row_field(row, 'value_type', 'resolved_value')
                 _set_row_field(row, 'notes', (row.notes or '') + ':kb_workshop_summary_formula_derived')
+            elif level is None and name in _ZERO_WHEN_MISSING_WORKSHOP_FORMULA_ROWS:
+                _set_row_field(row, 'value', 0.0)
+                _set_row_field(row, 'value_type', 'resolved_value')
+                _set_row_field(row, 'notes', (row.notes or '') + ':kb_workshop_summary_formula_unpurchased_zero')
             else:
                 _set_row_field(row, 'notes', ((row.notes or '') + ':unresolved_workshop_level_no_value_formula').strip(':'))
         else:
@@ -1785,6 +1818,10 @@ def compile_stat_inputs(
             _set_row_field(row, 'notes', 'projection_state=max_workshop:using_ws_plus_max_level')
         bind_alias_destination(row, alias_name, alias_index, canonical_stats, note='kb_alias_routed_enhancement')
         alias_slug = slug_text(alias_name)
+        if alias_slug == 'orb size':
+            bind_kb_fields(row, 'enhancements__tower__orb_size__multiplier', mapping_index, canonical_stats)
+            _append(out, row)
+            continue
         if alias_slug == 'enemy level skips':
             for extra_id in ('enhancements__tower__enemy_attack_level_skip__multiplier', 'enhancements__tower__enemy_health_level_skip__multiplier'):
                 extra = StatInput(stat_name=name, source_family='enhancement', source_name=name, value=value, value_type='resolved_value', stage='account_state', provenance='IDS::WS+', notes='kb_dual_routed_enhancement')
@@ -1947,6 +1984,8 @@ def compile_stat_inputs(
             if transform == 'plus_one_factor':
                 support_value = 1.0 + support_value
                 support_value_type = 'multiplier'
+            elif support_dest[1].endswith('_pct'):
+                support_value_type = 'ratio'
             _set_row_field(support_row, 'stat_name', f'{name}::Derived Support')
             _set_row_field(support_row, 'value', support_value)
             _set_row_field(support_row, 'value_type', support_value_type)
@@ -2073,6 +2112,27 @@ def compile_stat_inputs(
             _set_row_field(row, 'resolver_id', 'standard_bool')
             _set_row_field(row, 'kb_mapped', True)
             _append(out, row)
+            if attr_slug == 'maximum_power' and ids_resolved_value is not None:
+                multiplier_row = StatInput(
+                    stat_name=f'{bot_name}::{attr}',
+                    source_family='bot',
+                    source_name=bot_name,
+                    value=ids_resolved_value,
+                    value_type='resolved_value',
+                    stage='account_state',
+                    provenance='IDS::Bots',
+                    notes='v28_bot_plus_maximum_power_multiplier_routed',
+                )
+                _set_row_field(multiplier_row, 'raw_level', level)
+                _set_row_field(multiplier_row, 'resolved_value', float(ids_resolved_value))
+                _set_row_field(multiplier_row, 'resolved_unit', ids_resolved_unit)
+                bind_kb_fields(
+                    multiplier_row,
+                    'bot_upgrade__bot_bot__maximum_power__multiplier',
+                    mapping_index,
+                    canonical_stats,
+                )
+                _append(out, multiplier_row)
             continue
         if level is None and ids_resolved_value is None:
             continue
@@ -2352,6 +2412,12 @@ def compile_stat_inputs(
             _set_row_field(split_row, 'value', True)
             _set_row_field(split_row, 'value_type', 'bool')
             _append(out, split_row)
+        if card_id == 'PLASMA_CANNON':
+            split_row = StatInput(**{field: getattr(row, field) for field in StatInput.__dataclass_fields__.keys()})
+            bind_destination(split_row, ('capability', 'capability.plasma_cannon.enabled'), canonical_stats, note=f'kb_card_effect_registry_split_routed:{card_id}:enabled')
+            _set_row_field(split_row, 'value', True)
+            _set_row_field(split_row, 'value_type', 'bool')
+            _append(out, split_row)
         if card_id == 'ENEMY_BALANCE':
             for destination_tuple in (
                 ('environment_param', 'bc.more_enemies_pct'),
@@ -2561,7 +2627,7 @@ def compile_stat_inputs(
                     bind_destination(split_row, ('canonical_stat', split_target), canonical_stats, note='kb_perk_effect_split_routed:free_upgrade_chance_all')
                     _append(out, split_row)
                 continue
-            if target_stat_id and target_stat_id != 'ranged_enemy_attack_distance':
+            if target_stat_id:
                 bind_perk_effect_destination(row, target_stat_id, canonical_stats, alias_index)
             _append(out, row)
 
@@ -2649,6 +2715,33 @@ def compile_stat_inputs(
                         bind_kb_fields(unique_row, unique_contributor, mapping_index, canonical_stats)
                     _set_row_field(unique_row, 'contributor_id', _make_instance_contributor_id(unique_row.contributor_id, source_name=mod_name, role=role, sub_name='unique'))
                     _append(out, unique_row)
+                if unique_value is not None:
+                    for additional_contributor_id in _module_unique_additional_contributor_ids(mod_name):
+                        if additional_contributor_id == unique_contributor:
+                            continue
+                        alias_row = StatInput(
+                            stat_name=f'{mod_name}::unique',
+                            source_family='module',
+                            source_name=mod_name,
+                            value=unique_value,
+                            value_type=unique_value_type,
+                            stage='loadout_resolved',
+                            preset_name=module_preset,
+                            provenance='IDS::Modules',
+                            notes=f'module_{role}_unique_effect:kb_module_unique_additional_route',
+                        )
+                        bind_kb_fields(alias_row, additional_contributor_id, mapping_index, canonical_stats)
+                        _set_row_field(
+                            alias_row,
+                            'contributor_id',
+                            _make_instance_contributor_id(
+                                alias_row.contributor_id,
+                                source_name=mod_name,
+                                role=role,
+                                sub_name='unique_route',
+                            ),
+                        )
+                        _append(out, alias_row)
                 if mod_name == 'Singularity Harness' and unique_value is not None:
                     sh_row = StatInput(stat_name=f'{mod_name}::unique', source_family='module', source_name=mod_name, value=unique_value, value_type=unique_value_type, stage='loadout_resolved', preset_name=module_preset, provenance='IDS::Modules', notes=f'module_{role}_unique_effect:kb_manual_singularity_harness_bot_range_routed')
                     bind_destination(sh_row, ('mechanic_param', 'bot.global.range_bonus_m'), canonical_stats, note='kb_manual_singularity_harness_bot_range_routed')

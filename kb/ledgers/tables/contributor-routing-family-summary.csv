@@ -1,11 +1,11 @@
 source_family,route_count,registered_routes,dangling_routes,status
 battle_condition,20,20,0,closed
-bot_upgrade,17,17,0,closed
+bot_upgrade,22,22,0,closed
 card,7,7,0,closed
 enhancements,17,17,0,closed
 guardian_upgrade,19,19,0,closed
 lab,46,46,0,closed
-module,17,17,0,closed
+module,42,42,0,closed
 perk,6,6,0,closed
 player_stuff,11,11,0,closed
 relic,27,27,0,closed

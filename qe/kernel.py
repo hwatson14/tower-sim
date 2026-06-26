@@ -48,6 +48,37 @@ _MUTATION_METADATA_FIELDS = frozenset(
     }
 )
 _REMOVE_FORBIDDEN_FIELDS = _MUTATION_METADATA_FIELDS | frozenset({'new_value', 'factor'})
+_TRACE_STEP_ALREADY_PUBLISHED_SEQUENCE_KEYS = frozenset({
+    'requested_surface_ids',
+    'direct_upstream_node_ids',
+    'direct_downstream_node_ids',
+})
+
+
+def _with_surface_id(row, surface_id: str):
+    if row.surface_id == surface_id:
+        return row
+    return replace(row, surface_id=surface_id)
+
+
+def _resolved_surface_value_type(meta: Mapping[str, Any], rows: Sequence[BaselineContributorRow]) -> str:
+    unit = str(meta.get('unit') or '').strip()
+    if unit and unit != 'unknown':
+        return unit
+    value_types = {
+        str(row.value_type or '').strip()
+        for row in rows
+        if str(row.value_type or '').strip() and str(row.value_type or '').strip() != 'unknown'
+    }
+    if len(value_types) == 1:
+        return next(iter(value_types))
+    return 'unknown'
+
+
+def _has_bounded_resolution_metadata(destination_id: str) -> bool:
+    from qe.routing import load_bounded_resolution_metadata
+
+    return str(destination_id) in load_bounded_resolution_metadata()
 
 
 @lru_cache(maxsize=1)
@@ -90,6 +121,7 @@ class ResolvedSurfaceRow:
     final_value: Any
     value_type: str
     status: str
+    schema: Mapping[str, Any] | None = None
 
 
 @dataclass(frozen=True)
@@ -305,8 +337,17 @@ class StatQueryKernel:
                     return candidate
             return None
 
+        published_surface_cache: dict[str, str] = {}
+
         def _publish_surface_id(surface_id: str) -> str:
-            return publish_lookup.get(surface_id, to_v2_surface_id(surface_id))
+            cached = published_surface_cache.get(surface_id)
+            if cached is not None:
+                return cached
+            published = publish_lookup.get(surface_id)
+            if published is None:
+                published = to_v2_surface_id(surface_id)
+            published_surface_cache[surface_id] = published
+            return published
 
         def _surface_step(
             surface_id: str,
@@ -329,6 +370,9 @@ class StatQueryKernel:
                 if value is None:
                     continue
                 if isinstance(value, (list, tuple, set)):
+                    if key in _TRACE_STEP_ALREADY_PUBLISHED_SEQUENCE_KEYS:
+                        payload[key] = list(value)
+                        continue
                     payload[key] = [
                         _publish_surface_id(item) if 'surface' in key or 'node' in key else item
                         for item in value
@@ -493,27 +537,28 @@ class StatQueryKernel:
                     )
                 pending.remove(available_surface_id)
         resolved_rows = tuple(
-            replace(
+            _with_surface_id(
                 resolved_by_available_surface[available_surface_id],
-                surface_id=publish_lookup[available_surface_id],
+                publish_lookup[available_surface_id],
             )
             for available_surface_id in available_requested
             if available_surface_id is not None
         )
         contributor_rows = () if trace_mode == 'none' else tuple(
-            replace(row, surface_id=publish_lookup.get(row.surface_id, row.surface_id))
+            _with_surface_id(row, publish_lookup.get(row.surface_id, row.surface_id))
             for available_surface_id in available_requested
             if available_surface_id is not None
             for row in available[available_surface_id]
         )
         dependency_trace: dict[str, dict[str, Any]] = {}
+        resolved_published_surfaces = {_publish_surface_id(key) for key in resolved_rows_by_surface}
         for available_surface_id in dependency_seeds:
             published_surface_id = _publish_surface_id(available_surface_id)
             direct_upstream = tuple(_publish_surface_id(node_id) for node_id in self.registry.upstream.get(available_surface_id, []))
             direct_downstream = tuple(_publish_surface_id(node_id) for node_id in self.registry.downstream.get(available_surface_id, []))
             upstream_closure = tuple(_publish_surface_id(node_id) for node_id in sorted(self.registry.closure_upstream((available_surface_id,)) - {available_surface_id}))
             downstream_closure = tuple(_publish_surface_id(node_id) for node_id in sorted(self.registry.closure_downstream((available_surface_id,)) - {available_surface_id}))
-            resolved_upstream = tuple(node_id for node_id in direct_upstream if node_id in {_publish_surface_id(key) for key in resolved_rows_by_surface})
+            resolved_upstream = tuple(node_id for node_id in direct_upstream if node_id in resolved_published_surfaces)
             unresolved_upstream = tuple(node_id for node_id in direct_upstream if node_id not in resolved_upstream)
             trace_steps = trace_steps_by_surface.get(published_surface_id, ()) if trace_mode == 'full_trace' else ()
             dependency_trace[published_surface_id] = {
@@ -550,17 +595,23 @@ class StatQueryKernel:
         destination_object_type, separator, destination_id = legacy_surface_id.partition('::')
         if (
             separator
-            and destination_object_type in {
-                'canonical_stat',
-                'mechanic_param',
-                'runtime_mechanic_param',
-                'environment_param',
-                'account_flag',
-                'account_context',
-                'meta_progression_param',
-                'cosmetic_bonus',
-                'capability',
-            }
+            and (
+                destination_object_type in {
+                    'canonical_stat',
+                    'mechanic_param',
+                    'runtime_mechanic_param',
+                    'environment_param',
+                    'account_flag',
+                    'account_context',
+                    'meta_progression_param',
+                    'cosmetic_bonus',
+                    'capability',
+                }
+                or (
+                    destination_object_type == 'support_surface'
+                    and _has_bounded_resolution_metadata(destination_id)
+                )
+            )
             and all(row.source_family is not None for row in rows)
         ):
             stat_inputs = [
@@ -605,13 +656,14 @@ class StatQueryKernel:
                 str(key): value
                 for key, value in (resolved_rows or {}).items()
             }
-            final_value, status, notes, _schema = resolve_bounded_bucket(
+            final_value, status, notes, schema = resolve_bounded_bucket(
                 destination_object_type,
                 destination_id,
                 stat_inputs,
                 bounded_meta,
             )
             meta = {'unit': str(bounded_meta.get('unit') or ''), 'resolver': str(bounded_meta.get('resolver') or '')}
+            value_type = _resolved_surface_value_type(meta, rows)
             if trace_steps is not None:
                 trace_steps.append({
                     'step_index': len(trace_steps) + 1,
@@ -621,14 +673,15 @@ class StatQueryKernel:
                     'note': notes,
                     'backend': 'qe_native_bucket',
                     'resolver_id': str(meta.get('resolver') or ''),
-                    'value_type': str(meta.get('unit') or next(iter({row.value_type for row in rows}))),
+                    'value_type': value_type,
                     'final_value': final_value,
                 })
             return ResolvedSurfaceRow(
                 surface_id=surface_id,
                 final_value=final_value,
-                value_type=str(meta.get('unit') or next(iter({row.value_type for row in rows}))),
+                value_type=value_type,
                 status=status,
+                schema=schema,
             )
 
         value_types = {row.value_type for row in rows}

@@ -1,0 +1,14 @@
+{
+  "destination": "state::tower.regen",
+  "compare_state_key": null,
+  "compare_preset": null,
+  "compare_perk_state": null,
+  "package_value": null,
+  "ep_value": null,
+  "relative_delta_pct": null,
+  "workshop_base": null,
+  "multiplier_product": 1.0,
+  "recomputed_package_value": null,
+  "required_missing_multiplier_to_match_ep": null,
+  "contributors": []
+}

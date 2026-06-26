@@ -32,6 +32,7 @@ _CANONICAL_DOMAIN_ALIASES: dict[str, set[str]] = {
 RUNTIME_CALLABLE_GENERATOR_KINDS: frozenset[str] = frozenset({
     'exact_linear_generator_from_row_verified_summary',
     'exact_linear_generator_from_row_verified_table',
+    'exact_linear_generator_from_live_wiki_rule',
 })
 
 

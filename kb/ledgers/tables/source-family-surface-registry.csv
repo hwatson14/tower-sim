@@ -10,7 +10,7 @@ bot_upgrade,closed,yes,kb/bots/tables/bot-entity-registry.csv,no,"Dedicated norm
 guardian_upgrade,closed,yes,kb/guardians/tables/guardian-upgrades.csv,no,Dedicated guardian tables present.
 battle_condition,closed,yes,kb/tournaments/tables/battle-condition-curves-canonical.csv,no,Dedicated BC and heat tables present.
 vault,closed,partial,kb/economy/tables/vault-tree-registry.csv,no,"Vault now has normalized tree identity, spend-routing, and explicit externalized-input surfaces for simulator use."
-relic,closed,partial,kb/global-rules/tables/relic-input-registry.csv,yes,Active input registry now present; per-account relic values remain external instance inputs.
+relic,closed,yes,kb/global-rules/tables/relic-input-registry.csv,no,Effect/input routing registry is closed; per-account relic numeric values remain external instance inputs by design.
 player_stuff,closed,yes,kb/global-rules/tables/player-stuff-input-registry.csv,no,Active input registry now present for player/account fields.
 theme_song,closed,yes,kb/global-rules/tables/theme-song-input-registry.csv,no,Active input registry now present for cosmetic coin-bonus inputs.
 unlock,closed,yes,kb/global-rules/tables/unlock-input-registry.csv,no,Active input registry now present for capability/unlock booleans.

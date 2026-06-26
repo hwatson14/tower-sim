@@ -50,3 +50,4 @@ Defense Absolute (lab),linear,1.0,0.03,,lab,value = 1.0 + 0.03 * level
 Damage / Meter (lab),linear,1.0,0.02,,lab,value = 1.0 + 0.02 * level
 Wall Rebuild (lab),linear,0.0,-10.0,,lab,value = -10.0 * level (reduction)
 Max Rend Armor Multiplier (lab),linear,0.0,0.25,,lab,value = 0.25 * level
+Super Tower Bonus (lab),linear,1.0,0.03,,lab,value = 1.03 + ((level - 1.0) / 1.0) * 0.03

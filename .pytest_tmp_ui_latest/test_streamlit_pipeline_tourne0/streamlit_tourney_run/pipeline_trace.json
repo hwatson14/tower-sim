@@ -1,0 +1,312 @@
+{
+  "request": {
+    "ids": "input/imports/ids.csv",
+    "out": ".pytest_tmp_ui_latest/test_streamlit_pipeline_tourne0/streamlit_tourney_run",
+    "preset": "Tourney",
+    "state_mode": "start_of_run",
+    "manual_inputs": null,
+    "runtime_state_overlay": null,
+    "perk_mode": "max_progression_policy",
+    "perk_policy_preset": "GC Max Waves",
+    "include_slow_audits": false,
+    "perk_state": "auto",
+    "tier": null,
+    "include_boss_wave_milestone_matrix": false,
+    "boss_wave_align_clean_reference_rows": true,
+    "run_tracker_csv": null,
+    "approve_tracker_empirical_farming_cph": false,
+    "approve_tracker_empirical_run_coin_duration_integrals": false,
+    "approve_tracker_current_export_account_state_validation": false,
+    "approve_tracker_empirical_run_duration_projection": false,
+    "approve_tracker_empirical_wave_skip_reward": false,
+    "approve_tracker_wave_skip_intro_semantics": false,
+    "approve_source_intro_sprint_coin_window": false,
+    "approve_tracker_empirical_econ_window_overlap": false,
+    "approve_tracker_empirical_kill_density_transform": false,
+    "approve_boss_wave_pressure_factor_review_default": false
+  },
+  "execution_path": {
+    "recompute_mode": "report_snapshot_hybrid",
+    "execution_branch": "report_snapshot_planner",
+    "cache_status": "cold",
+    "fallback_required": false,
+    "fallback_reason": null,
+    "bundle_used": null,
+    "consumer_id": null,
+    "family_id": "timing_tournament_no_perks",
+    "runtime_consumers": [],
+    "cache_fingerprint": null,
+    "cache_validation": null,
+    "incremental_plan": null,
+    "parity": null,
+    "runtime_publication": null,
+    "total_elapsed_ms": 3656.882
+  },
+  "stages": [
+    {
+      "stage_id": "input_load",
+      "title": "Input load",
+      "owner_module": "input.loader",
+      "entry_function": "load_inputs",
+      "status": "ok",
+      "elapsed_ms": 0.0,
+      "outputs_summary": {
+        "ids_path": "input/imports/ids.csv",
+        "manual_inputs_path": "input/manual_inputs.yaml",
+        "run_tracker_csv": null,
+        "approve_tracker_empirical_farming_cph": false,
+        "approve_tracker_empirical_run_coin_duration_integrals": false,
+        "approve_tracker_current_export_account_state_validation": false,
+        "approve_tracker_empirical_run_duration_projection": false,
+        "approve_tracker_empirical_wave_skip_reward": false,
+        "approve_tracker_wave_skip_intro_semantics": false,
+        "approve_source_intro_sprint_coin_window": false,
+        "approve_tracker_empirical_econ_window_overlap": false,
+        "approve_tracker_empirical_kill_density_transform": false,
+        "approve_boss_wave_pressure_factor_review_default": false,
+        "runtime_state_overlay": null,
+        "section_names": [
+          "Labs",
+          "WS",
+          "WS+",
+          "UWs",
+          "Cards",
+          "Relics",
+          "Vault",
+          "Bots",
+          "Themes & Songs",
+          "Modules",
+          "Guardians",
+          "Player & Stuff"
+        ],
+        "section_row_counts": {
+          "Labs": 218,
+          "WS": 50,
+          "WS+": 20,
+          "UWs": 36,
+          "Cards": 31,
+          "Relics": 37,
+          "Vault": 67,
+          "Bots": 26,
+          "Themes & Songs": 1,
+          "Modules": 79,
+          "Guardians": 18,
+          "Player & Stuff": 23
+        }
+      },
+      "notes": []
+    },
+    {
+      "stage_id": "runtime_account_assembly",
+      "title": "Runtime/account assembly",
+      "owner_module": "input.runtime_state",
+      "entry_function": "build_runtime_state",
+      "status": "ok",
+      "elapsed_ms": 0.0,
+      "outputs_summary": {
+        "runtime_state_overlay": null,
+        "perk_config_resolution": {
+          "requested_perks_path": "manual_inputs.yaml:perk_policy",
+          "resolved_perks_path": "manual_inputs.yaml:perk_policy",
+          "fallback_applied": false,
+          "fallback_reason": null,
+          "perk_mode": "max_progression_policy",
+          "manual_banned_perk_count": 6,
+          "unlocked_ultimate_weapons": [
+            "Black Hole",
+            "Chain Lightning",
+            "Chrono Field",
+            "Death Wave",
+            "Golden Tower",
+            "Spotlight"
+          ],
+          "uw_locked_perks_excluded": {
+            "4 More Smart Missiles": "Smart Missiles",
+            "Extra Set of Inner Mines": "Inner Land Mines",
+            "Swamp Radius x1.5": "Poison Swamp"
+          },
+          "perk_policy_preset": "GC Max Waves"
+        },
+        "perk_support": {
+          "progression_state": "dynamic_current_or_projected_max_by_state_mode",
+          "workshop_state": "dynamic_current_or_projected_max_by_state_mode",
+          "perk_state": "auto",
+          "perk_mode": "max_progression_policy",
+          "requested_perk_policy_preset": "GC Max Waves",
+          "perk_policy_preset": "GC Max Waves",
+          "perk_materialization": false,
+          "perk_ids_parser_support": false,
+          "perk_external_config_support": true,
+          "perk_account_state_support": true,
+          "perk_stat_input_support": true,
+          "perk_resolver_support": true,
+          "active_perk_preset": null,
+          "configured_active_perk_preset": "Tourney",
+          "state_mode": "start_of_run"
+        }
+      },
+      "notes": []
+    },
+    {
+      "stage_id": "compare_materialization",
+      "title": "Compare materialization",
+      "owner_module": "evaluators.compare",
+      "entry_function": "_build_compare_rows_by_preset",
+      "status": "ok",
+      "elapsed_ms": 0.0,
+      "outputs_summary": {
+        "default_preset": "Tourney",
+        "state_mode": "start_of_run",
+        "perk_state": "auto"
+      },
+      "notes": []
+    },
+    {
+      "stage_id": "stat_resolution",
+      "title": "Stat-input compilation and resolution",
+      "owner_module": "qe.routing",
+      "entry_function": "QEResolutionPlanner.resolve_report_snapshot",
+      "status": "ok",
+      "elapsed_ms": 0.0,
+      "outputs_summary": {
+        "stat_input_count": 591,
+        "statbook_row_count": 634,
+        "engine_status": "publish_gate_enforced_resolution",
+        "qe_resolution_backend": "report_snapshot_hybrid"
+      },
+      "notes": []
+    },
+    {
+      "stage_id": "checks_generation",
+      "title": "Compare/verification generation",
+      "owner_module": "evaluators.compare",
+      "entry_function": "build_line_by_line_verification",
+      "status": "ok",
+      "elapsed_ms": 0.0,
+      "outputs_summary": {
+        "ep_compare_summary": {
+          "ep_compare_count": 49,
+          "ep_compare_status_counts": {
+            "matched_close": 7,
+            "matched_exact": 14,
+            "stage_scope_mismatch": 28
+          },
+          "ep_mismatch_count": 28,
+          "ep_alignment_status": "aligned_except_accounted_stage_scope_limits",
+          "ep_clean_aligned_count": 21,
+          "ep_accounted_stage_scope_limit_count": 28,
+          "ep_unaccounted_alignment_gap_count": 0,
+          "ep_raw_formula_mismatch_count": 0,
+          "ep_true_formula_mismatch_count": 0,
+          "ep_known_export_defect_count": 0,
+          "ep_unknown_formula_mismatch_count": 0,
+          "ep_stage_scope_mismatch_count": 28,
+          "ep_stage_scope_unsupported_facet_counts": {
+            "ep_export_bug:max_rend_multiplier_exports_identity_or_display_1_0_instead_of_kb_qe_9_6": 1,
+            "ep_export_drift:free_defense_upgrade_chance_low_by_about_1pct_after_percent_normalization": 1,
+            "ep_shortcut:ehp_total_inherits_component_compare_limitations": 1,
+            "ep_shortcut:super_tower_uw_component_scope_differs_from_effective_uptime_factor": 1,
+            "ep_user_guess:bh_kill_share": 1,
+            "ep_user_guess:boss_wave_interval": 1,
+            "ep_user_guess:chrono_field_damage_reduction_scope": 1,
+            "ep_user_guess:cl_damage_pct_of_total_damage": 1,
+            "ep_user_guess:damage_stat_progression_or_module_policy": 2,
+            "ep_user_guess:dimension_core_shock_stack_policy": 1,
+            "ep_user_guess:dpm_damage_at_range_pct": 3,
+            "ep_user_guess:effective_module_substat_policy": 1,
+            "ep_user_guess:ehp_tradeoff_perk_selection": 1,
+            "ep_user_guess:extra_orb_tagged_share": 1,
+            "ep_user_guess:gb_kill_share": 1,
+            "ep_user_guess:gt_bh_sync_policy": 1,
+            "ep_user_guess:locked_or_unowned_uw_helper_levels": 3,
+            "ep_user_guess:project_funding_cash": 2,
+            "ep_user_guess:range_lab_slider_level": 1,
+            "ep_user_guess:spotlight_missile_enablement": 1,
+            "ep_user_guess:spotlight_missile_hits": 2,
+            "ep_user_guess:uw_target_level_policy": 5,
+            "max_progression": 28,
+            "max_workshop": 28
+          },
+          "ep_stage_scope_user_guess_facet_counts": {
+            "ep_user_guess:bh_kill_share": 1,
+            "ep_user_guess:boss_wave_interval": 1,
+            "ep_user_guess:chrono_field_damage_reduction_scope": 1,
+            "ep_user_guess:cl_damage_pct_of_total_damage": 1,
+            "ep_user_guess:damage_stat_progression_or_module_policy": 2,
+            "ep_user_guess:dimension_core_shock_stack_policy": 1,
+            "ep_user_guess:dpm_damage_at_range_pct": 3,
+            "ep_user_guess:effective_module_substat_policy": 1,
+            "ep_user_guess:ehp_tradeoff_perk_selection": 1,
+            "ep_user_guess:extra_orb_tagged_share": 1,
+            "ep_user_guess:gb_kill_share": 1,
+            "ep_user_guess:gt_bh_sync_policy": 1,
+            "ep_user_guess:locked_or_unowned_uw_helper_levels": 3,
+            "ep_user_guess:project_funding_cash": 2,
+            "ep_user_guess:range_lab_slider_level": 1,
+            "ep_user_guess:spotlight_missile_enablement": 1,
+            "ep_user_guess:spotlight_missile_hits": 2,
+            "ep_user_guess:uw_target_level_policy": 5
+          },
+          "ep_stage_scope_shortcut_facet_counts": {
+            "ep_shortcut:ehp_total_inherits_component_compare_limitations": 1,
+            "ep_shortcut:super_tower_uw_component_scope_differs_from_effective_uptime_factor": 1
+          },
+          "ep_stage_scope_rows_with_accounted_facets": 28,
+          "ep_stage_scope_rows_without_accounted_facets": 0,
+          "ep_stage_scope_unaccounted_destinations": [],
+          "ep_non_comparable_count": 0,
+          "ep_missing_from_package_count": 0
+        },
+        "line_verification_summary": {
+          "not_applicable": 25,
+          "publishable": 609
+        },
+        "state_matrix_modes": [
+          "account_baseline",
+          "gem_respec",
+          "start_of_run",
+          "max_progression"
+        ]
+      },
+      "notes": []
+    },
+    {
+      "stage_id": "artifact_write",
+      "title": "Artifact write",
+      "owner_module": "app.publication",
+      "entry_function": "write_core_outputs",
+      "status": "ok",
+      "elapsed_ms": 0.0,
+      "outputs_summary": {
+        "out_dir": ".pytest_tmp_ui_latest/test_streamlit_pipeline_tourne0/streamlit_tourney_run"
+      },
+      "notes": []
+    }
+  ],
+  "artifacts_written": [
+    ".pytest_tmp_ui_latest/test_streamlit_pipeline_tourne0/streamlit_tourney_run/account_state.json",
+    ".pytest_tmp_ui_latest/test_streamlit_pipeline_tourne0/streamlit_tourney_run/artifact_contract_manifest.json",
+    ".pytest_tmp_ui_latest/test_streamlit_pipeline_tourne0/streamlit_tourney_run/audit_surface_manifest.json",
+    ".pytest_tmp_ui_latest/test_streamlit_pipeline_tourne0/streamlit_tourney_run/diagnostics.json",
+    ".pytest_tmp_ui_latest/test_streamlit_pipeline_tourne0/streamlit_tourney_run/ep_oracle_compare.json",
+    ".pytest_tmp_ui_latest/test_streamlit_pipeline_tourne0/streamlit_tourney_run/family_completeness_matrix.json",
+    ".pytest_tmp_ui_latest/test_streamlit_pipeline_tourne0/streamlit_tourney_run/input_dashboard.json",
+    ".pytest_tmp_ui_latest/test_streamlit_pipeline_tourne0/streamlit_tourney_run/line_by_line_verification.json",
+    ".pytest_tmp_ui_latest/test_streamlit_pipeline_tourne0/streamlit_tourney_run/module_card_payloads.json",
+    ".pytest_tmp_ui_latest/test_streamlit_pipeline_tourne0/streamlit_tourney_run/optimizer_scores.json",
+    ".pytest_tmp_ui_latest/test_streamlit_pipeline_tourne0/streamlit_tourney_run/run_stats_query_rows_max_progression.json",
+    ".pytest_tmp_ui_latest/test_streamlit_pipeline_tourne0/streamlit_tourney_run/run_stats_query_rows_start_of_run.json",
+    ".pytest_tmp_ui_latest/test_streamlit_pipeline_tourne0/streamlit_tourney_run/stat_inputs.json",
+    ".pytest_tmp_ui_latest/test_streamlit_pipeline_tourne0/streamlit_tourney_run/statbook.json",
+    ".pytest_tmp_ui_latest/test_streamlit_pipeline_tourne0/streamlit_tourney_run/statbook_publishable.json",
+    ".pytest_tmp_ui_latest/test_streamlit_pipeline_tourne0/streamlit_tourney_run/state_matrix.json",
+    ".pytest_tmp_ui_latest/test_streamlit_pipeline_tourne0/streamlit_tourney_run/stats_dashboard.json",
+    ".pytest_tmp_ui_latest/test_streamlit_pipeline_tourne0/streamlit_tourney_run/survivor_closure_report.json",
+    ".pytest_tmp_ui_latest/test_streamlit_pipeline_tourne0/streamlit_tourney_run/tower_damage_runtime_gap_report.json",
+    ".pytest_tmp_ui_latest/test_streamlit_pipeline_tourne0/streamlit_tourney_run/tower_defense_absolute_semantic_gap_report.json",
+    ".pytest_tmp_ui_latest/test_streamlit_pipeline_tourne0/streamlit_tourney_run/tower_hp_semantic_gap_report.json",
+    ".pytest_tmp_ui_latest/test_streamlit_pipeline_tourne0/streamlit_tourney_run/tower_regen_closure_report.json",
+    ".pytest_tmp_ui_latest/test_streamlit_pipeline_tourne0/streamlit_tourney_run/tower_regen_ep_semantic_gap_report.json",
+    ".pytest_tmp_ui_latest/test_streamlit_pipeline_tourne0/streamlit_tourney_run/line_by_line_verification.csv"
+  ]
+}

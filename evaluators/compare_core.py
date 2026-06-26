@@ -77,11 +77,35 @@ def _normalize_row_keyed_payload(rows: dict) -> dict:
 def kb_alignment_status_from_compare_status(compare_status: str | None) -> str:
     if compare_status in {None, 'not_in_ep'}:
         return 'not_ep_compared'
-    if compare_status in {'match', 'close'}:
+    if compare_status in {'match', 'close', 'matched_exact', 'matched_close'}:
         return 'aligned'
-    if compare_status in {'stage_scope_mismatch', 'formula_blocked', 'not_comparable'}:
+    if compare_status in {
+        'stage_scope_mismatch',
+        'formula_blocked',
+        'not_comparable',
+        'non_comparable',
+        'non_numeric_compare',
+    }:
         return 'not_comparable'
     return 'misaligned'
+
+
+_EP_KNOWN_EXPORT_DEFECT_NOTE_PREFIXES = ('ep_export_bug:', 'ep_export_drift:')
+
+
+def _compare_notes_have_known_export_defect(notes: list | tuple | set | None) -> bool:
+    return any(
+        str(note).startswith(_EP_KNOWN_EXPORT_DEFECT_NOTE_PREFIXES)
+        for note in (notes or [])
+    )
+
+
+def _compare_has_known_export_defect(payload: dict) -> bool:
+    return (
+        payload.get('ep_compare_known_export_defect') is True
+        or _compare_notes_have_known_export_defect(payload.get('compare_notes'))
+        or _compare_notes_have_known_export_defect(payload.get('notes'))
+    )
 
 
 def _normalize_perk_state(perk_state: str) -> str:
@@ -467,15 +491,99 @@ def _build_publishable_statbook(statbook_dict: dict, formula_ledger: dict) -> di
 
 def build_compare_status_summary(ep_compare: dict) -> dict:
     status_counts = Counter(v.get('status') for v in ep_compare.values())
+    raw_mismatch_count = sum(1 for v in ep_compare.values() if v.get('status') == 'mismatch')
+    known_export_defect_count = sum(
+        1
+        for v in ep_compare.values()
+        if v.get('status') == 'mismatch' and _compare_has_known_export_defect(v)
+    )
+    true_mismatch_count = max(0, raw_mismatch_count - known_export_defect_count)
+    stage_scope_rows = {
+        destination: payload
+        for destination, payload in ep_compare.items()
+        if payload.get('status') == 'stage_scope_mismatch'
+    }
+    stage_scope_facets_by_destination = {
+        destination: _stage_scope_unsupported_facets(payload)
+        for destination, payload in stage_scope_rows.items()
+    }
+    unsupported_facet_counts = Counter(
+        facet
+        for facets in stage_scope_facets_by_destination.values()
+        for facet in facets
+    )
+    user_guess_facet_counts = Counter(
+        facet
+        for facets in stage_scope_facets_by_destination.values()
+        for facet in facets
+        if str(facet).startswith('ep_user_guess:')
+    )
+    shortcut_facet_counts = Counter(
+        facet
+        for facets in stage_scope_facets_by_destination.values()
+        for facet in facets
+        if str(facet).startswith('ep_shortcut:')
+    )
+    unaccounted_stage_scope_destinations = sorted(
+        destination
+        for destination, facets in stage_scope_facets_by_destination.items()
+        if not facets
+    )
+    matched_count = sum(
+        1 for v in ep_compare.values() if v.get('status') in {'matched_exact', 'matched_close'}
+    )
+    non_comparable_count = sum(1 for v in ep_compare.values() if v.get('status') == 'non_comparable')
+    missing_from_package_count = sum(
+        1 for v in ep_compare.values() if v.get('status') == 'missing_from_package'
+    )
+    accounted_stage_scope_count = len(stage_scope_rows) - len(unaccounted_stage_scope_destinations)
+    unaccounted_blocking_count = (
+        true_mismatch_count
+        + non_comparable_count
+        + missing_from_package_count
+        + len(unaccounted_stage_scope_destinations)
+    )
+    if unaccounted_blocking_count == 0 and matched_count + accounted_stage_scope_count == len(ep_compare):
+        alignment_status = 'aligned_except_accounted_stage_scope_limits'
+    elif unaccounted_blocking_count == 0:
+        alignment_status = 'no_formula_mismatches_but_compare_scope_incomplete'
+    else:
+        alignment_status = 'unresolved_ep_alignment_gaps'
     return {
         'ep_compare_count': len(ep_compare),
         'ep_compare_status_counts': dict(sorted(status_counts.items())),
         'ep_mismatch_count': sum(1 for v in ep_compare.values() if v.get('status') not in {'matched_exact', 'matched_close'}),
-        'ep_true_formula_mismatch_count': sum(1 for v in ep_compare.values() if v.get('status') == 'mismatch'),
-        'ep_stage_scope_mismatch_count': sum(1 for v in ep_compare.values() if v.get('status') == 'stage_scope_mismatch'),
-        'ep_non_comparable_count': sum(1 for v in ep_compare.values() if v.get('status') == 'non_comparable'),
-        'ep_missing_from_package_count': sum(1 for v in ep_compare.values() if v.get('status') == 'missing_from_package'),
+        'ep_alignment_status': alignment_status,
+        'ep_clean_aligned_count': matched_count,
+        'ep_accounted_stage_scope_limit_count': accounted_stage_scope_count,
+        'ep_unaccounted_alignment_gap_count': unaccounted_blocking_count,
+        'ep_raw_formula_mismatch_count': raw_mismatch_count,
+        'ep_true_formula_mismatch_count': true_mismatch_count,
+        'ep_known_export_defect_count': known_export_defect_count,
+        'ep_unknown_formula_mismatch_count': true_mismatch_count,
+        'ep_stage_scope_mismatch_count': len(stage_scope_rows),
+        'ep_stage_scope_unsupported_facet_counts': dict(sorted(unsupported_facet_counts.items())),
+        'ep_stage_scope_user_guess_facet_counts': dict(sorted(user_guess_facet_counts.items())),
+        'ep_stage_scope_shortcut_facet_counts': dict(sorted(shortcut_facet_counts.items())),
+        'ep_stage_scope_rows_with_accounted_facets': accounted_stage_scope_count,
+        'ep_stage_scope_rows_without_accounted_facets': len(unaccounted_stage_scope_destinations),
+        'ep_stage_scope_unaccounted_destinations': unaccounted_stage_scope_destinations,
+        'ep_non_comparable_count': non_comparable_count,
+        'ep_missing_from_package_count': missing_from_package_count,
     }
+
+
+def _stage_scope_unsupported_facets(payload: dict) -> list[str]:
+    notes = [str(note) for note in (payload.get('compare_notes') or [])]
+    marker = 'ep_compare_uses_unsupported_stage_facets'
+    if marker not in notes:
+        return []
+    marker_index = notes.index(marker)
+    return [
+        note
+        for note in notes[marker_index + 1:]
+        if note and note != marker
+    ]
 
 
 def ensure_compare_authoritative_verdict_fields(compare: dict) -> dict:
@@ -483,12 +591,13 @@ def ensure_compare_authoritative_verdict_fields(compare: dict) -> dict:
         if not isinstance(payload, dict):
             continue
         status = payload.get('status')
-        kb_alignment_status = payload.get('kb_alignment_status')
-        if kb_alignment_status is None:
-            kb_alignment_status = kb_alignment_status_from_compare_status(status)
-            payload['kb_alignment_status'] = kb_alignment_status
-        if payload.get('verdict') is None:
-            payload['verdict'] = 'pass_with_compare_limitations' if kb_alignment_status == 'not_comparable' else ('pass' if kb_alignment_status == 'aligned' else 'fail'),
+        kb_alignment_status = kb_alignment_status_from_compare_status(status)
+        payload['kb_alignment_status'] = kb_alignment_status
+        payload['verdict'] = (
+            'pass_with_compare_limitations'
+            if kb_alignment_status == 'not_comparable'
+            else ('pass' if kb_alignment_status == 'aligned' else 'fail')
+        )
     return compare
 
 
@@ -498,12 +607,10 @@ def ensure_line_verification_authoritative_verdict_fields(verification: dict) ->
         if not isinstance(payload, dict):
             continue
         compare_status = payload.get('ep_compare_status')
-        kb_alignment_status = payload.get('kb_alignment_status')
-        if kb_alignment_status is None:
-            kb_alignment_status = kb_alignment_status_from_compare_status(compare_status)
-            payload['kb_alignment_status'] = kb_alignment_status
-        if payload.get('verdict') is None:
-            payload['verdict'] = verdict_from_verification(payload.get('verification_status'), compare_status)
+        payload['kb_alignment_status'] = kb_alignment_status_from_compare_status(compare_status)
+        payload['verdict'] = verdict_from_verification(
+            payload.get('verification_status'), compare_status
+        )
     return verification
 
 

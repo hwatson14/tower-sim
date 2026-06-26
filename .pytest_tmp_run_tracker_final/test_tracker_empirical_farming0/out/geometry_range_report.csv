@@ -1,0 +1,5 @@
+preset,state_mode,status,tower_range_input_surface_id,tower_range_theoretical_m,tower_range_displayed_m,displayed_delta_m,displayed_to_theoretical_ratio,transform_status
+Farming,start_of_run,partial_displayed_proxy,state::tower.range_m,69.5,69.5,0.0,1.0,identity_to_80
+Farming,max_progression,partial_displayed_proxy,state::tower.range_m,69.5,69.5,0.0,1.0,identity_to_80
+Tourney,start_of_run,partial_displayed_proxy,state::tower.range_m,130.66,121.40406875139999,-9.255931248600007,0.9291601771881218,compressed_above_80
+Tourney,max_progression,partial_displayed_proxy,state::tower.range_m,130.66,121.40406875139999,-9.255931248600007,0.9291601771881218,compressed_above_80

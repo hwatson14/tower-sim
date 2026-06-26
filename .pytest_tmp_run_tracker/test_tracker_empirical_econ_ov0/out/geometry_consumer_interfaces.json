@@ -1,0 +1,65 @@
+{
+  "artifact": "geometry_consumer_interfaces.json",
+  "schema_version": 1,
+  "owner": "simulators.geometry",
+  "interfaces": {
+    "timing": {
+      "status": "wired_displayed_space_and_contact_time_proxy_base",
+      "safe_exports": [
+        "tower_range_displayed_m",
+        "wall_radius_displayed_m",
+        "boss_path_distance_to_wall_displayed_candidate_m",
+        "boss_contact_time_displayed_proxy_seconds",
+        "chrono_field_radius_displayed_m",
+        "black_hole_radius_displayed_m",
+        "black_hole_center_distance_displayed_m",
+        "golden_bot_radius_displayed_m",
+        "chrono_field_inbound_path_exposure_fraction_proxy",
+        "black_hole_inbound_path_exposure_fraction_proxy",
+        "golden_bot_inbound_path_exposure_fraction_proxy",
+        "black_hole_overlap_fraction_of_golden_bot"
+      ],
+      "blocked": [
+        "cadence_derivation",
+        "boss_contact_time_truth",
+        "effective_travel_geometry"
+      ]
+    },
+    "survivability": {
+      "status": "proxy_only",
+      "safe_exports": [
+        "tower_radius_displayed_m",
+        "wall_radius_displayed_m",
+        "chrono_field_radius_displayed_m",
+        "black_hole_radius_displayed_m",
+        "black_hole_center_distance_displayed_m",
+        "black_hole_overlap_fraction_of_tower",
+        "black_hole_overlap_fraction_of_wall",
+        "chrono_field_inbound_path_exposure_fraction_proxy",
+        "ranged_enemy_inside_black_hole_fraction_proxy"
+      ],
+      "blocked": [
+        "wall_contact_truth",
+        "boss_hit_sequencing",
+        "exact_damage_intake_geometry"
+      ]
+    },
+    "econ": {
+      "status": "proxy_only",
+      "safe_exports": [
+        "black_hole_radius_displayed_m",
+        "black_hole_center_distance_displayed_m",
+        "golden_bot_radius_displayed_m",
+        "black_hole_inbound_path_exposure_fraction_proxy",
+        "golden_bot_inbound_path_exposure_fraction_proxy",
+        "black_hole_overlap_fraction_of_golden_bot",
+        "killed_within_black_hole_fraction_proxy"
+      ],
+      "blocked": [
+        "exact_tagged_enemy_fraction",
+        "exact_density_weighted_coin_modelling",
+        "exact_kill_location_distribution"
+      ]
+    }
+  }
+}

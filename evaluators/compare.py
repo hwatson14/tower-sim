@@ -55,6 +55,8 @@ EP_KNOWN_EXPORT_DEFECT_NOTES = {
     _state('free_defense_upgrade_chance_pct'): 'ep_export_drift:free_defense_upgrade_chance_low_by_about_1pct_after_percent_normalization',
 }
 
+EP_KNOWN_EXPORT_DEFECT_NOTE_PREFIXES = ('ep_export_bug:', 'ep_export_drift:')
+
 
 def _normalize_row_keyed_payload(rows: dict) -> dict:
     normalized: dict = {}
@@ -109,9 +111,15 @@ def _annotate_display_fields(statbook_dict: dict) -> None:
 def kb_alignment_status_from_compare_status(compare_status: str | None) -> str:
     if compare_status in {None, 'not_in_ep'}:
         return 'not_ep_compared'
-    if compare_status in {'match', 'close'}:
+    if compare_status in {'match', 'close', 'matched_exact', 'matched_close'}:
         return 'aligned'
-    if compare_status in {'stage_scope_mismatch', 'formula_blocked', 'not_comparable'}:
+    if compare_status in {
+        'stage_scope_mismatch',
+        'formula_blocked',
+        'not_comparable',
+        'non_comparable',
+        'non_numeric_compare',
+    }:
         return 'not_comparable'
     return 'misaligned'
 
@@ -129,35 +137,132 @@ def verdict_from_verification(verification_status: str, compare_status: str | No
 
 
 def _compare_has_known_export_defect(payload: dict) -> bool:
-    return any(
-        str(note).startswith(('ep_export_bug:', 'ep_export_drift:'))
-        for note in (payload.get('compare_notes') or [])
-    )
+    return _compare_notes_have_known_export_defect(payload.get('compare_notes') or payload.get('notes'))
+
+
+def _compare_notes_have_known_export_defect(notes: list | tuple | set | None) -> bool:
+    return any(str(note).startswith(EP_KNOWN_EXPORT_DEFECT_NOTE_PREFIXES) for note in (notes or []))
+
+
+def _kb_alignment_status_from_compare_payload(compare_status: str | None, payload: dict | None = None) -> str:
+    payload = payload or {}
+    if (
+        compare_status == 'mismatch'
+        and (
+            payload.get('ep_compare_known_export_defect') is True
+            or _compare_has_known_export_defect(payload)
+            or _compare_notes_have_known_export_defect(payload.get('ep_compare_notes'))
+        )
+    ):
+        return 'not_comparable'
+    return kb_alignment_status_from_compare_status(compare_status)
+
+
+def _compare_verdict_from_alignment(kb_alignment_status: str) -> str:
+    if kb_alignment_status == 'not_comparable':
+        return 'pass_with_compare_limitations'
+    return 'pass' if kb_alignment_status == 'aligned' else 'fail'
+
+
+def _verification_compare_status_for_verdict(compare_status: str | None, known_export_defect: bool) -> str | None:
+    return 'not_comparable' if compare_status == 'mismatch' and known_export_defect else compare_status
 
 
 def build_compare_status_summary(ep_compare: dict) -> dict:
     status_counts = Counter(v.get('status') for v in ep_compare.values())
-    true_mismatch_count = sum(1 for v in ep_compare.values() if v.get('status') == 'mismatch')
-    known_export_defect_count = sum(1 for v in ep_compare.values() if _compare_has_known_export_defect(v))
-    unsupported_facet_counts = Counter(
-        note
+    raw_mismatch_count = sum(1 for v in ep_compare.values() if v.get('status') == 'mismatch')
+    known_export_defect_count = sum(
+        1
         for v in ep_compare.values()
-        if v.get('status') == 'stage_scope_mismatch'
-        for note in (v.get('compare_notes') or [])
-        if str(note).startswith('ep_user_guess:')
+        if v.get('status') == 'mismatch' and _compare_has_known_export_defect(v)
     )
+    true_mismatch_count = max(0, raw_mismatch_count - known_export_defect_count)
+    stage_scope_rows = {
+        destination: payload
+        for destination, payload in ep_compare.items()
+        if payload.get('status') == 'stage_scope_mismatch'
+    }
+    stage_scope_facets_by_destination = {
+        destination: _stage_scope_unsupported_facets(payload)
+        for destination, payload in stage_scope_rows.items()
+    }
+    unsupported_facet_counts = Counter(
+        facet
+        for facets in stage_scope_facets_by_destination.values()
+        for facet in facets
+    )
+    user_guess_facet_counts = Counter(
+        facet
+        for facets in stage_scope_facets_by_destination.values()
+        for facet in facets
+        if str(facet).startswith('ep_user_guess:')
+    )
+    shortcut_facet_counts = Counter(
+        facet
+        for facets in stage_scope_facets_by_destination.values()
+        for facet in facets
+        if str(facet).startswith('ep_shortcut:')
+    )
+    unaccounted_stage_scope_destinations = sorted(
+        destination
+        for destination, facets in stage_scope_facets_by_destination.items()
+        if not facets
+    )
+    matched_count = sum(
+        1 for v in ep_compare.values() if v.get('status') in {'matched_exact', 'matched_close'}
+    )
+    non_comparable_count = sum(1 for v in ep_compare.values() if v.get('status') == 'non_comparable')
+    missing_from_package_count = sum(
+        1 for v in ep_compare.values() if v.get('status') == 'missing_from_package'
+    )
+    accounted_stage_scope_count = len(stage_scope_rows) - len(unaccounted_stage_scope_destinations)
+    unaccounted_blocking_count = (
+        true_mismatch_count
+        + non_comparable_count
+        + missing_from_package_count
+        + len(unaccounted_stage_scope_destinations)
+    )
+    if unaccounted_blocking_count == 0 and matched_count + accounted_stage_scope_count == len(ep_compare):
+        alignment_status = 'aligned_except_accounted_stage_scope_limits'
+    elif unaccounted_blocking_count == 0:
+        alignment_status = 'no_formula_mismatches_but_compare_scope_incomplete'
+    else:
+        alignment_status = 'unresolved_ep_alignment_gaps'
     return {
         'ep_compare_count': len(ep_compare),
         'ep_compare_status_counts': dict(sorted(status_counts.items())),
         'ep_mismatch_count': sum(1 for v in ep_compare.values() if v.get('status') not in {'matched_exact', 'matched_close'}),
+        'ep_alignment_status': alignment_status,
+        'ep_clean_aligned_count': matched_count,
+        'ep_accounted_stage_scope_limit_count': accounted_stage_scope_count,
+        'ep_unaccounted_alignment_gap_count': unaccounted_blocking_count,
+        'ep_raw_formula_mismatch_count': raw_mismatch_count,
         'ep_true_formula_mismatch_count': true_mismatch_count,
         'ep_known_export_defect_count': known_export_defect_count,
-        'ep_unknown_formula_mismatch_count': max(0, true_mismatch_count - known_export_defect_count),
-        'ep_stage_scope_mismatch_count': sum(1 for v in ep_compare.values() if v.get('status') == 'stage_scope_mismatch'),
+        'ep_unknown_formula_mismatch_count': true_mismatch_count,
+        'ep_stage_scope_mismatch_count': len(stage_scope_rows),
         'ep_stage_scope_unsupported_facet_counts': dict(sorted(unsupported_facet_counts.items())),
-        'ep_non_comparable_count': sum(1 for v in ep_compare.values() if v.get('status') == 'non_comparable'),
-        'ep_missing_from_package_count': sum(1 for v in ep_compare.values() if v.get('status') == 'missing_from_package'),
+        'ep_stage_scope_user_guess_facet_counts': dict(sorted(user_guess_facet_counts.items())),
+        'ep_stage_scope_shortcut_facet_counts': dict(sorted(shortcut_facet_counts.items())),
+        'ep_stage_scope_rows_with_accounted_facets': accounted_stage_scope_count,
+        'ep_stage_scope_rows_without_accounted_facets': len(unaccounted_stage_scope_destinations),
+        'ep_stage_scope_unaccounted_destinations': unaccounted_stage_scope_destinations,
+        'ep_non_comparable_count': non_comparable_count,
+        'ep_missing_from_package_count': missing_from_package_count,
     }
+
+
+def _stage_scope_unsupported_facets(payload: dict) -> list[str]:
+    notes = [str(note) for note in (payload.get('compare_notes') or [])]
+    marker = 'ep_compare_uses_unsupported_stage_facets'
+    if marker not in notes:
+        return []
+    marker_index = notes.index(marker)
+    return [
+        note
+        for note in notes[marker_index + 1:]
+        if note and note != marker
+    ]
 
 
 def classify_compare_status(destination: str, contract: dict, package_row, ep_entry: dict, stage_context: dict | None = None, normalize_compare_values: Callable[[str, str, object, object], tuple[object, object, list[str]]] | None = None):
@@ -258,7 +363,14 @@ def build_ep_compare(ep_oracle, statbook_rows_by_preset, formula_ledger, package
         contract = formula_contract(formula_ledger, dest)
         status, delta, rel_pct, notes = classify_compare_status(dest, contract, pkg, ep, stage_context, normalize_compare_values)
         compare_notes = assumption_notes + notes + _known_export_defect_notes(dest, status)
-        kb_alignment_status = kb_alignment_status_from_compare_status(status)
+        known_export_defect = _compare_notes_have_known_export_defect(compare_notes)
+        kb_alignment_status = _kb_alignment_status_from_compare_payload(
+            status,
+            {
+                'compare_notes': compare_notes,
+                'ep_compare_known_export_defect': known_export_defect,
+            },
+        )
         compare[dest] = {
             **ep,
             'ep_value': ep.get('ep_value_parsed'),
@@ -279,7 +391,7 @@ def build_ep_compare(ep_oracle, statbook_rows_by_preset, formula_ledger, package
             'relative_delta_pct': rel_pct,
             'status': status,
             'kb_alignment_status': kb_alignment_status,
-            'verdict': 'pass_with_compare_limitations' if kb_alignment_status == 'not_comparable' else ('pass' if kb_alignment_status == 'aligned' else 'fail'),
+            'verdict': _compare_verdict_from_alignment(kb_alignment_status),
             'compare_notes': compare_notes,
             'notes': compare_notes,
         }
@@ -291,12 +403,9 @@ def ensure_compare_authoritative_verdict_fields(compare: dict) -> dict:
         if not isinstance(payload, dict):
             continue
         status = payload.get('status')
-        kb_alignment_status = payload.get('kb_alignment_status')
-        if kb_alignment_status is None:
-            kb_alignment_status = kb_alignment_status_from_compare_status(status)
-            payload['kb_alignment_status'] = kb_alignment_status
-        if payload.get('verdict') is None:
-            payload['verdict'] = 'pass_with_compare_limitations' if kb_alignment_status == 'not_comparable' else ('pass' if kb_alignment_status == 'aligned' else 'fail')
+        kb_alignment_status = _kb_alignment_status_from_compare_payload(status, payload)
+        payload['kb_alignment_status'] = kb_alignment_status
+        payload['verdict'] = _compare_verdict_from_alignment(kb_alignment_status)
     return compare
 
 
@@ -305,12 +414,13 @@ def ensure_line_verification_authoritative_verdict_fields(verification: dict) ->
         if not isinstance(payload, dict):
             continue
         compare_status = payload.get('ep_compare_status')
-        kb_alignment_status = payload.get('kb_alignment_status')
-        if kb_alignment_status is None:
-            kb_alignment_status = kb_alignment_status_from_compare_status(compare_status)
-            payload['kb_alignment_status'] = kb_alignment_status
-        if payload.get('verdict') is None:
-            payload['verdict'] = verdict_from_verification(payload.get('verification_status'), compare_status)
+        known_export_defect = (
+            payload.get('ep_compare_known_export_defect') is True
+            or _compare_notes_have_known_export_defect(payload.get('ep_compare_notes'))
+        )
+        verdict_compare_status = _verification_compare_status_for_verdict(compare_status, known_export_defect)
+        payload['kb_alignment_status'] = _kb_alignment_status_from_compare_payload(compare_status, payload)
+        payload['verdict'] = verdict_from_verification(payload.get('verification_status'), verdict_compare_status)
     return verification
 
 
@@ -414,23 +524,39 @@ def build_line_by_line_verification(statbook_dict, ep_compare, formula_ledger, f
     for key, row in rows.items():
         contributors = row.get('contributors', [])
         schema = row.get('schema') or {}
+        contract = formula_contract(formula_ledger, key)
         allowed = set(schema.get('allowed_input_value_types') or [])
+        allowed_formula_inputs = contract.get('allowed_formula_input_value_types') or []
+        if isinstance(allowed_formula_inputs, str):
+            allowed_formula_inputs = [allowed_formula_inputs]
+        allowed_formula_input_value_types = {str(value) for value in allowed_formula_inputs}
+        level_formula_input_allowed = (
+            'level' in allowed_formula_input_value_types
+            or contract.get('allow_level_contributors') is True
+        )
         issues = []
         unresolved = []
         level_rows = []
         semantic_mismatch = []
+        level_surface = schema.get('unit') == 'level' or key.endswith('.level') or key.endswith('_level')
+        raw_text_surface = 'raw_text' in set(schema.get('expected_input_semantics') or [])
         for c in contributors:
             vt = c.get('value_type')
             notes = str(c.get('notes') or '').lower()
             defaulted_if_missing = c.get('defaulted_if_missing') is True
-            if vt == 'level':
+            if vt == 'level' and not level_surface and not level_formula_input_allowed:
                 level_rows.append(c.get('source_name') or c.get('stat_name'))
             if (
                 not defaulted_if_missing
-                and (c.get('value') is None or 'unresolved' in notes or vt in {'missing_inventory', 'raw_text', 'display_token'})
+                and (
+                    c.get('value') is None
+                    or 'unresolved' in notes
+                    or vt in {'missing_inventory', 'display_token'}
+                    or (vt == 'raw_text' and not raw_text_surface)
+                )
             ):
                 unresolved.append(c.get('source_name') or c.get('stat_name'))
-            if allowed and vt is not None and vt not in allowed:
+            if allowed and vt is not None and vt not in allowed and vt not in allowed_formula_input_value_types:
                 semantic_mismatch.append({
                     'source': c.get('source_name') or c.get('stat_name'),
                     'value_type': vt,
@@ -441,7 +567,6 @@ def build_line_by_line_verification(statbook_dict, ep_compare, formula_ledger, f
             issues.append('unresolved_contributor_present')
         if semantic_mismatch:
             issues.append('semantically_incompatible_contributor_present')
-        contract = formula_contract(formula_ledger, key)
         consumed_contributors = None
         notes_text = str(row.get('notes') or '')
         match = re.search(r'Consumed\s+(\d+)\/(\d+)\s+contributors', notes_text)
@@ -451,10 +576,10 @@ def build_line_by_line_verification(statbook_dict, ep_compare, formula_ledger, f
                 issues.append('unconsumed_contributor_present')
         compare = ep_compare.get(key)
         compare_status = None if compare is None else compare.get('status')
-        if compare_status == 'mismatch':
+        compare_notes = [] if compare is None else list(compare.get('compare_notes') or compare.get('notes') or [])
+        known_export_defect = compare_status == 'mismatch' and _compare_notes_have_known_export_defect(compare_notes)
+        if compare_status == 'mismatch' and not known_export_defect:
             issues.append('ep_reference_mismatch')
-        if compare_status == 'stage_scope_mismatch':
-            issues.append('ep_reference_stage_scope_mismatch')
         verification_status = 'publishable'
         publish_policy = str(contract.get('publish_policy') or '').strip()
         row_status = row.get('status')
@@ -478,8 +603,16 @@ def build_line_by_line_verification(statbook_dict, ep_compare, formula_ledger, f
                 verification_status = 'not_applicable'
             else:
                 verification_status = 'blocked' if row_status in {'resolved', 'partially_resolved'} else 'needs_work'
-        kb_alignment_status = kb_alignment_status_from_compare_status(compare_status)
-        verdict = verdict_from_verification(verification_status, compare_status)
+        verdict_compare_status = _verification_compare_status_for_verdict(compare_status, known_export_defect)
+        kb_alignment_status = _kb_alignment_status_from_compare_payload(
+            compare_status,
+            {
+                'compare_notes': compare_notes,
+                'ep_compare_notes': compare_notes,
+                'ep_compare_known_export_defect': known_export_defect,
+            },
+        )
+        verdict = verdict_from_verification(verification_status, verdict_compare_status)
         verification[key] = {
             'destination': key,
             'status': row.get('status'),
@@ -495,6 +628,8 @@ def build_line_by_line_verification(statbook_dict, ep_compare, formula_ledger, f
             'unresolved_contributors': unresolved,
             'semantic_mismatches': semantic_mismatch,
             'ep_compare_status': compare_status,
+            'ep_compare_notes': compare_notes,
+            'ep_compare_known_export_defect': known_export_defect,
             'ep_compare_delta': None if compare is None else compare.get('delta'),
             'ep_compare_value': None if compare is None else compare.get('package_value'),
             'ep_compare_value_type': None if compare is None else compare.get('package_value_type'),
@@ -680,6 +815,105 @@ def _build_artifact_contract_manifest(account_state, canonical_output_preset: st
     }
 
 
+_REQUESTED_EFFECT_ROUTE_FAMILY_MAP = {
+    'bot': ('bot_upgrade', 'bot upgrade effects'),
+    'card': ('card', 'card base and mastery effects'),
+    'enhancement': ('enhancements', 'workshop enhancement effects'),
+    'module': ('module', 'module main and unique effects'),
+    'module_substat': ('module', 'module substat effects'),
+    'relic': ('relic', 'relic effects'),
+    'workshop': ('workshop', 'workshop effects'),
+}
+
+
+def _int_csv_field(row: dict, field_name: str, default: int = 0) -> int:
+    try:
+        return int(str(row.get(field_name, '')).strip())
+    except (TypeError, ValueError):
+        return default
+
+
+def _build_requested_effect_route_closure() -> dict:
+    family_summary_rows = {
+        row.get('source_family'): row
+        for row in _load_csv_rows(ROOT / 'kb' / 'ledgers' / 'tables' / 'contributor-routing-family-summary.csv')
+        if row.get('source_family')
+    }
+    source_registry_rows = {
+        row.get('source_family'): row
+        for row in _load_csv_rows(ROOT / 'kb' / 'ledgers' / 'tables' / 'source-family-surface-registry.csv')
+        if row.get('source_family')
+    }
+    source_families: dict[str, dict[str, object]] = {}
+    matrix_families: dict[str, dict[str, object]] = {}
+    for matrix_family, (source_family, effect_scope) in sorted(_REQUESTED_EFFECT_ROUTE_FAMILY_MAP.items()):
+        summary = family_summary_rows.get(source_family, {})
+        registry = source_registry_rows.get(source_family, {})
+        route_count = _int_csv_field(summary, 'route_count')
+        registered_routes = _int_csv_field(summary, 'registered_routes')
+        dangling_routes = _int_csv_field(summary, 'dangling_routes')
+        route_status = str(summary.get('status') or 'missing')
+        routing_status = str(registry.get('routing_status') or 'missing')
+        dedicated_surface = str(registry.get('dedicated_active_surface_present') or 'missing')
+        content_gap_flag = str(registry.get('content_gap_flag') or 'missing')
+        closed = (
+            route_status == 'closed'
+            and routing_status == 'closed'
+            and dedicated_surface == 'yes'
+            and content_gap_flag == 'no'
+            and route_count > 0
+            and registered_routes == route_count
+            and dangling_routes == 0
+        )
+        source_entry = source_families.setdefault(
+            source_family,
+            {
+                'source_family': source_family,
+                'effect_scopes': [],
+                'route_count': route_count,
+                'registered_routes': registered_routes,
+                'dangling_routes': dangling_routes,
+                'status': route_status,
+                'routing_status': routing_status,
+                'dedicated_active_surface_present': dedicated_surface,
+                'primary_surface': registry.get('primary_surface') or '',
+                'content_gap_flag': content_gap_flag,
+                'closed': closed,
+            },
+        )
+        source_entry['effect_scopes'] = sorted({
+            *list(source_entry.get('effect_scopes') or []),
+            effect_scope,
+        })
+        matrix_families[matrix_family] = {
+            'source_family': source_family,
+            'effect_scope': effect_scope,
+            'closed': closed,
+        }
+    closed_source_families = sorted(
+        source_family
+        for source_family, entry in source_families.items()
+        if bool(entry.get('closed'))
+    )
+    open_source_families = sorted(
+        source_family
+        for source_family, entry in source_families.items()
+        if not bool(entry.get('closed'))
+    )
+    return {
+        'source_family_count': len(source_families),
+        'closed_source_family_count': len(closed_source_families),
+        'open_source_families': open_source_families,
+        'status': 'closed' if not open_source_families else 'needs_work',
+        'ledger_sources': {
+            'route_summary': 'kb/ledgers/tables/contributor-routing-family-summary.csv',
+            'surface_registry': 'kb/ledgers/tables/source-family-surface-registry.csv',
+        },
+        'matrix_family_map': matrix_families,
+        'source_families': dict(sorted(source_families.items())),
+    }
+
+
 def _build_family_completeness_matrix(account_state, stat_inputs) -> dict:
     from collections import Counter
     family_totals = Counter(row.source_family for row in stat_inputs)
@@ -687,6 +921,8 @@ def _build_family_completeness_matrix(account_state, stat_inputs) -> dict:
     card_presets = getattr(account_state, 'card_presets', {}) or {}
     module_presets = getattr(account_state, 'module_presets', {}) or {}
     perk_presets = getattr(account_state, 'perk_presets', {}) or {}
+    requested_effect_route_closure = _build_requested_effect_route_closure()
+    requested_effect_matrix_families = requested_effect_route_closure.get('matrix_family_map') or {}
     preset_lane_completeness = {}
     for preset in CANONICAL_PRESET_NAMES:
         preset_lane_completeness[preset] = {
@@ -701,17 +937,21 @@ def _build_family_completeness_matrix(account_state, stat_inputs) -> dict:
     for family in sorted(set(family_totals) | {'workshop','lab','card','module','module_substat','relic','vault','enhancement','uw','bot','guardian','uw_plus'}):
         total_rows = int(family_totals.get(family, 0))
         mapped_rows = int(mapped_totals.get(family, 0))
-        families[family] = {
+        family_row = {
             'total_rows': total_rows,
             'mapped_rows': mapped_rows,
             'unmapped_rows': total_rows - mapped_rows,
         }
+        if family in requested_effect_matrix_families:
+            family_row['requested_effect_route_closure'] = dict(requested_effect_matrix_families[family])
+        families[family] = family_row
     return {
         'version': 1,
         'canonical_output_preset': getattr(account_state, 'default_preset', None),
         'canonical_presets': list(CANONICAL_PRESET_NAMES),
         'synthetic_preset_names_present': _synthetic_preset_names_present(account_state),
         'preset_lane_completeness': preset_lane_completeness,
+        'requested_effect_route_closure': requested_effect_route_closure,
         'families': families,
     }
 
@@ -887,6 +1127,9 @@ EP_USER_SPECIFIC_GUESS_FACETS = {
     'derived::edamage.shock_stack_factor': [
         'ep_user_guess:dimension_core_shock_stack_policy',
     ],
+    'derived::edamage.super_tower_factor': [
+        'ep_shortcut:super_tower_uw_component_scope_differs_from_effective_uptime_factor',
+    ],
     'derived::edamage.uw.death_wave_dps': [
         'ep_user_guess:uw_target_level_policy',
     ],
@@ -922,6 +1165,9 @@ EP_USER_SPECIFIC_GUESS_FACETS = {
     'derived::ehp.chain_thunder_factor': [
         'ep_user_guess:cl_damage_pct_of_total_damage',
     ],
+    'derived::ehp': [
+        'ep_shortcut:ehp_total_inherits_component_compare_limitations',
+    ],
     'derived::eecon': [
         'ep_user_guess:bh_kill_share',
         'ep_user_guess:gb_kill_share',
@@ -935,6 +1181,11 @@ EP_USER_SPECIFIC_GUESS_NOTE = (
     'EP comparison depends on user-specific workbook guesses that are not yet '
     'exported as oracle inputs; TowerSim keeps the runtime calculation explicit '
     'instead of reproducing those spreadsheet shortcuts.'
+)
+
+EP_ORACLE_SHORTCUT_SCOPE_NOTE = (
+    'EP comparison row is a workbook shortcut or aggregate whose exported value '
+    'does not have the same scope as the owning TowerSim runtime surface.'
 )
 
 
@@ -1090,10 +1341,23 @@ def _ep_stage_context_for_destination(destination: str, package_stage_context: d
         unsupported_facets.append(facet)
         notes.append(f'EP surface may include conditional runtime card state from {card_name}, which is not materialized in the package compare path.')
 
-    user_guess_facets = EP_USER_SPECIFIC_GUESS_FACETS.get(destination, [])
+    compare_limitation_facets = EP_USER_SPECIFIC_GUESS_FACETS.get(destination, [])
+    if compare_limitation_facets:
+        unsupported_facets.extend(compare_limitation_facets)
+    known_export_defect_note = EP_KNOWN_EXPORT_DEFECT_NOTES.get(destination)
+    if known_export_defect_note:
+        unsupported_facets.append(known_export_defect_note)
+        notes.append('EP export row has a known export limitation and is treated as compare-limited, not formula truth.')
+    user_guess_facets = [
+        facet for facet in compare_limitation_facets if str(facet).startswith('ep_user_guess:')
+    ]
+    shortcut_scope_facets = [
+        facet for facet in compare_limitation_facets if str(facet).startswith('ep_shortcut:')
+    ]
     if user_guess_facets:
-        unsupported_facets.extend(user_guess_facets)
         notes.append(EP_USER_SPECIFIC_GUESS_NOTE)
+    if shortcut_scope_facets:
+        notes.append(EP_ORACLE_SHORTCUT_SCOPE_NOTE)
 
     if package_state_mode == 'max_progression':
         package_progression_state = 'projected_max_progression'

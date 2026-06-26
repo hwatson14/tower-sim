@@ -80,6 +80,26 @@ fields:
       - incoming_damage_multiplier
       - state::combat.incoming_damage_multiplier
     min: 0.0
+  boss_wave_pressure_factor:
+    aliases:
+      - boss_wave_pressure_factor
+      - boss_wave_difficulty_factor
+      - boss_wave_enemy_pressure_factor
+      - state::combat.boss_wave_pressure_factor
+    min: 0.0
+    ownership_class: scenario_runtime_input
+    owned_by: manual_or_explicit_runtime_input
+    rationale: Explicit Boss Waves scalar for scenario analysis when non-boss terminal pressure is represented as a simple combined boss-health and incoming-damage pressure factor; omitted by default so it does not become hidden KB truth.
+  approve_boss_wave_empirical_pressure_transform:
+    aliases:
+      - approve_boss_wave_empirical_pressure_transform
+      - approve_empirical_boss_pressure_transform
+      - state::combat.approve_boss_wave_empirical_pressure_transform
+    min: 0.0
+    max: 1.0
+    ownership_class: scenario_runtime_input
+    owned_by: manual_or_explicit_runtime_input
+    rationale: Explicit default-off approval flag for reviewing empirical Boss Waves terminal-pressure transform promotion. A value greater than 0 removes only the operator-approval blocker; it does not apply a hidden pressure factor or close source/validation blockers.
   flame_bot_damage_reduction_pct:
     aliases:
       - flame_bot_damage_reduction_pct
@@ -331,4 +351,12 @@ fields:
     ownership_class: scenario_runtime_input
     owned_by: explicit_runtime_input
     rationale: Explicit maximum surviving wave for armored-hit pressure when externally observed or source-modeled; avoids inventing hit-density math.
+  boss_terminal_max_wave:
+    aliases:
+      - boss_terminal_max_wave
+      - state::combat.boss_terminal_max_wave
+    min: 0.0
+    ownership_class: scenario_runtime_input
+    owned_by: explicit_runtime_input
+    rationale: Explicit maximum surviving wave for boss-specific deferred pressure such as Boss Ultimate when externally observed or source-modeled; avoids inventing Boss Ultimate math.
 

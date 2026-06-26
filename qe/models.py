@@ -46,7 +46,26 @@ class StatInput:
     resolved_unit: Optional[str] = None
 
     def to_dict(self) -> Dict[str, Any]:
-        return asdict(self)
+        return {
+            'stat_name': self.stat_name,
+            'source_family': self.source_family,
+            'source_name': self.source_name,
+            'value': self.value,
+            'value_type': self.value_type,
+            'stage': self.stage,
+            'active': self.active,
+            'preset_name': self.preset_name,
+            'provenance': self.provenance,
+            'notes': self.notes,
+            'contributor_id': self.contributor_id,
+            'destination_object_type': self.destination_object_type,
+            'destination_id': self.destination_id,
+            'resolver_id': self.resolver_id,
+            'kb_mapped': self.kb_mapped,
+            'raw_level': self.raw_level,
+            'resolved_value': self.resolved_value,
+            'resolved_unit': self.resolved_unit,
+        }
 
 
 # ---------------------------------------------------------------------------
@@ -64,6 +83,9 @@ class StatRow:
     contributors: List[Dict[str, Any]] = field(default_factory=list)
     schema: Dict[str, Any] | None = None
 
+    def to_dict(self) -> Dict[str, Any]:
+        return _stat_row_to_dict(self)
+
 
 @dataclass
 class StatBook:
@@ -72,9 +94,25 @@ class StatBook:
 
     def to_dict(self) -> Dict[str, Any]:
         return {
-            'rows': {k: asdict(v) for k, v in self.rows.items()},
+            'rows': {k: v.to_dict() for k, v in self.rows.items()},
             'diagnostics': self.diagnostics,
         }
+
+
+def _stat_row_to_dict(row: StatRow) -> Dict[str, Any]:
+    return {
+        'stat_name': row.stat_name,
+        'final_value': row.final_value,
+        'value_type': row.value_type,
+        'source_count': row.source_count,
+        'status': row.status,
+        'notes': row.notes,
+        'contributors': [
+            dict(contributor) if isinstance(contributor, Mapping) else contributor
+            for contributor in row.contributors
+        ],
+        'schema': dict(row.schema) if isinstance(row.schema, Mapping) else row.schema,
+    }
 
 
 # ---------------------------------------------------------------------------

@@ -1,0 +1,27 @@
+{
+  "objectives": {
+    "ehp": {
+      "score": 1.73348214675162e+17,
+      "display": "173.35 q",
+      "accuracy": "query_owned_surface",
+      "formula": "consumes derived::ehp"
+    },
+    "edamage": {
+      "score": 4.995680086759844e+25,
+      "display": "49956800.87 Q",
+      "accuracy": "query_owned_surface",
+      "formula": "consumes derived::edamage"
+    },
+    "eecon": {
+      "score": 64215562.7252958,
+      "display": "64.22 M",
+      "accuracy": "query_owned_surface",
+      "formula": "consumes derived::eecon"
+    }
+  },
+  "meta": {
+    "version": "v4",
+    "note": "Optimizer consumes Query Engine-owned derived objective surfaces only; local canonical fallback formulas removed.",
+    "requires": "derived::ehp, derived::edamage, and derived::eecon must already be published by Query Engine surfaces"
+  }
+}

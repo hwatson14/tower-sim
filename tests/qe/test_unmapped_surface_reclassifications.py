@@ -13,7 +13,7 @@ from evaluators.compare import _build_kb_incomplete_areas
 from qe import models as qe_models
 from qe.stat_input_compiler import compile_stat_inputs
 import qe.stat_input_compiler as stat_input_compiler
-from qe.routing import QEResolutionPlanner
+from qe.routing import QEResolutionPlanner, load_bounded_resolution_metadata
 from simulators.progression import resolve_progression_consumer_bundle
 
 
@@ -36,13 +36,14 @@ def _compiled_rows(state):
     )
 
 
-def _resolved_snapshot(state):
+def _resolved_snapshot(state, scenario_context=None):
     planner = QEResolutionPlanner()
     return planner.resolve_report_snapshot(
         state,
         preset_name=state.default_preset,
         state_mode='start_of_run',
         perks_enabled=bool(state.active_perk_preset),
+        scenario_context=scenario_context,
     )
 
 
@@ -68,6 +69,397 @@ def _single_row_by_family(rows, *, name: str, source_family: str):
     assert matched, f'missing compiled row for {name!r} in source family {source_family!r}'
     assert len(matched) == 1, f'expected one compiled row for {name!r} in {source_family!r}, got {len(matched)}'
     return matched[0]
+
+
+def test_boss_waves_runtime_surfaces_have_bounded_metadata_units() -> None:
+    metadata = load_bounded_resolution_metadata()
+    expected_units = {
+        'bot.amplify.owned': 'bool',
+        'bot.bot_bot.owned': 'bool',
+        'bot.flame.owned': 'bool',
+        'bot.flame_bot.lab_burn_stack': 'count',
+        'bot.golden.owned': 'bool',
+        'bot.plus.bonus_cell.unlocked': 'bool',
+        'bot.plus.echoing_shot.unlocked': 'bool',
+        'bot.plus.maximum_power.unlocked': 'bool',
+        'bot.plus.titan_shock.unlocked': 'bool',
+        'bot.plus.wildfire.unlocked': 'bool',
+        'bot.thunder.owned': 'bool',
+        'capability.energy_shield.enabled': 'bool',
+        'cards.berserker.assumed_bonus_multiplier': 'multiplier',
+        'cards.damage.mastery_effect': 'multiplier',
+        'cards.energy_net.duration_seconds': 'seconds',
+        'cards.energy_shield.extra_charge_count': 'count',
+        'cards.energy_shield.recharge_cooldown_seconds': 'seconds',
+        'cards.slow_aura.enemy_speed_pct': 'pct',
+        'cards.slow_aura.mastery_effect': 'multiplier',
+        'cards.super_tower.active': 'bool',
+        'cards.super_tower.bonus_multiplier': 'multiplier',
+        'cards.ultimate_crit.chance_pct': 'pct',
+        'cards.wave_accelerator.spawn_rate_acceleration': 'multiplier',
+        'cards.wave_accelerator.wave_cooldown_reduction_pct': 'pct',
+        'cards.wave_skip.chance_pct': 'pct',
+        'dissonance.attack.active_boost_multiplier': 'multiplier',
+        'dissonance.attack.echo_source_bonus': 'ratio',
+        'dissonance.attack.pb': 'count',
+        'dissonance.attack_run_active': 'bool',
+        'dissonance.defense.active_boost_multiplier': 'multiplier',
+        'dissonance.defense.echo_source_bonus': 'ratio',
+        'dissonance.defense.pb': 'count',
+        'dissonance.defense_run_active': 'bool',
+        'dissonance.utility.active_boost_multiplier': 'multiplier',
+        'dissonance.utility.echo_source_bonus': 'ratio',
+        'dissonance.utility.pb': 'count',
+        'dissonance.utility_run_active': 'bool',
+        'dissonance.ultimate_weapons.active_boost_multiplier': 'multiplier',
+        'dissonance.ultimate_weapons.echo_source_bonus': 'ratio',
+        'dissonance.ultimate_weapons.pb': 'count',
+        'dissonance.ultimate_weapons_run_active': 'bool',
+        'energy_shield_charge_count': 'count',
+        'module.armor.assist_lab_bonus_pct': 'pct',
+        'module.armor.assist_substat_lab_bonus_pct': 'pct',
+        'module.cannon.assist_lab_bonus_pct': 'pct',
+        'module.cannon.assist_substat_lab_bonus_pct': 'pct',
+        'module.core.assist_lab_bonus_pct': 'pct',
+        'module.core.assist_substat_lab_bonus_pct': 'pct',
+        'module.generator.assist_lab_bonus_pct': 'pct',
+        'module.generator.assist_substat_lab_bonus_pct': 'pct',
+        'module.lab.coin_cost_reduction_pct': 'pct',
+        'module.lab.common_drop_chance_bonus_pct': 'pct',
+        'module.lab.daily_mission_shards_bonus': 'shards_per_mission',
+        'module.lab.rare_drop_chance_bonus_pct': 'pct',
+        'module.lab.reroll_shards_bonus': 'shards',
+        'module.lab.shard_cost_reduction_pct': 'pct',
+        'module.lab.shatter_shards_bonus_pct': 'pct',
+        'shock.damage_multiplier': 'multiplier',
+        'uw.black_hole.owned': 'bool',
+        'uw.chain_lightning.max_enemy_damage_reduction_pct': 'pct',
+        'uw.chain_lightning.owned': 'bool',
+        'uw.chrono_field.owned': 'bool',
+        'uw.death_wave.owned': 'bool',
+        'uw.golden_tower.owned': 'bool',
+        'uw.inner_land_mines.owned': 'bool',
+        'uw.poison_swamp.owned': 'bool',
+        'uw.smart_missiles.owned': 'bool',
+        'uw.spotlight.owned': 'bool',
+        'enemy.basic.ultimate_enabled': 'bool',
+        'enemy.boss.attack_multiplier': 'multiplier',
+        'enemy.boss.health_multiplier_lab': 'multiplier',
+        'enemy.boss.ultimate_enabled': 'bool',
+        'enemy.common.attack_multiplier': 'multiplier',
+        'enemy.common.health_multiplier': 'multiplier',
+        'enemy.fast.attack_multiplier': 'multiplier',
+        'enemy.fast.health_multiplier': 'multiplier',
+        'enemy.fast.speed_multiplier': 'multiplier',
+        'enemy.fast.ultimate_enabled': 'bool',
+        'enemy.protector.damage_reduction_pct': 'pct',
+        'enemy.protector.health_multiplier': 'multiplier',
+        'enemy.protector.radius_m': 'm',
+        'enemy.protector.ultimate_enabled': 'bool',
+        'enemy.ranged.attack_multiplier': 'multiplier',
+        'enemy.ranged.health_multiplier': 'multiplier',
+        'enemy.ranged.range_multiplier': 'multiplier',
+        'enemy.ranged.ultimate_enabled': 'bool',
+        'enemy.ray.attack_multiplier': 'multiplier',
+        'enemy.ray.health_multiplier': 'multiplier',
+        'enemy.scatter.attack_multiplier': 'multiplier',
+        'enemy.scatter.health_multiplier': 'multiplier',
+        'enemy.tank.attack_multiplier': 'multiplier',
+        'enemy.tank.health_multiplier': 'multiplier',
+        'enemy.tank.ultimate_enabled': 'bool',
+        'enemy.vampire.attack_multiplier': 'multiplier',
+        'enemy.vampire.health_multiplier': 'multiplier',
+    }
+
+    for destination_id, unit in expected_units.items():
+        assert metadata[destination_id]['unit'] == unit
+        assert metadata[destination_id]['resolver']
+        assert metadata[destination_id]['unit'] != 'unknown'
+
+
+def test_v28_bot_plus_unlock_surfaces_publish_bool_values() -> None:
+    statbook = _resolved_snapshot(_base_account_state()).statbook
+    expected_surfaces = (
+        'state::bot.plus.wildfire.unlocked',
+        'state::bot.plus.titan_shock.unlocked',
+        'state::bot.plus.bonus_cell.unlocked',
+        'state::bot.plus.echoing_shot.unlocked',
+        'state::bot.plus.maximum_power.unlocked',
+    )
+
+    for surface_id in expected_surfaces:
+        row = statbook.rows[surface_id]
+        bot_plus_contributors = [
+            contributor
+            for contributor in row.contributors
+            if contributor.get('source_family') == 'bot_plus'
+        ]
+        assert len(bot_plus_contributors) == 1
+        expected_value = bot_plus_contributors[0]['value']
+        assert isinstance(expected_value, bool)
+
+        assert row.status == 'resolved'
+        assert row.value_type == 'bool'
+        assert dict(row.schema or {}).get('unit') == 'bool'
+        assert dict(row.schema or {}).get('resolver') == 'standard_bool'
+        assert row.final_value is expected_value
+
+
+def test_enemy_context_surfaces_publish_kb_schema_units() -> None:
+    statbook = _resolved_snapshot(_base_account_state()).statbook
+    expected_units = {
+        'context::enemy.basic.ultimate_enabled': 'bool',
+        'context::enemy.boss.attack_multiplier': 'multiplier',
+        'context::enemy.boss.health_multiplier_lab': 'multiplier',
+        'context::enemy.common.health_multiplier': 'multiplier',
+        'context::enemy.fast.speed_multiplier': 'multiplier',
+        'context::enemy.protector.damage_reduction_pct': 'pct',
+        'context::enemy.protector.radius_m': 'm',
+        'context::enemy.ranged.range_multiplier': 'multiplier',
+        'context::enemy.tank.ultimate_enabled': 'bool',
+    }
+
+    for surface_id, unit in expected_units.items():
+        row = statbook.rows[surface_id]
+        assert row.status == 'resolved'
+        assert row.value_type == unit
+        assert dict(row.schema or {}).get('unit') == unit
+        assert dict(row.schema or {}).get('unit') != 'unknown'
+
+
+def test_dissonance_surfaces_publish_kb_schema_units() -> None:
+    state = replace(
+        _base_account_state(),
+        player_meta={**_base_account_state().player_meta, 'Farming Tier': 'Tier 10'},
+        dissonance_pbs_by_tier={
+            'Tier 4': {'attack': 400, 'defense': 401, 'utility': 402, 'ultimate_weapons': 403},
+            'Tier 10': {'attack': 1000, 'defense': 1001, 'utility': 1002, 'ultimate_weapons': 1003},
+        },
+    )
+    statbook = _resolved_snapshot(
+        state,
+        scenario_context={'mode_id': 'boss_wave', 'dissonance_run_category': 'attack'},
+    ).statbook
+    expected_units = {
+        'state::dissonance.attack.pb': 'count',
+        'state::dissonance.defense.pb': 'count',
+        'state::dissonance.utility.pb': 'count',
+        'state::dissonance.ultimate_weapons.pb': 'count',
+        'state::dissonance.attack.active_boost_multiplier': 'multiplier',
+        'state::dissonance.defense.active_boost_multiplier': 'multiplier',
+        'state::dissonance.utility.active_boost_multiplier': 'multiplier',
+        'state::dissonance.ultimate_weapons.active_boost_multiplier': 'multiplier',
+        'state::dissonance.attack.echo_source_bonus': 'ratio',
+        'state::dissonance.defense.echo_source_bonus': 'ratio',
+        'state::dissonance.utility.echo_source_bonus': 'ratio',
+        'state::dissonance.ultimate_weapons.echo_source_bonus': 'ratio',
+        'support_surface::dissonance.attack_run_active': 'bool',
+        'support_surface::dissonance.defense_run_active': 'bool',
+        'support_surface::dissonance.utility_run_active': 'bool',
+        'support_surface::dissonance.ultimate_weapons_run_active': 'bool',
+    }
+
+    for surface_id, unit in expected_units.items():
+        row = statbook.rows[surface_id]
+        assert row.status == 'resolved'
+        assert row.value_type == unit
+        assert dict(row.schema or {}).get('unit') == unit
+        assert dict(row.schema or {}).get('unit') != 'unknown'
+    assert statbook.rows['support_surface::dissonance.attack_run_active'].final_value is True
+    assert statbook.rows['support_surface::dissonance.defense_run_active'].final_value is False
+
+
+def test_module_auxiliary_surfaces_publish_kb_schema_units() -> None:
+    statbook = _resolved_snapshot(_base_account_state()).statbook
+    expected_units = {
+        'state::module.armor.assist_lab_bonus_pct': 'pct',
+        'state::module.armor.assist_substat_lab_bonus_pct': 'pct',
+        'state::module.cannon.assist_lab_bonus_pct': 'pct',
+        'state::module.cannon.assist_substat_lab_bonus_pct': 'pct',
+        'state::module.core.assist_lab_bonus_pct': 'pct',
+        'state::module.core.assist_substat_lab_bonus_pct': 'pct',
+        'state::module.generator.assist_lab_bonus_pct': 'pct',
+        'state::module.generator.assist_substat_lab_bonus_pct': 'pct',
+        'state::module.lab.coin_cost_reduction_pct': 'pct',
+        'state::module.lab.common_drop_chance_bonus_pct': 'pct',
+        'state::module.lab.daily_mission_shards_bonus': 'shards_per_mission',
+        'state::module.lab.rare_drop_chance_bonus_pct': 'pct',
+        'state::module.lab.reroll_shards_bonus': 'shards',
+        'state::module.lab.shard_cost_reduction_pct': 'pct',
+        'state::module.lab.shatter_shards_bonus_pct': 'pct',
+    }
+
+    for surface_id, unit in expected_units.items():
+        row = statbook.rows[surface_id]
+        assert row.status == 'resolved'
+        assert row.value_type == unit
+        assert dict(row.schema or {}).get('unit') == unit
+        assert dict(row.schema or {}).get('unit') != 'unknown'
+
+
+def test_capability_surfaces_publish_kb_schema_units() -> None:
+    statbook = _resolved_snapshot(_base_account_state()).statbook
+    expected_units = {
+        'state::capability.additional_card_slot.count': 'count',
+        'state::capability.extra_orb_adjuster': 'bool',
+        'state::capability.modules.effect_bans.armor': 'count',
+        'state::capability.modules.effect_bans.cannon': 'count',
+        'state::capability.modules.effect_bans.core': 'count',
+        'state::capability.modules.effect_bans.generator': 'count',
+        'state::capability.modules.unmerge': 'bool',
+        'state::capability.perks.auto_pick': 'bool',
+        'state::capability.perks.auto_pick_ranking': 'enum',
+        'state::capability.perks.ban_count': 'count',
+        'state::capability.perks.first_choice': 'enum',
+        'state::capability.perks.option_quantity': 'count',
+        'state::capability.perks.unlock': 'bool',
+        'state::capability.recovery_package.after_boss': 'bool',
+        'state::capability.target_priority': 'enum',
+        'state::capability.tower.double_death_ray': 'bool',
+        'state::capability.tower.garlic_thorns': 'bool',
+        'state::capability.tower.light_speed_shots': 'bool',
+        'state::capability.uw.black_hole.disable_ranged': 'bool',
+        'state::capability.uw.black_hole.extra_black_hole': 'bool',
+        'state::capability.uw.chain_lightning.shock': 'bool',
+        'state::capability.uw.inner_land_mines.stun': 'bool',
+        'state::capability.uw.poison_swamp.rend': 'bool',
+        'state::capability.uw.poison_swamp.stun': 'bool',
+        'state::capability.uw.smart_missiles.barrage': 'bool',
+        'state::capability.uw.smart_missiles.explosion': 'bool',
+        'state::capability.workshop.enhancements_unlock': 'bool',
+    }
+
+    for surface_id, unit in expected_units.items():
+        row = statbook.rows[surface_id]
+        assert row.status == 'resolved'
+        assert row.value_type == unit
+        assert dict(row.schema or {}).get('unit') == unit
+        assert dict(row.schema or {}).get('unit') != 'unknown'
+
+
+def test_account_flag_and_account_meta_surfaces_publish_kb_schema_units() -> None:
+    statbook = _resolved_snapshot(_base_account_state()).statbook
+    expected_units = {
+        'state::account_flag.ad_gems_stack_multiplier': 'multiplier',
+        'state::account_flag.auto_charge_berzerker': 'bool',
+        'state::account_flag.auto_restart_run': 'bool',
+        'state::account_flag.auto_shatter_rare_modules': 'bool',
+        'state::account_flag.bot_cooldown_sliders': 'bool',
+        'state::account_flag.bot_presets': 'bool',
+        'state::account_flag.bot_respec_discount_pct': 'pct',
+        'state::account_flag.daily_mission_set_shard_type': 'bool',
+        'state::account_flag.damage_cap_slider': 'bool',
+        'state::account_flag.demon_mode_automation': 'bool',
+        'state::account_flag.disable_ads': 'bool',
+        'state::account_flag.discount_enhancements_pct': 'pct',
+        'state::account_flag.discount_rerolls_pct': 'pct',
+        'state::account_flag.epic_pack': 'bool',
+        'state::account_flag.free_mission_reroll': 'bool',
+        'state::account_flag.missile_barrage_automation': 'bool',
+        'state::account_flag.nuke_automation': 'bool',
+        'state::account_flag.smart_demon_mode_automation': 'bool',
+        'state::account_flag.smart_missile_barrage_automation': 'bool',
+        'state::account_flag.smart_nuke_automation': 'bool',
+        'state::account_flag.starter_pack': 'bool',
+        'state::account_flag.workshop_orb_adjuster': 'bool',
+        'state::account_flag.workshop_presets': 'bool',
+        'state::account_flag.workshop_respec_discount_pct': 'pct',
+        'state::account_meta.buy_multiplier': 'multiplier',
+        'state::account_meta.card_presets': 'bool',
+        'state::account_meta.event_relic_count': 'count',
+        'state::account_meta.guild_relic_count': 'count',
+        'state::account_meta.keys_spent': 'count',
+        'state::account_meta.more_round_stats': 'bool',
+        'state::account_meta.other_relic_count': 'count',
+        'state::account_meta.reroll_daily_mission': 'bool',
+        'state::account_meta.total_relic_count': 'count',
+        'state::account_meta.workshop_respec': 'bool',
+    }
+
+    for surface_id, unit in expected_units.items():
+        row = statbook.rows[surface_id]
+        assert row.status == 'resolved'
+        assert row.value_type == unit
+        assert dict(row.schema or {}).get('unit') == unit
+        assert dict(row.schema or {}).get('unit') != 'unknown'
+
+
+def test_meta_progression_surfaces_publish_kb_schema_units() -> None:
+    statbook = _resolved_snapshot(_base_account_state()).statbook
+    expected_units = {
+        'state::meta.account_context.coin_multiplier_display': 'multiplier',
+        'state::meta.account_context.farming_tier': 'enum',
+        'state::meta.cosmetic_bonus.theme_song_coin_multiplier': 'multiplier',
+        'state::meta.enhancement_attack_cost_reduction_pct': 'pct',
+        'state::meta.enhancement_defense_cost_reduction_pct': 'pct',
+        'state::meta.enhancement_utility_cost_reduction_pct': 'pct',
+        'state::meta.game_speed_multiplier': 'multiplier',
+        'state::meta.lab_coin_cost_reduction_pct': 'pct',
+        'state::meta.lab_speed_multiplier': 'multiplier',
+        'state::meta.milestones.waves_required_delta': 'waves',
+        'state::meta.workshop_attack_cost_reduction_pct': 'pct',
+        'state::meta.workshop_defense_cost_reduction_pct': 'pct',
+        'state::meta.workshop_utility_cost_reduction_pct': 'pct',
+    }
+
+    for surface_id, unit in expected_units.items():
+        row = statbook.rows[surface_id]
+        assert row.status == 'resolved'
+        assert row.value_type == unit
+        assert dict(row.schema or {}).get('unit') == unit
+        assert dict(row.schema or {}).get('unit') != 'unknown'
+
+
+def test_lab_mechanic_surfaces_publish_kb_schema_units() -> None:
+    statbook = _resolved_snapshot(_base_account_state()).statbook
+    expected_units = {
+        'state::lab.land_mine_damage_multiplier': 'multiplier',
+        'state::lab.land_mine_decay_seconds': 'seconds',
+        'state::lab.orb_speed_bonus': 'rpm',
+        'state::lab.recharge_demon_mode_waves': 'waves',
+        'state::lab.recharge_nuke_waves': 'waves',
+        'state::lab.recharge_second_wind_waves': 'waves',
+        'state::lab.second_wind_blast_pct': 'pct',
+        'state::lab.shockwave_size_bonus': 'm',
+        'state::lab.super_tower_bonus_multiplier': 'multiplier',
+    }
+
+    for surface_id, unit in expected_units.items():
+        row = statbook.rows[surface_id]
+        assert row.status == 'resolved'
+        assert row.value_type == unit
+        assert dict(row.schema or {}).get('unit') == unit
+        assert dict(row.schema or {}).get('unit') != 'unknown'
+
+
+def test_uw_and_uw_plus_mechanic_surfaces_publish_kb_schema_units() -> None:
+    statbook = _resolved_snapshot(_base_account_state()).statbook
+    expected_units = {
+        'state::uw.black_hole.damage_pct_enemy_hp_per_second': 'pct',
+        'state::uw.chain_lightning.scatter_multiplier': 'multiplier',
+        'state::uw.death_wave.armor_strip_count': 'count',
+        'state::uw.death_wave.cells_bonus_multiplier': 'multiplier',
+        'state::uw.death_wave.damage_amplifier_multiplier_per_effect_wave': 'multiplier',
+        'state::uw.inner_land_mines.damage': 'multiplier',
+        'state::uw.smart_missiles.chain_hit_damage_multiplier': 'multiplier',
+        'state::uw.spotlight.missiles_frequency_seconds': 'seconds',
+        'state::uw_plus.black_hole.consume': 'multiplier',
+        'state::uw_plus.chain_lightning.smite': 'multiplier',
+        'state::uw_plus.chrono_field.chrono_loop': 'rotation_rate',
+        'state::uw_plus.death_wave.kill_wall': 'scalar_bonus',
+        'state::uw_plus.golden_tower.golden_combo': 'pct',
+        'state::uw_plus.inner_land_mines.charged_mines': 'multiplier',
+        'state::uw_plus.poison_swamp.death_creep': 'pct',
+        'state::uw_plus.smart_missiles.cover_fire': 'seconds',
+        'state::uw_plus.spotlight.light_range': 'multiplier',
+    }
+
+    for surface_id, unit in expected_units.items():
+        row = statbook.rows[surface_id]
+        assert row.status == 'resolved'
+        assert row.value_type == unit
+        assert dict(row.schema or {}).get('unit') == unit
+        assert dict(row.schema or {}).get('unit') != 'unknown'
 
 
 def _rows_by_name(rows, name: str):
@@ -124,11 +516,16 @@ def test_parser_drop_rows_are_omitted() -> None:
 
 
 def test_account_metadata_rows_route_to_metadata_lane() -> None:
-    row = _single_row(_compiled_rows(_base_account_state()), 'Keys spent')
+    rows = _compiled_rows(_base_account_state())
+    row = _single_row(rows, 'Keys spent')
+    relic_count_row = _single_row(rows, 'Total Relics')
 
     assert row.destination_object_type == 'meta_progression_param'
     assert row.destination_id == 'account_meta.keys_spent'
     assert row.notes == 'account_metadata_routed:Keys spent'
+    assert relic_count_row.destination_object_type == 'meta_progression_param'
+    assert relic_count_row.destination_id == 'account_meta.total_relic_count'
+    assert relic_count_row.value_type == 'count'
 
 
 def test_capability_policy_rows_route_to_capability_lane() -> None:
@@ -163,6 +560,25 @@ def test_governed_numeric_rows_route_without_old_bucket() -> None:
     assert starting_cash.destination_id == 'economy.starting_cash_bonus'
     assert starting_cash.value_type == 'resolved_value'
     assert 'pending' not in (starting_cash.notes or '')
+
+
+def test_progression_scalar_runtime_surfaces_publish_kb_schema_units() -> None:
+    statbook = _resolved_snapshot(_base_account_state()).statbook
+    expected_units = {
+        'state::economy.starting_cash_bonus': 'cash',
+        'state::economy.max_interest_bonus': 'cash',
+        'state::perk.standard_perks_bonus_pct': 'pct',
+        'state::perk.tradeoff_bonus_pct': 'pct',
+        'state::combat.orb_boss_hit_pct': 'pct',
+        'state::shock.chance_pct': 'pct',
+    }
+
+    for surface_id, unit in expected_units.items():
+        row = statbook.rows[surface_id]
+        assert row.status == 'resolved'
+        assert row.value_type == unit
+        assert dict(row.schema or {}).get('unit') == unit
+        assert dict(row.schema or {}).get('unit') != 'unknown'
 
 
 def test_v28_dissonant_echo_labs_route_as_levels() -> None:
@@ -297,9 +713,13 @@ def test_progression_family_publishes_active_v28_dissonant_pb_surfaces() -> None
             'state::dissonance.utility.pb',
             'state::dissonance.ultimate_weapons.pb',
             'state::dissonance.attack.active_boost_multiplier',
+            'state::dissonance.defense.active_boost_multiplier',
             'state::dissonance.utility.active_boost_multiplier',
+            'state::dissonance.ultimate_weapons.active_boost_multiplier',
             'state::dissonance.attack.echo_source_bonus',
+            'state::dissonance.defense.echo_source_bonus',
             'state::dissonance.utility.echo_source_bonus',
+            'state::dissonance.ultimate_weapons.echo_source_bonus',
         ),
         preset_name='Farming',
         state_mode='start_of_run',
@@ -311,9 +731,13 @@ def test_progression_family_publishes_active_v28_dissonant_pb_surfaces() -> None
     assert statbook.rows['state::dissonance.utility.pb'].final_value == pytest.approx(1002.0)
     assert statbook.rows['state::dissonance.ultimate_weapons.pb'].final_value == pytest.approx(1003.0)
     assert statbook.rows['state::dissonance.attack.active_boost_multiplier'].final_value > 1.0
+    assert statbook.rows['state::dissonance.defense.active_boost_multiplier'].final_value > 1.0
     assert statbook.rows['state::dissonance.utility.active_boost_multiplier'].final_value > 1.0
+    assert statbook.rows['state::dissonance.ultimate_weapons.active_boost_multiplier'].final_value > 1.0
     assert statbook.rows['state::dissonance.attack.echo_source_bonus'].final_value > 0.0
+    assert statbook.rows['state::dissonance.defense.echo_source_bonus'].final_value > 0.0
     assert statbook.rows['state::dissonance.utility.echo_source_bonus'].final_value > 0.0
+    assert statbook.rows['state::dissonance.ultimate_weapons.echo_source_bonus'].final_value > 0.0
 
 
 def test_active_farming_module_uniques_compile_to_unique_effect_values() -> None:
@@ -353,6 +777,49 @@ def test_tourney_project_funding_unique_compiles_to_cash_digit_surface() -> None
     assert len(matched) == 1
     assert matched[0].value == pytest.approx(100.0)
     assert matched[0].destination_id == 'module.project_funding.cash_digit_multiplier_pct'
+
+
+def test_active_other_preset_module_unique_routes_compile_to_kb_destinations() -> None:
+    state = _base_account_state()
+    tourney_rows = compile_stat_inputs(
+        state,
+        preset_name='Tourney',
+        state_mode='start_of_run',
+    )
+    milestone_rows = compile_stat_inputs(
+        state,
+        preset_name='Milestone',
+        state_mode='start_of_run',
+    )
+    routed = {
+        row.contributor_id.split('@@', 1)[0]: row
+        for row in [*tourney_rows, *milestone_rows]
+        if row.contributor_id
+        and row.contributor_id.split('@@', 1)[0]
+        in {
+            'module__armor__anti_cube_portal__damage_multiplier',
+            'module__armor__anti_cube_portal__shockwave_damage_taken_mult_x',
+            'module__cannon__being_annihilator__guaranteed_supercrits_after_supercrit_attacks',
+            'module__generator__galaxy_compressor__uw_cooldown_reduction_on_package_s',
+            'module__generator__galaxy_compressor__uw_cooldown_reduction_seconds',
+        }
+    }
+
+    assert routed['module__armor__anti_cube_portal__damage_multiplier'].destination_id == (
+        'module.anti_cube_portal.damage_multiplier'
+    )
+    assert routed['module__armor__anti_cube_portal__shockwave_damage_taken_mult_x'].destination_id == (
+        'module.anti_cube_portal.shockwave_damage_taken_mult_x'
+    )
+    assert routed[
+        'module__cannon__being_annihilator__guaranteed_supercrits_after_supercrit_attacks'
+    ].destination_id == 'module.being_annihilator.guaranteed_supercrits_after_supercrit_attacks'
+    assert routed[
+        'module__generator__galaxy_compressor__uw_cooldown_reduction_on_package_s'
+    ].destination_id == 'module.galaxy_compressor.uw_cooldown_reduction_on_package_s'
+    assert routed[
+        'module__generator__galaxy_compressor__uw_cooldown_reduction_seconds'
+    ].destination_id == 'module.galaxy_compressor.uw_cooldown_reduction_seconds'
 
 
 def test_progression_family_publishes_active_module_unique_state_surfaces() -> None:
@@ -400,6 +867,26 @@ def test_progression_family_publishes_project_funding_state_surface() -> None:
     row = statbook.rows['state::module.project_funding.cash_digit_multiplier_pct']
     assert row.status == 'resolved'
     assert row.final_value == pytest.approx(100.0)
+
+
+def test_progression_family_publishes_being_annihilator_state_surface() -> None:
+    planner = QEResolutionPlanner()
+    statbook = planner.resolve_declared_family_statbook(
+        _base_account_state(),
+        family_id='progression_start_of_run',
+        requested_surface_ids=(
+            'state::module.being_annihilator.guaranteed_supercrits_after_supercrit_attacks',
+        ),
+        preset_name='Milestone',
+        module_preset_name='Milestone',
+        state_mode='start_of_run',
+        notes='test_being_annihilator_state_surface_publication',
+    )
+
+    row = statbook.rows['state::module.being_annihilator.guaranteed_supercrits_after_supercrit_attacks']
+    assert row.status == 'resolved'
+    assert row.final_value == pytest.approx(6.0)
+    assert row.value_type == 'count'
 
 
 def test_optimizer_module_effects_bundle_resolves_optional_module_surfaces_when_explicitly_requested() -> None:
@@ -508,6 +995,39 @@ def test_enemy_balance_card_splits_to_spawn_and_cash_routes() -> None:
         ('canonical_stat', 'cash_kill_multiplier'),
     }
     assert {row.notes for row in rows} == {'kb_card_effect_registry_split_routed:ENEMY_BALANCE'}
+
+
+def test_ranged_enemy_distance_tradeoff_routes_to_named_environment_rule() -> None:
+    state = _base_account_state()
+    perk_id = 'PERK_RANGED_ENEMIES_ATTACK_DISTANCE_REDUCED_BUT_TOWER_RANGED_ENEMIES_DAMAGE_X3'
+    mutated = replace(
+        state,
+        perk_presets={
+            **state.perk_presets,
+            'ranged_tradeoff_probe': [PerkSelection(perk_id=perk_id, picks=1)],
+        },
+        perk_preset_namespace_class='transient',
+        active_perk_preset='ranged_tradeoff_probe',
+    )
+
+    rows = [
+        row for row in _compiled_rows_with_projection(mutated, ScenarioProjectionState(projected_perks=True))
+        if row.contributor_id and row.contributor_id.startswith(f'perk::{perk_id}::')
+    ]
+    assert len(rows) == 2
+    rows_by_effect = {row.contributor_id: row for row in rows}
+
+    distance_row = rows_by_effect[f'perk::{perk_id}::effect_1']
+    damage_row = rows_by_effect[f'perk::{perk_id}::effect_2']
+
+    assert distance_row.destination_object_type == 'environment_param'
+    assert distance_row.destination_id == 'enemy.ranged.attack_distance_rule'
+    assert distance_row.value == 'wiki_named_effect'
+    assert distance_row.value_type == 'raw_text'
+    assert distance_row.notes == 'kb_perk_effect_routed:ranged_enemy_attack_distance'
+    assert damage_row.destination_object_type == 'environment_param'
+    assert damage_row.destination_id == 'enemy.ranged.damage_multiplier'
+    assert damage_row.value == pytest.approx(3.0)
 
 
 def test_range_card_routes_through_effect_registry_not_name_fallback() -> None:
@@ -636,6 +1156,32 @@ def test_land_mine_stun_card_routes_to_duration_not_mastery_miss_attack_semantic
     assert row.destination_object_type == 'runtime_mechanic_param'
     assert row.destination_id == 'cards.land_mine_stun.duration_seconds'
     assert row.notes == 'kb_card_effect_registry_routed:LAND_MINE_STUN'
+
+
+def test_card_runtime_surfaces_publish_kb_value_types() -> None:
+    state = _base_account_state()
+    card_names = ['Critical Coin', 'Intro Sprint', 'Land Mine Stun', 'Plasma Cannon', 'Second Wind']
+    assert all(card_name in state.cards_inventory for card_name in card_names)
+    mutated = replace(
+        state,
+        card_presets={**state.card_presets, state.default_preset: card_names},
+    )
+
+    snapshot = QEResolutionPlanner().resolve_report_snapshot(
+        mutated,
+        preset_name=mutated.default_preset,
+        state_mode='start_of_run',
+        perks_enabled=bool(mutated.active_perk_preset),
+    )
+    statbook = snapshot.statbook
+
+    assert statbook.rows['state::cards.critical_coin.bonus_multiplier'].value_type == 'pct'
+    assert statbook.rows['state::cards.intro_sprint.waves'].value_type == 'waves'
+    assert statbook.rows['state::cards.land_mine_stun.duration_seconds'].value_type == 'seconds'
+    assert statbook.rows['state::capability.plasma_cannon.enabled'].value_type == 'bool'
+    assert statbook.rows['state::capability.plasma_cannon.enabled'].final_value is True
+    assert statbook.rows['state::cards.second_wind.shield_duration_seconds'].value_type == 'seconds'
+    assert statbook.rows['state::capability.second_wind.enabled'].value_type == 'bool'
 
 
 def test_death_ray_card_splits_enable_and_duration_rows() -> None:
@@ -795,8 +1341,11 @@ def test_progression_family_publishes_energy_shield_charge_surfaces() -> None:
 
     assert statbook.rows['state::capability.energy_shield.enabled'].status == 'resolved'
     assert statbook.rows['state::capability.energy_shield.enabled'].final_value is True
+    assert statbook.rows['state::capability.energy_shield.enabled'].value_type == 'bool'
     assert statbook.rows['state::cards.energy_shield.recharge_cooldown_seconds'].final_value == pytest.approx(480.0)
+    assert statbook.rows['state::cards.energy_shield.recharge_cooldown_seconds'].value_type == 'seconds'
     assert statbook.rows['state::cards.energy_shield.extra_charge_count'].final_value == pytest.approx(2.0)
+    assert statbook.rows['state::cards.energy_shield.extra_charge_count'].value_type == 'count'
 
 
 def test_max_progression_assumes_second_wind_mastery_regen_is_active_when_equipped() -> None:
@@ -1028,6 +1577,7 @@ def test_materialized_lab_values_replace_level_pending_for_sanctioned_formula_la
         'Recharge Demon Mode': ('mechanic_param', 'lab.recharge_demon_mode_waves', 750.0),
         'Recharge Nuke': ('mechanic_param', 'lab.recharge_nuke_waves', 1000.0),
         'Energy Shield Extra Hit': ('mechanic_param', 'energy_shield_charge_count', 2.0),
+        'Super Tower Bonus': ('mechanic_param', 'lab.super_tower_bonus_multiplier', 1.78),
     }
 
     for lab_name, expected in expected_resolved.items():
@@ -1265,6 +1815,7 @@ def test_wave_skip_card_publishes_timing_family_state_surface() -> None:
     row = statbook.rows.get('state::cards.wave_skip.chance_pct')
     assert row is not None
     assert row.final_value is not None
+    assert row.value_type == 'pct'
     assert row.status == 'resolved'
 
 
@@ -1327,6 +1878,7 @@ def test_progression_family_publishes_berserker_full_stack_assumption_surface() 
     row = statbook.rows['state::cards.berserker.assumed_bonus_multiplier']
 
     assert row.final_value == 8.0
+    assert row.value_type == 'multiplier'
     assert row.status == 'resolved'
 
 
@@ -1355,6 +1907,7 @@ def test_progression_family_publishes_ultimate_crit_surface_and_uw_helper_factor
     factor_row = statbook.rows['derived::edamage.uw_crit_card_factor']
 
     assert card_row.final_value == pytest.approx(3.0)
+    assert card_row.value_type == 'pct'
     assert card_row.status == 'resolved'
     crit_multiplier = next(
         c['value']
@@ -1416,8 +1969,12 @@ def test_black_hole_uw_tracks_publish_progression_ehp_support_surfaces() -> None
 
     assert duration_row.final_value == 32.0
     assert duration_row.status == 'resolved'
+    assert duration_row.value_type == 'seconds'
+    assert dict(duration_row.schema or {}).get('unit') == 'seconds'
     assert cooldown_row.final_value == 50.0
     assert cooldown_row.status == 'resolved'
+    assert cooldown_row.value_type == 'seconds'
+    assert dict(cooldown_row.schema or {}).get('unit') == 'seconds'
 
 
 def test_progression_family_publishes_raw_uw_timing_rows_separately_from_timing_effective_rows() -> None:
@@ -1523,6 +2080,7 @@ def test_progression_family_publishes_flame_bot_burn_stack_surface_without_gated
     row = statbook.rows['state::bot.flame_bot.lab_burn_stack']
 
     assert row.final_value == pytest.approx(0.0)
+    assert row.value_type == 'count'
     assert row.status == 'resolved'
     assert row.contributors
     assert row.contributors[0]['surface_id'] == 'state::bot.flame_bot.lab_burn_stack'
@@ -1536,6 +2094,7 @@ def test_v28_bot_bot_and_bot_plus_rows_route_from_ids_bots() -> None:
     bot_bot_bonus = _single_row_by_family(rows, name='Bot Bot::Bonus', source_family='bot')
     bot_bot_unlock = _single_row_by_family(rows, name='Bot Bot::Unlocked', source_family='bot_unlock')
     bot_plus_wildfire = _single_row_by_family(rows, name='Bot +::Wildfire', source_family='bot_plus')
+    bot_plus_maximum_power = _single_row_by_family(rows, name='Bot +::Maximum Power', source_family='bot')
 
     assert bot_bot_unlock.destination_object_type == 'runtime_mechanic_param'
     assert bot_bot_unlock.destination_id == 'bot.bot_bot.owned'
@@ -1555,6 +2114,35 @@ def test_v28_bot_bot_and_bot_plus_rows_route_from_ids_bots() -> None:
     assert bot_plus_wildfire.destination_id == 'bot.plus.wildfire.unlocked'
     assert bot_plus_wildfire.value is False
     assert bot_plus_wildfire.value_type == 'bool'
+
+    assert bot_plus_maximum_power.destination_object_type == 'mechanic_param'
+    assert bot_plus_maximum_power.destination_id == 'bot.bot_bot.maximum_power_multiplier'
+    assert bot_plus_maximum_power.contributor_id == 'bot_upgrade__bot_bot__maximum_power__multiplier'
+    assert bot_plus_maximum_power.value == pytest.approx(1.25)
+    assert bot_plus_maximum_power.value_type == 'resolved_value'
+
+
+def test_v28_bot_bot_lab_rows_route_to_canonical_bot_bot_surfaces() -> None:
+    rows = _compiled_rows(_base_account_state())
+
+    bot_bot_duration = _single_row_by_family(rows, name='Bot Bot - Duration', source_family='lab')
+    bot_bot_cooldown = _single_row_by_family(rows, name='Bot Bot - Cooldown', source_family='lab')
+
+    assert bot_bot_duration.destination_object_type == 'mechanic_param'
+    assert bot_bot_duration.destination_id == 'bot.bot_bot.duration_seconds'
+    assert bot_bot_duration.value_type == 'resolved_value'
+    assert bot_bot_duration.notes == 'kb_bot_lab_formula_verified:Bot Bot - Duration'
+
+    assert bot_bot_cooldown.destination_object_type == 'mechanic_param'
+    assert bot_bot_cooldown.destination_id == 'bot.bot_bot.cooldown_seconds'
+    assert bot_bot_cooldown.value_type == 'resolved_value'
+    assert bot_bot_cooldown.notes == 'kb_bot_lab_formula_verified:Bot Bot - Cooldown'
+
+    statbook = _resolved_snapshot(_base_account_state()).statbook
+    assert 'state::bot.bot.duration_seconds' not in statbook.rows
+    assert 'state::bot.bot.cooldown_seconds' not in statbook.rows
+    assert statbook.rows['state::bot.bot_bot.duration_seconds'].value_type == 'seconds'
+    assert statbook.rows['state::bot.bot_bot.cooldown_seconds'].value_type == 'seconds'
 
 
 def test_ids_bot_and_uw_unlock_flags_gate_locked_track_values() -> None:
@@ -1817,19 +2405,25 @@ def test_progression_family_publishes_relic_support_surfaces_for_derived_consume
         notes='hardening_f_relic_support_probe',
     )
 
-    for surface_id in (
-        'support_surface::ehp.health_relic_pct',
-        'support_surface::ehp.dabs_relic_pct',
-        'support_surface::ehp.def_pct_relic_pct',
-        'support_surface::eecon.adstarter_theme_relic_factor',
-        'support_surface::eecon.freeup_attack_relic_pct',
-        'support_surface::eecon.freeup_defense_relic_pct',
-        'support_surface::eecon.freeup_utility_relic_pct',
-    ):
+    expected_value_types = {
+        'support_surface::ehp.health_relic_pct': 'ratio',
+        'support_surface::ehp.dabs_relic_pct': 'ratio',
+        'support_surface::ehp.def_pct_relic_pct': 'ratio',
+        'support_surface::eecon.adstarter_theme_relic_factor': 'multiplier',
+        'support_surface::eecon.freeup_attack_relic_pct': 'ratio',
+        'support_surface::eecon.freeup_defense_relic_pct': 'ratio',
+        'support_surface::eecon.freeup_utility_relic_pct': 'ratio',
+    }
+
+    for surface_id, value_type in expected_value_types.items():
         row = statbook.rows[surface_id]
         assert row.status == 'resolved'
+        assert row.value_type == value_type
+        assert dict(row.schema or {}).get('unit') == value_type
+        assert row.value_type != 'unknown'
         assert len(row.contributors) == 1
         assert row.contributors[0]['source_class'] == 'relics'
+        assert row.contributors[0]['input_value_type'] == value_type
         assert row.final_value == pytest.approx(row.contributors[0]['value'])
 
 

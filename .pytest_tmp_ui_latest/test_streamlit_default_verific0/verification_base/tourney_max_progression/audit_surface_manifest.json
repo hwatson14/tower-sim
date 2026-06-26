@@ -1,0 +1,78 @@
+{
+  "version": 1,
+  "canonical_output_preset": "Tourney",
+  "surface_contracts": [
+    {
+      "surface": "account_state.json",
+      "contract": "full",
+      "completeness_scope": "canonical_full_state",
+      "notes": "canonical account-state snapshot"
+    },
+    {
+      "surface": "state_matrix.json",
+      "contract": "full",
+      "completeness_scope": "state_mode_resolution_matrix",
+      "notes": "full matrix over supported state modes"
+    },
+    {
+      "surface": "diagnostics.json",
+      "contract": "partial",
+      "completeness_scope": "selected_context",
+      "notes": "diagnostic/selected-context summaries only"
+    },
+    {
+      "surface": "statbook_publishable.json",
+      "contract": "partial",
+      "completeness_scope": "publishable_filtered",
+      "notes": "publishable policy filtered rows"
+    },
+    {
+      "surface": "ep_oracle_compare.json",
+      "contract": "partial",
+      "completeness_scope": "compare_context",
+      "notes": "compare-only selected context"
+    }
+  ],
+  "preset_lane_completeness": {
+    "Tourney": {
+      "cards_explicit": true,
+      "cards_empty": false,
+      "modules_explicit": true,
+      "modules_empty": false,
+      "perks_explicit": false,
+      "perks_empty": false
+    },
+    "Farming": {
+      "cards_explicit": true,
+      "cards_empty": false,
+      "modules_explicit": true,
+      "modules_empty": false,
+      "perks_explicit": false,
+      "perks_empty": false
+    },
+    "Milestone": {
+      "cards_explicit": true,
+      "cards_empty": true,
+      "modules_explicit": true,
+      "modules_empty": false,
+      "perks_explicit": false,
+      "perks_empty": false
+    },
+    "Preset 4": {
+      "cards_explicit": true,
+      "cards_empty": true,
+      "modules_explicit": true,
+      "modules_empty": false,
+      "perks_explicit": false,
+      "perks_empty": false
+    },
+    "Preset 5": {
+      "cards_explicit": true,
+      "cards_empty": true,
+      "modules_explicit": true,
+      "modules_empty": false,
+      "perks_explicit": false,
+      "perks_empty": false
+    }
+  }
+}

@@ -6,6 +6,10 @@ notes:
 - Keep source provenance in contributors, not here.
 domains:
   uw.black_hole:
+  - id: uw.black_hole.owned
+    unit: bool
+    resolver: standard_bool
+    status: keep_now
   - id: uw.black_hole.duration_seconds
     unit: seconds
     resolver: uw_duration_param
@@ -22,11 +26,19 @@ domains:
     unit: pct
     resolver: standard_scalar_param
     status: keep_now
+  - id: uw.black_hole.damage_pct_enemy_hp_per_second
+    unit: pct
+    resolver: standard_scalar_param
+    status: keep_now
   - id: uw.black_hole.coin_bonus_multiplier
     unit: multiplier
     resolver: standard_scalar_param
     status: keep_now
   uw.golden_tower:
+  - id: uw.golden_tower.owned
+    unit: bool
+    resolver: standard_bool
+    status: keep_now
   - id: uw.golden_tower.duration_seconds
     unit: seconds
     resolver: uw_duration_param
@@ -40,6 +52,10 @@ domains:
     resolver: standard_scalar_param
     status: keep_now
   uw.spotlight:
+  - id: uw.spotlight.owned
+    unit: bool
+    resolver: standard_bool
+    status: keep_now
   - id: uw.spotlight.bonus_multiplier
     unit: multiplier
     resolver: standard_scalar_param
@@ -60,7 +76,15 @@ domains:
     unit: seconds
     resolver: cooldown_param
     status: keep_now
+  - id: uw.spotlight.missiles_frequency_seconds
+    unit: seconds
+    resolver: standard_scalar_param
+    status: keep_now
   uw.chrono_field:
+  - id: uw.chrono_field.owned
+    unit: bool
+    resolver: standard_bool
+    status: keep_now
   - id: uw.chrono_field.duration_seconds
     unit: seconds
     resolver: uw_duration_param
@@ -82,6 +106,10 @@ domains:
     resolver: standard_scalar_param
     status: not_public_source
   uw.death_wave:
+  - id: uw.death_wave.owned
+    unit: bool
+    resolver: standard_bool
+    status: keep_now
   - id: uw.death_wave.damage_multiplier
     unit: multiplier
     resolver: standard_scalar_param
@@ -102,12 +130,32 @@ domains:
     unit: multiplier
     resolver: standard_scalar_param
     status: keep_now
+  - id: uw.death_wave.armor_strip_count
+    unit: count
+    resolver: integer_count_param
+    status: keep_now
+  - id: uw.death_wave.cells_bonus_multiplier
+    unit: multiplier
+    resolver: standard_scalar_param
+    status: keep_now
+  - id: uw.death_wave.damage_amplifier_multiplier_per_effect_wave
+    unit: multiplier
+    resolver: standard_scalar_param
+    status: keep_now
   - id: uw.death_wave.health_bonus_multiplier
     unit: multiplier
     resolver: standard_scalar_param
     status: keep_now
   uw.chain_lightning:
+  - id: uw.chain_lightning.owned
+    unit: bool
+    resolver: standard_bool
+    status: keep_now
   - id: uw.chain_lightning.damage_multiplier
+    unit: multiplier
+    resolver: standard_scalar_param
+    status: keep_now
+  - id: uw.chain_lightning.scatter_multiplier
     unit: multiplier
     resolver: standard_scalar_param
     status: keep_now
@@ -131,7 +179,15 @@ domains:
     unit: multiplier
     resolver: standard_scalar_param
     status: keep_now
+  - id: uw.chain_lightning.max_enemy_damage_reduction_pct
+    unit: pct
+    resolver: pct_capped_param
+    status: keep_now
   uw.poison_swamp:
+  - id: uw.poison_swamp.owned
+    unit: bool
+    resolver: standard_bool
+    status: keep_now
   - id: uw.poison_swamp.damage_multiplier
     unit: multiplier
     resolver: standard_scalar_param
@@ -161,7 +217,15 @@ domains:
     resolver: integer_count_param
     status: keep_now
   uw.smart_missiles:
+  - id: uw.smart_missiles.owned
+    unit: bool
+    resolver: standard_bool
+    status: keep_now
   - id: uw.smart_missiles.damage_multiplier
+    unit: multiplier
+    resolver: standard_scalar_param
+    status: keep_now
+  - id: uw.smart_missiles.chain_hit_damage_multiplier
     unit: multiplier
     resolver: standard_scalar_param
     status: keep_now
@@ -182,7 +246,15 @@ domains:
     resolver: standard_scalar_param
     status: keep_now
   uw.inner_land_mines:
+  - id: uw.inner_land_mines.owned
+    unit: bool
+    resolver: standard_bool
+    status: keep_now
   - id: uw.inner_land_mines.damage_multiplier
+    unit: multiplier
+    resolver: standard_scalar_param
+    status: keep_now
+  - id: uw.inner_land_mines.damage
     unit: multiplier
     resolver: standard_scalar_param
     status: keep_now
@@ -207,6 +279,10 @@ domains:
     resolver: standard_scalar_param
     status: keep_now
   bot.golden:
+  - id: bot.golden.owned
+    unit: bool
+    resolver: standard_bool
+    status: keep_now
   - id: bot.golden.duration_seconds
     unit: seconds
     resolver: standard_scalar_param
@@ -224,6 +300,10 @@ domains:
     resolver: standard_scalar_param
     status: keep_now
   bot.amplify:
+  - id: bot.amplify.owned
+    unit: bool
+    resolver: standard_bool
+    status: keep_now
   - id: bot.amplify.duration_seconds
     unit: seconds
     resolver: standard_scalar_param
@@ -241,6 +321,10 @@ domains:
     resolver: standard_scalar_param
     status: keep_now
   bot.flame:
+  - id: bot.flame.owned
+    unit: bool
+    resolver: standard_bool
+    status: keep_now
   - id: bot.flame.cooldown_seconds
     unit: seconds
     resolver: cooldown_param
@@ -258,6 +342,10 @@ domains:
     resolver: standard_scalar_param
     status: keep_now
   bot.thunder:
+  - id: bot.thunder.owned
+    unit: bool
+    resolver: standard_bool
+    status: keep_now
   - id: bot.thunder.duration_seconds
     unit: seconds
     resolver: standard_scalar_param
@@ -279,6 +367,10 @@ domains:
     resolver: pct_capped_param
     status: keep_now
   bot.bot_bot:
+  - id: bot.bot_bot.owned
+    unit: bool
+    resolver: standard_bool
+    status: keep_now
   - id: bot.bot_bot.duration_seconds
     unit: seconds
     resolver: standard_scalar_param
@@ -413,6 +505,11 @@ domains:
     unit: m
     resolver: standard_scalar_param
     status: keep_now
+  bot.flame_bot:
+  - id: bot.flame_bot.lab_burn_stack
+    unit: count
+    resolver: integer_count_param
+    status: keep_now
   guardian.meta_extended:
   - id: guardian.meta.chip_slots_count
     unit: count
@@ -439,6 +536,68 @@ domains:
     status: keep_now
   - id: uw.smart_missiles.explosion_radius_m
     unit: m
+    resolver: standard_scalar_param
+    status: keep_now
+  modules.assist:
+  - id: module.armor.assist_lab_bonus_pct
+    unit: pct
+    resolver: standard_scalar_param
+    status: keep_now
+  - id: module.armor.assist_substat_lab_bonus_pct
+    unit: pct
+    resolver: standard_scalar_param
+    status: keep_now
+  - id: module.cannon.assist_lab_bonus_pct
+    unit: pct
+    resolver: standard_scalar_param
+    status: keep_now
+  - id: module.cannon.assist_substat_lab_bonus_pct
+    unit: pct
+    resolver: standard_scalar_param
+    status: keep_now
+  - id: module.core.assist_lab_bonus_pct
+    unit: pct
+    resolver: standard_scalar_param
+    status: keep_now
+  - id: module.core.assist_substat_lab_bonus_pct
+    unit: pct
+    resolver: standard_scalar_param
+    status: keep_now
+  - id: module.generator.assist_lab_bonus_pct
+    unit: pct
+    resolver: standard_scalar_param
+    status: keep_now
+  - id: module.generator.assist_substat_lab_bonus_pct
+    unit: pct
+    resolver: standard_scalar_param
+    status: keep_now
+  modules.labs:
+  - id: module.lab.coin_cost_reduction_pct
+    unit: pct
+    resolver: standard_scalar_param
+    status: keep_now
+  - id: module.lab.common_drop_chance_bonus_pct
+    unit: pct
+    resolver: standard_scalar_param
+    status: keep_now
+  - id: module.lab.daily_mission_shards_bonus
+    unit: shards_per_mission
+    resolver: standard_scalar_param
+    status: keep_now
+  - id: module.lab.rare_drop_chance_bonus_pct
+    unit: pct
+    resolver: standard_scalar_param
+    status: keep_now
+  - id: module.lab.reroll_shards_bonus
+    unit: shards
+    resolver: standard_scalar_param
+    status: keep_now
+  - id: module.lab.shard_cost_reduction_pct
+    unit: pct
+    resolver: standard_scalar_param
+    status: keep_now
+  - id: module.lab.shatter_shards_bonus_pct
+    unit: pct
     resolver: standard_scalar_param
     status: keep_now
   modules.uniques:
@@ -570,8 +729,451 @@ domains:
     unit: raw
     resolver: standard_scalar_param
     status: keep_now
+  lab:
+  - id: lab.land_mine_damage_multiplier
+    unit: multiplier
+    resolver: standard_scalar_param
+    status: keep_now
+  - id: lab.land_mine_decay_seconds
+    unit: seconds
+    resolver: standard_scalar_param
+    status: keep_now
+  - id: lab.orb_speed_bonus
+    unit: rpm
+    resolver: standard_scalar_param
+    status: keep_now
+  - id: lab.recharge_demon_mode_waves
+    unit: waves
+    resolver: standard_scalar_param
+    status: keep_now
+  - id: lab.recharge_nuke_waves
+    unit: waves
+    resolver: standard_scalar_param
+    status: keep_now
+  - id: lab.recharge_second_wind_waves
+    unit: waves
+    resolver: standard_scalar_param
+    status: keep_now
+  - id: lab.second_wind_blast_pct
+    unit: pct
+    resolver: standard_scalar_param
+    status: keep_now
+  - id: lab.shockwave_size_bonus
+    unit: m
+    resolver: standard_scalar_param
+    status: keep_now
+  - id: lab.super_tower_bonus_multiplier
+    unit: multiplier
+    resolver: standard_scalar_param
+    status: keep_now
+  shock:
+  - id: shock.damage_multiplier
+    unit: multiplier
+    resolver: standard_scalar_param
+    status: keep_now
+  - id: shock.chance_pct
+    unit: pct
+    resolver: standard_scalar_param
+    status: keep_now
+  capability.energy_shield:
+  - id: capability.energy_shield.enabled
+    unit: bool
+    resolver: standard_bool
+    status: keep_now
+  capability.second_wind:
+  - id: capability.second_wind.enabled
+    unit: bool
+    resolver: standard_bool
+    status: keep_now
   cards:
+  - id: cards.berserker.assumed_bonus_multiplier
+    unit: multiplier
+    resolver: standard_scalar_param
+    status: keep_now
+  - id: cards.critical_coin.bonus_multiplier
+    unit: pct
+    resolver: standard_scalar_param
+    status: keep_now
+  - id: cards.area_of_effect.mastery_effect
+    unit: pct
+    resolver: standard_scalar_param
+    status: keep_now
+  - id: cards.attack_speed.mastery_effect
+    unit: multiplier
+    resolver: standard_scalar_param
+    status: keep_now
+  - id: cards.berserker.mastery_effect
+    unit: seconds
+    resolver: standard_scalar_param
+    status: keep_now
+  - id: cards.cash.mastery_effect
+    unit: pct
+    resolver: standard_scalar_param
+    status: keep_now
+  - id: cards.coins.mastery_effect
+    unit: multiplier
+    resolver: standard_scalar_param
+    status: keep_now
+  - id: cards.critical_chance.mastery_effect
+    unit: pct
+    resolver: standard_scalar_param
+    status: keep_now
+  - id: cards.critical_coin.mastery_effect
+    unit: pct
+    resolver: standard_scalar_param
+    status: keep_now
+  - id: cards.damage.mastery_effect
+    unit: multiplier
+    resolver: standard_scalar_param
+    status: keep_now
+  - id: cards.death_ray.mastery_effect
+    unit: pct
+    resolver: standard_scalar_param
+    status: keep_now
+  - id: cards.demon_mode.mastery_effect
+    unit: multiplier
+    resolver: standard_scalar_param
+    status: keep_now
+  - id: cards.energy_net.mastery_effect
+    unit: multiplier
+    resolver: standard_scalar_param
+    status: keep_now
+  - id: cards.energy_net.duration_seconds
+    unit: seconds
+    resolver: standard_scalar_param
+    status: keep_now
+  - id: cards.energy_shield.mastery_effect
+    unit: pct
+    resolver: standard_scalar_param
+    status: keep_now
+  - id: cards.energy_shield.extra_charge_count
+    unit: count
+    resolver: integer_count_param
+    status: keep_now
+  - id: energy_shield_charge_count
+    unit: count
+    resolver: integer_count_param
+    status: keep_now
+  - id: cards.energy_shield.recharge_cooldown_seconds
+    unit: seconds
+    resolver: standard_scalar_param
+    status: keep_now
+  - id: cards.enemy_balance.mastery_effect
+    unit: pct
+    resolver: standard_scalar_param
+    status: keep_now
+  - id: cards.extra_defense.mastery_effect
+    unit: pct
+    resolver: standard_scalar_param
+    status: keep_now
+  - id: cards.extra_orb.mastery_effect
+    unit: multiplier
+    resolver: standard_scalar_param
+    status: keep_now
+  - id: cards.fortress.mastery_effect
+    unit: seconds
+    resolver: standard_scalar_param
+    status: keep_now
+  - id: cards.free_upgrades.mastery_effect
+    unit: count
+    resolver: integer_count_param
+    status: keep_now
+  - id: cards.health.mastery_effect
+    unit: multiplier
+    resolver: standard_scalar_param
+    status: keep_now
+  - id: cards.health_regen.mastery_effect
+    unit: multiplier
+    resolver: standard_scalar_param
+    status: keep_now
+  - id: cards.intro_sprint.mastery_effect
+    unit: multiplier
+    resolver: standard_scalar_param
+    status: keep_now
+  - id: cards.intro_sprint.waves
+    unit: waves
+    resolver: standard_scalar_param
+    status: keep_now
+  - id: cards.land_mine_stun.mastery_effect
+    unit: pct
+    resolver: standard_scalar_param
+    status: keep_now
+  - id: cards.land_mine_stun.duration_seconds
+    unit: seconds
+    resolver: standard_scalar_param
+    status: keep_now
+  - id: cards.nuke.mastery_effect
+    unit: pct
+    resolver: standard_scalar_param
+    status: keep_now
   - id: cards.plasma_cannon.effect_pct
     unit: pct
     resolver: standard_scalar_param
+    status: keep_now
+  - id: cards.plasma_cannon.mastery_effect
+    unit: pct
+    resolver: standard_scalar_param
+    status: keep_now
+  - id: cards.range.mastery_effect
+    unit: multiplier
+    resolver: standard_scalar_param
+    status: keep_now
+  - id: cards.recovery_package_chance.mastery_effect
+    unit: pct
+    resolver: standard_scalar_param
+    status: keep_now
+  - id: cards.second_wind.mastery_effect
+    unit: multiplier
+    resolver: standard_scalar_param
+    status: keep_now
+  - id: cards.second_wind.shield_duration_seconds
+    unit: seconds
+    resolver: standard_scalar_param
+    status: keep_now
+  - id: cards.slow_aura.enemy_speed_pct
+    unit: pct
+    resolver: standard_scalar_param
+    status: keep_now
+  - id: cards.slow_aura.mastery_effect
+    unit: multiplier
+    resolver: standard_scalar_param
+    status: keep_now
+  - id: cards.super_tower.active
+    unit: bool
+    resolver: standard_bool
+    status: keep_now
+  - id: cards.super_tower.bonus_multiplier
+    unit: multiplier
+    resolver: standard_scalar_param
+    status: keep_now
+  - id: cards.super_tower.cooldown_seconds
+    unit: seconds
+    resolver: standard_scalar_param
+    status: keep_now
+  - id: cards.super_tower.mastery_effect
+    unit: seconds
+    resolver: standard_scalar_param
+    status: keep_now
+  - id: cards.super_tower.mastery_active
+    unit: bool
+    resolver: standard_bool
+    status: keep_now
+  - id: cards.super_tower.uw_mastery_multiplier
+    unit: multiplier
+    resolver: standard_scalar_param
+    status: keep_now
+  - id: cards.ultimate_crit.chance_pct
+    unit: pct
+    resolver: standard_scalar_param
+    status: keep_now
+  - id: cards.ultimate_crit.mastery_effect
+    unit: pct
+    resolver: standard_scalar_param
+    status: keep_now
+  - id: cards.wave_accelerator.mastery_effect
+    unit: pct
+    resolver: standard_scalar_param
+    status: keep_now
+  - id: cards.wave_accelerator.spawn_rate_acceleration
+    unit: multiplier
+    resolver: standard_scalar_param
+    status: keep_now
+  - id: cards.wave_accelerator.wave_cooldown_reduction_pct
+    unit: pct
+    resolver: standard_scalar_param
+    status: keep_now
+  - id: cards.wave_skip.chance_pct
+    unit: pct
+    resolver: standard_scalar_param
+    status: keep_now
+  - id: cards.wave_skip.mastery_effect
+    unit: pct
+    resolver: standard_scalar_param
+    status: keep_now
+  ehp:
+  - id: ehp.black_hole_duration_seconds
+    unit: seconds
+    resolver: uw_duration_param
+    status: keep_now
+  - id: ehp.black_hole_cooldown_seconds
+    unit: seconds
+    resolver: cooldown_param
+    status: keep_now
+  - id: ehp.health_relic_pct
+    unit: ratio
+    resolver: standard_scalar_stat
+    status: keep_now
+  - id: ehp.dabs_relic_pct
+    unit: ratio
+    resolver: standard_scalar_stat
+    status: keep_now
+  - id: ehp.def_pct_relic_pct
+    unit: ratio
+    resolver: pct_capped_scalar_stat
+    status: keep_now
+  eecon:
+  - id: eecon.adstarter_theme_relic_factor
+    unit: multiplier
+    resolver: standard_scalar_stat
+    status: keep_now
+  - id: eecon.freeup_attack_relic_pct
+    unit: ratio
+    resolver: pct_capped_scalar_stat
+    status: keep_now
+  - id: eecon.freeup_defense_relic_pct
+    unit: ratio
+    resolver: pct_capped_scalar_stat
+    status: keep_now
+  - id: eecon.freeup_utility_relic_pct
+    unit: ratio
+    resolver: pct_capped_scalar_stat
+    status: keep_now
+  economy:
+  - id: economy.starting_cash_bonus
+    unit: cash
+    resolver: standard_scalar_param
+    status: keep_now
+  - id: economy.max_interest_bonus
+    unit: cash
+    resolver: standard_scalar_param
+    status: keep_now
+  perk:
+  - id: perk.enemy_kill_cash_multiplier
+    unit: multiplier
+    resolver: standard_scalar_param
+    status: keep_now
+  - id: perk.free_upgrade_chance_all_pct
+    unit: pct
+    resolver: standard_scalar_param
+    status: keep_now
+  - id: perk.max_game_speed
+    unit: flat
+    resolver: standard_scalar_param
+    status: keep_now
+  - id: perk.standard_perks_bonus_pct
+    unit: pct
+    resolver: standard_scalar_param
+    status: keep_now
+  - id: perk.tradeoff_bonus_pct
+    unit: pct
+    resolver: standard_scalar_param
+    status: keep_now
+  - id: perk.wave_requirement_multiplier
+    unit: multiplier
+    resolver: standard_scalar_param
+    status: keep_now
+  combat:
+  - id: combat.orb_boss_hit_pct
+    unit: pct
+    resolver: standard_scalar_param
+    status: keep_now
+  uw_plus.black_hole:
+  - id: uw_plus.black_hole.consume
+    unit: multiplier
+    resolver: standard_scalar_param
+    status: keep_now
+  uw_plus.chain_lightning:
+  - id: uw_plus.chain_lightning.smite
+    unit: multiplier
+    resolver: standard_scalar_param
+    status: keep_now
+  uw_plus.chrono_field:
+  - id: uw_plus.chrono_field.chrono_loop
+    unit: rotation_rate
+    resolver: standard_scalar_param
+    status: keep_now
+  uw_plus.death_wave:
+  - id: uw_plus.death_wave.kill_wall
+    unit: scalar_bonus
+    resolver: standard_scalar_param
+    status: keep_now
+  uw_plus.golden_tower:
+  - id: uw_plus.golden_tower.golden_combo
+    unit: pct
+    resolver: standard_scalar_param
+    status: keep_now
+  uw_plus.inner_land_mines:
+  - id: uw_plus.inner_land_mines.charged_mines
+    unit: multiplier
+    resolver: standard_scalar_param
+    status: keep_now
+  uw_plus.poison_swamp:
+  - id: uw_plus.poison_swamp.death_creep
+    unit: pct
+    resolver: standard_scalar_param
+    status: keep_now
+  uw_plus.smart_missiles:
+  - id: uw_plus.smart_missiles.cover_fire
+    unit: seconds
+    resolver: standard_scalar_param
+    status: keep_now
+  uw_plus.spotlight:
+  - id: uw_plus.spotlight.light_range
+    unit: multiplier
+    resolver: standard_scalar_param
+    status: keep_now
+  dissonance:
+  - id: dissonance.attack.pb
+    unit: count
+    resolver: integer_count_param
+    status: keep_now
+  - id: dissonance.defense.pb
+    unit: count
+    resolver: integer_count_param
+    status: keep_now
+  - id: dissonance.utility.pb
+    unit: count
+    resolver: integer_count_param
+    status: keep_now
+  - id: dissonance.ultimate_weapons.pb
+    unit: count
+    resolver: integer_count_param
+    status: keep_now
+  - id: dissonance.attack.active_boost_multiplier
+    unit: multiplier
+    resolver: standard_scalar_param
+    status: keep_now
+  - id: dissonance.defense.active_boost_multiplier
+    unit: multiplier
+    resolver: standard_scalar_param
+    status: keep_now
+  - id: dissonance.utility.active_boost_multiplier
+    unit: multiplier
+    resolver: standard_scalar_param
+    status: keep_now
+  - id: dissonance.ultimate_weapons.active_boost_multiplier
+    unit: multiplier
+    resolver: standard_scalar_param
+    status: keep_now
+  - id: dissonance.attack.echo_source_bonus
+    unit: ratio
+    resolver: standard_scalar_param
+    status: keep_now
+  - id: dissonance.defense.echo_source_bonus
+    unit: ratio
+    resolver: standard_scalar_param
+    status: keep_now
+  - id: dissonance.utility.echo_source_bonus
+    unit: ratio
+    resolver: standard_scalar_param
+    status: keep_now
+  - id: dissonance.ultimate_weapons.echo_source_bonus
+    unit: ratio
+    resolver: standard_scalar_param
+    status: keep_now
+  - id: dissonance.attack_run_active
+    unit: bool
+    resolver: scenario_gate_bool
+    status: keep_now
+  - id: dissonance.defense_run_active
+    unit: bool
+    resolver: scenario_gate_bool
+    status: keep_now
+  - id: dissonance.utility_run_active
+    unit: bool
+    resolver: scenario_gate_bool
+    status: keep_now
+  - id: dissonance.ultimate_weapons_run_active
+    unit: bool
+    resolver: scenario_gate_bool
     status: keep_now

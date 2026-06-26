@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import html
 import re
+from functools import lru_cache
 
 DISPLAY_SUFFIXES = [
     (1e24, 'S'),
@@ -73,7 +74,7 @@ def _format_display_number(value) -> str | None:
 
 
 
-def _format_display_value(value, value_type: str | None) -> str | None:
+def _format_display_value_uncached(value, value_type: str | None) -> str | None:
     if value is None:
         return None
     vt = value_type or ''
@@ -88,17 +89,55 @@ def _format_display_value(value, value_type: str | None) -> str | None:
     return _format_display_number(value) or str(value)
 
 
-def _contributor_display_type(contributor: dict) -> str | None:
-    preferred = contributor.get('input_value_type') or contributor.get('value_type')
+def _display_cache_key(value, value_type: str | None):
+    key = (type(value), value, value_type or '')
+    try:
+        hash(key)
+    except TypeError:
+        return None
+    return key
+
+
+@lru_cache(maxsize=8192)
+def _format_display_value_cached(_value_class, value, value_type: str) -> str | None:
+    return _format_display_value_uncached(value, value_type)
+
+
+def _format_display_value(value, value_type: str | None) -> str | None:
+    if value is None:
+        return None
+    key = _display_cache_key(value, value_type)
+    if key is None:
+        return _format_display_value_uncached(value, value_type)
+    return _format_display_value_cached(*key)
+
+
+def _contributor_display_type_uncached(preferred, contributor_id) -> str | None:
     preferred_text = str(preferred or '').strip().lower()
     if preferred_text not in {'', 'scalar', 'resolved_value'}:
         return str(preferred)
-    contributor_id = str(contributor.get('contributor_id') or '').lower()
-    if '__pct' in contributor_id or 'percent' in contributor_id:
+    contributor_text = str(contributor_id or '').lower()
+    if '__pct' in contributor_text or 'percent' in contributor_text:
         return 'pct'
-    if '__multiplier' in contributor_id or 'multiplier' in contributor_id:
+    if '__multiplier' in contributor_text or 'multiplier' in contributor_text:
         return 'multiplier'
     return str(preferred) if preferred is not None else None
+
+
+@lru_cache(maxsize=4096)
+def _contributor_display_type_cached(preferred, contributor_id) -> str | None:
+    return _contributor_display_type_uncached(preferred, contributor_id)
+
+
+def _contributor_display_type(contributor: dict) -> str | None:
+    preferred = contributor.get('input_value_type') or contributor.get('value_type')
+    contributor_id = contributor.get('contributor_id')
+    key = (preferred, contributor_id)
+    try:
+        hash(key)
+    except TypeError:
+        return _contributor_display_type_uncached(preferred, contributor_id)
+    return _contributor_display_type_cached(preferred, contributor_id)
 
 
 def annotate_display_fields(statbook_dict: dict) -> None:

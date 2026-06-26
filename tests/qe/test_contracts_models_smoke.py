@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import csv
+from collections import Counter
 from pathlib import Path
 
 import pytest
@@ -31,6 +32,42 @@ ROOT = Path(__file__).resolve().parents[2]
 RUNTIME_NON_FORMULA_OWNED_WHITELIST: set[str] = set()
 MAX_APPROVED_EXCEPTION_COUNT = 0
 MAX_NON_FORMULA_OWNED_COUNT = 0
+
+
+def _contract_ids_from_yaml(path: Path) -> set[str]:
+    payload = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+    ids: set[str] = set()
+
+    def collect(value):
+        if isinstance(value, dict):
+            if "id" in value:
+                ids.add(str(value["id"]))
+            for child in value.values():
+                collect(child)
+        elif isinstance(value, list):
+            for child in value:
+                collect(child)
+
+    collect(payload)
+    return ids
+
+
+def _contract_entries_from_yaml(path: Path) -> dict[str, dict]:
+    payload = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+    entries: dict[str, dict] = {}
+
+    def collect(value):
+        if isinstance(value, dict):
+            if "id" in value:
+                entries[str(value["id"])] = value
+            for child in value.values():
+                collect(child)
+        elif isinstance(value, list):
+            for child in value:
+                collect(child)
+
+    collect(payload)
+    return entries
 
 
 def test_canonical_preset_names__include_primary_defaults():
@@ -76,6 +113,414 @@ def test_normalize_contract_payload__rewrites_legacy_surface_tokens_recursively(
     )
     assert normalized["requested_surface_ids"] == ["state::uw.black_hole.base_cooldown_seconds"]
     assert "canonical_stat::tower_damage" not in normalized["note"]
+
+
+def test_normalize_contract_payload__keeps_clean_containers_and_converts_tuples():
+    clean = {"rows": [{"surface_id": "state::tower.damage", "value": 1.0}]}
+    tuple_payload = {"requested_surface_ids": ("state::tower.damage",)}
+
+    assert normalize_contract_payload(clean) is clean
+    assert normalize_contract_payload(tuple_payload) == {
+        "requested_surface_ids": ["state::tower.damage"],
+    }
+
+
+def test_module_substat_registry_names_all_have_explicit_qe_routes():
+    from qe.query_routing import slug_text
+
+    route_contract = yaml.safe_load(
+        (ROOT / "kb" / "global-rules" / "contracts" / "query-routing-mappings.yaml").read_text(
+            encoding="utf-8"
+        )
+    )
+    canonical_ids = _contract_ids_from_yaml(
+        ROOT / "kb" / "global-rules" / "contracts" / "canonical-stats.yaml"
+    )
+    mechanic_ids = _contract_ids_from_yaml(
+        ROOT / "kb" / "global-rules" / "contracts" / "mechanic-params.yaml"
+    )
+
+    routes = {
+        slug_text(name): tuple(destination)
+        for name, destination in route_contract["module_substat_name_to_destination"].items()
+    }
+    substat_names = {
+        slug_text(row["substat"])
+        for row in csv.DictReader(
+            (ROOT / "kb" / "modules" / "tables" / "module-substats.csv").open(
+                encoding="utf-8-sig"
+            )
+        )
+        if row.get("substat")
+    }
+
+    missing_routes = sorted(name for name in substat_names if name not in routes)
+    assert missing_routes == []
+
+    bad_destinations = {}
+    for name in sorted(substat_names):
+        destination_type, destination_id = routes[name]
+        if destination_type == "canonical_stat":
+            ok = destination_id in canonical_ids
+        elif destination_type in {"mechanic_param", "runtime_mechanic_param"}:
+            ok = destination_id in mechanic_ids
+        else:
+            ok = False
+        if not ok:
+            bad_destinations[name] = (destination_type, destination_id)
+    assert bad_destinations == {}
+
+
+def test_requested_effect_family_closure_routes_target_existing_contract_ids():
+    requested_families = {
+        "bot_upgrade",
+        "card",
+        "enhancements",
+        "module",
+        "relic",
+        "workshop",
+    }
+    expected_route_counts = {
+        "bot_upgrade": 22,
+        "card": 7,
+        "enhancements": 17,
+        "module": 42,
+        "relic": 27,
+        "workshop": 48,
+    }
+    contract_ids_by_type = {
+        "canonical_stat": _contract_ids_from_yaml(
+            ROOT / "kb" / "global-rules" / "contracts" / "canonical-stats.yaml"
+        ),
+        "mechanic_param": _contract_ids_from_yaml(
+            ROOT / "kb" / "global-rules" / "contracts" / "mechanic-params.yaml"
+        ),
+        "runtime_mechanic_param": _contract_ids_from_yaml(
+            ROOT / "kb" / "global-rules" / "contracts" / "mechanic-params.yaml"
+        ),
+        "environment_param": _contract_ids_from_yaml(
+            ROOT / "kb" / "global-rules" / "contracts" / "environment-params.yaml"
+        ),
+        "capability": _contract_ids_from_yaml(
+            ROOT / "kb" / "global-rules" / "contracts" / "capabilities.yaml"
+        ),
+    }
+
+    family_counts: Counter[str] = Counter()
+    bad_destinations = {}
+    bad_statuses = {}
+    with (ROOT / "kb" / "ledgers" / "tables" / "contributor-routing-closure.csv").open(
+        newline="",
+        encoding="utf-8-sig",
+    ) as handle:
+        for row in csv.DictReader(handle):
+            family = str(row.get("source_family") or "").strip()
+            if family not in requested_families:
+                continue
+            contributor_id = str(row.get("contributor_id") or "").strip()
+            destination_type = str(row.get("destination_object_type") or "").strip()
+            destination_id = str(row.get("destination_id") or "").strip()
+            family_counts[family] += 1
+            if row.get("registration_status") != "registered":
+                bad_statuses[contributor_id] = row.get("registration_status")
+            valid_ids = contract_ids_by_type.get(destination_type)
+            if valid_ids is None or destination_id not in valid_ids:
+                bad_destinations[contributor_id] = (destination_type, destination_id)
+
+    assert dict(sorted(family_counts.items())) == expected_route_counts
+    assert bad_statuses == {}
+    assert bad_destinations == {}
+
+
+def test_relic_input_registry_has_explicit_semantic_units():
+    registry_path = ROOT / "kb" / "global-rules" / "tables" / "relic-input-registry.csv"
+    rows = {
+        row["contributor_id"]: row
+        for row in csv.DictReader(registry_path.open(newline="", encoding="utf-8"))
+    }
+    expected_hints = {
+        "relic__tower__lab_speed__pct": "pct_bonus",
+        "relic__tower__ultimate_damage__pct": "pct_bonus",
+        "relic__tower__attack_speed__pct": "pct_bonus",
+        "relic__tower__crit_chance__pct": "percent_points",
+        "relic__tower__crit_multiplier__pct": "pct_bonus",
+        "relic__tower__damage_per_meter__pct": "pct_bonus",
+        "relic__tower__supercrit_chance__pct": "percent_points",
+        "relic__tower__supercrit_multiplier__pct": "pct_bonus",
+        "relic__tower__rend_armor_multiplier__pct": "pct_bonus",
+        "relic__tower__defense_pct__pct": "percent_points",
+        "relic__tower__thorns__pct": "percent_points",
+        "relic__tower__knockback_force__pct": "pct_bonus",
+        "relic__tower__orb_speed__pct": "pct_bonus",
+        "relic__tower__cash__pct": "pct_bonus",
+        "relic__tower__coins__pct": "pct_bonus",
+        "relic__tower__free_attack_upgrade__pct": "percent_points",
+        "relic__tower__free_defense_upgrade__pct": "percent_points",
+        "relic__tower__free_utility_upgrade__pct": "percent_points",
+        "relic__tower__recovery_amount__pct": "percent_points",
+        "relic__tower__enemy_attack_level_skip__pct": "percent_points",
+        "relic__tower__enemy_health_level_skip__pct": "percent_points",
+    }
+
+    ambiguous = {
+        contributor_id
+        for contributor_id, row in rows.items()
+        if row.get("semantic_unit_hint") == "percent_points_or_pct_bonus"
+    }
+    assert ambiguous == set()
+    for contributor_id, expected_hint in expected_hints.items():
+        assert rows[contributor_id]["semantic_unit_hint"] == expected_hint
+
+
+def test_requested_effect_family_closure_matches_contributor_mappings():
+    requested_families = {
+        "bot_upgrade",
+        "card",
+        "enhancements",
+        "module",
+        "relic",
+        "workshop",
+    }
+    mapping_contract = yaml.safe_load(
+        (ROOT / "kb" / "global-rules" / "contracts" / "contributor-mappings-full.yaml").read_text(
+            encoding="utf-8"
+        )
+    )
+    mapped_routes = {
+        family: {
+            row["contributor_id"]: (
+                row["destination_object_type"],
+                row["destination_id"],
+            )
+            for row in mapping_contract["source_families"][family]
+        }
+        for family in requested_families
+    }
+    closure_routes = {family: {} for family in requested_families}
+    with (ROOT / "kb" / "ledgers" / "tables" / "contributor-routing-closure.csv").open(
+        newline="",
+        encoding="utf-8-sig",
+    ) as handle:
+        for row in csv.DictReader(handle):
+            family = row.get("source_family")
+            if family not in requested_families:
+                continue
+            closure_routes[family][row["contributor_id"]] = (
+                row["destination_object_type"],
+                row["destination_id"],
+            )
+
+    assert closure_routes == mapped_routes
+
+
+def test_module_closure_ledger_covers_all_module_contributor_mappings():
+    mapping_contract = yaml.safe_load(
+        (ROOT / "kb" / "global-rules" / "contracts" / "contributor-mappings-full.yaml").read_text(
+            encoding="utf-8"
+        )
+    )
+    mapped_module_routes = {
+        row["contributor_id"]: (
+            row["destination_object_type"],
+            row["destination_id"],
+        )
+        for row in mapping_contract["source_families"]["module"]
+    }
+    closure_routes = {}
+    with (ROOT / "kb" / "ledgers" / "tables" / "contributor-routing-closure.csv").open(
+        newline="",
+        encoding="utf-8-sig",
+    ) as handle:
+        for row in csv.DictReader(handle):
+            if row.get("source_family") != "module":
+                continue
+            closure_routes[row["contributor_id"]] = (
+                row["destination_object_type"],
+                row["destination_id"],
+            )
+
+    assert closure_routes == mapped_module_routes
+
+
+def test_relic_registry_and_closure_ledger_match_contributor_mappings():
+    mapping_contract = yaml.safe_load(
+        (ROOT / "kb" / "global-rules" / "contracts" / "contributor-mappings-full.yaml").read_text(
+            encoding="utf-8"
+        )
+    )
+    mapped_relic_routes = {
+        row["contributor_id"]: (
+            row["destination_object_type"],
+            row["destination_id"],
+            row["resolver"],
+        )
+        for row in mapping_contract["source_families"]["relic"]
+    }
+
+    registry_routes = {}
+    with (ROOT / "kb" / "global-rules" / "tables" / "relic-input-registry.csv").open(
+        newline="",
+        encoding="utf-8-sig",
+    ) as handle:
+        for row in csv.DictReader(handle):
+            registry_routes[row["contributor_id"]] = (
+                row["destination_object_type"],
+                row["destination_id"],
+                row["resolver"],
+            )
+
+    closure_routes = {}
+    with (ROOT / "kb" / "ledgers" / "tables" / "contributor-routing-closure.csv").open(
+        newline="",
+        encoding="utf-8-sig",
+    ) as handle:
+        for row in csv.DictReader(handle):
+            if row.get("source_family") != "relic":
+                continue
+            closure_routes[row["contributor_id"]] = (
+                row["destination_object_type"],
+                row["destination_id"],
+                mapped_relic_routes[row["contributor_id"]][2],
+            )
+
+    assert registry_routes == mapped_relic_routes
+    assert closure_routes == mapped_relic_routes
+
+
+def test_card_effect_registry_base_targets_are_qe_routable():
+    from qe.query_routing import slug_text
+
+    route_contract = yaml.safe_load(
+        (ROOT / "kb" / "global-rules" / "contracts" / "query-routing-mappings.yaml").read_text(
+            encoding="utf-8"
+        )
+    )
+    direct_targets = set(route_contract["card_target_surface_to_destination"])
+    canonical_targets = set(route_contract["card_target_surface_to_canonical"])
+    fallback_names = set(route_contract["card_name_fallback_destination"])
+
+    unrouted = {}
+    route_counts: Counter[str] = Counter()
+    with (ROOT / "kb" / "cards" / "tables" / "card-effect-registry.csv").open(
+        newline="",
+        encoding="utf-8-sig",
+    ) as handle:
+        for row in csv.DictReader(handle):
+            if row.get("layer") != "base_card":
+                continue
+            card_id = str(row.get("card_id") or "").strip()
+            target_surface = str(row.get("target_surface") or "").strip()
+            effect_name = slug_text(str(row.get("effect_name") or ""))
+            if target_surface in direct_targets:
+                route_counts["direct_target"] += 1
+            elif target_surface in canonical_targets:
+                route_counts["canonical_target"] += 1
+            elif effect_name in fallback_names:
+                route_counts["fallback_name"] += 1
+            else:
+                unrouted[card_id] = (effect_name, target_surface)
+
+    assert sum(route_counts.values()) == 31
+    assert route_counts == {
+        "direct_target": 29,
+        "canonical_target": 1,
+        "fallback_name": 1,
+    }
+    assert unrouted == {}
+
+
+def test_card_mastery_registry_effects_have_declared_mechanic_params():
+    from qe.query_routing import slug_text
+
+    def unit_from_token(raw: str) -> str:
+        token = str(raw or "").strip().replace("+", "")
+        if token.startswith("x"):
+            return "multiplier"
+        if token.endswith("%"):
+            return "pct"
+        if token.endswith("s"):
+            return "seconds"
+        return "count"
+
+    mechanic_entries = _contract_entries_from_yaml(
+        ROOT / "kb" / "global-rules" / "contracts" / "mechanic-params.yaml"
+    )
+    expected = {}
+    inconsistent_units = {}
+    with (ROOT / "kb" / "cards" / "tables" / "card-masteries.csv").open(
+        newline="",
+        encoding="utf-8-sig",
+    ) as handle:
+        for row in csv.DictReader(handle):
+            raw_name = str(row.get("card_mastery") or "").strip()
+            if not raw_name:
+                continue
+            card_name = "Recovery Package Chance" if raw_name == "Package Chance" else raw_name
+            mastery_name = f"{card_name} Mastery"
+            card_slug = slug_text(mastery_name[:-8]).replace(" ", "_")
+            destination_id = f"cards.{card_slug}.mastery_effect"
+            units = {unit_from_token(row[f"level_{level}"]) for level in range(10)}
+            if len(units) != 1:
+                inconsistent_units[mastery_name] = sorted(units)
+                continue
+            expected[destination_id] = units.pop()
+
+    assert len(expected) == 31
+    assert inconsistent_units == {}
+
+    missing = sorted(destination_id for destination_id in expected if destination_id not in mechanic_entries)
+    assert missing == []
+
+    bad_metadata = {}
+    for destination_id, expected_unit in sorted(expected.items()):
+        entry = mechanic_entries[destination_id]
+        expected_resolver = "integer_count_param" if expected_unit == "count" else "standard_scalar_param"
+        if entry.get("unit") != expected_unit or entry.get("resolver") != expected_resolver:
+            bad_metadata[destination_id] = {
+                "expected": {
+                    "unit": expected_unit,
+                    "resolver": expected_resolver,
+                },
+                "actual": {
+                    "unit": entry.get("unit"),
+                    "resolver": entry.get("resolver"),
+                },
+            }
+
+    assert bad_metadata == {}
+
+
+def test_thunder_bot_linger_split_keeps_upgrade_slow_and_lab_duration():
+    from qe.stat_input_compiler import BOT_UPGRADE_BINDINGS
+
+    route_contract = yaml.safe_load(
+        (ROOT / "kb" / "global-rules" / "contracts" / "query-routing-mappings.yaml").read_text(
+            encoding="utf-8"
+        )
+    )
+
+    assert BOT_UPGRADE_BINDINGS[("Thunder Bot", "Linger")] == (
+        "bot_upgrade__thunder_bot__linger_slow__pct",
+        "linger_seconds",
+    )
+    assert tuple(route_contract["uw_lab_direct_destination"]["Thunder Bot - Linger Time"]) == (
+        "mechanic_param",
+        "bot.thunder.linger_duration_seconds",
+    )
+
+
+def test_qe_publication_display_text_normalizer_caches_string_inputs():
+    from qe.publication import _normalize_display_text, _normalize_display_text_from_string
+
+    _normalize_display_text_from_string.cache_clear()
+
+    assert _normalize_display_text(None) == "—"
+    assert _normalize_display_text(" +  2.500 % ") == "+ 2.5%"
+    assert _normalize_display_text(" +  2.500 % ") == "+ 2.5%"
+
+    cache_info = _normalize_display_text_from_string.cache_info()
+    assert cache_info.hits >= 1
+    assert cache_info.currsize == 2
 
 
 def test_surface_id_roundtrip__legacy_owned_uw_tracks_publish_under_distinct_base_state_ids():
@@ -137,6 +582,117 @@ def test_state_identity_and_bound_preset_family__binds_successfully():
 def test_qe_resolution_planner__is_importable():
     planner = QEResolutionPlanner()
     assert planner is not None
+
+
+def test_environment_param_metadata_declares_enemy_level_skip_reduction_unit():
+    from qe.routing import load_bounded_resolution_metadata
+
+    metadata = load_bounded_resolution_metadata()
+
+    assert metadata['bc.enemy_level_skip_reduction_pp'] == {
+        'domain': 'bc',
+        'unit': 'pct',
+        'resolver': 'bc_effective_value',
+    }
+
+
+def test_capability_metadata_loads_capabilities_contract_units():
+    from qe.routing import load_bounded_resolution_metadata
+
+    metadata = load_bounded_resolution_metadata()
+
+    assert metadata['capability.additional_card_slot.count'] == {
+        'domain': 'capability',
+        'unit': 'count',
+        'resolver': 'capability_passthrough',
+    }
+    assert metadata['capability.perks.first_choice'] == {
+        'domain': 'capability',
+        'unit': 'enum',
+        'resolver': 'capability_passthrough',
+    }
+
+
+def test_account_metadata_contract_units_load_into_bounded_metadata():
+    from qe.routing import load_bounded_resolution_metadata
+
+    metadata = load_bounded_resolution_metadata()
+
+    assert metadata['account_flag.disable_ads'] == {
+        'domain': 'account_flag',
+        'unit': 'bool',
+        'resolver': 'capability_passthrough',
+    }
+    assert metadata['account_meta.total_relic_count'] == {
+        'domain': 'account_meta',
+        'unit': 'count',
+        'resolver': 'standard_scalar_param',
+    }
+    assert metadata['game_runtime.speed_multiplier'] == {
+        'domain': 'game_runtime',
+        'unit': 'multiplier',
+        'resolver': 'standard_scalar_param',
+    }
+
+
+def test_enemy_level_skip_reduction_environment_param_resolves_with_pct_schema():
+    from qe.routing import load_bounded_resolution_metadata, resolve_bounded_bucket
+
+    metadata = load_bounded_resolution_metadata()
+    contributor = StatInput(
+        stat_name='Enemy Level Skip Reduction',
+        source_family='lab',
+        source_name='Enemy Level Skip Reduction',
+        value=2.5,
+        value_type='percent_display',
+        stage='additive_pre_cap',
+        destination_object_type='environment_param',
+        destination_id='bc.enemy_level_skip_reduction_pp',
+        resolver_id='bc_effective_value',
+        kb_mapped=True,
+    )
+
+    final_value, status, _notes, schema = resolve_bounded_bucket(
+        'environment_param',
+        'bc.enemy_level_skip_reduction_pp',
+        [contributor],
+        metadata['bc.enemy_level_skip_reduction_pp'],
+    )
+
+    assert status == 'resolved'
+    assert final_value == pytest.approx(2.5)
+    assert schema['unit'] == 'pct'
+    assert 'percentage_points' in schema['expected_input_semantics']
+
+
+def test_ranged_enemy_attack_distance_rule_resolves_as_raw_text_passthrough():
+    from qe.routing import load_bounded_resolution_metadata, resolve_bounded_bucket
+
+    metadata = load_bounded_resolution_metadata()
+    contributor = StatInput(
+        stat_name='Ranged Enemies Attack Distance Reduced, But Tower Ranged Enemies Damage x3::effect_1',
+        source_family='perk',
+        source_name='Ranged Enemies Attack Distance Reduced, But Tower Ranged Enemies Damage x3',
+        value='wiki_named_effect',
+        value_type='raw_text',
+        stage='run_selected',
+        destination_object_type='environment_param',
+        destination_id='enemy.ranged.attack_distance_rule',
+        resolver_id='raw_text_passthrough',
+        kb_mapped=True,
+    )
+
+    final_value, status, _notes, schema = resolve_bounded_bucket(
+        'environment_param',
+        'enemy.ranged.attack_distance_rule',
+        [contributor],
+        metadata['enemy.ranged.attack_distance_rule'],
+    )
+
+    assert status == 'resolved'
+    assert final_value == 'wiki_named_effect'
+    assert schema['unit'] == 'raw_text'
+    assert 'raw_text' in schema['expected_input_semantics']
 
 
 def test_qe_shared_runtime_context__is_importable_and_cached():
@@ -436,6 +992,24 @@ def test_dissonant_run_scenario_context_restricts_qe_stat_surfaces() -> None:
         publish_query_surfaces(book.rows, account_state_labs=account_state.labs)
         return book
 
+    default_response = resolve_checkpoint_surfaces(
+        account_state,
+        requested_surface_ids=support_surfaces,
+        preset_name="Farming",
+        state_mode="start_of_run",
+        perks_enabled=False,
+        scenario_context={"mode_id": "farming", "tier": 14, "dissonance_run_category": "none"},
+    )
+    default_book = query_response_to_statbook(
+        default_response,
+        notes="test default non-dissonant scenario",
+    )
+    publish_query_surfaces(default_book.rows, account_state_labs=account_state.labs)
+    for support_surface_id in support_surfaces:
+        row = default_book.rows[support_surface_id]
+        assert row.status == "resolved"
+        assert row.final_value is False
+
     books = {category: restricted_book(category) for category in restrictions}
 
     for category, spec in restrictions.items():
@@ -481,6 +1055,163 @@ def test_dissonant_run_scenario_context_restricts_qe_stat_surfaces() -> None:
     assert uw_book.rows["state::uw.chain_lightning.damage_multiplier"].final_value == pytest.approx(0.0)
     assert uw_book.rows["state::uw.chrono_field.damage_reduction_pct"].final_value == pytest.approx(0.0)
     assert uw_book.rows["derived::edamage.uw.chain_lightning_dps"].final_value == pytest.approx(0.0)
+
+
+def test_enemy_ultimate_enabled_context_surfaces_resolve_as_booleans() -> None:
+    bundle = load_inputs()
+    account_state = build_runtime_state(
+        bundle.ids_raw,
+        default_preset="Farming",
+        loadout_config=bundle.loadout_config,
+        perk_config=bundle.perk_config,
+    )
+
+    lab_names_by_surface = {
+        "context::enemy.fast.ultimate_enabled": "Fast's Ultimate",
+        "context::enemy.ranged.ultimate_enabled": "Ranged Ultimate",
+        "context::enemy.boss.ultimate_enabled": "Boss's Ultimate",
+        "context::enemy.basic.ultimate_enabled": "Basic's Ultimate",
+        "context::enemy.tank.ultimate_enabled": "Tank's Ultimate",
+        "context::enemy.protector.ultimate_enabled": "Protector's Ultimate",
+    }
+
+    snapshot = QEResolutionPlanner().resolve_report_snapshot(
+        account_state,
+        preset_name="Farming",
+        state_mode="start_of_run",
+        perks_enabled=False,
+    )
+
+    for surface_id, lab_name in lab_names_by_surface.items():
+        try:
+            expected = float(account_state.labs.get(lab_name, 0) or 0) > 0
+        except (TypeError, ValueError):
+            expected = bool(account_state.labs.get(lab_name))
+        row = snapshot.statbook.rows[surface_id]
+        assert row.status == "resolved"
+        assert row.final_value is expected
+
+
+def test_report_snapshot_resolves_level_and_duration_account_surfaces() -> None:
+    bundle = load_inputs()
+    account_state = build_runtime_state(
+        bundle.ids_raw,
+        default_preset="Farming",
+        loadout_config=bundle.loadout_config,
+        perk_config=bundle.perk_config,
+    )
+    snapshot = QEResolutionPlanner().resolve_report_snapshot(
+        account_state,
+        preset_name="Farming",
+        state_mode="start_of_run",
+        perks_enabled=False,
+    )
+
+    level_surface_ids = (
+        "state::labs.dissonant_echo.attack.level",
+        "state::labs.dissonant_echo.defense.level",
+        "state::labs.dissonant_echo.utility.level",
+        "state::labs.dissonant_echo.ultimate_weapons.level",
+        "state::tower.range_lab_level",
+        "state::shockwave.size_lab_level",
+    )
+    for surface_id in level_surface_ids:
+        row = snapshot.statbook.rows[surface_id]
+        assert row.status == "resolved"
+        assert row.schema["unit"] == "level"
+        assert row.final_value == pytest.approx(float(row.contributors[0]["value"]))
+
+    duration_row = snapshot.statbook.rows["state::module.amplifying_strike.tower_damage_5x_duration_s"]
+    assert duration_row.status == "resolved"
+    assert duration_row.schema["unit"] == "seconds"
+    assert duration_row.final_value == pytest.approx(float(duration_row.contributors[0]["value"]))
+
+
+def test_report_snapshot_resolves_raw_text_passthrough_surfaces() -> None:
+    bundle = load_inputs()
+    account_state = build_runtime_state(
+        bundle.ids_raw,
+        default_preset="Farming",
+        loadout_config=bundle.loadout_config,
+        perk_config=bundle.perk_config,
+    )
+    snapshot = QEResolutionPlanner().resolve_report_snapshot(
+        account_state,
+        preset_name="Farming",
+        state_mode="start_of_run",
+        perks_enabled=False,
+    )
+
+    expected_values = {
+        "state::capability.target_priority": "2",
+        "state::capability.perks.first_choice": "1",
+        "state::capability.perks.auto_pick_ranking": "12",
+        "state::meta.account_context.farming_tier": "Tier 14",
+    }
+
+    for surface_id, expected_value in expected_values.items():
+        row = snapshot.statbook.rows[surface_id]
+        assert row.status == "resolved"
+        assert row.final_value == expected_value
+        assert "raw_text" in row.schema["expected_input_semantics"]
+
+
+def test_level_contributors_still_block_non_level_formula_surfaces() -> None:
+    from qe.routing import resolve_bounded_bucket
+
+    contributor = StatInput(
+        stat_name="Example Formula Level",
+        source_family="lab",
+        source_name="Example Formula",
+        value=26.0,
+        value_type="level",
+        stage="account_state",
+        destination_object_type="mechanic_param",
+        destination_id="example.multiplier",
+        resolver_id="standard_scalar_param",
+        kb_mapped=True,
+    )
+
+    final_value, status, notes, schema = resolve_bounded_bucket(
+        "mechanic_param",
+        "example.multiplier",
+        [contributor],
+        {"unit": "unknown", "resolver": "standard_scalar_param"},
+    )
+
+    assert final_value is None
+    assert status == "mapped_not_resolved"
+    assert "unresolved" in notes
+    assert "level" not in schema["expected_input_semantics"]
+
+
+def test_raw_text_contributors_still_block_non_passthrough_formula_surfaces() -> None:
+    from qe.routing import resolve_bounded_bucket
+
+    contributor = StatInput(
+        stat_name="Example Formula Text",
+        source_family="lab",
+        source_name="Example Formula",
+        value="Tier 14",
+        value_type="raw_text",
+        stage="account_state",
+        destination_object_type="mechanic_param",
+        destination_id="example.multiplier",
+        resolver_id="standard_scalar_param",
+        kb_mapped=True,
+    )
+
+    final_value, status, notes, schema = resolve_bounded_bucket(
+        "mechanic_param",
+        "example.multiplier",
+        [contributor],
+        {"unit": "unknown", "resolver": "standard_scalar_param"},
+    )
+
+    assert final_value is None
+    assert status == "mapped_not_resolved"
+    assert "unresolved" in notes
+    assert "raw_text" not in schema["expected_input_semantics"]
 
 
 def test_bot_runtime_contract__declares_raw_and_effective_range_split() -> None:

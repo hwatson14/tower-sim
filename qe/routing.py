@@ -46,6 +46,8 @@ _CONTRACT_PATHS = (
     _ROOT / 'kb' / 'global-rules' / 'contracts' / 'canonical-stats.yaml',
     _ROOT / 'kb' / 'global-rules' / 'contracts' / 'mechanic-params.yaml',
     _ROOT / 'kb' / 'global-rules' / 'contracts' / 'environment-params.yaml',
+    _ROOT / 'kb' / 'global-rules' / 'contracts' / 'capabilities.yaml',
+    _ROOT / 'kb' / 'global-rules' / 'contracts' / 'account-metadata.yaml',
 )
 _YAML_LOADER = getattr(yaml, 'CSafeLoader', yaml.SafeLoader)
 
@@ -187,17 +189,31 @@ def _resolve_coins_per_kill_bonus(
     return final, 'resolved' if not unsupported else 'partially_resolved', notes, schema
 
 
+def _is_level_destination(destination_id: str) -> bool:
+    return destination_id.endswith('.level') or destination_id.endswith('_level')
+
+
 def _destination_type_schema(destination_id: str, meta: dict[str, str]) -> dict[str, object]:
     unit = meta.get('unit', 'unknown')
     resolver = meta.get('resolver', 'unknown')
-    allowed = {'resolved_value', 'flat', 'pct', 'multiplier', 'percent_display', 'multiplier_display', 'bool', 'count'}
+    allowed = {'resolved_value', 'flat', 'pct', 'ratio', 'multiplier', 'percent_display', 'multiplier_display', 'bool', 'count'}
     if unit and unit != 'unknown':
         allowed.add(unit)
+    if unit == 'seconds':
+        allowed.add('duration_seconds')
+    if resolver in {'capability_passthrough', 'raw_text_passthrough'}:
+        allowed.add('raw_text')
+    if _is_level_destination(destination_id):
+        allowed.add('level')
+        if unit == 'unknown':
+            unit = 'level'
     expected_semantics: list[str] = []
     if unit == 'pct':
         expected_semantics = ['percentage_points', 'percentage_multiplier', 'resolved_percent']
     elif unit == 'multiplier':
         expected_semantics = ['base_multiplier', 'multiplier_factor', 'multiplier_display']
+    elif unit == 'level':
+        expected_semantics = ['level', 'resolved_numeric']
     elif unit in {'seconds', 'm', 'rpm', 'count', 'hp', 'damage', 'hp_per_second', 'attacks_per_second', 'damage_block', 'force', 'cash', 'coins'}:
         expected_semantics = ['resolved_unit_value', 'unit_multiplier']
     else:
@@ -220,8 +236,19 @@ def _destination_type_schema(destination_id: str, meta: dict[str, str]) -> dict[
     }
     if destination_id in overrides:
         expected_semantics = overrides[destination_id]
-    if destination_id.endswith('.owned') or destination_id.endswith('.active'):
+    if (
+        resolver in {'scenario_gate_bool', 'standard_bool'}
+        or unit == 'bool'
+        or destination_id.endswith('.owned')
+        or destination_id.endswith('.unlocked')
+        or destination_id.endswith('.active')
+        or destination_id.endswith('_active')
+        or destination_id.endswith('.enabled')
+        or destination_id.endswith('_enabled')
+    ):
         expected_semantics = ['bool']
+    if resolver in {'capability_passthrough', 'raw_text_passthrough'}:
+        expected_semantics = list(dict.fromkeys([*expected_semantics, 'bool', 'raw_text']))
     explicit_caps = {}
     if destination_id in CANONICAL_PCT_CAPS:
         explicit_caps['max'] = CANONICAL_PCT_CAPS[destination_id]
@@ -245,8 +272,10 @@ def _row_semantic_class(row: StatInput) -> str:
         return 'bool'
     value_type = row.value_type or ''
     if value_type == 'level':
-        return 'unresolved_level'
-    if value_type in {'raw_text', 'display_token', 'missing_inventory'}:
+        return 'level'
+    if value_type == 'raw_text':
+        return 'raw_text'
+    if value_type in {'display_token', 'missing_inventory'}:
         return 'unresolved_non_numeric'
     if row.value is None:
         return 'unresolved_none'
@@ -258,18 +287,25 @@ def _row_semantic_class(row: StatInput) -> str:
         return 'multiplier_factor'
     if value_type == 'count':
         return 'resolved_numeric'
-    if value_type in {'seconds', 'm', 'rpm', 'hp', 'damage', 'hp_per_second', 'attacks_per_second', 'damage_block', 'force', 'cash', 'coins'}:
+    if value_type in {'seconds', 'duration_seconds', 'm', 'rpm', 'hp', 'damage', 'hp_per_second', 'attacks_per_second', 'damage_block', 'force', 'cash', 'coins'}:
         return 'resolved_unit_value'
     return 'resolved_numeric'
 
 
-def _is_unresolved_contributor(row: StatInput) -> bool:
+def _is_unresolved_contributor(row: StatInput, *, allow_level: bool = False, allow_raw_text: bool = False) -> bool:
     note = (row.notes or '').lower()
-    return row.value_type in {'level', 'raw_text', 'display_token', 'missing_inventory'} or row.value is None or 'unresolved' in note
+    disallowed_value_types = {'display_token', 'missing_inventory'}
+    if not allow_level:
+        disallowed_value_types.add('level')
+    if not allow_raw_text:
+        disallowed_value_types.add('raw_text')
+    return row.value_type in disallowed_value_types or row.value is None or 'unresolved' in note
 
 
 def _is_semantically_compatible(row: StatInput, destination_object_type: str, destination_id: str, schema: dict[str, object]) -> bool:
     if destination_object_type == 'capability':
+        if row.value_type == 'raw_text':
+            return 'raw_text' in set(schema.get('expected_input_semantics') or [])
         if destination_id.endswith('.enabled'):
             return isinstance(row.value, bool) or row.value_type == 'bool'
         if destination_id.endswith('.count'):
@@ -295,6 +331,10 @@ def _is_semantically_compatible(row: StatInput, destination_object_type: str, de
     expected = set(schema['expected_input_semantics'])
     if semantic == 'bool':
         return 'bool' in expected or destination_object_type == 'capability'
+    if semantic == 'level':
+        return 'level' in expected and _as_float(row.value) is not None
+    if semantic == 'raw_text':
+        return 'raw_text' in expected
     if semantic == 'percentage_points':
         return 'percentage_points' in expected or 'resolved_percent' in expected or schema['unit'] in {'pct', 'multiplier'}
     if semantic == 'multiplier_display':
@@ -309,9 +349,11 @@ def _is_semantically_compatible(row: StatInput, destination_object_type: str, de
 def _publish_gate_check(destination_object_type: str, destination_id: str, contributors: list[StatInput], meta: dict[str, str]) -> tuple[bool, str, list[str], dict[str, object]]:
     schema = _destination_type_schema(destination_id, meta)
     bad: list[str] = []
+    allow_level = _is_level_destination(destination_id)
+    allow_raw_text = schema.get('resolver') in {'capability_passthrough', 'raw_text_passthrough'}
     for row in contributors:
         reason = None
-        if _is_unresolved_contributor(row):
+        if _is_unresolved_contributor(row, allow_level=allow_level, allow_raw_text=allow_raw_text):
             reason = 'unresolved_or_level'
         elif not _is_semantically_compatible(row, destination_object_type, destination_id, schema):
             reason = 'semantically_incompatible'
@@ -594,6 +636,8 @@ def _safe_single_or_uniform_resolution(destination_object_type: str, destination
         return all(bools), 'resolved', 'Mapped boolean flag surface resolved with logical-and over all contributors.'
     if len(contributors) == 1:
         row = contributors[0]
+        if row.value_type == 'raw_text' and destination_object_type in {'capability', 'account_context'}:
+            return str(row.value), 'resolved', 'Single mapped passthrough contributor; raw text/enum preserved.'
         value = _as_float(row.value)
         if value is not None:
             return value, 'resolved', 'Single mapped contributor; direct value preserved.'
@@ -667,6 +711,16 @@ def _resolve_bucket(
             publish_note + (' Offending contributors: ' + ', '.join(bad_contributors[:12]) if bad_contributors else ''),
             schema,
         )
+
+    if meta.get('resolver') == 'raw_text_passthrough':
+        if len(contributors) == 1 and contributors[0].value_type == 'raw_text':
+            return (
+                str(contributors[0].value),
+                'resolved',
+                'Mapped raw-text passthrough rule preserved from a declared KB environment parameter.',
+                schema,
+            )
+        return None, 'mapped_not_resolved', 'Raw-text passthrough resolver requires exactly one raw_text contributor.', schema
 
     if destination_object_type == 'mechanic_param' and destination_id.startswith('uw.'):
         resolved_rows = meta.get('_resolved_rows', {})
@@ -765,7 +819,14 @@ def _resolve_bucket(
         return value, status, notes, schema
 
     if destination_object_type == 'mechanic_param' and destination_id.startswith('bot.'):
-        if destination_id.endswith('.owned'):
+        unit = meta.get('unit', 'unknown')
+        resolver = meta.get('resolver', 'unknown')
+        if (
+            resolver == 'standard_bool'
+            or unit == 'bool'
+            or destination_id.endswith('.owned')
+            or destination_id.endswith('.unlocked')
+        ):
             value, status, notes = _safe_single_or_uniform_resolution(destination_object_type, destination_id, contributors)
             return value, status, notes, schema
         resolved_rows = meta.get('_resolved_rows', {})
@@ -780,8 +841,6 @@ def _resolve_bucket(
         if not numeric_values:
             return None, 'mapped_not_resolved', 'Missing numeric bot mechanic contributors.', schema
 
-        unit = meta.get('unit', 'unknown')
-        resolver = meta.get('resolver', 'unknown')
         final = sum(numeric_values)
         if unit == 'pct' and resolver in {'pct_capped_param', 'pct_capped_scalar_stat'}:
             cap = CANONICAL_PCT_CAPS.get(destination_id)
@@ -811,6 +870,13 @@ def _resolve_bucket(
         return _resolve_coins_per_kill_bonus(destination_id, contributors, schema)
     if destination_id == 'tower_damage_per_meter_multiplier':
         return _resolve_decimal_base_times_post_multipliers(destination_id, contributors, schema)
+    if destination_id == 'tower_rend_armor_multiplier':
+        return _resolve_base_times_post_multipliers(
+            destination_id,
+            contributors,
+            schema,
+            note_label='Destination-specific rend armor multiplier family',
+        )
     if destination_id == 'tower_shockwave_size_m':
         return _resolve_shockwave_size_m(contributors, schema)
     if destination_id == 'wall_fortification_multiplier':
@@ -917,6 +983,10 @@ def _resolve_bucket(
             if measure == 'level':
                 unsupported.append(f'{row.source_family}:{row.source_name}:unresolved_level_token')
                 continue
+            if row.source_family == 'vault' and str(row.contributor_id or '').startswith('vault.'):
+                additive_pct += value * 100.0 if 0.0 <= value <= 1.0 else value
+                consumed += 1
+                continue
             if row.source_family == 'enhancement':
                 multiplier_product *= _canonical_source_multiplier(destination_id, row, value)
                 consumed += 1
@@ -1020,12 +1090,24 @@ def _load_bounded_resolution_metadata_cached() -> dict[str, dict[str, str]]:
     for path in _CONTRACT_PATHS:
         with path.open('r', encoding='utf-8') as handle:
             data = yaml.load(handle, Loader=_YAML_LOADER)
-        for domain, entries in data['domains'].items():
-            for entry in entries:
+        if 'domains' in data:
+            for domain, entries in data['domains'].items():
+                for entry in entries:
+                    out[entry['id']] = {
+                        'domain': domain,
+                        'unit': entry['unit'],
+                        'resolver': entry['resolver'],
+                    }
+            continue
+        if 'entries' in data:
+            default_domain = 'capability' if data.get('kind') == 'capabilities' else data.get('kind', 'metadata')
+            for entry in data.get('entries') or []:
+                entry_type = str(entry.get('type') or '').strip()
+                unit = entry.get('unit') or ('bool' if entry_type == 'boolean' else entry_type)
                 out[entry['id']] = {
-                    'domain': domain,
-                    'unit': entry['unit'],
-                    'resolver': entry['resolver'],
+                    'domain': entry.get('domain') or default_domain,
+                    'unit': unit,
+                    'resolver': entry.get('resolver') or 'capability_passthrough',
                 }
     return out
 
@@ -1757,6 +1839,7 @@ def query_response_to_statbook(
             status='resolved' if zero_default_gated_off else row.status,
             notes=notes,
             contributors=contributors_by_surface.get(row.surface_id, []),
+            schema=None if row.schema is None else dict(row.schema),
         )
     merged_diagnostics = dict(diagnostics or {})
     merged_diagnostics.setdefault('family_id', response.family_id)
@@ -1967,6 +2050,7 @@ def _delta_statbook_from_response(
                 final_value=row.final_value,
                 value_type=row.value_type,
                 status=row.status,
+                schema=None if row.schema is None else dict(row.schema),
             )
         )
         if surface_id in impacted_surface_set:
@@ -2278,6 +2362,11 @@ def _merge_delegated_family_rows(
     for row in delegated_response.resolved_surface_rows:
         if row.surface_id not in fallback_statbook.rows:
             continue
+        schema = None if row.schema is None else dict(row.schema)
+        if schema is not None:
+            schema.update({'delegated_family_id': family_id, 'source': 'query_kernel'})
+        else:
+            schema = {'delegated_family_id': family_id, 'source': 'query_kernel'}
         merged_rows[row.surface_id] = StatRow(
             stat_name=row.surface_id,
             final_value=row.final_value,
@@ -2303,7 +2392,7 @@ def _merge_delegated_family_rows(
                 for contributor in delegated_response.contributor_rows
                 if contributor.surface_id == row.surface_id
             ],
-            schema={'delegated_family_id': family_id, 'source': 'query_kernel'},
+            schema=schema,
         )
     diagnostics = dict(fallback_statbook.diagnostics)
     diagnostics['qe_native_family_merge'] = {

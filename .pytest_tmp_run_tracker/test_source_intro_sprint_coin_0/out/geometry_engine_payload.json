@@ -1,0 +1,801 @@
+{
+  "artifact": "geometry_engine_payload.json",
+  "schema_version": 1,
+  "engine": "geometry_engine",
+  "owner": "simulators.geometry",
+  "status": "partial_displayed_proxy",
+  "presets": {
+    "Farming": {
+      "start_of_run": {
+        "engine": "geometry_engine",
+        "owner": "simulators.geometry",
+        "schema_version": 1,
+        "status": "partial_displayed_proxy",
+        "input_surfaces": {
+          "tower_range_theoretical_m": {
+            "value": 69.5,
+            "source_surface_id": "state::tower.range_m",
+            "source_unit_system": "tower_range_theoretical_m",
+            "truth_status": "qe_resolved_stat_input"
+          },
+          "golden_bot_range_m": {
+            "value": 70.0,
+            "source_surface_id": "state::bot.golden.range_m",
+            "source_unit_system": "golden_bot_range_m",
+            "truth_status": "qe_resolved_stat_input"
+          },
+          "golden_bot_owned": {
+            "value": true,
+            "source_surface_id": "state::bot.golden.owned",
+            "source_unit_system": "boolean",
+            "truth_status": "qe_resolved_stat_input"
+          },
+          "spotlight_count": {
+            "value": 3.0,
+            "source_surface_id": "state::uw.spotlight.count",
+            "source_unit_system": "count",
+            "truth_status": "qe_resolved_stat_input"
+          },
+          "spotlight_angle_degrees": {
+            "value": 56.85,
+            "source_surface_id": "state::uw.spotlight.angle_degrees",
+            "source_unit_system": "angle_degrees",
+            "truth_status": "qe_resolved_stat_input"
+          }
+        },
+        "surfaces": {
+          "tower_range_displayed_m": 69.5,
+          "tower_radius_displayed_m": 69.5,
+          "wall_radius_displayed_m": 25.3789,
+          "boss_path_distance_to_tower_displayed_candidate_m": 69.5,
+          "boss_path_distance_to_wall_displayed_candidate_m": 44.1211,
+          "regular_orb_radius_displayed_m": 73.6522,
+          "extra_orb_radius_displayed_m": 65.2519,
+          "golden_bot_radius_displayed_m": 93.10000000000001,
+          "spotlight_radius_displayed_proxy_m": 69.5,
+          "spotlight_sector_area_proxy_m2": 7189.003662232244
+        },
+        "overlaps": {},
+        "encounters": {
+          "boss_wall_travel_displayed_proxy": {
+            "status": "resolved_displayed_proxy_candidate",
+            "truth_status": "displayed_proxy_candidate_not_wall_contact_truth",
+            "timing_use": "default_base_candidate_only_manual_override_wins",
+            "tower_range_theoretical_m": 69.5,
+            "tower_range_displayed_m": 69.5,
+            "wall_radius_displayed_m": 25.3789,
+            "boss_path_distance_to_tower_displayed_candidate_m": 69.5,
+            "boss_path_distance_to_wall_displayed_candidate_m": 44.1211,
+            "reference_tower_range_theoretical_m": 69.5,
+            "reference_tower_range_displayed_m": 69.5,
+            "reference_wall_radius_displayed_m": 25.3789,
+            "reference_path_distance_to_wall_displayed_m": 44.1211,
+            "reference_contact_time_seconds": 2.0,
+            "boss_contact_time_displayed_proxy_seconds": 2.0
+          },
+          "boss_contact_time_displayed_proxy_seconds": 2.0,
+          "golden_bot_inbound_path_exposure_fraction_proxy": 1.0,
+          "spotlight_angular_coverage_fraction_proxy": 0.47375
+        },
+        "surface_metadata": {
+          "tower_range_displayed_m": {
+            "surface_type": "displayed",
+            "truth_status": "community_fit_current",
+            "source_unit_system": "tower_range_theoretical_m",
+            "evidence": "geometry_handoff_v3:S2"
+          },
+          "tower_radius_displayed_m": {
+            "surface_type": "displayed",
+            "truth_status": "community_fit_current",
+            "source_unit_system": "tower_range_displayed_m",
+            "evidence": "geometry_handoff_v3:S2"
+          },
+          "wall_radius_displayed_m": {
+            "surface_type": "displayed",
+            "truth_status": "user_supplied_advanced_analysis_image",
+            "source_unit_system": "tower_range_displayed_m",
+            "evidence": "geometry_handoff_v3:S4"
+          },
+          "boss_path_distance_to_tower_displayed_candidate_m": {
+            "surface_type": "displayed_candidate",
+            "truth_status": "proxy_scaffold_not_contact_truth",
+            "source_unit_system": "tower_range_displayed_m",
+            "evidence": "geometry_handoff_v3:wall_contact_scaffold"
+          },
+          "boss_path_distance_to_wall_displayed_candidate_m": {
+            "surface_type": "displayed_candidate",
+            "truth_status": "proxy_scaffold_not_contact_truth",
+            "source_unit_system": "tower_range_displayed_m_minus_wall_radius_displayed_m",
+            "evidence": "geometry_handoff_v3:wall_contact_scaffold"
+          },
+          "regular_orb_radius_displayed_m": {
+            "surface_type": "displayed",
+            "truth_status": "user_supplied_advanced_analysis_image",
+            "source_unit_system": "tower_range_displayed_m",
+            "evidence": "geometry_handoff_v3:S4"
+          },
+          "extra_orb_radius_displayed_m": {
+            "surface_type": "displayed",
+            "truth_status": "user_supplied_advanced_analysis_image",
+            "source_unit_system": "tower_range_displayed_m",
+            "evidence": "geometry_handoff_v3:S4"
+          },
+          "golden_bot_radius_displayed_m": {
+            "surface_type": "displayed",
+            "truth_status": "community_formula_current_displayed_proxy_golden_bot_only",
+            "source_unit_system": "golden_bot_range_m + tower_range_displayed_m",
+            "evidence": "geometry_handoff_v3:S3/S6"
+          },
+          "spotlight_radius_displayed_proxy_m": {
+            "surface_type": "derived_proxy",
+            "truth_status": "proxy_only_until_validated",
+            "source_unit_system": "tower_range_displayed_m + spotlight quantity/angle",
+            "evidence": "geometry_handoff_v3:S13"
+          },
+          "spotlight_sector_area_proxy_m2": {
+            "surface_type": "derived_proxy",
+            "truth_status": "proxy_only_until_validated",
+            "source_unit_system": "tower_range_displayed_m + spotlight quantity/angle",
+            "evidence": "geometry_handoff_v3:S13"
+          },
+          "boss_contact_time_displayed_proxy_seconds": {
+            "surface_type": "derived_proxy",
+            "truth_status": "proxy_only",
+            "source_unit_system": "displayed_geometry",
+            "evidence": "geometry_handoff_v3:derived_math"
+          },
+          "golden_bot_inbound_path_exposure_fraction_proxy": {
+            "surface_type": "derived_proxy",
+            "truth_status": "proxy_only",
+            "source_unit_system": "displayed_geometry",
+            "evidence": "geometry_handoff_v3:derived_math"
+          },
+          "spotlight_angular_coverage_fraction_proxy": {
+            "surface_type": "derived_proxy",
+            "truth_status": "proxy_only",
+            "source_unit_system": "displayed_geometry",
+            "evidence": "geometry_handoff_v3:derived_math"
+          }
+        },
+        "blocked_surfaces": {
+          "wall_contact_radius_effective_u": {
+            "surface_type": "effective",
+            "status": "blocked",
+            "reason": "displayed wall radius is not promoted to effective wall contact truth"
+          },
+          "boss_contact_time_from_geometry_seconds": {
+            "surface_type": "effective",
+            "status": "blocked",
+            "reason": "measured boss contact time truth remains blocked; only displayed proxy base seconds may feed simulators.timing with diagnostics"
+          },
+          "ranged_enemy_firing_distance_m": {
+            "surface_type": "effective_or_displayed",
+            "status": "blocked_legacy_candidate",
+            "reason": "legacy formula is not current validated truth"
+          },
+          "flame_bot_displayed_radius_m": {
+            "surface_type": "displayed",
+            "status": "blocked_unresolved_candidate",
+            "reason": "Golden Bot displayed-radius formula is not generalized to non-GB bots"
+          },
+          "amplify_bot_displayed_radius_m": {
+            "surface_type": "displayed",
+            "status": "blocked_unresolved_candidate",
+            "reason": "Golden Bot displayed-radius formula is not generalized to non-GB bots"
+          },
+          "thunder_bot_displayed_radius_m": {
+            "surface_type": "displayed",
+            "status": "blocked_unresolved_candidate",
+            "reason": "Golden Bot displayed-radius formula is not generalized to non-GB bots"
+          },
+          "bot_pathing_distribution": {
+            "surface_type": "runtime_pathing",
+            "status": "blocked",
+            "reason": "post-v28 bot movement and synchronicity need separate validation"
+          }
+        },
+        "unresolved_notes": [
+          "Black Hole size is absent; BH displayed surfaces and overlap proxies were omitted.",
+          "Chrono Field range extension is absent; CF displayed radius proxy was omitted.",
+          "Displayed/proxy geometry is not effective/contact truth.",
+          "Proxy overlaps do not equal exact captured, tagged, killed, or density-weighted enemy fractions."
+        ]
+      },
+      "max_progression": {
+        "engine": "geometry_engine",
+        "owner": "simulators.geometry",
+        "schema_version": 1,
+        "status": "partial_displayed_proxy",
+        "input_surfaces": {
+          "tower_range_theoretical_m": {
+            "value": 69.5,
+            "source_surface_id": "state::tower.range_m",
+            "source_unit_system": "tower_range_theoretical_m",
+            "truth_status": "qe_resolved_stat_input"
+          },
+          "golden_bot_range_m": {
+            "value": 70.0,
+            "source_surface_id": "state::bot.golden.range_m",
+            "source_unit_system": "golden_bot_range_m",
+            "truth_status": "qe_resolved_stat_input"
+          },
+          "golden_bot_owned": {
+            "value": true,
+            "source_surface_id": "state::bot.golden.owned",
+            "source_unit_system": "boolean",
+            "truth_status": "qe_resolved_stat_input"
+          },
+          "spotlight_count": {
+            "value": 3.0,
+            "source_surface_id": "state::uw.spotlight.count",
+            "source_unit_system": "count",
+            "truth_status": "qe_resolved_stat_input"
+          },
+          "spotlight_angle_degrees": {
+            "value": 56.85,
+            "source_surface_id": "state::uw.spotlight.angle_degrees",
+            "source_unit_system": "angle_degrees",
+            "truth_status": "qe_resolved_stat_input"
+          }
+        },
+        "surfaces": {
+          "tower_range_displayed_m": 69.5,
+          "tower_radius_displayed_m": 69.5,
+          "wall_radius_displayed_m": 25.3789,
+          "boss_path_distance_to_tower_displayed_candidate_m": 69.5,
+          "boss_path_distance_to_wall_displayed_candidate_m": 44.1211,
+          "regular_orb_radius_displayed_m": 73.6522,
+          "extra_orb_radius_displayed_m": 65.2519,
+          "golden_bot_radius_displayed_m": 93.10000000000001,
+          "spotlight_radius_displayed_proxy_m": 69.5,
+          "spotlight_sector_area_proxy_m2": 7189.003662232244
+        },
+        "overlaps": {},
+        "encounters": {
+          "boss_wall_travel_displayed_proxy": {
+            "status": "resolved_displayed_proxy_candidate",
+            "truth_status": "displayed_proxy_candidate_not_wall_contact_truth",
+            "timing_use": "default_base_candidate_only_manual_override_wins",
+            "tower_range_theoretical_m": 69.5,
+            "tower_range_displayed_m": 69.5,
+            "wall_radius_displayed_m": 25.3789,
+            "boss_path_distance_to_tower_displayed_candidate_m": 69.5,
+            "boss_path_distance_to_wall_displayed_candidate_m": 44.1211,
+            "reference_tower_range_theoretical_m": 69.5,
+            "reference_tower_range_displayed_m": 69.5,
+            "reference_wall_radius_displayed_m": 25.3789,
+            "reference_path_distance_to_wall_displayed_m": 44.1211,
+            "reference_contact_time_seconds": 2.0,
+            "boss_contact_time_displayed_proxy_seconds": 2.0
+          },
+          "boss_contact_time_displayed_proxy_seconds": 2.0,
+          "golden_bot_inbound_path_exposure_fraction_proxy": 1.0,
+          "spotlight_angular_coverage_fraction_proxy": 0.47375
+        },
+        "surface_metadata": {
+          "tower_range_displayed_m": {
+            "surface_type": "displayed",
+            "truth_status": "community_fit_current",
+            "source_unit_system": "tower_range_theoretical_m",
+            "evidence": "geometry_handoff_v3:S2"
+          },
+          "tower_radius_displayed_m": {
+            "surface_type": "displayed",
+            "truth_status": "community_fit_current",
+            "source_unit_system": "tower_range_displayed_m",
+            "evidence": "geometry_handoff_v3:S2"
+          },
+          "wall_radius_displayed_m": {
+            "surface_type": "displayed",
+            "truth_status": "user_supplied_advanced_analysis_image",
+            "source_unit_system": "tower_range_displayed_m",
+            "evidence": "geometry_handoff_v3:S4"
+          },
+          "boss_path_distance_to_tower_displayed_candidate_m": {
+            "surface_type": "displayed_candidate",
+            "truth_status": "proxy_scaffold_not_contact_truth",
+            "source_unit_system": "tower_range_displayed_m",
+            "evidence": "geometry_handoff_v3:wall_contact_scaffold"
+          },
+          "boss_path_distance_to_wall_displayed_candidate_m": {
+            "surface_type": "displayed_candidate",
+            "truth_status": "proxy_scaffold_not_contact_truth",
+            "source_unit_system": "tower_range_displayed_m_minus_wall_radius_displayed_m",
+            "evidence": "geometry_handoff_v3:wall_contact_scaffold"
+          },
+          "regular_orb_radius_displayed_m": {
+            "surface_type": "displayed",
+            "truth_status": "user_supplied_advanced_analysis_image",
+            "source_unit_system": "tower_range_displayed_m",
+            "evidence": "geometry_handoff_v3:S4"
+          },
+          "extra_orb_radius_displayed_m": {
+            "surface_type": "displayed",
+            "truth_status": "user_supplied_advanced_analysis_image",
+            "source_unit_system": "tower_range_displayed_m",
+            "evidence": "geometry_handoff_v3:S4"
+          },
+          "golden_bot_radius_displayed_m": {
+            "surface_type": "displayed",
+            "truth_status": "community_formula_current_displayed_proxy_golden_bot_only",
+            "source_unit_system": "golden_bot_range_m + tower_range_displayed_m",
+            "evidence": "geometry_handoff_v3:S3/S6"
+          },
+          "spotlight_radius_displayed_proxy_m": {
+            "surface_type": "derived_proxy",
+            "truth_status": "proxy_only_until_validated",
+            "source_unit_system": "tower_range_displayed_m + spotlight quantity/angle",
+            "evidence": "geometry_handoff_v3:S13"
+          },
+          "spotlight_sector_area_proxy_m2": {
+            "surface_type": "derived_proxy",
+            "truth_status": "proxy_only_until_validated",
+            "source_unit_system": "tower_range_displayed_m + spotlight quantity/angle",
+            "evidence": "geometry_handoff_v3:S13"
+          },
+          "boss_contact_time_displayed_proxy_seconds": {
+            "surface_type": "derived_proxy",
+            "truth_status": "proxy_only",
+            "source_unit_system": "displayed_geometry",
+            "evidence": "geometry_handoff_v3:derived_math"
+          },
+          "golden_bot_inbound_path_exposure_fraction_proxy": {
+            "surface_type": "derived_proxy",
+            "truth_status": "proxy_only",
+            "source_unit_system": "displayed_geometry",
+            "evidence": "geometry_handoff_v3:derived_math"
+          },
+          "spotlight_angular_coverage_fraction_proxy": {
+            "surface_type": "derived_proxy",
+            "truth_status": "proxy_only",
+            "source_unit_system": "displayed_geometry",
+            "evidence": "geometry_handoff_v3:derived_math"
+          }
+        },
+        "blocked_surfaces": {
+          "wall_contact_radius_effective_u": {
+            "surface_type": "effective",
+            "status": "blocked",
+            "reason": "displayed wall radius is not promoted to effective wall contact truth"
+          },
+          "boss_contact_time_from_geometry_seconds": {
+            "surface_type": "effective",
+            "status": "blocked",
+            "reason": "measured boss contact time truth remains blocked; only displayed proxy base seconds may feed simulators.timing with diagnostics"
+          },
+          "ranged_enemy_firing_distance_m": {
+            "surface_type": "effective_or_displayed",
+            "status": "blocked_legacy_candidate",
+            "reason": "legacy formula is not current validated truth"
+          },
+          "flame_bot_displayed_radius_m": {
+            "surface_type": "displayed",
+            "status": "blocked_unresolved_candidate",
+            "reason": "Golden Bot displayed-radius formula is not generalized to non-GB bots"
+          },
+          "amplify_bot_displayed_radius_m": {
+            "surface_type": "displayed",
+            "status": "blocked_unresolved_candidate",
+            "reason": "Golden Bot displayed-radius formula is not generalized to non-GB bots"
+          },
+          "thunder_bot_displayed_radius_m": {
+            "surface_type": "displayed",
+            "status": "blocked_unresolved_candidate",
+            "reason": "Golden Bot displayed-radius formula is not generalized to non-GB bots"
+          },
+          "bot_pathing_distribution": {
+            "surface_type": "runtime_pathing",
+            "status": "blocked",
+            "reason": "post-v28 bot movement and synchronicity need separate validation"
+          }
+        },
+        "unresolved_notes": [
+          "Black Hole size is absent; BH displayed surfaces and overlap proxies were omitted.",
+          "Chrono Field range extension is absent; CF displayed radius proxy was omitted.",
+          "Displayed/proxy geometry is not effective/contact truth.",
+          "Proxy overlaps do not equal exact captured, tagged, killed, or density-weighted enemy fractions."
+        ]
+      }
+    },
+    "Tourney": {
+      "start_of_run": {
+        "engine": "geometry_engine",
+        "owner": "simulators.geometry",
+        "schema_version": 1,
+        "status": "partial_displayed_proxy",
+        "input_surfaces": {
+          "tower_range_theoretical_m": {
+            "value": 130.66,
+            "source_surface_id": "state::tower.range_m",
+            "source_unit_system": "tower_range_theoretical_m",
+            "truth_status": "qe_resolved_stat_input"
+          },
+          "golden_bot_range_m": {
+            "value": 70.0,
+            "source_surface_id": "state::bot.golden.range_m",
+            "source_unit_system": "golden_bot_range_m",
+            "truth_status": "qe_resolved_stat_input"
+          },
+          "golden_bot_owned": {
+            "value": true,
+            "source_surface_id": "state::bot.golden.owned",
+            "source_unit_system": "boolean",
+            "truth_status": "qe_resolved_stat_input"
+          },
+          "spotlight_count": {
+            "value": 3.0,
+            "source_surface_id": "state::uw.spotlight.count",
+            "source_unit_system": "count",
+            "truth_status": "qe_resolved_stat_input"
+          },
+          "spotlight_angle_degrees": {
+            "value": 56.85,
+            "source_surface_id": "state::uw.spotlight.angle_degrees",
+            "source_unit_system": "angle_degrees",
+            "truth_status": "qe_resolved_stat_input"
+          }
+        },
+        "surfaces": {
+          "tower_range_displayed_m": 121.40406875139999,
+          "tower_radius_displayed_m": 121.40406875139999,
+          "wall_radius_displayed_m": 36.80817593905827,
+          "boss_path_distance_to_tower_displayed_candidate_m": 121.40406875139999,
+          "boss_path_distance_to_wall_displayed_candidate_m": 84.59589281234172,
+          "regular_orb_radius_displayed_m": 93.66640891053984,
+          "extra_orb_radius_displayed_m": 83.63632115174588,
+          "golden_bot_radius_displayed_m": 162.6290474928826,
+          "spotlight_radius_displayed_proxy_m": 121.40406875139999,
+          "spotlight_sector_area_proxy_m2": 21936.411261961275
+        },
+        "overlaps": {},
+        "encounters": {
+          "boss_wall_travel_displayed_proxy": {
+            "status": "resolved_displayed_proxy_candidate",
+            "truth_status": "displayed_proxy_candidate_not_wall_contact_truth",
+            "timing_use": "default_base_candidate_only_manual_override_wins",
+            "tower_range_theoretical_m": 130.66,
+            "tower_range_displayed_m": 121.40406875139999,
+            "wall_radius_displayed_m": 36.80817593905827,
+            "boss_path_distance_to_tower_displayed_candidate_m": 121.40406875139999,
+            "boss_path_distance_to_wall_displayed_candidate_m": 84.59589281234172,
+            "reference_tower_range_theoretical_m": 69.5,
+            "reference_tower_range_displayed_m": 69.5,
+            "reference_wall_radius_displayed_m": 25.3789,
+            "reference_path_distance_to_wall_displayed_m": 44.1211,
+            "reference_contact_time_seconds": 2.0,
+            "boss_contact_time_displayed_proxy_seconds": 3.8347136772356865
+          },
+          "boss_contact_time_displayed_proxy_seconds": 3.8347136772356865,
+          "golden_bot_inbound_path_exposure_fraction_proxy": 1.0,
+          "spotlight_angular_coverage_fraction_proxy": 0.47375
+        },
+        "surface_metadata": {
+          "tower_range_displayed_m": {
+            "surface_type": "displayed",
+            "truth_status": "community_fit_current",
+            "source_unit_system": "tower_range_theoretical_m",
+            "evidence": "geometry_handoff_v3:S2"
+          },
+          "tower_radius_displayed_m": {
+            "surface_type": "displayed",
+            "truth_status": "community_fit_current",
+            "source_unit_system": "tower_range_displayed_m",
+            "evidence": "geometry_handoff_v3:S2"
+          },
+          "wall_radius_displayed_m": {
+            "surface_type": "displayed",
+            "truth_status": "user_supplied_advanced_analysis_image",
+            "source_unit_system": "tower_range_displayed_m",
+            "evidence": "geometry_handoff_v3:S4"
+          },
+          "boss_path_distance_to_tower_displayed_candidate_m": {
+            "surface_type": "displayed_candidate",
+            "truth_status": "proxy_scaffold_not_contact_truth",
+            "source_unit_system": "tower_range_displayed_m",
+            "evidence": "geometry_handoff_v3:wall_contact_scaffold"
+          },
+          "boss_path_distance_to_wall_displayed_candidate_m": {
+            "surface_type": "displayed_candidate",
+            "truth_status": "proxy_scaffold_not_contact_truth",
+            "source_unit_system": "tower_range_displayed_m_minus_wall_radius_displayed_m",
+            "evidence": "geometry_handoff_v3:wall_contact_scaffold"
+          },
+          "regular_orb_radius_displayed_m": {
+            "surface_type": "displayed",
+            "truth_status": "user_supplied_advanced_analysis_image",
+            "source_unit_system": "tower_range_displayed_m",
+            "evidence": "geometry_handoff_v3:S4"
+          },
+          "extra_orb_radius_displayed_m": {
+            "surface_type": "displayed",
+            "truth_status": "user_supplied_advanced_analysis_image",
+            "source_unit_system": "tower_range_displayed_m",
+            "evidence": "geometry_handoff_v3:S4"
+          },
+          "golden_bot_radius_displayed_m": {
+            "surface_type": "displayed",
+            "truth_status": "community_formula_current_displayed_proxy_golden_bot_only",
+            "source_unit_system": "golden_bot_range_m + tower_range_displayed_m",
+            "evidence": "geometry_handoff_v3:S3/S6"
+          },
+          "spotlight_radius_displayed_proxy_m": {
+            "surface_type": "derived_proxy",
+            "truth_status": "proxy_only_until_validated",
+            "source_unit_system": "tower_range_displayed_m + spotlight quantity/angle",
+            "evidence": "geometry_handoff_v3:S13"
+          },
+          "spotlight_sector_area_proxy_m2": {
+            "surface_type": "derived_proxy",
+            "truth_status": "proxy_only_until_validated",
+            "source_unit_system": "tower_range_displayed_m + spotlight quantity/angle",
+            "evidence": "geometry_handoff_v3:S13"
+          },
+          "boss_contact_time_displayed_proxy_seconds": {
+            "surface_type": "derived_proxy",
+            "truth_status": "proxy_only",
+            "source_unit_system": "displayed_geometry",
+            "evidence": "geometry_handoff_v3:derived_math"
+          },
+          "golden_bot_inbound_path_exposure_fraction_proxy": {
+            "surface_type": "derived_proxy",
+            "truth_status": "proxy_only",
+            "source_unit_system": "displayed_geometry",
+            "evidence": "geometry_handoff_v3:derived_math"
+          },
+          "spotlight_angular_coverage_fraction_proxy": {
+            "surface_type": "derived_proxy",
+            "truth_status": "proxy_only",
+            "source_unit_system": "displayed_geometry",
+            "evidence": "geometry_handoff_v3:derived_math"
+          }
+        },
+        "blocked_surfaces": {
+          "wall_contact_radius_effective_u": {
+            "surface_type": "effective",
+            "status": "blocked",
+            "reason": "displayed wall radius is not promoted to effective wall contact truth"
+          },
+          "boss_contact_time_from_geometry_seconds": {
+            "surface_type": "effective",
+            "status": "blocked",
+            "reason": "measured boss contact time truth remains blocked; only displayed proxy base seconds may feed simulators.timing with diagnostics"
+          },
+          "ranged_enemy_firing_distance_m": {
+            "surface_type": "effective_or_displayed",
+            "status": "blocked_legacy_candidate",
+            "reason": "legacy formula is not current validated truth"
+          },
+          "flame_bot_displayed_radius_m": {
+            "surface_type": "displayed",
+            "status": "blocked_unresolved_candidate",
+            "reason": "Golden Bot displayed-radius formula is not generalized to non-GB bots"
+          },
+          "amplify_bot_displayed_radius_m": {
+            "surface_type": "displayed",
+            "status": "blocked_unresolved_candidate",
+            "reason": "Golden Bot displayed-radius formula is not generalized to non-GB bots"
+          },
+          "thunder_bot_displayed_radius_m": {
+            "surface_type": "displayed",
+            "status": "blocked_unresolved_candidate",
+            "reason": "Golden Bot displayed-radius formula is not generalized to non-GB bots"
+          },
+          "bot_pathing_distribution": {
+            "surface_type": "runtime_pathing",
+            "status": "blocked",
+            "reason": "post-v28 bot movement and synchronicity need separate validation"
+          }
+        },
+        "unresolved_notes": [
+          "Black Hole size is absent; BH displayed surfaces and overlap proxies were omitted.",
+          "Chrono Field range extension is absent; CF displayed radius proxy was omitted.",
+          "Displayed/proxy geometry is not effective/contact truth.",
+          "Proxy overlaps do not equal exact captured, tagged, killed, or density-weighted enemy fractions."
+        ]
+      },
+      "max_progression": {
+        "engine": "geometry_engine",
+        "owner": "simulators.geometry",
+        "schema_version": 1,
+        "status": "partial_displayed_proxy",
+        "input_surfaces": {
+          "tower_range_theoretical_m": {
+            "value": 130.66,
+            "source_surface_id": "state::tower.range_m",
+            "source_unit_system": "tower_range_theoretical_m",
+            "truth_status": "qe_resolved_stat_input"
+          },
+          "golden_bot_range_m": {
+            "value": 70.0,
+            "source_surface_id": "state::bot.golden.range_m",
+            "source_unit_system": "golden_bot_range_m",
+            "truth_status": "qe_resolved_stat_input"
+          },
+          "golden_bot_owned": {
+            "value": true,
+            "source_surface_id": "state::bot.golden.owned",
+            "source_unit_system": "boolean",
+            "truth_status": "qe_resolved_stat_input"
+          },
+          "spotlight_count": {
+            "value": 3.0,
+            "source_surface_id": "state::uw.spotlight.count",
+            "source_unit_system": "count",
+            "truth_status": "qe_resolved_stat_input"
+          },
+          "spotlight_angle_degrees": {
+            "value": 56.85,
+            "source_surface_id": "state::uw.spotlight.angle_degrees",
+            "source_unit_system": "angle_degrees",
+            "truth_status": "qe_resolved_stat_input"
+          }
+        },
+        "surfaces": {
+          "tower_range_displayed_m": 121.40406875139999,
+          "tower_radius_displayed_m": 121.40406875139999,
+          "wall_radius_displayed_m": 36.80817593905827,
+          "boss_path_distance_to_tower_displayed_candidate_m": 121.40406875139999,
+          "boss_path_distance_to_wall_displayed_candidate_m": 84.59589281234172,
+          "regular_orb_radius_displayed_m": 93.66640891053984,
+          "extra_orb_radius_displayed_m": 83.63632115174588,
+          "golden_bot_radius_displayed_m": 162.6290474928826,
+          "spotlight_radius_displayed_proxy_m": 121.40406875139999,
+          "spotlight_sector_area_proxy_m2": 21936.411261961275
+        },
+        "overlaps": {},
+        "encounters": {
+          "boss_wall_travel_displayed_proxy": {
+            "status": "resolved_displayed_proxy_candidate",
+            "truth_status": "displayed_proxy_candidate_not_wall_contact_truth",
+            "timing_use": "default_base_candidate_only_manual_override_wins",
+            "tower_range_theoretical_m": 130.66,
+            "tower_range_displayed_m": 121.40406875139999,
+            "wall_radius_displayed_m": 36.80817593905827,
+            "boss_path_distance_to_tower_displayed_candidate_m": 121.40406875139999,
+            "boss_path_distance_to_wall_displayed_candidate_m": 84.59589281234172,
+            "reference_tower_range_theoretical_m": 69.5,
+            "reference_tower_range_displayed_m": 69.5,
+            "reference_wall_radius_displayed_m": 25.3789,
+            "reference_path_distance_to_wall_displayed_m": 44.1211,
+            "reference_contact_time_seconds": 2.0,
+            "boss_contact_time_displayed_proxy_seconds": 3.8347136772356865
+          },
+          "boss_contact_time_displayed_proxy_seconds": 3.8347136772356865,
+          "golden_bot_inbound_path_exposure_fraction_proxy": 1.0,
+          "spotlight_angular_coverage_fraction_proxy": 0.47375
+        },
+        "surface_metadata": {
+          "tower_range_displayed_m": {
+            "surface_type": "displayed",
+            "truth_status": "community_fit_current",
+            "source_unit_system": "tower_range_theoretical_m",
+            "evidence": "geometry_handoff_v3:S2"
+          },
+          "tower_radius_displayed_m": {
+            "surface_type": "displayed",
+            "truth_status": "community_fit_current",
+            "source_unit_system": "tower_range_displayed_m",
+            "evidence": "geometry_handoff_v3:S2"
+          },
+          "wall_radius_displayed_m": {
+            "surface_type": "displayed",
+            "truth_status": "user_supplied_advanced_analysis_image",
+            "source_unit_system": "tower_range_displayed_m",
+            "evidence": "geometry_handoff_v3:S4"
+          },
+          "boss_path_distance_to_tower_displayed_candidate_m": {
+            "surface_type": "displayed_candidate",
+            "truth_status": "proxy_scaffold_not_contact_truth",
+            "source_unit_system": "tower_range_displayed_m",
+            "evidence": "geometry_handoff_v3:wall_contact_scaffold"
+          },
+          "boss_path_distance_to_wall_displayed_candidate_m": {
+            "surface_type": "displayed_candidate",
+            "truth_status": "proxy_scaffold_not_contact_truth",
+            "source_unit_system": "tower_range_displayed_m_minus_wall_radius_displayed_m",
+            "evidence": "geometry_handoff_v3:wall_contact_scaffold"
+          },
+          "regular_orb_radius_displayed_m": {
+            "surface_type": "displayed",
+            "truth_status": "user_supplied_advanced_analysis_image",
+            "source_unit_system": "tower_range_displayed_m",
+            "evidence": "geometry_handoff_v3:S4"
+          },
+          "extra_orb_radius_displayed_m": {
+            "surface_type": "displayed",
+            "truth_status": "user_supplied_advanced_analysis_image",
+            "source_unit_system": "tower_range_displayed_m",
+            "evidence": "geometry_handoff_v3:S4"
+          },
+          "golden_bot_radius_displayed_m": {
+            "surface_type": "displayed",
+            "truth_status": "community_formula_current_displayed_proxy_golden_bot_only",
+            "source_unit_system": "golden_bot_range_m + tower_range_displayed_m",
+            "evidence": "geometry_handoff_v3:S3/S6"
+          },
+          "spotlight_radius_displayed_proxy_m": {
+            "surface_type": "derived_proxy",
+            "truth_status": "proxy_only_until_validated",
+            "source_unit_system": "tower_range_displayed_m + spotlight quantity/angle",
+            "evidence": "geometry_handoff_v3:S13"
+          },
+          "spotlight_sector_area_proxy_m2": {
+            "surface_type": "derived_proxy",
+            "truth_status": "proxy_only_until_validated",
+            "source_unit_system": "tower_range_displayed_m + spotlight quantity/angle",
+            "evidence": "geometry_handoff_v3:S13"
+          },
+          "boss_contact_time_displayed_proxy_seconds": {
+            "surface_type": "derived_proxy",
+            "truth_status": "proxy_only",
+            "source_unit_system": "displayed_geometry",
+            "evidence": "geometry_handoff_v3:derived_math"
+          },
+          "golden_bot_inbound_path_exposure_fraction_proxy": {
+            "surface_type": "derived_proxy",
+            "truth_status": "proxy_only",
+            "source_unit_system": "displayed_geometry",
+            "evidence": "geometry_handoff_v3:derived_math"
+          },
+          "spotlight_angular_coverage_fraction_proxy": {
+            "surface_type": "derived_proxy",
+            "truth_status": "proxy_only",
+            "source_unit_system": "displayed_geometry",
+            "evidence": "geometry_handoff_v3:derived_math"
+          }
+        },
+        "blocked_surfaces": {
+          "wall_contact_radius_effective_u": {
+            "surface_type": "effective",
+            "status": "blocked",
+            "reason": "displayed wall radius is not promoted to effective wall contact truth"
+          },
+          "boss_contact_time_from_geometry_seconds": {
+            "surface_type": "effective",
+            "status": "blocked",
+            "reason": "measured boss contact time truth remains blocked; only displayed proxy base seconds may feed simulators.timing with diagnostics"
+          },
+          "ranged_enemy_firing_distance_m": {
+            "surface_type": "effective_or_displayed",
+            "status": "blocked_legacy_candidate",
+            "reason": "legacy formula is not current validated truth"
+          },
+          "flame_bot_displayed_radius_m": {
+            "surface_type": "displayed",
+            "status": "blocked_unresolved_candidate",
+            "reason": "Golden Bot displayed-radius formula is not generalized to non-GB bots"
+          },
+          "amplify_bot_displayed_radius_m": {
+            "surface_type": "displayed",
+            "status": "blocked_unresolved_candidate",
+            "reason": "Golden Bot displayed-radius formula is not generalized to non-GB bots"
+          },
+          "thunder_bot_displayed_radius_m": {
+            "surface_type": "displayed",
+            "status": "blocked_unresolved_candidate",
+            "reason": "Golden Bot displayed-radius formula is not generalized to non-GB bots"
+          },
+          "bot_pathing_distribution": {
+            "surface_type": "runtime_pathing",
+            "status": "blocked",
+            "reason": "post-v28 bot movement and synchronicity need separate validation"
+          }
+        },
+        "unresolved_notes": [
+          "Black Hole size is absent; BH displayed surfaces and overlap proxies were omitted.",
+          "Chrono Field range extension is absent; CF displayed radius proxy was omitted.",
+          "Displayed/proxy geometry is not effective/contact truth.",
+          "Proxy overlaps do not equal exact captured, tagged, killed, or density-weighted enemy fractions."
+        ]
+      }
+    }
+  },
+  "diagnostics": {
+    "state_count": 4,
+    "resolved_state_count": 0,
+    "partial_state_count": 4,
+    "unresolved_state_count": 0,
+    "effective_contact_truth_promoted": false,
+    "proxy_governance_status": "active"
+  }
+}

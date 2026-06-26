@@ -944,6 +944,14 @@ nodes:
     verification_status: verified
     blocker_reason: ''
     notes: Module assertion source for Anti-Cube Portal eDamage surface.
+  - node_id: source_input::module:Being Annihilator
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: verified
+    blocker_reason: ''
+    notes: Module assertion source for Being Annihilator eDamage critical-factor surface.
   - node_id: source_input::module:Dimension Core
     node_kind: source_input
     family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
@@ -1000,6 +1008,14 @@ nodes:
     verification_status: verified
     blocker_reason: ''
     notes: Anti-Cube Portal shockwave damage-taken multiplier for eDamage.
+  - node_id: state::module.being_annihilator.guaranteed_supercrits_after_supercrit_attacks
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: debug_only
+    verification_status: verified
+    blocker_reason: ''
+    notes: Being Annihilator guaranteed future super-crit attack count for eDamage.
   - node_id: state::module.dimension_core.max_shock_stacks
     node_kind: surface
     family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
@@ -2305,6 +2321,30 @@ nodes:
     verification_status: verified
     blocker_reason: ''
     notes: Wave Accelerator Mastery spawn-rate acceleration support input.
+  - node_id: source_input::card:Enemy Balance
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: verified
+    blocker_reason: ''
+    notes: Enemy Balance card assertion source for mastery-gated elite pressure diagnostics.
+  - node_id: source_input::lab:Enemy Balance Mastery
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: verified
+    blocker_reason: ''
+    notes: Enemy Balance Mastery lab source for double-elite pressure diagnostics.
+  - node_id: state::cards.enemy_balance.mastery_effect
+    node_kind: environment
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: support_only
+    verification_status: verified
+    blocker_reason: ''
+    notes: Enemy Balance Mastery double-elite chance support input for Boss Waves non-boss pressure diagnostics.
   - node_id: source_input::card:Intro Sprint
     node_kind: source_input
     family_ids: [timing_farm_with_perks, timing_scenario_probe, progression_start_of_run, progression_runtime_with_perks]
@@ -2369,6 +2409,14 @@ nodes:
     verification_status: verified
     blocker_reason: ''
     notes: Wave Skip card source for eEcon wave factor.
+  - node_id: source_input::lab:Wave Skip Mastery
+    node_kind: source_input
+    family_ids: [timing_tournament_no_perks, timing_farm_with_perks, timing_scenario_probe]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: verified
+    blocker_reason: ''
+    notes: Wave Skip Mastery lab source for double-wave-skip timing/economy diagnostics.
   - node_id: source_input::uw:Economy Ultimate Weapons
     node_kind: source_input
     family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
@@ -2393,6 +2441,14 @@ nodes:
     verification_status: verified
     blocker_reason: ''
     notes: Wave Skip card chance consumed by eEcon wave and free-upgrade factors.
+  - node_id: state::cards.wave_skip.mastery_effect
+    node_kind: environment
+    family_ids: [timing_tournament_no_perks, timing_farm_with_perks, timing_scenario_probe]
+    is_publishable: false
+    publication_relevance: support_only
+    verification_status: verified
+    blocker_reason: ''
+    notes: Wave Skip Mastery chance to double skipped waves after equip/unlock gating.
   - node_id: state::economy.coins_multiplier
     node_kind: surface
     family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
@@ -3440,6 +3496,13 @@ edges:
     publication_relevance: support_only
     verification_status: verified
     notes: Module assertions govern Anti-Cube Portal eDamage publication.
+  - upstream_node_id: source_input::module:Being Annihilator
+    downstream_node_id: state::module.being_annihilator.guaranteed_supercrits_after_supercrit_attacks
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [module_assertions, assist_slot_choice]
+    publication_relevance: support_only
+    verification_status: verified
+    notes: Module assertions govern Being Annihilator eDamage critical-factor publication.
   - upstream_node_id: source_input::module:Dimension Core
     downstream_node_id: state::module.dimension_core.max_shock_stacks
     invalidation_semantics: recompute_downstream
@@ -4323,6 +4386,20 @@ edges:
     publication_relevance: support_only
     verification_status: verified
     notes: Active Wave Accelerator Mastery publishes the equipped-card spawn-rate acceleration multiplier after equip/unlock gating.
+  - upstream_node_id: source_input::card:Enemy Balance
+    downstream_node_id: state::cards.enemy_balance.mastery_effect
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [card_assertions]
+    publication_relevance: support_only
+    verification_status: verified
+    notes: Enemy Balance card equip gates the mastery double-elite pressure diagnostic surface.
+  - upstream_node_id: source_input::lab:Enemy Balance Mastery
+    downstream_node_id: state::cards.enemy_balance.mastery_effect
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [lab_level_change]
+    publication_relevance: support_only
+    verification_status: verified
+    notes: Active Enemy Balance Mastery publishes double-elite chance after equip/unlock gating.
   - upstream_node_id: source_input::card:Intro Sprint
     downstream_node_id: state::cards.intro_sprint.waves
     invalidation_semantics: recompute_downstream
@@ -4344,6 +4421,13 @@ edges:
     publication_relevance: support_only
     verification_status: verified
     notes: Wave Skip card affects eEcon wave and free-upgrade factors.
+  - upstream_node_id: source_input::lab:Wave Skip Mastery
+    downstream_node_id: state::cards.wave_skip.mastery_effect
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [lab_level_change]
+    publication_relevance: support_only
+    verification_status: verified
+    notes: Wave Skip Mastery affects double-wave-skip timing/economy diagnostics when the card is equipped and mastery is unlocked.
   - upstream_node_id: source_input::card:Coins
     downstream_node_id: state::economy.coins_multiplier
     invalidation_semantics: recompute_downstream

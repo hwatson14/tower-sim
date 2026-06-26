@@ -111,6 +111,106 @@ surfaces:
     compare_policy: normal
     rationale: Effective Paths Chrono Field+ exposure helper before final slow-factor
       multiplication.
+  derived::edamage.bullet_crit_factor:
+    formula_class: ep_helper_composite
+    publish_policy: allow_if_resolved
+    compare_policy: normal
+    rationale: Effective Paths bullet critical-hit helper published by QE derived composites and compared in the tournament/no-perk run context.
+  derived::edamage.uw_crit_factor:
+    formula_class: ep_helper_composite
+    publish_policy: allow_if_resolved
+    compare_policy: normal
+    rationale: Effective Paths ultimate-weapon critical-hit helper published by QE derived composites and compared in the tournament/no-perk run context.
+  derived::edamage.multishot_factor:
+    formula_class: ep_helper_composite
+    publish_policy: allow_if_resolved
+    compare_policy: normal
+    rationale: Effective Paths multishot helper published by QE derived composites and compared in the tournament/no-perk run context.
+  derived::edamage.bounce_factor:
+    formula_class: ep_helper_composite
+    publish_policy: allow_if_resolved
+    compare_policy: normal
+    rationale: Effective Paths bounce-shot helper published by QE derived composites and compared in the tournament/no-perk run context.
+  derived::edamage.rapidfire_factor:
+    formula_class: ep_helper_composite
+    publish_policy: allow_if_resolved
+    compare_policy: normal
+    rationale: Effective Paths rapid-fire helper published by QE derived composites and compared in the tournament/no-perk run context.
+  derived::edamage.bullet_per_second:
+    formula_class: ep_helper_composite
+    publish_policy: allow_if_resolved
+    compare_policy: normal
+    rationale: Effective Paths bullets-per-second helper published by QE derived composites and compared in the tournament/no-perk run context.
+  derived::edamage.range_dpm_factor:
+    formula_class: ep_helper_composite
+    publish_policy: allow_if_resolved
+    compare_policy: normal
+    rationale: Effective Paths damage-per-meter helper; compare remains loadout-slider sensitive through stage-context facets.
+  derived::edamage.super_tower_factor:
+    formula_class: ep_helper_composite
+    publish_policy: allow_if_resolved
+    compare_policy: normal
+    rationale: Effective Paths Super Tower exposure helper; EP compare is stage-scoped because EP exports a UW component shortcut rather than the full effective uptime factor.
+  derived::edamage.bullet_pipeline_factor:
+    formula_class: ep_helper_composite
+    publish_policy: allow_if_resolved
+    compare_policy: normal
+    rationale: Effective Paths bullet pipeline helper; compare remains stage-scoped when DPM-at-range and range-slider workbook facets are unavailable.
+  derived::edamage.uw_dissonance_factor:
+    formula_class: ep_helper_composite
+    publish_policy: allow_if_resolved
+    compare_policy: normal
+    rationale: Effective Paths attack/ultimate-weapon Dissonance helper published by QE from Dissonant Echo multiplier surfaces.
+  derived::edamage.spotlight_factor:
+    formula_class: ep_helper_composite
+    publish_policy: allow_if_resolved
+    compare_policy: normal
+    rationale: Effective Paths Spotlight helper; compare remains stage-scoped where workbook target-level policy is an unsupported EP facet.
+  derived::edamage.uw.death_wave_dps:
+    formula_class: ep_helper_composite
+    publish_policy: allow_if_resolved
+    compare_policy: normal
+    rationale: Effective Paths Death Wave DPS helper; compare remains stage-scoped where workbook ultimate-weapon target-level policy is unsupported.
+  derived::edamage.uw.chain_lightning_dps:
+    formula_class: ep_helper_composite
+    publish_policy: allow_if_resolved
+    compare_policy: normal
+    rationale: Effective Paths Chain Lightning DPS helper and Boss Waves diagnostic/fallback damage source; compare remains stage-scoped where workbook ultimate-weapon target-level policy is unsupported.
+  derived::edamage.uw.smart_missiles_dps:
+    formula_class: ep_helper_composite
+    publish_policy: allow_if_resolved
+    compare_policy: normal
+    rationale: Effective Paths Smart Missiles DPS helper published by QE derived composites and compared in the tournament/no-perk run context.
+  derived::edamage.uw.spotlight_missiles_dps:
+    formula_class: ep_helper_composite
+    publish_policy: allow_if_resolved
+    compare_policy: normal
+    rationale: Effective Paths Spotlight Missiles DPS helper; compare remains stage-scoped where missile enablement and hit-count workbook facets are unsupported.
+  derived::edamage.uw.poison_swamp_dps:
+    formula_class: ep_helper_composite
+    publish_policy: allow_if_resolved
+    compare_policy: normal
+    rationale: Effective Paths Poison Swamp DPS helper published by QE derived composites and compared in the tournament/no-perk run context.
+  derived::edamage.uw.ilm_dps:
+    formula_class: ep_helper_composite
+    publish_policy: allow_if_resolved
+    compare_policy: normal
+    rationale: Effective Paths Inner Land Mines DPS helper published by QE derived composites and compared in the tournament/no-perk run context.
+  derived::edamage.shock_stack_factor:
+    formula_class: ep_helper_composite
+    publish_policy: allow_if_resolved
+    compare_policy: normal
+    rationale: Effective Paths shock-stack helper; compare remains stage-scoped where Dimension Core stack policy is an unsupported workbook facet.
+  derived::edamage.uw_total_damage:
+    formula_class: ep_helper_composite
+    publish_policy: allow_if_resolved
+    compare_policy: normal
+    rationale: Effective Paths ultimate-weapon total-damage helper; compare remains stage-scoped where UW target-level and Spotlight Missile hit facets are unsupported.
+  derived::edamage.slow_factor:
+    formula_class: ep_helper_composite
+    publish_policy: allow_if_resolved
+    compare_policy: normal
+    rationale: Effective Paths slow-factor helper published by QE derived composites and compared in the tournament/no-perk run context.
   derived::edamage.boss_applicable_dps_cl_only:
     formula_class: simulator_support_surface
     publish_policy: allow_if_resolved
@@ -148,6 +248,41 @@ surfaces:
     rationale: Effective Paths Health raw helper before the Armor-slot module health
       multiplier; published separately because the EP export now splits raw health
       and armor multiplier while TowerSim also preserves the post-armor health pool.
+  derived::ehp:
+    formula_class: ep_helper_composite
+    publish_policy: allow_if_resolved
+    compare_policy: normal
+    rationale: Effective Paths eHP objective surface; compare can inherit component-level stage-scope limitations rather than indicating a separate formula mismatch.
+  derived::ehp.armor_factor:
+    formula_class: ep_helper_composite
+    publish_policy: allow_if_resolved
+    compare_policy: normal
+    rationale: Effective Paths armor helper published by QE derived composites and compared in the farming eHP context.
+  derived::ehp.defense_taken_factor:
+    formula_class: ep_helper_composite
+    publish_policy: allow_if_resolved
+    compare_policy: normal
+    rationale: Effective Paths defense-taken helper from defense percent, published by QE derived composites and compared in the farming eHP context.
+  derived::ehp.wall_factor:
+    formula_class: ep_helper_composite
+    publish_policy: allow_if_resolved
+    compare_policy: normal
+    rationale: Effective Paths wall-health helper published by QE derived composites and compared in the farming eHP context.
+  derived::ehp.tradeoff_defense_factor:
+    formula_class: ep_helper_composite
+    publish_policy: allow_if_resolved
+    compare_policy: normal
+    rationale: Effective Paths tradeoff-defense helper; compare remains stage-scoped when EP perk-selection assumptions are unavailable.
+  derived::ehp.chrono_field_damage_reduction_factor:
+    formula_class: ep_helper_composite
+    publish_policy: allow_if_resolved
+    compare_policy: normal
+    rationale: Effective Paths Chrono Field damage-reduction helper; compare remains stage-scoped where workbook damage-reduction scope is unsupported.
+  derived::ehp.chain_thunder_factor:
+    formula_class: ep_helper_composite
+    publish_policy: allow_if_resolved
+    compare_policy: normal
+    rationale: Effective Paths Chain Thunder helper; compare remains stage-scoped where Chain Lightning damage-share assumptions are unavailable.
   derived::wall.regen_hp_per_second:
     formula_class: ep_helper_composite
     publish_policy: allow_if_resolved
@@ -160,6 +295,74 @@ surfaces:
     compare_policy: normal
     rationale: Effective Paths Average CpK/eEcon objective surface, including Utility
       Dissonance/Echo and coin-path contributors.
+  derived::dissonance.attack.echo_multiplier:
+    formula_class: kb_contract_repaired
+    publish_policy: allow_if_resolved
+    compare_policy: helper_or_non_ep_surface
+    allowed_formula_input_value_types:
+    - level
+    rationale: "v28 Dissonant Echo Attack formula bridge: (1 + lab level) * 0.5%, published by QE so downstream consumers use the ratio surface rather than rederive from lab level."
+  derived::dissonance.defense.echo_multiplier:
+    formula_class: kb_contract_repaired
+    publish_policy: allow_if_resolved
+    compare_policy: helper_or_non_ep_surface
+    allowed_formula_input_value_types:
+    - level
+    rationale: "v28 Dissonant Echo Defense formula bridge: (1 + lab level) * 0.5%, published by QE so downstream consumers use the ratio surface rather than rederive from lab level."
+  derived::dissonance.utility.echo_multiplier:
+    formula_class: kb_contract_repaired
+    publish_policy: allow_if_resolved
+    compare_policy: helper_or_non_ep_surface
+    allowed_formula_input_value_types:
+    - level
+    rationale: "v28 Dissonant Echo Utility formula bridge: (1 + lab level) * 0.5%, published by QE so downstream consumers use the ratio surface rather than rederive from lab level."
+  derived::dissonance.ultimate_weapons.echo_multiplier:
+    formula_class: kb_contract_repaired
+    publish_policy: allow_if_resolved
+    compare_policy: helper_or_non_ep_surface
+    allowed_formula_input_value_types:
+    - level
+    rationale: "v28 Dissonant Echo Ultimate Weapons formula bridge: (1 + lab level) * 0.5%, published by QE so downstream consumers use the ratio surface rather than rederive from lab level."
+  derived::dissonance.attack.echo_bonus_multiplier:
+    formula_class: kb_contract_repaired_derived_display
+    publish_policy: allow_if_resolved
+    compare_policy: helper_or_non_ep_surface
+    rationale: v28 Attack Dissonant Echo additive bonus published by QE from the echo-source bonus and Echo ratio.
+  derived::dissonance.defense.echo_bonus_multiplier:
+    formula_class: kb_contract_repaired_derived_display
+    publish_policy: allow_if_resolved
+    compare_policy: helper_or_non_ep_surface
+    rationale: v28 Defense Dissonant Echo additive bonus published by QE from the echo-source bonus and Echo ratio.
+  derived::dissonance.utility.echo_bonus_multiplier:
+    formula_class: kb_contract_repaired_derived_display
+    publish_policy: allow_if_resolved
+    compare_policy: helper_or_non_ep_surface
+    rationale: v28 Utility Dissonant Echo additive bonus published by QE from the echo-source bonus and Echo ratio.
+  derived::dissonance.ultimate_weapons.echo_bonus_multiplier:
+    formula_class: kb_contract_repaired_derived_display
+    publish_policy: allow_if_resolved
+    compare_policy: helper_or_non_ep_surface
+    rationale: v28 Ultimate Weapons Dissonant Echo additive bonus published by QE from the echo-source bonus and Echo ratio.
+  derived::dissonance.attack.total_multiplier:
+    formula_class: kb_contract_repaired_derived_display
+    publish_policy: allow_if_resolved
+    compare_policy: helper_or_non_ep_surface
+    rationale: v28 Attack Dissonance total multiplier published by QE from active boost plus Echo additive bonus.
+  derived::dissonance.defense.total_multiplier:
+    formula_class: kb_contract_repaired_derived_display
+    publish_policy: allow_if_resolved
+    compare_policy: helper_or_non_ep_surface
+    rationale: v28 Defense Dissonance total multiplier published by QE from active boost plus Echo additive bonus.
+  derived::dissonance.utility.total_multiplier:
+    formula_class: kb_contract_repaired_derived_display
+    publish_policy: allow_if_resolved
+    compare_policy: helper_or_non_ep_surface
+    rationale: v28 Utility Dissonance total multiplier published by QE from active boost plus Echo additive bonus.
+  derived::dissonance.ultimate_weapons.total_multiplier:
+    formula_class: kb_contract_repaired_derived_display
+    publish_policy: allow_if_resolved
+    compare_policy: helper_or_non_ep_surface
+    rationale: v28 Ultimate Weapons Dissonance total multiplier published by QE from active boost plus Echo additive bonus.
   state::tower.range_m:
     formula_class: generic_validated
     publish_policy: allow

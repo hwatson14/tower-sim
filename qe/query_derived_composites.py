@@ -162,6 +162,21 @@ def _has_dissonance_restriction_override(rows: Dict[str, StatRow], category: str
     return False
 
 
+def _dissonance_restriction_override_categories(rows: Dict[str, StatRow]) -> set[str]:
+    prefix = 'dissonance_restriction_override::'
+    categories: set[str] = set()
+    for row in rows.values():
+        for contributor in row.contributors or []:
+            contributor_id = str((contributor or {}).get('contributor_id') or '')
+            if not contributor_id.startswith(prefix):
+                continue
+            _, _, rest = contributor_id.partition(prefix)
+            category, separator, _ = rest.partition('::')
+            if separator and category:
+                categories.add(category)
+    return categories
+
+
 def _tp(rows: Dict[str, StatRow], a: str, b: str) -> float:
     return _get(rows, a) + _get(rows, b)
 
@@ -783,6 +798,8 @@ def _dissonance_total_multiplier(rows: Dict[str, StatRow], category: str) -> flo
 
 def _publish_dissonance_surfaces(rows: Dict[str, StatRow]) -> None:
     for category, level_surface in _DISSONANT_ECHO_LEVEL_SURFACES.items():
+        echo_multiplier_surface = f'derived::dissonance.{category}.echo_multiplier'
+        echo_bonus_surface = f'derived::dissonance.{category}.echo_bonus_multiplier'
         level_row = _row(rows, level_surface)
         echo_fraction = 0.0
         try:
@@ -793,7 +810,7 @@ def _publish_dissonance_surfaces(rows: Dict[str, StatRow]) -> None:
         if level_row is not None:
             _publish(
                 rows,
-                f'derived::dissonance.{category}.echo_multiplier',
+                echo_multiplier_surface,
                 echo_fraction,
                 'ratio',
                 [_contributor(rows, level_surface, f'dissonance.{category}.echo_multiplier')],
@@ -807,17 +824,15 @@ def _publish_dissonance_surfaces(rows: Dict[str, StatRow]) -> None:
         echo_spillover_source = max(0.0, echo_source_bonus - active_delta)
         echo_bonus = echo_spillover_source * max(0.0, echo_fraction)
         total_multiplier = active_boost + echo_bonus
-        contributors = [
-            _contributor(rows, active_boost_surface, f'dissonance.{category}.total_multiplier'),
-            _contributor(rows, echo_source_surface, f'dissonance.{category}.total_multiplier'),
-            _contributor(rows, level_surface, f'dissonance.{category}.total_multiplier'),
-        ]
         _publish(
             rows,
-            f'derived::dissonance.{category}.echo_bonus_multiplier',
+            echo_bonus_surface,
             echo_bonus,
             'multiplier',
-            contributors[1:],
+            [
+                _contributor(rows, echo_source_surface, f'dissonance.{category}.echo_bonus_multiplier'),
+                _contributor(rows, echo_multiplier_surface, f'dissonance.{category}.echo_bonus_multiplier'),
+            ],
             'v28 Dissonant Echo additive bonus applied to this tier: sum(max(Dissonant Boost - 1, 0) from other _IDS tier PBs) * Echo lab fraction. The active-tier PB is excluded from Echo to avoid double-counting.',
         )
         _publish(
@@ -825,7 +840,10 @@ def _publish_dissonance_surfaces(rows: Dict[str, StatRow]) -> None:
             f'derived::dissonance.{category}.total_multiplier',
             total_multiplier,
             'multiplier',
-            contributors,
+            [
+                _contributor(rows, active_boost_surface, f'dissonance.{category}.total_multiplier'),
+                _contributor(rows, echo_bonus_surface, f'dissonance.{category}.total_multiplier'),
+            ],
             'v28 total Dissonance multiplier used by stats: active-tier Dissonant Boost plus other-tier Dissonant Echo additive bonus.',
         )
 
@@ -905,6 +923,7 @@ def publish_derived_composites(rows: Dict[str, StatRow]) -> None:
     _publish_dissonance_surfaces(rows)
     _publish_effective_bot_ranges(rows)
     _publish_bot_plus_surfaces(rows)
+    dissonance_override_categories = _dissonance_restriction_override_categories(rows)
     defense_dissonance_active = _bool(
         rows,
         [
@@ -913,7 +932,7 @@ def publish_derived_composites(rows: Dict[str, StatRow]) -> None:
             'context::dissonance.defense_run_active',
         ],
         False,
-    ) or _has_dissonance_restriction_override(rows, 'defense')
+    ) or 'defense' in dissonance_override_categories
     utility_dissonance_active = _bool(
         rows,
         [
@@ -922,7 +941,7 @@ def publish_derived_composites(rows: Dict[str, StatRow]) -> None:
             'context::dissonance.utility_run_active',
         ],
         False,
-    ) or _has_dissonance_restriction_override(rows, 'utility')
+    ) or 'utility' in dissonance_override_categories
     ultimate_weapons_dissonance_active = _bool(
         rows,
         [
@@ -931,7 +950,7 @@ def publish_derived_composites(rows: Dict[str, StatRow]) -> None:
             'context::dissonance.ultimate_weapons_run_active',
         ],
         False,
-    ) or _has_dissonance_restriction_override(rows, 'ultimate_weapons')
+    ) or 'ultimate_weapons' in dissonance_override_categories
     # eHP: closer to EP CN5 structure
     health_factor = _get_first(rows, ['support_surface::ehp.health_factor', _compat_runtime('ehp.health_factor')], 0.0)
     health_ws = _get_first(rows, ['support_surface::ehp.health_ws'], 0.0)
@@ -1302,7 +1321,7 @@ def publish_derived_composites(rows: Dict[str, StatRow]) -> None:
             'context::dissonance.attack_run_active',
         ],
         False,
-    ) or _has_dissonance_restriction_override(rows, 'attack')
+    ) or 'attack' in dissonance_override_categories
     defense_dissonance_active = _bool(
         rows,
         [
@@ -1311,7 +1330,7 @@ def publish_derived_composites(rows: Dict[str, StatRow]) -> None:
             'context::dissonance.defense_run_active',
         ],
         False,
-    ) or _has_dissonance_restriction_override(rows, 'defense')
+    ) or 'defense' in dissonance_override_categories
     if attack_dissonance_active:
         asp = 1.0
         dpm = 0.0
@@ -1395,7 +1414,17 @@ def publish_derived_composites(rows: Dict[str, StatRow]) -> None:
         ],
         0.0,
     )
-    being_annihilator = _get_first(rows, [_compat_mech('module.being_annihilator.streak_count'), _compat_runtime('module.being_annihilator.streak_count')], 0.0)
+    being_annihilator = _get_first(
+        rows,
+        [
+            'state::module.being_annihilator.guaranteed_supercrits_after_supercrit_attacks',
+            _compat_mech('module.being_annihilator.guaranteed_supercrits_after_supercrit_attacks'),
+            _compat_runtime('module.being_annihilator.guaranteed_supercrits_after_supercrit_attacks'),
+            _compat_mech('module.being_annihilator.streak_count'),
+            _compat_runtime('module.being_annihilator.streak_count'),
+        ],
+        0.0,
+    )
     bullet_crit_factor = _ep_critical(cc, cf, scc, scm, being_annihilator)
     uw_crit_factor = _ep_uwcritical(cc, cf, scc, scm)
     uw_crit_card_factor = _ev(ultimate_crit_card_chance_pct, cf)

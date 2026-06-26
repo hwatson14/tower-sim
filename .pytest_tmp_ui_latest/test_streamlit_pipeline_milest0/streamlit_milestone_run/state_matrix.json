@@ -1,0 +1,78 @@
+{
+  "account_baseline": {
+    "support": {
+      "state_mode": "account_baseline",
+      "supported": true,
+      "projection_facets_applied": [],
+      "projection_facets_missing": [],
+      "notes": [
+        "Permanent account-owned systems only; excludes workshop, bots, and loadout surfaces."
+      ]
+    },
+    "input_count": 447,
+    "mapped_input_count": 447,
+    "resolved_stat_count": 330,
+    "partially_resolved_stat_count": 0,
+    "perk_preset_name": null,
+    "perks_enabled": false
+  },
+  "gem_respec": {
+    "support": {
+      "state_mode": "gem_respec",
+      "supported": true,
+      "projection_facets_applied": [],
+      "projection_facets_missing": [],
+      "notes": [
+        "Adds gem-respeccable systems on top of account baseline; excludes loadout-only cards/modules."
+      ]
+    },
+    "input_count": 516,
+    "mapped_input_count": 516,
+    "resolved_stat_count": 312,
+    "partially_resolved_stat_count": 0,
+    "perk_preset_name": null,
+    "perks_enabled": false
+  },
+  "start_of_run": {
+    "support": {
+      "state_mode": "start_of_run",
+      "supported": true,
+      "projection_facets_applied": [],
+      "projection_facets_missing": [],
+      "notes": [
+        "Current IDS preset with active loadout applied."
+      ]
+    },
+    "input_count": 574,
+    "mapped_input_count": 574,
+    "resolved_stat_count": 322,
+    "partially_resolved_stat_count": 0,
+    "perk_preset_name": null,
+    "perks_enabled": false
+  },
+  "max_progression": {
+    "support": {
+      "state_mode": "max_progression",
+      "supported": true,
+      "projection_facets_applied": [
+        "max_workshop",
+        "projected_perks",
+        "death_wave_health",
+        "berserker_damage_bonus"
+      ],
+      "projection_facets_missing": [],
+      "notes": [
+        "Max progression projects workshop rows to max_level while preserving current permanent state and preset loadout.",
+        "Projected perk materialization is a first-class max-progression facet and must not be inferred solely from active_perk_preset presence.",
+        "Death Wave health behavior that differs from start_of_run must be modeled as an explicit scenario facet, not as an implicit side effect of workshop projection.",
+        "Berserker damage bonus state that differs from start_of_run must be modeled as an explicit scenario facet, not as an implicit runtime-only assumption."
+      ]
+    },
+    "input_count": 609,
+    "mapped_input_count": 609,
+    "resolved_stat_count": 378,
+    "partially_resolved_stat_count": 0,
+    "perk_preset_name": "ProjectedMaxPolicy_AllExceptManualBans",
+    "perks_enabled": true
+  }
+}

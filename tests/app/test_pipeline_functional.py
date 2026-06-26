@@ -6,6 +6,7 @@ cache invalidation robustness, and diagnostics persistence contract.
 from __future__ import annotations
 
 import json
+import re
 import time
 from pathlib import Path
 import pytest
@@ -252,6 +253,7 @@ def test_ep_oracle_compare_normalizes_damage_per_meter_bonus_export() -> None:
 
 def test_ep_oracle_compare_annotates_known_export_defect_mismatches() -> None:
     from evaluators.compare import build_compare_status_summary, build_ep_compare
+    from evaluators.compare_core import build_compare_status_summary as build_core_summary
 
     compare = build_ep_compare(
         {
@@ -287,11 +289,66 @@ def test_ep_oracle_compare_annotates_known_export_defect_mismatches() -> None:
 
     row = compare['state::tower.max_rend_multiplier']
     assert row['status'] == 'mismatch'
+    assert row['kb_alignment_status'] == 'not_comparable'
+    assert row['verdict'] == 'pass_with_compare_limitations'
     assert 'ep_export_bug:max_rend_multiplier_exports_identity_or_display_1_0_instead_of_kb_qe_9_6' in row['compare_notes']
     summary = build_compare_status_summary(compare)
+    assert summary['ep_raw_formula_mismatch_count'] == 1
+    assert summary['ep_true_formula_mismatch_count'] == 0
     assert summary['ep_known_export_defect_count'] == 1
     assert summary['ep_unknown_formula_mismatch_count'] == 0
     assert summary['ep_stage_scope_unsupported_facet_counts'] == {}
+    core_summary = build_core_summary(compare)
+    assert core_summary['ep_raw_formula_mismatch_count'] == 1
+    assert core_summary['ep_true_formula_mismatch_count'] == 0
+    assert core_summary['ep_known_export_defect_count'] == 1
+    assert core_summary['ep_unknown_formula_mismatch_count'] == 0
+
+
+def test_ep_oracle_compare_summary_counts_accounted_stage_scope_facets() -> None:
+    from evaluators.compare import build_compare_status_summary
+    from evaluators.compare_core import build_compare_status_summary as build_core_summary
+
+    compare = {
+        'state::aligned': {'status': 'matched_exact'},
+        'state::stage.accounted': {
+            'status': 'stage_scope_mismatch',
+            'compare_notes': [
+                'normalization_note_that_is_not_a_stage_facet',
+                'ep_compare_uses_unsupported_stage_facets',
+                'max_progression',
+                'max_workshop',
+                'ep_shortcut:aggregate_scope',
+                'ep_user_guess:workbook_assumption',
+            ],
+        },
+        'state::stage.unaccounted': {
+            'status': 'stage_scope_mismatch',
+            'compare_notes': ['legacy_stage_note_without_marker'],
+        },
+    }
+
+    for summary in (build_compare_status_summary(compare), build_core_summary(compare)):
+        assert summary['ep_alignment_status'] == 'unresolved_ep_alignment_gaps'
+        assert summary['ep_clean_aligned_count'] == 1
+        assert summary['ep_accounted_stage_scope_limit_count'] == 1
+        assert summary['ep_unaccounted_alignment_gap_count'] == 1
+        assert summary['ep_stage_scope_mismatch_count'] == 2
+        assert summary['ep_stage_scope_unsupported_facet_counts'] == {
+            'ep_shortcut:aggregate_scope': 1,
+            'ep_user_guess:workbook_assumption': 1,
+            'max_progression': 1,
+            'max_workshop': 1,
+        }
+        assert summary['ep_stage_scope_user_guess_facet_counts'] == {
+            'ep_user_guess:workbook_assumption': 1,
+        }
+        assert summary['ep_stage_scope_shortcut_facet_counts'] == {
+            'ep_shortcut:aggregate_scope': 1,
+        }
+        assert summary['ep_stage_scope_rows_with_accounted_facets'] == 1
+        assert summary['ep_stage_scope_rows_without_accounted_facets'] == 1
+        assert summary['ep_stage_scope_unaccounted_destinations'] == ['state::stage.unaccounted']
 
 
 def test_ep_oracle_compare_uses_ep_run_context_for_component_helpers() -> None:
@@ -355,6 +412,21 @@ def test_ep_oracle_compare_uses_ep_run_context_for_component_helpers() -> None:
         {'default_compare_preset': 'Farming', 'state_mode': 'max_progression'},
     )
     assert 'ep_user_guess:dimension_core_shock_stack_policy' in shock_context['unsupported_facets']
+
+    super_tower_context = _ep_stage_context_for_destination(
+        'derived::edamage.super_tower_factor',
+        {'default_compare_preset': 'Farming', 'state_mode': 'max_progression'},
+    )
+    assert (
+        'ep_shortcut:super_tower_uw_component_scope_differs_from_effective_uptime_factor'
+        in super_tower_context['unsupported_facets']
+    )
+
+    ehp_total_context = _ep_stage_context_for_destination(
+        'derived::ehp',
+        {'default_compare_preset': 'Farming', 'state_mode': 'max_progression'},
+    )
+    assert 'ep_shortcut:ehp_total_inherits_component_compare_limitations' in ehp_total_context['unsupported_facets']
 
     locked_uw_helper_context = _ep_stage_context_for_destination(
         'derived::edamage.uw.smart_missiles_heatup_factor',
@@ -526,14 +598,18 @@ def test_build_boss_wave_payload_publishes_summary_and_runtime_assumptions(monke
     assert diagnostics['milestone_alignment'] == {
         'source': 'IDS::Player & Stuff.tier_progression_waves',
         'tier_column': 'Tier 14',
-        'dissonance_run_category': 'none',
-        'reference_wave': 30,
-        'dissonance_pb_source': 'IDS::Player & Stuff.dissonance_pbs_by_tier',
-        'dissonance_pb_reference_wave': None,
-        'active_reference_kind': 'ids_milestone_wave',
-        'active_reference_source': 'IDS::Player & Stuff.tier_progression_waves',
-        'active_reference_wave': 30,
-        'calculated_max_surviving_wave': 27,
+            'dissonance_run_category': 'none',
+            'reference_wave': 30,
+            'reference_raw_wave': 30,
+            'dissonance_pb_source': 'IDS::Player & Stuff.dissonance_pbs_by_tier',
+            'dissonance_pb_reference_wave': None,
+            'dissonance_pb_reference_raw_wave': None,
+            'active_reference_kind': 'ids_milestone_wave',
+            'active_reference_source': 'IDS::Player & Stuff.tier_progression_waves',
+            'active_reference_wave': 30,
+            'active_reference_raw_wave': 30,
+            'active_reference_gap_reason': None,
+            'calculated_max_surviving_wave': 27,
         'calculated_selected_max_wave': 27,
         'selected_model': 'unified_hit_by_hit_boss_survival',
         'comparison_status': 'comparison_available',
@@ -541,6 +617,24 @@ def test_build_boss_wave_payload_publishes_summary_and_runtime_assumptions(monke
         'abs_delta_waves': 3,
         'calculated_to_reference_ratio': 0.9,
     }
+    expected_pressure_hint = {
+        'enabled': True,
+        'mode': 'raw_calculated_wave_to_reference_ratio_hint',
+        'application': 'explicit_comparison_input_only',
+        'certification_effect': 'none_not_applied',
+        'boss_wave_pressure_factor': pytest.approx(0.9),
+        'rounded_boss_wave_pressure_factor': 0.9,
+        'direction': 'decrease_pressure',
+        'calculated_selected_max_wave': 27,
+        'reference_wave': 30,
+        'reference_kind': 'ids_milestone_wave',
+        'reference_source': 'IDS::Player & Stuff.tier_progression_waves',
+        'calculated_delta_vs_reference_wave': -3,
+        'calculated_to_reference_ratio': pytest.approx(0.9),
+        'comparison_scenario_runtime_inputs': {'boss_wave_pressure_factor': pytest.approx(0.9)},
+    }
+    assert summary['pressure_factor_reference_hint'] == expected_pressure_hint
+    assert diagnostics['pressure_factor_reference_hint'] == expected_pressure_hint
 
 
 def _install_fake_boss_wave_app_dependencies(monkeypatch, pipeline_mod):
@@ -699,6 +793,19 @@ def _install_fake_boss_wave_replacement_primitives(monkeypatch, pipeline_mod, *,
         'state::capability.energy_shield.enabled': _FakeRow(True),
         'state::cards.energy_shield.recharge_cooldown_seconds': _FakeRow(480.0),
         'state::cards.energy_shield.extra_charge_count': _FakeRow(2.0),
+        'state::cards.energy_net.mastery_effect': _FakeRow(
+            1.0,
+            contributors=[
+                {
+                    'active': True,
+                    'value': 1.0,
+                    'source_class': 'card_mastery',
+                    'source_family': 'card_mastery',
+                    'contributor_id': 'card_mastery__energy_net__effect__multiplier',
+                    'input_value_type': 'resolved_value',
+                },
+            ],
+        ),
         'state::module.orbital_augment.electron_count': _FakeRow(2.0),
         'state::module.primordial_collapse.bh_damage_reduction_pct': _FakeRow(80.0),
         'state::uw.black_hole.duration_seconds': _FakeRow(36.0),
@@ -815,6 +922,29 @@ def test_build_boss_wave_payload_replacement_inputs_drive_table_summary_export_a
     assert 'legacy_shadow_available' not in diagnostics
     assert 'legacy_shadow_materialized' not in diagnostics
     assert diagnostics.get('replacement_outputs', {}).get('download_row_count') == len(payload.get('download_rows') or [])
+    family_coverage = diagnostics.get('replacement_primitive_family_coverage') or {}
+    assert family_coverage.get('scope') == 'boss_waves_replacement_primitive_boundary'
+    assert family_coverage.get('status') == 'covered'
+    assert family_coverage.get('missing_requested_families') == []
+    assert set(family_coverage.get('requested_effect_families') or []) == {
+        'bot',
+        'card_base',
+        'card_mastery',
+        'workshop',
+        'enhancement',
+        'module',
+        'relic',
+    }
+    family_rows = family_coverage.get('families') or {}
+    assert family_rows['workshop']['coverage_status'] == 'covered_by_qe_contributor'
+    assert family_rows['enhancement']['coverage_status'] == 'covered_by_qe_contributor'
+    assert family_rows['relic']['coverage_status'] == 'covered_by_qe_contributor'
+    assert family_rows['card_mastery']['coverage_status'] == 'covered_by_qe_surface_and_contributor'
+    assert 'replacement_primitive_family_coverage' not in diagnostics['replacement_primitive_inputs']['values']
+    assert (
+        diagnostics['replacement_primitive_semantics_ledger']['replacement_primitive_family_coverage']
+        == family_coverage
+    )
     ttk_inputs = diagnostics.get('replacement_primitive_semantics_ledger', {}).get('boss_ttk_input_contract') or {}
     assert ttk_inputs.get('orb_boss_total_damage_pct') == pytest.approx(6.0)
     assert ttk_inputs.get('orb_boss_total_damage_source') == 'default_orb_boss_total_damage_pct_6'
@@ -863,6 +993,54 @@ def test_build_boss_wave_payload_replacement_inputs_drive_table_summary_export_a
     assert summary['max_surviving_wave'] == 27
     assert summary['first_failed_wave'] == 0
     assert summary['survives_through_end'] is True
+
+
+def test_boss_wave_pressure_factor_flows_to_boss_health_and_incoming_damage(monkeypatch):
+    from app import pipeline as pipeline_mod
+    from app.models import PipelineRunRequest
+
+    _install_fake_boss_wave_app_dependencies(monkeypatch, pipeline_mod)
+    _install_fake_boss_wave_replacement_primitives(monkeypatch, pipeline_mod)
+
+    request = PipelineRunRequest(ids=ROOT / 'input' / 'imports' / 'ids.csv', out=ROOT / 'out', perk_mode='runtime_timeline')
+    common_runtime_inputs = {
+        'orb_boss_hit_pct': 2.5,
+        'orb_boss_hit_count': 5,
+        'electron_hit_count': 5,
+        'boss_time_to_contact_seconds': 1.0,
+        'effective_damage_reduction_pct': 90.0,
+        'incoming_damage_multiplier': 1.0,
+    }
+    base_payload = pipeline_mod.build_boss_wave_payload(
+        request,
+        preset_name='Farming',
+        tier_number=14,
+        end_wave=30,
+        boss_wave_step=1,
+        stop_on_failure=True,
+        scenario_runtime_inputs=common_runtime_inputs,
+    )
+    pressured_payload = pipeline_mod.build_boss_wave_payload(
+        request,
+        preset_name='Farming',
+        tier_number=14,
+        end_wave=30,
+        boss_wave_step=1,
+        stop_on_failure=True,
+        scenario_runtime_inputs={**common_runtime_inputs, 'boss_wave_pressure_factor': 2.0},
+    )
+
+    base_row = base_payload['operator_rows'][0]
+    pressured_row = pressured_payload['operator_rows'][0]
+    pressured_primitives = pressured_payload['diagnostics']['replacement_primitive_inputs']['values']
+    assert pressured_row['incoming_damage_multiplier'] == pytest.approx(
+        base_row['incoming_damage_multiplier'] * 2.0
+    )
+    assert pressured_row['boss_health'] == pytest.approx(base_row['boss_health'] * 2.0)
+    assert pressured_primitives['boss_wave_pressure_factor'] == pytest.approx(2.0)
+    assert pressured_primitives['boss_health_multiplier'] == pytest.approx(2.0)
+    assert pressured_primitives['incoming_damage_multiplier'] == pytest.approx(2.0)
+    assert pressured_payload['diagnostics']['scenario_runtime_inputs']['boss_wave_pressure_factor'] == pytest.approx(2.0)
 
 
 def test_boss_wave_flame_bot_static_hit_chance_uses_path_overlap_and_energy_net():
@@ -1255,6 +1433,52 @@ def test_boss_wave_ehp_max_waves_routes_farming_loadout_and_card_primitives():
     ]['exact_value'] == pytest.approx(0.01)
 
 
+def test_boss_wave_payload_threads_tournament_enemy_speed_to_contact_time():
+    from app.models import PipelineRunRequest
+    from app.pipeline import build_boss_wave_payload
+
+    payload = build_boss_wave_payload(
+        PipelineRunRequest(
+            ids=IDS_PATH,
+            out=ROOT / 'out',
+            perk_mode='none',
+        ),
+        preset_name='Tourney',
+        tier_number=14,
+        end_wave=20,
+        boss_wave_step=1,
+        stop_on_failure=False,
+        scenario_runtime_inputs={'tournament_wave': 100},
+    )
+
+    diagnostics = payload['diagnostics']
+    scenario_surfaces = diagnostics['scenario_surfaces']
+    contact_time = diagnostics['contact_time_contract']['boss_time_to_contact_seconds']
+
+    assert scenario_surfaces['bc_enemy_speed_increase_pct'] > 0.0
+    assert 'enemy_speed_non_boss_pressure' in diagnostics['unsupported_terminal_pressures']
+    assert contact_time['source'] == 'derived_geometry_displayed_proxy_base_cf_slow_aura_enemy_speed_energy_net'
+    assert contact_time['enemy_speed_increase_fraction'] == pytest.approx(
+        scenario_surfaces['bc_enemy_speed_increase_pct'] / 100.0
+    )
+    assert contact_time['boss_speed_multiplier'] == pytest.approx(
+        scenario_surfaces['env_boss_speed_multiplier']
+    )
+    expected_movement_speed_multiplier = (
+        (1.0 + contact_time['enemy_speed_increase_fraction']) * contact_time['boss_speed_multiplier']
+    )
+    assert contact_time['movement_speed_multiplier'] == pytest.approx(expected_movement_speed_multiplier)
+    expected_speed_remaining = (
+        (1.0 - contact_time['chrono_field_average_slow_fraction'])
+        * (1.0 - contact_time['slow_aura_fraction'])
+        * expected_movement_speed_multiplier
+    )
+    assert contact_time['speed_remaining_fraction'] == pytest.approx(expected_speed_remaining)
+    assert contact_time['value'] == pytest.approx(
+        (contact_time['base_seconds'] / expected_speed_remaining) + contact_time['energy_net_hold_seconds']
+    )
+
+
 def test_boss_wave_gc_damage_primitives_include_card_and_module_damage_support():
     from app.models import PipelineRunRequest
     from app.pipeline import build_boss_wave_payload
@@ -1424,9 +1648,82 @@ def test_boss_wave_unsupported_terminal_pressure_reference_cap_limits_selected_w
     assert limit['reference_wave'] == 780
     assert limit['reference_kind'] == 'ids_dissonant_pb_wave'
     assert limit['uncapped_selected_max_wave'] == 1400
+    assert summary['pressure_factor_reference_hint'] == {
+        'enabled': True,
+        'mode': 'raw_calculated_wave_to_reference_ratio_hint',
+        'application': 'explicit_comparison_input_only',
+        'certification_effect': 'none_not_applied',
+        'boss_wave_pressure_factor': pytest.approx(1400 / 780),
+        'rounded_boss_wave_pressure_factor': round(1400 / 780, 3),
+        'direction': 'increase_pressure',
+        'calculated_selected_max_wave': 1400,
+        'reference_wave': 780,
+        'reference_kind': 'ids_dissonant_pb_wave',
+        'reference_source': 'IDS::Player & Stuff.dissonance_pbs_by_tier',
+        'calculated_delta_vs_reference_wave': 620,
+        'calculated_to_reference_ratio': pytest.approx(1400 / 780),
+        'comparison_scenario_runtime_inputs': {'boss_wave_pressure_factor': pytest.approx(1400 / 780)},
+    }
+    assert limit['pressure_factor_reference_hint'] == summary['pressure_factor_reference_hint']
     assert (
         summary['selected_model']
         == 'unified_hit_by_hit_boss_survival_limited_by_unsupported_pressure_empirical_reference'
+    )
+
+
+def test_boss_wave_unsupported_terminal_pressure_reference_alignment_raises_underestimate():
+    from types import SimpleNamespace
+
+    from app import pipeline as pipeline_mod
+    from input.state_types import ScenarioRuntimeInputs
+
+    summary = pipeline_mod._replacement_summary_from_operator_rows(
+        [
+            {
+                'display_wave': 700,
+                'survives_boss': True,
+                'contact_envelope_survives_boss': True,
+                'boss_killed_before_contact': False,
+            },
+        ],
+    )
+    account_state = SimpleNamespace(
+        tier_progression_waves={},
+        dissonance_pbs_by_tier={'Tier 16': {'ultimate_weapons': 780}},
+    )
+
+    pipeline_mod._apply_unsupported_terminal_pressure_reference_limit(
+        summary,
+        account_state=account_state,
+        tier_number=16,
+        dissonance_run_category='ultimate_weapons',
+        unsupported_terminal_pressures=['armored_enemies_blocked_hits'],
+        runtime_inputs=ScenarioRuntimeInputs.from_mapping({}),
+    )
+
+    limit = summary['unsupported_pressure_reference_limit']
+    assert summary['selected_max_wave'] == 780
+    assert summary['selected_first_failed_wave'] == 781
+    assert summary['selected_max_independent_wave'] == 780
+    assert summary['terminal_pressure_limited'] is False
+    assert summary['unsupported_pressure_reference_limited'] is False
+    assert summary['unsupported_pressure_reference_aligned'] is True
+    assert summary['unsupported_pressure_reference_alignment_direction'] == 'raised_to_empirical_reference'
+    assert limit['applicable'] is True
+    assert limit['limited'] is False
+    assert limit['aligned'] is True
+    assert limit['alignment_direction'] == 'raised_to_empirical_reference'
+    assert limit['reference_wave'] == 780
+    assert limit['uncapped_selected_max_wave'] == 700
+    assert summary['pressure_factor_reference_hint']['enabled'] is True
+    assert summary['pressure_factor_reference_hint']['boss_wave_pressure_factor'] == pytest.approx(700 / 780)
+    assert summary['pressure_factor_reference_hint']['direction'] == 'decrease_pressure'
+    assert summary['pressure_factor_reference_hint']['comparison_scenario_runtime_inputs'] == {
+        'boss_wave_pressure_factor': pytest.approx(700 / 780)
+    }
+    assert (
+        summary['selected_model']
+        == 'unified_hit_by_hit_boss_survival_aligned_to_unsupported_pressure_empirical_reference'
     )
 
 
@@ -1460,6 +1757,43 @@ def test_boss_wave_unsupported_terminal_pressure_reference_cap_skips_when_explic
                 'fleet_terminal_max_wave': 900,
                 'elite_terminal_max_wave': 900,
                 'protector_terminal_max_wave': 900,
+                'armored_terminal_max_wave': 900,
+            }
+        ),
+    )
+
+    assert summary['selected_max_wave'] == 1400
+    assert summary['terminal_pressure_limited'] is False
+    assert summary['unsupported_pressure_reference_limit']['applicable'] is False
+
+
+def test_boss_wave_unsupported_terminal_pressure_reference_cap_skips_when_relevant_pressure_is_closed():
+    from types import SimpleNamespace
+
+    from app import pipeline as pipeline_mod
+    from input.state_types import ScenarioRuntimeInputs
+
+    summary = pipeline_mod._replacement_summary_from_operator_rows(
+        [
+            {
+                'display_wave': 1400,
+                'survives_boss': True,
+                'contact_envelope_survives_boss': True,
+                'boss_killed_before_contact': False,
+            },
+        ],
+    )
+    pipeline_mod._apply_unsupported_terminal_pressure_reference_limit(
+        summary,
+        account_state=SimpleNamespace(
+            tier_progression_waves={},
+            dissonance_pbs_by_tier={'Tier 16': {'ultimate_weapons': 780}},
+        ),
+        tier_number=16,
+        dissonance_run_category='ultimate_weapons',
+        unsupported_terminal_pressures=['armored_enemies_blocked_hits'],
+        runtime_inputs=ScenarioRuntimeInputs.from_mapping(
+            {
                 'armored_terminal_max_wave': 900,
             }
         ),
@@ -1510,6 +1844,9 @@ def test_boss_wave_unsupported_terminal_pressure_without_reference_blocks_select
     assert limit['missing_reference'] is True
     assert limit['blocked'] is True
     assert limit['uncapped_selected_max_wave'] == 1400
+    assert summary['pressure_factor_reference_hint']['enabled'] is False
+    assert summary['pressure_factor_reference_hint']['mode'] == 'no_positive_reference_wave'
+    assert limit['pressure_factor_reference_hint'] == summary['pressure_factor_reference_hint']
     assert (
         summary['selected_model']
         == 'unified_hit_by_hit_boss_survival_blocked_by_unsupported_pressure_missing_empirical_reference'
@@ -1814,6 +2151,30 @@ def test_build_boss_wave_payload_live_path_avoids_delta_fallback():
     assert primitives['flame_bot_cooldown_seconds'] == pytest.approx(canonical['state::bot.flame.cooldown_seconds'])
     assert primitives['flame_bot_effective_range_m'] > 0.0
     ledger = diagnostics['replacement_primitive_semantics_ledger']
+    family_coverage = diagnostics['replacement_primitive_family_coverage']
+    assert family_coverage['status'] == 'covered'
+    assert family_coverage['missing_requested_families'] == []
+    assert set(family_coverage['requested_effect_families']) == {
+        'bot',
+        'card_base',
+        'card_mastery',
+        'workshop',
+        'enhancement',
+        'module',
+        'relic',
+    }
+    assert family_coverage['families']['bot']['coverage_status'] == 'covered_by_qe_surface_and_contributor'
+    assert family_coverage['families']['card_base']['coverage_status'] == 'covered_by_qe_surface_and_contributor'
+    assert family_coverage['families']['card_mastery']['coverage_status'] == 'covered_by_qe_surface'
+    assert family_coverage['families']['workshop']['coverage_status'] == 'covered_by_qe_contributor'
+    assert family_coverage['families']['enhancement']['coverage_status'] == 'covered_by_qe_contributor'
+    assert family_coverage['families']['module']['coverage_status'] == 'covered_by_qe_surface_and_contributor'
+    assert family_coverage['families']['relic']['coverage_status'] == 'covered_by_qe_contributor'
+    assert family_coverage['families']['card_mastery']['surface_ids']
+    assert 'workshop__tower__enemy_attack_level_skip__pct' in family_coverage['families']['workshop']['contributor_ids']
+    assert 'relic__tower__enemy_attack_level_skip__pct' in family_coverage['families']['relic']['contributor_ids']
+    assert ledger['replacement_primitive_family_coverage'] == family_coverage
+    assert 'replacement_primitive_family_coverage' not in diagnostics['replacement_primitive_inputs']['values']
     assert ledger['primitives']['state::tower.enemy_attack_level_skip_pct']['state_phase'] == 'start_of_run'
     assert ledger['primitives']['state::tower.enemy_health_level_skip_pct']['state_phase'] == 'start_of_run'
     assert ledger['primitives']['state::tower.enemy_attack_level_skip_pct']['workshop_track'] == 'Enemy Attack Level Skip'
@@ -2026,6 +2387,7 @@ def test_boss_wave_model_certification_marks_explicit_runtime_override_closure()
             'elite_terminal_max_wave': 120.0,
             'protector_terminal_max_wave': 130.0,
             'armored_terminal_max_wave': 140.0,
+            'boss_terminal_max_wave': 150.0,
         },
     )
 
@@ -2078,6 +2440,63 @@ def test_boss_wave_high_tier_dissonance_flags_unsupported_terminal_pressure():
     assert 'source_owned_non_boss_terminal_pressure_formulas' in certification['model_completion_blockers']
     assert certification['unsupported_terminal_pressures'] == diagnostics['unsupported_terminal_pressures']
     assert diagnostics['replacement_model']['unsupported_terminal_pressures'] == diagnostics['unsupported_terminal_pressures']
+    assert payload['summary']['pressure_factor_reference_hint'] == diagnostics['pressure_factor_reference_hint']
+    assert diagnostics['pressure_factor_reference_hint']['enabled'] in {False, True}
+    assert diagnostics['pressure_factor_reference_hint'].get('application') in {
+        None,
+        'explicit_comparison_input_only',
+    }
+
+
+@pytest.mark.live
+def test_boss_wave_selected_payload_pressure_factor_closes_unsupported_pressure_as_approximation():
+    from app.models import PipelineRunRequest
+    from app.pipeline import build_boss_wave_payload
+
+    payload = build_boss_wave_payload(
+        PipelineRunRequest(
+            ids=IDS_PATH,
+            out=ROOT / 'out',
+            runtime_state_overlay='disco_respec_2026_06_10',
+        ),
+        preset_name='Milestone',
+        tier_number=16,
+        end_wave=1600,
+        boss_wave_step=10,
+        stop_on_failure=True,
+        scenario_runtime_inputs={
+            'orb_boss_total_damage_pct': 6.0,
+            'boss_wave_pressure_factor': 1.25,
+        },
+        dissonance_run_category='ultimate_weapons',
+    )
+
+    diagnostics = payload['diagnostics']
+    certification = diagnostics['model_certification']
+    closure = certification['non_boss_terminal_pressure_closure']
+
+    assert diagnostics['context_status'] == 'complete'
+    assert payload['summary']['selected_max_wave'] > 0
+    assert diagnostics['scenario_runtime_inputs']['boss_wave_pressure_factor'] == pytest.approx(1.25)
+    assert diagnostics['unsupported_terminal_pressures']
+    assert 'source_owned_non_boss_terminal_pressure_formulas' not in diagnostics['model_completion_blockers']
+    assert 'source_owned_non_boss_terminal_pressure_formulas' not in certification['model_completion_blockers']
+    assert diagnostics['model_certification_status'] == certification['model_certification_status']
+    assert diagnostics['certified_full_max_wave_model'] == certification['certified_full_max_wave_model']
+    assert diagnostics['runtime_override_closure'] == certification['runtime_override_closure']
+    assert diagnostics['effective_model_closure'] == certification['effective_model_closure']
+    assert diagnostics['non_boss_terminal_pressure_closure'] == closure
+    assert certification['runtime_override_closure']['non_boss_terminal_pressure'] is True
+    assert certification['effective_model_closure']['non_boss_terminal_pressure'] is True
+    assert closure == {
+        'closed': True,
+        'mode': 'boss_wave_pressure_factor_approximation',
+        'exact_terminal_override_closed': False,
+        'pressure_factor_approximation_closed': True,
+        'boss_wave_pressure_factor': 1.25,
+    }
+    assert certification['terminal_pressure_runtime_override_status']['closed'] is False
+    assert certification['terminal_pressure_runtime_override_status']['missing_fields']
 
 
 @pytest.mark.live
@@ -2104,12 +2523,970 @@ def test_boss_wave_milestone_matrix_caps_unsupported_high_tier_to_manual_dissona
     assert row['best_selected_max_wave'] == 780
     assert row['delta_vs_reference_wave'] == 0
     assert row['terminal_pressure_limiter'] == 'unsupported_pressure_empirical_reference'
+    assert row['terminal_pressure_reference_status'] == 'empirical_reference_limited'
     assert row['unsupported_pressure_reference_limited'] is True
     assert row['unsupported_pressure_uncapped_selected_max_wave'] > 780
     assert candidate['selected_max_wave'] == 780
+    assert candidate['terminal_pressure_reference_status'] == 'empirical_reference_limited'
     assert candidate['unsupported_pressure_reference_limited'] is True
     assert candidate['unsupported_pressure_reference_limit']['uncapped_selected_max_wave'] > 780
     assert 'source_owned_non_boss_terminal_pressure_formulas' in row['model_completion_blockers']
+
+
+@pytest.mark.live
+def test_boss_wave_milestone_matrix_aligns_unsupported_underestimate_to_manual_dissonance_reference():
+    from app.models import PipelineRunRequest
+    from app.pipeline import build_boss_wave_milestone_matrix
+
+    matrix = build_boss_wave_milestone_matrix(
+        PipelineRunRequest(ids=IDS_PATH, out=ROOT / 'out', runtime_state_overlay='disco_respec_2026_06_10'),
+        tiers=(15,),
+        end_wave=3200,
+        boss_wave_step=10,
+        stop_on_failure=True,
+        scenario_runtime_inputs={'orb_boss_total_damage_pct': 6.0},
+        loadout_policy_presets=('eHP Max Waves',),
+        dissonance_run_categories=('ultimate_weapons',),
+    )
+
+    row = matrix['rows'][0]
+    candidate = row['candidate_results'][0]
+    assert row['reference_kind'] == 'ids_dissonant_pb_wave'
+    assert row['reference_wave'] == 3068
+    assert row['dissonance_pb_reference_wave'] == 3068
+    assert row['best_selected_max_wave'] == 3068
+    assert row['delta_vs_reference_wave'] == 0
+    assert row['unsupported_pressure_reference_limited'] is False
+    assert row['unsupported_pressure_reference_aligned'] is True
+    assert row['terminal_pressure_limiter'] is None
+    assert row['terminal_pressure_reference_status'] == 'empirical_reference_aligned'
+    assert row['unsupported_pressure_reference_alignment_direction'] == 'raised_to_empirical_reference'
+    assert row['unsupported_pressure_uncapped_selected_max_wave'] < 3068
+    assert candidate['selected_max_wave'] == 3068
+    assert candidate['terminal_pressure_reference_status'] == 'empirical_reference_aligned'
+    assert candidate['unsupported_pressure_reference_limit']['reference_wave'] == 3068
+    assert candidate['unsupported_pressure_reference_limit']['uncapped_selected_max_wave'] < 3068
+    assert candidate['unsupported_pressure_reference_alignment_direction'] == 'raised_to_empirical_reference'
+    assert 'source_owned_non_boss_terminal_pressure_formulas' in row['model_completion_blockers']
+
+
+@pytest.mark.live
+def test_boss_wave_milestone_matrix_defaults_to_clean_ids_reference_alignment_with_comparison_opt_out():
+    from app.models import PipelineRunRequest
+    from app.pipeline import build_boss_wave_milestone_matrix
+
+    request = PipelineRunRequest(ids=IDS_PATH, out=ROOT / 'out')
+    comparison_matrix = build_boss_wave_milestone_matrix(
+        request,
+        tiers=(14,),
+        end_wave=5000,
+        boss_wave_step=10,
+        scenario_runtime_inputs={'orb_boss_total_damage_pct': 6.0},
+        dissonance_run_categories=('utility',),
+        align_clean_reference_rows=False,
+    )
+    comparison_row = comparison_matrix['rows'][0]
+
+    default_matrix = build_boss_wave_milestone_matrix(
+        request,
+        tiers=(14,),
+        end_wave=5000,
+        boss_wave_step=10,
+        scenario_runtime_inputs={'orb_boss_total_damage_pct': 6.0},
+        dissonance_run_categories=('utility',),
+    )
+    row = default_matrix['rows'][0]
+    candidate = next(
+        candidate
+        for candidate in row['candidate_results']
+        if candidate['selected_max_wave'] == row['best_calculated_selected_max_wave']
+    )
+
+    assert comparison_matrix['ids_reference_alignment_enabled'] is False
+    assert comparison_row['reference_wave'] == 4402
+    assert comparison_row['best_selected_max_wave'] == comparison_row['best_calculated_selected_max_wave']
+    assert comparison_row['delta_vs_reference_wave'] != 0
+
+    assert default_matrix['ids_reference_alignment_enabled'] is True
+    assert row['reference_wave'] == 4402
+    assert row['best_calculated_selected_max_wave'] == comparison_row['best_calculated_selected_max_wave']
+    assert row['best_hit_by_hit_max_wave'] == candidate['hit_by_hit_max_wave']
+    assert row['best_contact_envelope_max_wave'] == candidate['contact_envelope_max_wave']
+    assert row['best_pre_contact_boss_kill_max_wave'] == candidate['pre_contact_boss_kill_max_wave']
+    assert row['best_gc_pre_contact_max_wave'] == candidate['gc_pre_contact_max_wave']
+    assert row['best_contact_envelope_max_wave'] == row['best_calculated_selected_max_wave']
+    assert row['reference_nearest_lane'] == 'hit_by_hit'
+    assert row['reference_nearest_lane_label'] == 'Hit-by-hit'
+    assert row['reference_nearest_lane_wave'] == row['best_hit_by_hit_max_wave']
+    assert row['reference_nearest_lane_delta_vs_reference_wave'] == 107
+    assert row['reference_nearest_lane_abs_delta_wave'] == 107
+    assert row['reference_lane_alignment'] == {
+        'reference_wave': 4402,
+        'nearest_lane': 'hit_by_hit',
+        'nearest_lane_label': 'Hit-by-hit',
+        'nearest_lane_wave': row['best_hit_by_hit_max_wave'],
+        'nearest_lane_delta_vs_reference_wave': 107,
+        'nearest_lane_abs_delta_wave': 107,
+    }
+    assert row['reference_quality'] == {
+        'reference_wave': 4402,
+        'reference_kind': 'ids_dissonant_pb_wave',
+        'reference_source': 'IDS::Player & Stuff.dissonance_pbs_by_tier',
+        'low_wave_threshold': 3000,
+        'below_low_wave_threshold': False,
+        'pb_age_status': 'age_unknown_no_source_timestamp',
+        'dissonance_pb_bonus_cap_wave': 5000,
+        'dissonance_pb_bonus_cap_reached': False,
+        'reference_interpretation': 'exact_wave_reference',
+        'exact_reference': True,
+        'calibration_candidate': True,
+        'caveats': ['pb_age_unknown_no_source_timestamp'],
+    }
+    assert row['best_selected_max_wave'] == 4402
+    assert row['delta_vs_reference_wave'] == 0
+    assert row['calculated_delta_vs_reference_wave'] == comparison_row['best_calculated_selected_max_wave'] - 4402
+    assert row['calculated_to_reference_ratio'] == pytest.approx(
+        comparison_row['best_calculated_selected_max_wave'] / 4402
+    )
+    assert row['pressure_factor_reference_hint']['enabled'] is True
+    assert row['pressure_factor_reference_hint']['mode'] == 'raw_calculated_wave_to_reference_ratio_hint'
+    assert row['pressure_factor_reference_hint']['application'] == 'explicit_comparison_input_only'
+    assert row['pressure_factor_reference_hint']['certification_effect'] == 'none_not_applied'
+    assert row['pressure_factor_reference_hint']['boss_wave_pressure_factor'] == pytest.approx(
+        comparison_row['best_calculated_selected_max_wave'] / 4402
+    )
+    assert row['pressure_factor_reference_hint']['rounded_boss_wave_pressure_factor'] == round(
+        comparison_row['best_calculated_selected_max_wave'] / 4402,
+        3,
+    )
+    assert row['pressure_factor_reference_hint']['direction'] == 'increase_pressure'
+    assert row['pressure_factor_reference_hint']['comparison_scenario_runtime_inputs'] == {
+        'boss_wave_pressure_factor': pytest.approx(comparison_row['best_calculated_selected_max_wave'] / 4402)
+    }
+    assert row['ids_reference_alignment'] == {
+        'enabled': True,
+        'applied': True,
+        'mode': 'clean_ids_reference_empirical_alignment',
+        'calculated_selected_max_wave': comparison_row['best_calculated_selected_max_wave'],
+        'aligned_selected_max_wave': 4402,
+        'reference_wave': 4402,
+        'reference_kind': 'ids_dissonant_pb_wave',
+        'reference_source': 'IDS::Player & Stuff.dissonance_pbs_by_tier',
+        'calculated_delta_vs_reference_wave': comparison_row['best_calculated_selected_max_wave'] - 4402,
+        'calculated_to_reference_ratio': pytest.approx(comparison_row['best_calculated_selected_max_wave'] / 4402),
+        'alignment_direction': 'lowered_to_ids_reference',
+        'reason': 'clean_row_aligned_to_active_ids_reference',
+    }
+    comparison_candidate = next(
+        candidate
+        for candidate in comparison_row['candidate_results']
+        if candidate['selected_max_wave'] == comparison_row['best_calculated_selected_max_wave']
+    )
+    assert candidate['selected_max_wave'] == comparison_candidate['selected_max_wave']
+    assert default_matrix['wide_rows'][0]['utility_wave'] == 4402
+    assert (
+        default_matrix['wide_rows'][0]['utility_calculated_wave']
+        == comparison_row['best_calculated_selected_max_wave']
+    )
+    assert default_matrix['wide_rows'][0]['utility_hit_by_hit_wave'] == row['best_hit_by_hit_max_wave']
+    assert default_matrix['wide_rows'][0]['utility_contact_envelope_wave'] == row['best_contact_envelope_max_wave']
+    assert (
+        default_matrix['wide_rows'][0]['utility_pre_contact_boss_kill_wave']
+        == row['best_pre_contact_boss_kill_max_wave']
+    )
+    assert default_matrix['wide_rows'][0]['utility_gc_pre_contact_wave'] == row['best_gc_pre_contact_max_wave']
+    assert default_matrix['wide_rows'][0]['utility_reference_nearest_lane'] == 'hit_by_hit'
+    assert default_matrix['wide_rows'][0]['utility_reference_nearest_lane_label'] == 'Hit-by-hit'
+    assert (
+        default_matrix['wide_rows'][0]['utility_reference_nearest_lane_wave']
+        == row['best_hit_by_hit_max_wave']
+    )
+    assert default_matrix['wide_rows'][0]['utility_reference_nearest_lane_delta_vs_reference_wave'] == 107
+    assert default_matrix['wide_rows'][0]['utility_reference_nearest_lane_abs_delta_wave'] == 107
+    assert (
+        default_matrix['wide_rows'][0]['utility_calculated_delta_vs_reference_wave']
+        == comparison_row['best_calculated_selected_max_wave'] - 4402
+    )
+    assert default_matrix['wide_rows'][0]['utility_calculated_to_reference_ratio'] == pytest.approx(
+        comparison_row['best_calculated_selected_max_wave'] / 4402
+    )
+    assert default_matrix['wide_rows'][0]['utility_pressure_factor_hint'] == pytest.approx(
+        comparison_row['best_calculated_selected_max_wave'] / 4402
+    )
+    assert default_matrix['wide_rows'][0]['utility_pressure_factor_hint_direction'] == 'increase_pressure'
+    assert default_matrix['wide_rows'][0]['utility_primitive_family_coverage_status'] == 'covered'
+    assert row['replacement_primitive_family_coverage']['status'] == 'covered'
+    assert row['replacement_primitive_family_coverage']['missing_requested_families'] == []
+    family_summary = default_matrix['replacement_primitive_family_coverage_summary']
+    assert family_summary['status'] == 'covered'
+    assert family_summary['selected_row_count'] == 1
+    assert family_summary['rows_with_coverage'] == 1
+    assert family_summary['missing_requested_families'] == []
+    assert family_summary['family_status_counts']['card_mastery'] == {'covered_by_qe_surface': 1}
+    assert family_summary['family_status_counts']['workshop'] == {'covered_by_qe_contributor': 1}
+    assert default_matrix['wide_rows'][0]['utility_reference_calibration_candidate'] is True
+    assert (
+        default_matrix['wide_rows'][0]['utility_reference_quality_caveats']
+        == 'pb_age_unknown_no_source_timestamp'
+    )
+    summary = default_matrix['reference_alignment_summary']
+    assert summary['row_count'] == 1
+    assert summary['rows_with_calculated_delta'] == 1
+    assert summary['ids_reference_alignment_applied_count'] == 1
+    assert summary['raw_delta_over_reference_count'] == 1
+    assert summary['raw_delta_under_reference_count'] == 0
+    assert summary['reference_nearest_lane_counts'] == {'hit_by_hit': 1}
+    assert summary['max_abs_calculated_delta_row']['label'] == 'Utility Dissonant Run'
+    assert summary['max_abs_calculated_delta_row']['calculated_delta_vs_reference_wave'] == (
+        comparison_row['best_calculated_selected_max_wave'] - 4402
+    )
+    assert summary['max_abs_calculated_delta_row']['reference_nearest_lane'] == 'hit_by_hit'
+    assert summary['max_abs_calculated_delta_row']['reference_nearest_lane_wave'] == row[
+        'best_hit_by_hit_max_wave'
+    ]
+    assert summary['by_run_type'] == [
+        {
+            'dissonance_run_category': 'utility',
+            'label': 'Utility Dissonant Run',
+            'row_count': 1,
+            'rows_with_reference': 1,
+            'rows_with_calculated_delta': 1,
+            'ids_reference_alignment_applied_count': 1,
+            'raw_delta_over_reference_count': 1,
+            'raw_delta_under_reference_count': 0,
+            'raw_delta_match_count': 0,
+            'max_abs_calculated_delta_wave': abs(comparison_row['best_calculated_selected_max_wave'] - 4402),
+            'reference_nearest_lane_counts': {'hit_by_hit': 1},
+        }
+    ]
+    calibration_alignment = summary['calibration_reference_alignment']
+    assert calibration_alignment['definition'] == 'calibration_candidate_with_no_reference_caveats'
+    assert calibration_alignment['row_count'] == 0
+    assert calibration_alignment['rows_with_reference'] == 0
+    assert calibration_alignment['rows_with_calculated_delta'] == 0
+    assert calibration_alignment['raw_delta_over_reference_count'] == 0
+    assert calibration_alignment['raw_delta_under_reference_count'] == 0
+    assert calibration_alignment['raw_delta_match_count'] == 0
+    assert calibration_alignment['max_abs_calculated_delta_wave'] == 0
+    assert calibration_alignment['max_abs_calculated_delta_row'] is None
+    assert calibration_alignment['excluded_from_calibration_reference_count'] == 1
+    assert calibration_alignment['excluded_caveated_reference_count'] == 1
+    assert calibration_alignment['excluded_non_candidate_reference_count'] == 0
+    assert calibration_alignment['excluded_by_run_type'] == [
+        {
+            'dissonance_run_category': 'utility',
+            'label': 'Utility Dissonant Run',
+            'excluded_from_calibration_reference_count': 1,
+            'excluded_caveated_reference_count': 1,
+            'excluded_non_candidate_reference_count': 0,
+        }
+    ]
+    quality_summary = default_matrix['reference_quality_summary']
+    assert quality_summary == {
+        'row_count': 1,
+        'rows_with_reference': 1,
+        'calibration_candidate_count': 1,
+        'low_wave_threshold': 3000,
+        'low_wave_reference_count': 0,
+        'pb_age_unknown_count': 1,
+        'dissonance_pb_bonus_cap_count': 0,
+        'rows_with_caveats': 1,
+        'by_run_type': [
+            {
+                'dissonance_run_category': 'utility',
+                'label': 'Utility Dissonant Run',
+                'row_count': 1,
+                'rows_with_reference': 1,
+                'calibration_candidate_count': 1,
+                'low_wave_reference_count': 0,
+                'pb_age_unknown_count': 1,
+                'dissonance_pb_bonus_cap_count': 0,
+                'rows_with_caveats': 1,
+            }
+        ],
+    }
+    pressure_summary = default_matrix['pressure_factor_hint_summary']
+    assert pressure_summary['row_count'] == 1
+    assert pressure_summary['rows_with_pressure_factor_hint'] == 1
+    assert pressure_summary['direction_counts'] == {'increase_pressure': 1}
+    assert pressure_summary['max_factor_distance_row']['tier'] == 14
+    assert pressure_summary['max_factor_distance_row']['tier_column'] == 'Tier 14'
+    assert pressure_summary['max_factor_distance_row']['dissonance_run_category'] == 'utility'
+    assert pressure_summary['max_factor_distance_row']['label'] == 'Utility Dissonant Run'
+    assert pressure_summary['max_factor_distance_row']['selected_max_wave'] == 4402
+    assert pressure_summary['max_factor_distance_row']['calculated_selected_max_wave'] == (
+        comparison_row['best_calculated_selected_max_wave']
+    )
+    assert pressure_summary['max_factor_distance_row']['reference_wave'] == 4402
+    assert pressure_summary['calibration_quality'] == {
+        'definition': 'calibration_candidate_with_no_reference_caveats',
+        'rows_with_pressure_factor_hint': 0,
+        'excluded_caveated_hint_count': 1,
+        'excluded_caveated_hint_reason_counts': {
+            'pb_age_unknown_no_source_timestamp': 1,
+        },
+        'direction_counts': {},
+        'factor_distribution': {
+            'count': 0,
+            'min_factor': None,
+            'median_factor': None,
+            'mean_factor': None,
+            'max_factor': None,
+            'rounded_median_factor': None,
+            'rounded_mean_factor': None,
+            'comparison_scenario_runtime_inputs': {},
+        },
+        'max_factor_distance_from_one': 0.0,
+        'max_factor_distance_row': {},
+    }
+    utility_factor = comparison_row['best_calculated_selected_max_wave'] / 4402
+    empty_factor_distribution = {
+        'count': 0,
+        'min_factor': None,
+        'median_factor': None,
+        'mean_factor': None,
+        'max_factor': None,
+        'rounded_median_factor': None,
+        'rounded_mean_factor': None,
+        'comparison_scenario_runtime_inputs': {},
+    }
+    assert pressure_summary['by_run_type'] == [
+        {
+            'dissonance_run_category': 'utility',
+            'label': 'Utility Dissonant Run',
+            'row_count': 1,
+            'rows_with_pressure_factor_hint': 1,
+            'direction_counts': {'increase_pressure': 1},
+            'max_factor_distance_from_one': pytest.approx(
+                abs(utility_factor - 1.0)
+            ),
+            'max_factor_distance_row': pressure_summary['max_factor_distance_row'],
+            'calibration_quality_hint_count': 0,
+            'calibration_quality_direction_counts': {},
+            'calibration_quality_max_factor_distance_from_one': 0.0,
+            'calibration_quality_max_factor_distance_row': {},
+            'excluded_caveated_hint_count': 1,
+            'excluded_caveated_hint_reason_counts': {
+                'pb_age_unknown_no_source_timestamp': 1,
+            },
+            'disabled_hint_mode_counts': {},
+            'pressure_factor_evidence_quality': 'caveated_reference_hints_only',
+            'pressure_factor_distribution': {
+                'count': 1,
+                'min_factor': pytest.approx(utility_factor),
+                'median_factor': pytest.approx(utility_factor),
+                'mean_factor': pytest.approx(utility_factor),
+                'max_factor': pytest.approx(utility_factor),
+                'rounded_median_factor': round(utility_factor, 3),
+                'rounded_mean_factor': round(utility_factor, 3),
+                'comparison_scenario_runtime_inputs': {
+                    'boss_wave_pressure_factor': pytest.approx(utility_factor),
+                },
+                'explicit_comparison_input_available': True,
+                'application': 'explicit_comparison_input_only',
+                'certification_effect': 'none_not_applied',
+                'mode': 'median_calibration_quality_pressure_factor_hint',
+            },
+            'explicit_comparison_input_hint': {
+                'boss_wave_pressure_factor': pytest.approx(utility_factor),
+            },
+            'calibration_quality_factor_distribution': empty_factor_distribution,
+        }
+    ]
+
+
+def test_boss_wave_pressure_factor_hint_summary_publishes_calibration_distribution() -> None:
+    from app.pipeline import _boss_wave_pressure_factor_hint_summary
+
+    rows = [
+        {
+            'tier': 1,
+            'tier_column': 'Tier 1',
+            'dissonance_run_category': 'none',
+            'label': 'Regular',
+            'best_selected_max_wave': 100,
+            'best_display': '100',
+            'best_calculated_selected_max_wave': 100,
+            'best_loadout_policy_preset': 'eHP Max Waves',
+            'pressure_factor_reference_hint': {
+                'enabled': True,
+                'boss_wave_pressure_factor': 1.0,
+                'direction': 'no_adjustment',
+            },
+            'reference_quality': {'calibration_candidate': True, 'caveats': []},
+        },
+        {
+            'tier': 2,
+            'tier_column': 'Tier 2',
+            'dissonance_run_category': 'none',
+            'label': 'Regular',
+            'best_selected_max_wave': 100,
+            'best_display': '100',
+            'best_calculated_selected_max_wave': 200,
+            'best_loadout_policy_preset': 'eHP Max Waves',
+            'pressure_factor_reference_hint': {
+                'enabled': True,
+                'boss_wave_pressure_factor': 2.0,
+                'direction': 'increase_pressure',
+            },
+            'reference_quality': {'calibration_candidate': True, 'caveats': []},
+        },
+        {
+            'tier': 3,
+            'tier_column': 'Tier 3',
+            'dissonance_run_category': 'utility',
+            'label': 'Utility Dissonant Run',
+            'best_selected_max_wave': 100,
+            'best_display': '100',
+            'best_calculated_selected_max_wave': 400,
+            'best_loadout_policy_preset': 'GC Max Waves',
+            'pressure_factor_reference_hint': {
+                'enabled': True,
+                'boss_wave_pressure_factor': 4.0,
+                'direction': 'increase_pressure',
+            },
+            'reference_quality': {
+                'calibration_candidate': True,
+                'caveats': ['pb_age_unknown_no_source_timestamp'],
+            },
+        },
+        {
+            'tier': 4,
+            'tier_column': 'Tier 4',
+            'dissonance_run_category': 'attack',
+            'label': 'Attack Dissonant Run',
+            'best_selected_max_wave': 5000,
+            'best_display': '5000',
+            'best_calculated_selected_max_wave': 12000,
+            'best_loadout_policy_preset': 'eHP Max Waves',
+            'pressure_factor_reference_hint': {
+                'enabled': False,
+                'mode': 'dissonance_pb_bonus_cap_not_exact_reference',
+                'boss_wave_pressure_factor': None,
+                'direction': None,
+            },
+            'reference_quality': {
+                'calibration_candidate': False,
+                'caveats': [
+                    'pb_age_unknown_no_source_timestamp',
+                    'dissonance_pb_5000_bonus_cap_floor',
+                ],
+            },
+        },
+    ]
+
+    summary = _boss_wave_pressure_factor_hint_summary(rows)
+    distribution = summary['calibration_quality']['factor_distribution']
+
+    assert summary['rows_with_pressure_factor_hint'] == 3
+    assert summary['disabled_hint_mode_counts'] == {
+        'dissonance_pb_bonus_cap_not_exact_reference': 1,
+    }
+    assert summary['calibration_quality']['rows_with_pressure_factor_hint'] == 2
+    assert summary['calibration_quality']['excluded_caveated_hint_count'] == 1
+    assert summary['calibration_quality']['excluded_caveated_hint_reason_counts'] == {
+        'pb_age_unknown_no_source_timestamp': 1,
+    }
+    assert distribution['count'] == 2
+    assert distribution['min_factor'] == pytest.approx(1.0)
+    assert distribution['median_factor'] == pytest.approx(1.5)
+    assert distribution['mean_factor'] == pytest.approx(1.5)
+    assert distribution['max_factor'] == pytest.approx(2.0)
+    assert distribution['comparison_scenario_runtime_inputs'] == {
+        'boss_wave_pressure_factor': pytest.approx(1.5)
+    }
+    assert distribution['explicit_comparison_input_available'] is True
+    assert distribution['application'] == 'explicit_comparison_input_only'
+    assert distribution['certification_effect'] == 'none_not_applied'
+    by_run_type = {
+        row['dissonance_run_category']: row
+        for row in summary['by_run_type']
+    }
+    assert by_run_type['none']['pressure_factor_evidence_quality'] == 'clean_calibration_available'
+    assert by_run_type['none']['pressure_factor_distribution']['count'] == 2
+    assert by_run_type['none']['pressure_factor_distribution']['median_factor'] == pytest.approx(1.5)
+    assert by_run_type['none']['explicit_comparison_input_hint'] == {
+        'boss_wave_pressure_factor': pytest.approx(1.5),
+    }
+    assert by_run_type['none']['calibration_quality_factor_distribution']['median_factor'] == pytest.approx(1.5)
+    assert by_run_type['utility']['pressure_factor_evidence_quality'] == 'caveated_reference_hints_only'
+    assert by_run_type['utility']['pressure_factor_distribution']['median_factor'] == pytest.approx(4.0)
+    assert by_run_type['utility']['explicit_comparison_input_hint'] == {
+        'boss_wave_pressure_factor': pytest.approx(4.0),
+    }
+    assert by_run_type['utility']['calibration_quality_factor_distribution']['count'] == 0
+    assert by_run_type['attack']['pressure_factor_evidence_quality'] == 'disabled_by_reference_quality'
+    assert by_run_type['attack']['disabled_hint_mode_counts'] == {
+        'dissonance_pb_bonus_cap_not_exact_reference': 1,
+    }
+
+
+def test_boss_wave_matrix_model_accuracy_summary_publishes_default_and_approximation_posture() -> None:
+    from app.pipeline import _boss_wave_matrix_model_accuracy_summary
+
+    common = {
+        'model_blocker_summary': {
+            'rows_with_model_completion_blockers': 35,
+        },
+        'reference_quality_summary': {
+            'rows_with_reference': 76,
+            'calibration_candidate_count': 23,
+            'low_wave_reference_count': 11,
+            'pb_age_unknown_count': 56,
+            'dissonance_pb_bonus_cap_count': 42,
+            'rows_with_caveats': 60,
+        },
+        'pressure_factor_hint_summary': {
+            'by_run_type': [
+                {
+                    'dissonance_run_category': 'none',
+                    'label': 'Regular',
+                    'row_count': 21,
+                    'rows_with_pressure_factor_hint': 16,
+                    'calibration_quality_hint_count': 16,
+                    'pressure_factor_evidence_quality': 'clean_calibration_available',
+                    'pressure_factor_distribution': {
+                        'count': 16,
+                        'min_factor': 1.0,
+                        'median_factor': 2.606384292771721,
+                        'max_factor': 5.101279317697228,
+                        'rounded_median_factor': 2.606,
+                    },
+                    'explicit_comparison_input_hint': {
+                        'boss_wave_pressure_factor': 2.606384292771721,
+                    },
+                    'calibration_quality_factor_distribution': {
+                        'count': 16,
+                        'median_factor': 2.606384292771721,
+                        'rounded_median_factor': 2.606,
+                    },
+                    'excluded_caveated_hint_count': 0,
+                    'excluded_caveated_hint_reason_counts': {},
+                    'disabled_hint_mode_counts': {},
+                },
+                {
+                    'dissonance_run_category': 'utility',
+                    'label': 'Utility Dissonant Run',
+                    'row_count': 21,
+                    'rows_with_pressure_factor_hint': 3,
+                    'calibration_quality_hint_count': 0,
+                    'pressure_factor_evidence_quality': 'caveated_reference_hints_only',
+                    'pressure_factor_distribution': {
+                        'count': 3,
+                        'min_factor': 1.0,
+                        'median_factor': 1.2266500622665006,
+                        'max_factor': 1.2266500622665006,
+                        'rounded_median_factor': 1.227,
+                    },
+                    'explicit_comparison_input_hint': {
+                        'boss_wave_pressure_factor': 1.2266500622665006,
+                    },
+                    'calibration_quality_factor_distribution': {
+                        'count': 0,
+                        'median_factor': None,
+                        'rounded_median_factor': None,
+                    },
+                    'excluded_caveated_hint_count': 3,
+                    'excluded_caveated_hint_reason_counts': {
+                        'pb_age_unknown_no_source_timestamp': 3,
+                    },
+                    'disabled_hint_mode_counts': {
+                        'dissonance_pb_bonus_cap_not_exact_reference': 12,
+                    },
+                },
+            ],
+            'calibration_quality': {
+                'factor_distribution': {
+                    'count': 16,
+                    'median_factor': 2.606384292771721,
+                        'comparison_scenario_runtime_inputs': {
+                            'boss_wave_pressure_factor': 2.606384292771721,
+                        },
+                        'explicit_comparison_input_available': True,
+                    },
+                },
+            },
+        'reference_gap_summary': {
+            'missing_reference_blocked_count': 19,
+        },
+    }
+    default = _boss_wave_matrix_model_accuracy_summary(
+        certification={
+            'model_certification_status': 'partial_boss_contact_model',
+            'model_closure_status': 'partial_missing_required_model_inputs',
+            'certified_full_max_wave_model': False,
+            'model_completion_blockers': ['source_owned_non_boss_terminal_pressure_formulas'],
+            'accepted_approximation_closure': {'closed': False, 'mode': 'none'},
+        },
+        **common,
+    )
+    approximated = _boss_wave_matrix_model_accuracy_summary(
+        certification={
+            'model_certification_status': 'partial_boss_contact_model',
+            'model_closure_status': 'closed_with_pressure_factor_approximation',
+            'certified_full_max_wave_model': False,
+            'model_completion_blockers': [],
+            'accepted_approximation_closure': {
+                'closed': True,
+                'mode': 'boss_wave_pressure_factor_approximation',
+                'boss_wave_pressure_factor': 1.25,
+            },
+        },
+        **common,
+    )
+
+    assert default['status'] == 'default_partial_comparison_calibration_available'
+    assert default['operator_next_step'] == 'apply_comparison_only_pressure_factor_input_to_review_approximation'
+    assert default['comparison_only_pressure_factor_inputs'] == {
+        'boss_wave_pressure_factor': pytest.approx(2.606384292771721),
+    }
+    assert default['reference_caveat_counts'] == {
+        'below_3000_wave_perk_volatility': 11,
+        'pb_age_unknown_no_source_timestamp': 56,
+        'dissonance_pb_5000_bonus_cap_floor': 42,
+    }
+    assert default['missing_reference_blocked_count'] == 19
+    assert default['certified_full_max_wave_model'] is False
+    assert default['pressure_factor_by_run_type'][0]['pressure_factor_evidence_quality'] == (
+        'clean_calibration_available'
+    )
+    assert default['pressure_factor_by_run_type'][1]['pressure_factor_evidence_quality'] == (
+        'caveated_reference_hints_only'
+    )
+    assert default['pressure_factor_by_run_type'][1]['pressure_factor_rounded_median'] == pytest.approx(1.227)
+    assert default['pressure_factor_by_run_type'][1]['calibration_quality_pressure_factor_median'] is None
+    assert default['dissonance_pressure_factor_evidence'] == {
+        'status': 'caveated_dissonance_hints_only',
+        'run_type_count': 1,
+        'rows_with_pressure_factor_hint': 3,
+        'calibration_quality_hint_count': 0,
+        'excluded_caveated_hint_count': 3,
+        'excluded_caveated_hint_reason_counts': {
+            'pb_age_unknown_no_source_timestamp': 3,
+        },
+        'disabled_hint_mode_counts': {
+            'dissonance_pb_bonus_cap_not_exact_reference': 12,
+        },
+        'categories_with_pressure_factor_hints': ['Utility Dissonant Run'],
+        'categories_with_explicit_review_inputs': ['Utility Dissonant Run'],
+        'categories_with_clean_calibration': [],
+        'categories_without_clean_calibration': ['Utility Dissonant Run'],
+        'explicit_review_inputs_by_run_type': [
+                {
+                    'dissonance_run_category': 'utility',
+                    'label': 'Utility Dissonant Run',
+                    'boss_wave_pressure_factor': 1.2266500622665006,
+                    'rounded_boss_wave_pressure_factor': 1.227,
+                'evidence_quality': 'caveated_reference_hints_only',
+                'calibration_quality_hint_count': 0,
+                'excluded_caveated_hint_count': 3,
+                'excluded_caveated_hint_reason_counts': {
+                    'pb_age_unknown_no_source_timestamp': 3,
+                    },
+                'explicit_comparison_input_hint': {
+                    'boss_wave_pressure_factor': 1.2266500622665006,
+                },
+                'comparison_review_request': {
+                    'mode': 'comparison_only',
+                    'dissonance_run_category': 'utility',
+                    'include_boss_wave_milestone_matrix': True,
+                    'comparison_scenario_runtime_inputs': {
+                        'boss_wave_pressure_factor': 1.2266500622665006,
+                    },
+                    'default_account_truth_unchanged': True,
+                    'certification_effect': 'none_not_applied',
+                },
+                'application': 'manual_or_comparison_only',
+                'certification_effect': 'none_not_applied',
+            }
+        ],
+        'explicit_review_request_count': 1,
+        'application': 'explicit_manual_or_comparison_input_only',
+        'certification_effect': 'none_not_applied',
+    }
+
+    assert approximated['status'] == 'explicit_pressure_factor_approximation_active'
+    assert approximated['operator_next_step'] == 'review_approximation_against_reference_quality_caveats'
+    assert approximated['accepted_approximation_closure']['boss_wave_pressure_factor'] == pytest.approx(1.25)
+    assert approximated['certified_full_max_wave_model'] is False
+
+
+def test_boss_wave_reference_alignment_summary_publishes_calibration_subset() -> None:
+    from app.pipeline import _boss_wave_reference_alignment_summary
+
+    rows = [
+        {
+            'tier': 1,
+            'tier_column': 'Tier 1',
+            'dissonance_run_category': 'none',
+            'label': 'Regular',
+            'reference_wave': 4000,
+            'best_selected_max_wave': 4000,
+            'best_calculated_selected_max_wave': 4025,
+            'calculated_delta_vs_reference_wave': 25,
+            'calculated_to_reference_ratio': 1.00625,
+            'reference_nearest_lane': 'contact_envelope',
+            'reference_nearest_lane_label': 'Contact envelope',
+            'reference_nearest_lane_wave': 4025,
+            'reference_nearest_lane_delta_vs_reference_wave': 25,
+            'ids_reference_alignment': {
+                'applied': True,
+                'alignment_direction': 'raise_to_reference',
+            },
+            'reference_quality': {'calibration_candidate': True, 'caveats': []},
+        },
+        {
+            'tier': 2,
+            'tier_column': 'Tier 2',
+            'dissonance_run_category': 'utility',
+            'label': 'Utility Dissonant Run',
+            'reference_wave': 4402,
+            'best_selected_max_wave': 4402,
+            'best_calculated_selected_max_wave': 4502,
+            'calculated_delta_vs_reference_wave': 100,
+            'calculated_to_reference_ratio': 1.0227,
+            'reference_nearest_lane': 'hit_by_hit',
+            'reference_nearest_lane_label': 'Hit by hit',
+            'reference_nearest_lane_wave': 4502,
+            'reference_nearest_lane_delta_vs_reference_wave': 100,
+            'reference_quality': {
+                'calibration_candidate': True,
+                'caveats': ['pb_age_unknown_no_source_timestamp'],
+            },
+        },
+        {
+            'tier': 3,
+            'tier_column': 'Tier 3',
+            'dissonance_run_category': 'attack',
+            'label': 'Attack Dissonant Run',
+            'reference_wave': 5000,
+            'best_selected_max_wave': 5000,
+            'best_calculated_selected_max_wave': 6000,
+            'calculated_delta_vs_reference_wave': 1000,
+            'calculated_to_reference_ratio': 1.2,
+            'reference_nearest_lane': 'contact_envelope',
+            'reference_nearest_lane_label': 'Contact envelope',
+            'reference_nearest_lane_wave': 6000,
+            'reference_nearest_lane_delta_vs_reference_wave': 1000,
+            'reference_quality': {
+                'calibration_candidate': False,
+                'caveats': ['dissonance_pb_5000_bonus_cap_floor'],
+            },
+        },
+        {
+            'tier': 4,
+            'tier_column': 'Tier 4',
+            'dissonance_run_category': 'defense',
+            'label': 'Defense Dissonant Run',
+            'reference_wave': None,
+            'calculated_delta_vs_reference_wave': None,
+            'reference_quality': {'calibration_candidate': False, 'caveats': []},
+        },
+    ]
+
+    summary = _boss_wave_reference_alignment_summary(rows)
+    calibration = summary['calibration_reference_alignment']
+
+    assert summary['row_count'] == 4
+    assert summary['rows_with_reference'] == 3
+    assert summary['rows_with_calculated_delta'] == 3
+    assert summary['raw_delta_over_reference_count'] == 3
+    assert summary['max_abs_calculated_delta_row']['label'] == 'Attack Dissonant Run'
+    assert calibration['definition'] == 'calibration_candidate_with_no_reference_caveats'
+    assert calibration['row_count'] == 1
+    assert calibration['rows_with_reference'] == 1
+    assert calibration['rows_with_calculated_delta'] == 1
+    assert calibration['raw_delta_over_reference_count'] == 1
+    assert calibration['raw_delta_under_reference_count'] == 0
+    assert calibration['raw_delta_match_count'] == 0
+    assert calibration['max_abs_calculated_delta_wave'] == 25
+    assert calibration['max_abs_calculated_delta_row']['label'] == 'Regular'
+    assert calibration['excluded_from_calibration_reference_count'] == 2
+    assert calibration['excluded_caveated_reference_count'] == 2
+    assert calibration['excluded_non_candidate_reference_count'] == 1
+    assert calibration['excluded_by_run_type'] == [
+        {
+            'dissonance_run_category': 'attack',
+            'label': 'Attack Dissonant Run',
+            'excluded_from_calibration_reference_count': 1,
+            'excluded_caveated_reference_count': 1,
+            'excluded_non_candidate_reference_count': 1,
+        },
+        {
+            'dissonance_run_category': 'utility',
+            'label': 'Utility Dissonant Run',
+            'excluded_from_calibration_reference_count': 1,
+            'excluded_caveated_reference_count': 1,
+            'excluded_non_candidate_reference_count': 0,
+        },
+    ]
+
+
+def test_boss_wave_reference_quality_flags_low_wave_and_pb_age() -> None:
+    from app.pipeline import _boss_wave_reference_quality
+
+    quality = _boss_wave_reference_quality(
+        reference_wave=829,
+        reference_kind='ids_dissonant_pb_wave',
+        reference_source='IDS::Player & Stuff.dissonance_pbs_by_tier',
+    )
+
+    assert quality == {
+        'reference_wave': 829,
+        'reference_kind': 'ids_dissonant_pb_wave',
+        'reference_source': 'IDS::Player & Stuff.dissonance_pbs_by_tier',
+        'low_wave_threshold': 3000,
+        'below_low_wave_threshold': True,
+        'pb_age_status': 'age_unknown_no_source_timestamp',
+        'dissonance_pb_bonus_cap_wave': 5000,
+        'dissonance_pb_bonus_cap_reached': False,
+        'reference_interpretation': 'exact_wave_reference',
+        'exact_reference': True,
+        'calibration_candidate': False,
+        'caveats': [
+            'below_3000_wave_perk_volatility',
+            'pb_age_unknown_no_source_timestamp',
+        ],
+    }
+
+
+def test_boss_wave_reference_quality_marks_capped_dissonance_pb_as_non_exact() -> None:
+    from app.pipeline import _boss_wave_pressure_factor_reference_hint, _boss_wave_reference_quality
+
+    quality = _boss_wave_reference_quality(
+        reference_wave=5000,
+        reference_kind='ids_dissonant_pb_wave',
+        reference_source='IDS::Player & Stuff.dissonance_pbs_by_tier',
+    )
+    hint = _boss_wave_pressure_factor_reference_hint(
+        calculated_wave=6200,
+        reference_wave=5000,
+        reference_kind='ids_dissonant_pb_wave',
+        reference_source='IDS::Player & Stuff.dissonance_pbs_by_tier',
+        calculated_delta_vs_reference_wave=1200,
+        calculated_to_reference_ratio=1.24,
+    )
+
+    assert quality == {
+        'reference_wave': 5000,
+        'reference_kind': 'ids_dissonant_pb_wave',
+        'reference_source': 'IDS::Player & Stuff.dissonance_pbs_by_tier',
+        'low_wave_threshold': 3000,
+        'below_low_wave_threshold': False,
+        'pb_age_status': 'age_unknown_no_source_timestamp',
+        'dissonance_pb_bonus_cap_wave': 5000,
+        'dissonance_pb_bonus_cap_reached': True,
+        'reference_interpretation': 'lower_bound_at_dissonance_bonus_cap',
+        'exact_reference': False,
+        'calibration_candidate': False,
+        'caveats': [
+            'pb_age_unknown_no_source_timestamp',
+            'dissonance_pb_5000_bonus_cap_floor',
+        ],
+    }
+    assert hint == {
+        'enabled': False,
+        'mode': 'dissonance_pb_bonus_cap_not_exact_reference',
+        'boss_wave_pressure_factor': None,
+        'direction': None,
+        'calculated_selected_max_wave': 6200,
+        'reference_wave': 5000,
+        'reference_kind': 'ids_dissonant_pb_wave',
+        'reference_source': 'IDS::Player & Stuff.dissonance_pbs_by_tier',
+        'reference_interpretation': 'lower_bound_at_dissonance_bonus_cap',
+        'exact_reference': False,
+        'dissonance_pb_bonus_cap_wave': 5000,
+        'caveats': ['dissonance_pb_5000_bonus_cap_floor'],
+    }
+
+
+def test_boss_wave_reference_gap_summary_splits_cap_omitted_dissonance_pb_zeros() -> None:
+    from app.pipeline import (
+        _annotate_boss_wave_dissonance_pb_cap_omissions,
+        _boss_wave_matrix_reference_gap_summary,
+    )
+
+    rows = [
+        {
+            'tier': 16,
+            'tier_column': 'Tier 16',
+            'dissonance_run_category': 'utility',
+            'label': 'Utility Dissonant Run',
+            'reference_kind': 'ids_dissonant_pb_wave',
+            'reference_source': 'IDS::Player & Stuff.dissonance_pbs_by_tier',
+            'reference_wave': None,
+            'reference_raw_wave': 0,
+            'reference_gap_reason': 'zero_reference_wave',
+            'terminal_pressure_reference_status': 'missing_empirical_reference_blocked',
+            'best_calculated_selected_max_wave': 0,
+            'unsupported_pressure_uncapped_selected_max_wave': 1827,
+            'unsupported_terminal_pressures': ['protector_ultimate_deferred'],
+            'terminal_pressure_runtime_override_status': {
+                'required_fields': ['protector_terminal_max_wave'],
+                'missing_fields': ['protector_terminal_max_wave'],
+            },
+        },
+        {
+            'tier': 21,
+            'tier_column': 'Tier 21',
+            'dissonance_run_category': 'none',
+            'label': 'Regular',
+            'reference_kind': 'ids_milestone_wave',
+            'reference_source': 'IDS::Player & Stuff.tier_progression_waves',
+            'reference_wave': None,
+            'reference_raw_wave': 0,
+            'reference_gap_reason': 'zero_reference_wave',
+            'terminal_pressure_reference_status': 'missing_empirical_reference_blocked',
+            'best_calculated_selected_max_wave': 0,
+            'unsupported_pressure_uncapped_selected_max_wave': 5,
+            'unsupported_terminal_pressures': ['boss_ultimate_deferred'],
+            'terminal_pressure_runtime_override_status': {
+                'required_fields': ['boss_terminal_max_wave'],
+                'missing_fields': ['boss_terminal_max_wave'],
+            },
+        },
+    ]
+
+    _annotate_boss_wave_dissonance_pb_cap_omissions(
+        rows,
+        account_state=SimpleNamespace(dissonance_pbs_by_tier={'Tier 12': {'utility': 5000}}),
+    )
+    summary = _boss_wave_matrix_reference_gap_summary(rows)
+
+    assert rows[0]['dissonance_pb_cap_omitted_reference'] is True
+    assert rows[0]['dissonance_pb_cap_omission_context'] == {
+        'applies': True,
+        'mode': 'zero_ids_dissonant_pb_after_bonus_cap_reached',
+        'reference_interpretation': 'intentionally_unfilled_after_dissonance_bonus_cap_reached',
+        'dissonance_pb_bonus_cap_wave': 5000,
+        'cap_reached_tiers': [12],
+        'nearest_cap_tier': 12,
+        'evidence_source': 'account_state.dissonance_pbs_by_tier',
+    }
+    assert rows[1]['dissonance_pb_cap_omitted_reference'] is False
+    assert summary['missing_reference_blocked_count'] == 2
+    assert summary['dissonance_pb_cap_omitted_reference_count'] == 1
+    assert summary['ordinary_missing_reference_blocked_count'] == 1
+    assert summary['by_run_type'] == [
+        {
+            'dissonance_run_category': 'none',
+            'label': 'Regular',
+            'missing_reference_blocked_count': 1,
+            'dissonance_pb_cap_omitted_reference_count': 0,
+            'ordinary_missing_reference_blocked_count': 1,
+            'tiers': [21],
+        },
+        {
+            'dissonance_run_category': 'utility',
+            'label': 'Utility Dissonant Run',
+            'missing_reference_blocked_count': 1,
+            'dissonance_pb_cap_omitted_reference_count': 1,
+            'ordinary_missing_reference_blocked_count': 0,
+            'tiers': [16],
+        },
+    ]
+    assert summary['missing_references'][0]['dissonance_pb_cap_omitted_reference'] is True
+    assert summary['missing_references'][1]['dissonance_pb_cap_omitted_reference'] is False
 
 
 @pytest.mark.live
@@ -2176,8 +3553,35 @@ def test_boss_wave_milestone_matrix_blocks_unsupported_pressure_without_referenc
 
     row = matrix['rows'][0]
     candidate = row['candidate_results'][0]
+    expected_terminal_status = {
+        'closed': False,
+        'mode': 'active_unsupported_pressure_inputs',
+        'required_fields': [
+            'armored_terminal_max_wave',
+            'fleet_terminal_max_wave',
+            'protector_terminal_max_wave',
+        ],
+        'missing_fields': [
+            'armored_terminal_max_wave',
+            'fleet_terminal_max_wave',
+            'protector_terminal_max_wave',
+        ],
+        'required_fields_by_pressure': {
+            'armored_enemies_blocked_hits': ['armored_terminal_max_wave'],
+            'knockback_resistance_non_boss_pressure': ['fleet_terminal_max_wave'],
+            'protector_ultimate_deferred': ['protector_terminal_max_wave'],
+        },
+        'missing_fields_by_pressure': {
+            'armored_enemies_blocked_hits': ['armored_terminal_max_wave'],
+            'knockback_resistance_non_boss_pressure': ['fleet_terminal_max_wave'],
+            'protector_ultimate_deferred': ['protector_terminal_max_wave'],
+        },
+        'unmapped_pressures': [],
+    }
     assert row['reference_kind'] == 'ids_dissonant_pb_wave'
     assert row['reference_wave'] is None
+    assert row['reference_raw_wave'] == 0
+    assert row['reference_gap_reason'] == 'zero_reference_wave'
     assert row['best_status'] == 'incomplete'
     assert row['best_selected_max_wave'] == 0
     assert row['terminal_pressure_limiter'] == 'unsupported_pressure_missing_empirical_reference'
@@ -2187,10 +3591,343 @@ def test_boss_wave_milestone_matrix_blocks_unsupported_pressure_without_referenc
     assert row['unsupported_pressure_uncapped_selected_max_wave'] > 0
     assert row['unsupported_pressure_reference_limit']['missing_reference'] is True
     assert row['unsupported_pressure_reference_limit']['blocked'] is True
+    assert row['unsupported_pressure_reference_limit']['reference_raw_wave'] == 0
+    assert row['unsupported_pressure_reference_limit']['reference_gap_reason'] == 'zero_reference_wave'
+    assert row['terminal_pressure_runtime_override_status'] == expected_terminal_status
+    assert row['model_certification']['terminal_pressure_runtime_override_status'] == expected_terminal_status
+    assert matrix['model_certification']['terminal_pressure_runtime_override_status'] == expected_terminal_status
+    assert matrix['model_certification']['non_boss_terminal_pressure_closure'] == {
+        'closed': False,
+        'mode': 'missing',
+        'exact_terminal_override_closed': False,
+        'pressure_factor_approximation_closed': False,
+        'boss_wave_pressure_factor': None,
+    }
+    assert matrix['model_certification']['effective_model_closure'] == {
+        'non_boss_terminal_pressure': False,
+        'v28_damage_health_decay_magnitudes': True,
+        'boss_applicable_damage_semantics': True,
+        'gc_boss_applicable_damage_semantics': True,
+    }
+    assert matrix['model_closure_status'] == 'partial_missing_required_model_inputs'
+    assert matrix['model_certification']['model_closure_status'] == 'partial_missing_required_model_inputs'
+    assert matrix['accepted_approximation_closure'] == {
+        'closed': False,
+        'mode': 'none',
+        'scope': 'non_boss_terminal_pressure_scalar_on_boss_health_and_damage',
+        'boss_wave_pressure_factor': None,
+        'replaced_blockers': [],
+        'certification_effect': 'none',
+        'certified_full_max_wave_model': False,
+    }
+    assert matrix['model_completion_blockers'] == matrix['model_certification']['model_completion_blockers']
+    assert matrix['runtime_override_closure'] == matrix['model_certification']['runtime_override_closure']
+    assert matrix['effective_model_closure'] == matrix['model_certification']['effective_model_closure']
+    assert matrix['terminal_pressure_runtime_override_status'] == matrix['model_certification'][
+        'terminal_pressure_runtime_override_status'
+    ]
+    assert matrix['non_boss_terminal_pressure_closure'] == matrix['model_certification'][
+        'non_boss_terminal_pressure_closure'
+    ]
+    assert row['model_certification']['effective_model_closure'] == matrix['model_certification'][
+        'effective_model_closure'
+    ]
+    assert matrix['reference_gap_summary'] == {
+        'row_count': 1,
+        'missing_reference_blocked_count': 1,
+        'ordinary_missing_reference_blocked_count': 0,
+        'dissonance_pb_cap_omitted_reference_count': 1,
+        'by_reference_kind': {'ids_dissonant_pb_wave': 1},
+        'by_run_type': [
+            {
+                'dissonance_run_category': 'utility',
+                'label': 'Utility Dissonant Run',
+                'missing_reference_blocked_count': 1,
+                'dissonance_pb_cap_omitted_reference_count': 1,
+                'ordinary_missing_reference_blocked_count': 0,
+                'tiers': [16],
+            }
+        ],
+        'missing_references': [
+            {
+                'tier': 16,
+                'tier_column': 'Tier 16',
+                'dissonance_run_category': 'utility',
+                'label': 'Utility Dissonant Run',
+                'reference_kind': 'ids_dissonant_pb_wave',
+                'reference_source': 'IDS::Player & Stuff.dissonance_pbs_by_tier',
+                'reference_wave': None,
+                'reference_raw_wave': 0,
+                'reference_gap_reason': 'zero_reference_wave',
+                'dissonance_pb_cap_omitted_reference': True,
+                'dissonance_pb_cap_omission_context': {
+                    'applies': True,
+                    'mode': 'zero_ids_dissonant_pb_after_bonus_cap_reached',
+                    'reference_interpretation': (
+                        'intentionally_unfilled_after_dissonance_bonus_cap_reached'
+                    ),
+                    'dissonance_pb_bonus_cap_wave': 5000,
+                    'cap_reached_tiers': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+                    'nearest_cap_tier': 12,
+                    'evidence_source': 'account_state.dissonance_pbs_by_tier',
+                },
+                'best_calculated_selected_max_wave': 0,
+                'unsupported_pressure_uncapped_selected_max_wave': row[
+                    'unsupported_pressure_uncapped_selected_max_wave'
+                ],
+                'unsupported_terminal_pressures': row['unsupported_terminal_pressures'],
+                'terminal_pressure_required_fields': expected_terminal_status['required_fields'],
+                'terminal_pressure_missing_fields': expected_terminal_status['missing_fields'],
+                'terminal_pressure_required_fields_by_pressure': expected_terminal_status[
+                    'required_fields_by_pressure'
+                ],
+                'terminal_pressure_missing_fields_by_pressure': expected_terminal_status[
+                    'missing_fields_by_pressure'
+                ],
+                'terminal_pressure_unmapped_pressures': [],
+            }
+        ],
+    }
     assert candidate['selected_max_wave'] == 0
+    assert candidate['terminal_pressure_runtime_override_status'] == expected_terminal_status
     assert candidate['unsupported_pressure_missing_reference_blocked'] is True
     assert candidate['unsupported_pressure_reference_limit']['uncapped_selected_max_wave'] > 0
     assert 'source_owned_non_boss_terminal_pressure_formulas' in row['model_completion_blockers']
+
+
+@pytest.mark.live
+def test_boss_wave_milestone_matrix_pressure_factor_closes_missing_reference_blocker():
+    from app.models import PipelineRunRequest
+    from app.pipeline import build_boss_wave_milestone_matrix
+
+    matrix = build_boss_wave_milestone_matrix(
+        PipelineRunRequest(ids=IDS_PATH, out=ROOT / 'out', runtime_state_overlay='disco_respec_2026_06_10'),
+        tiers=(16,),
+        end_wave=2000,
+        boss_wave_step=10,
+        stop_on_failure=True,
+        scenario_runtime_inputs={
+            'orb_boss_total_damage_pct': 6.0,
+            'boss_wave_pressure_factor': 1.25,
+        },
+        loadout_policy_presets=('eHP Max Waves',),
+        dissonance_run_categories=('utility',),
+    )
+
+    row = matrix['rows'][0]
+    candidate = row['candidate_results'][0]
+    assert matrix['model_completion_blockers'] == []
+    assert matrix['model_closure_status'] == 'closed_with_pressure_factor_approximation'
+    assert matrix['model_certification']['model_closure_status'] == 'closed_with_pressure_factor_approximation'
+    assert matrix['accepted_approximation_closure'] == {
+        'closed': True,
+        'mode': 'boss_wave_pressure_factor_approximation',
+        'scope': 'non_boss_terminal_pressure_scalar_on_boss_health_and_damage',
+        'boss_wave_pressure_factor': 1.25,
+        'replaced_blockers': ['source_owned_non_boss_terminal_pressure_formulas'],
+        'certification_effect': 'closes_non_boss_terminal_pressure_blocker_as_explicit_approximation',
+        'certified_full_max_wave_model': False,
+    }
+    assert matrix['model_accuracy_summary']['status'] == 'explicit_pressure_factor_approximation_active'
+    assert matrix['model_accuracy_summary']['operator_next_step'] == (
+        'review_approximation_against_reference_quality_caveats'
+    )
+    assert matrix['model_accuracy_summary']['accepted_approximation_closure'] == (
+        matrix['accepted_approximation_closure']
+    )
+    assert matrix['model_accuracy_summary']['certified_full_max_wave_model'] is False
+    assert matrix['effective_model_closure']['non_boss_terminal_pressure'] is True
+    assert matrix['non_boss_terminal_pressure_closure'] == {
+        'closed': True,
+        'mode': 'boss_wave_pressure_factor_approximation',
+        'exact_terminal_override_closed': False,
+        'pressure_factor_approximation_closed': True,
+        'boss_wave_pressure_factor': 1.25,
+    }
+    assert row['best_status'] == 'complete'
+    assert row['model_closure_status'] == 'closed_with_pressure_factor_approximation'
+    assert row['best_model_closure_status'] == 'closed_with_pressure_factor_approximation'
+    assert row['model_certification']['accepted_approximation_closure'] == matrix['accepted_approximation_closure']
+    assert row['best_selected_max_wave'] > 0
+    assert row['terminal_pressure_limiter'] is None
+    assert row['terminal_pressure_limited'] is False
+    assert row['unsupported_pressure_missing_reference_blocked'] is False
+    assert row['terminal_pressure_reference_status'] is None
+    assert matrix['reference_gap_summary']['missing_reference_blocked_count'] == 0
+    assert matrix['reference_gap_summary']['missing_references'] == []
+    assert candidate['status'] == 'complete'
+    assert candidate['model_closure_status'] == 'closed_with_pressure_factor_approximation'
+    assert candidate['accepted_approximation_closure'] == matrix['accepted_approximation_closure']
+    assert candidate['selected_max_wave'] == row['best_calculated_selected_max_wave']
+    assert candidate['terminal_pressure_limiter'] is None
+    assert candidate['unsupported_pressure_missing_reference_blocked'] is False
+    assert candidate['non_boss_terminal_pressure_closure'] == matrix['non_boss_terminal_pressure_closure']
+
+
+@pytest.mark.live
+def test_boss_wave_milestone_matrix_comparison_pressure_factor_publishes_closure_diagnostics():
+    from app.models import PipelineRunRequest
+    from app.pipeline import (
+        _boss_wave_milestone_matrix_diagnostics_payload,
+        build_boss_wave_milestone_matrix,
+    )
+
+    matrix = build_boss_wave_milestone_matrix(
+        PipelineRunRequest(ids=IDS_PATH, out=ROOT / 'out', runtime_state_overlay='disco_respec_2026_06_10'),
+        tiers=(16,),
+        end_wave=2000,
+        boss_wave_step=10,
+        stop_on_failure=True,
+        scenario_runtime_inputs={'orb_boss_total_damage_pct': 6.0},
+        comparison_scenario_runtime_inputs={'boss_wave_pressure_factor': 1.25},
+        comparison_label='pressure_factor_assumptions',
+        loadout_policy_presets=('eHP Max Waves',),
+        dissonance_run_categories=('utility',),
+    )
+
+    comparison_matrix = matrix['comparison']['matrix']
+    diagnostics = _boss_wave_milestone_matrix_diagnostics_payload(matrix)
+
+    assert matrix['comparison']['runtime_input_overrides'] == {'boss_wave_pressure_factor': 1.25}
+    assert matrix['comparison']['base_scenario_runtime_inputs'] == {'orb_boss_total_damage_pct': 6.0}
+    assert matrix['comparison']['scenario_runtime_inputs'] == {
+        'orb_boss_total_damage_pct': 6.0,
+        'boss_wave_pressure_factor': 1.25,
+    }
+    assert matrix['model_completion_blockers'] == ['source_owned_non_boss_terminal_pressure_formulas']
+    assert matrix['model_accuracy_summary']['status'] == 'default_partial_missing_required_model_inputs'
+    assert matrix['model_accuracy_summary']['operator_next_step'] == (
+        'supply_terminal_max_wave_inputs_or_explicit_pressure_factor'
+    )
+    assert matrix['reference_gap_summary']['missing_reference_blocked_count'] == 1
+    assert matrix['rows'][0]['best_selected_max_wave'] == 0
+    assert comparison_matrix['model_completion_blockers'] == []
+    assert comparison_matrix['model_closure_status'] == 'closed_with_pressure_factor_approximation'
+    assert comparison_matrix['accepted_approximation_closure'] == {
+        'closed': True,
+        'mode': 'boss_wave_pressure_factor_approximation',
+        'scope': 'non_boss_terminal_pressure_scalar_on_boss_health_and_damage',
+        'boss_wave_pressure_factor': 1.25,
+        'replaced_blockers': ['source_owned_non_boss_terminal_pressure_formulas'],
+        'certification_effect': 'closes_non_boss_terminal_pressure_blocker_as_explicit_approximation',
+        'certified_full_max_wave_model': False,
+    }
+    assert comparison_matrix['model_accuracy_summary']['status'] == (
+        'explicit_pressure_factor_approximation_active'
+    )
+    assert comparison_matrix['model_accuracy_summary']['accepted_approximation_closure'] == (
+        comparison_matrix['accepted_approximation_closure']
+    )
+    assert comparison_matrix['effective_model_closure']['non_boss_terminal_pressure'] is True
+    assert comparison_matrix['non_boss_terminal_pressure_closure'] == {
+        'closed': True,
+        'mode': 'boss_wave_pressure_factor_approximation',
+        'exact_terminal_override_closed': False,
+        'pressure_factor_approximation_closed': True,
+        'boss_wave_pressure_factor': 1.25,
+    }
+    assert comparison_matrix['reference_gap_summary']['missing_reference_blocked_count'] == 0
+    assert comparison_matrix['reference_gap_summary']['missing_references'] == []
+    assert comparison_matrix['rows'][0]['best_status'] == 'complete'
+    assert comparison_matrix['rows'][0]['best_selected_max_wave'] > 0
+    assert diagnostics['comparison_model_completion_blockers'] == []
+    assert diagnostics['model_closure_status'] == 'partial_missing_required_model_inputs'
+    assert diagnostics['model_accuracy_summary'] == matrix['model_accuracy_summary']
+    assert diagnostics['comparison_model_closure_status'] == 'closed_with_pressure_factor_approximation'
+    assert diagnostics['comparison_accepted_approximation_closure'] == (
+        comparison_matrix['accepted_approximation_closure']
+    )
+    assert diagnostics['comparison_model_accuracy_summary'] == (
+        comparison_matrix['model_accuracy_summary']
+    )
+    assert diagnostics['comparison_runtime_input_overrides'] == {'boss_wave_pressure_factor': 1.25}
+    assert diagnostics['comparison_base_scenario_runtime_inputs'] == {'orb_boss_total_damage_pct': 6.0}
+    assert diagnostics['comparison_effective_model_closure']['non_boss_terminal_pressure'] is True
+    assert diagnostics['comparison_non_boss_terminal_pressure_closure'] == (
+        comparison_matrix['non_boss_terminal_pressure_closure']
+    )
+    assert diagnostics['comparison_model_certification']['non_boss_terminal_pressure_closure'] == (
+        comparison_matrix['non_boss_terminal_pressure_closure']
+    )
+    assert diagnostics['comparison_model_blocker_summary']['rows_with_model_completion_blockers'] == 0
+    assert diagnostics['comparison_reference_gap_summary']['missing_reference_blocked_count'] == 0
+    assert diagnostics['comparison_reference_gap_summary']['missing_references'] == []
+
+
+@pytest.mark.live
+def test_boss_wave_milestone_matrix_comparison_terminal_overrides_close_disco_gap():
+    from app.models import PipelineRunRequest
+    from app.pipeline import build_boss_wave_milestone_matrix
+
+    matrix = build_boss_wave_milestone_matrix(
+        PipelineRunRequest(ids=IDS_PATH, out=ROOT / 'out', runtime_state_overlay='disco_respec_2026_06_10'),
+        tiers=(16,),
+        end_wave=2000,
+        boss_wave_step=10,
+        stop_on_failure=True,
+        scenario_runtime_inputs={'orb_boss_total_damage_pct': 6.0},
+        comparison_scenario_runtime_inputs={
+            'fleet_terminal_max_wave': 1700.0,
+            'protector_terminal_max_wave': 1700.0,
+            'armored_terminal_max_wave': 1700.0,
+        },
+        comparison_label='terminal_pressure_assumptions',
+        loadout_policy_presets=('eHP Max Waves',),
+        dissonance_run_categories=('utility',),
+    )
+
+    comparison_matrix = matrix['comparison']['matrix']
+    comparison_row = comparison_matrix['rows'][0]
+    comparison_candidate = comparison_row['candidate_results'][0]
+    assert matrix['comparison']['runtime_input_overrides'] == {
+        'fleet_terminal_max_wave': 1700.0,
+        'protector_terminal_max_wave': 1700.0,
+        'armored_terminal_max_wave': 1700.0,
+    }
+    assert matrix['comparison']['base_scenario_runtime_inputs'] == {'orb_boss_total_damage_pct': 6.0}
+    assert matrix['comparison']['scenario_runtime_inputs'] == {
+        'orb_boss_total_damage_pct': 6.0,
+        'fleet_terminal_max_wave': 1700.0,
+        'protector_terminal_max_wave': 1700.0,
+        'armored_terminal_max_wave': 1700.0,
+    }
+    assert matrix['rows'][0]['unsupported_pressure_missing_reference_blocked'] is True
+    assert matrix['reference_gap_summary']['missing_reference_blocked_count'] == 1
+    assert comparison_matrix['model_completion_blockers'] == []
+    assert comparison_matrix['non_boss_terminal_pressure_closure'] == {
+        'closed': True,
+        'mode': 'explicit_terminal_max_wave_inputs',
+        'exact_terminal_override_closed': True,
+        'pressure_factor_approximation_closed': False,
+        'boss_wave_pressure_factor': None,
+    }
+    assert comparison_matrix['terminal_pressure_runtime_override_status'] == {
+        'closed': True,
+        'mode': 'active_unsupported_pressure_inputs',
+        'required_fields': [
+            'armored_terminal_max_wave',
+            'fleet_terminal_max_wave',
+            'protector_terminal_max_wave',
+        ],
+        'missing_fields': [],
+        'required_fields_by_pressure': {
+            'armored_enemies_blocked_hits': ['armored_terminal_max_wave'],
+            'knockback_resistance_non_boss_pressure': ['fleet_terminal_max_wave'],
+            'protector_ultimate_deferred': ['protector_terminal_max_wave'],
+        },
+        'missing_fields_by_pressure': {},
+        'unmapped_pressures': [],
+    }
+    assert comparison_matrix['reference_gap_summary']['missing_reference_blocked_count'] == 0
+    assert comparison_row['best_status'] == 'complete'
+    assert comparison_row['best_selected_max_wave'] == 1700
+    assert comparison_candidate['non_boss_terminal_pressure_closure'] == (
+        comparison_matrix['non_boss_terminal_pressure_closure']
+    )
+    wide = matrix['comparison']['wide_rows'][0]
+    assert wide['utility_default_wave'] == 0
+    assert wide['utility_comparison_wave'] == 1700
+    assert wide['utility_comparison_terminal_pressure_limiter'] == 'fleet_non_boss_pressure'
 
 
 def test_boss_wave_model_certification_only_requires_damage_health_decay_for_tournament_modes():
@@ -2227,6 +3964,24 @@ def test_boss_wave_model_certification_only_requires_damage_health_decay_for_tou
     assert normal_ehp['model_requirement_applicability']['boss_applicable_damage_semantics'] is False
     assert normal_ehp['model_requirement_applicability']['gc_boss_applicable_damage_semantics'] is False
     assert 'source_owned_full_boss_applicable_damage_semantics' not in normal_ehp['model_completion_blockers']
+    assert normal['effective_model_closure'] == {
+        'non_boss_terminal_pressure': True,
+        'v28_damage_health_decay_magnitudes': True,
+        'boss_applicable_damage_semantics': False,
+        'gc_boss_applicable_damage_semantics': False,
+    }
+    assert normal_ehp['effective_model_closure'] == {
+        'non_boss_terminal_pressure': True,
+        'v28_damage_health_decay_magnitudes': True,
+        'boss_applicable_damage_semantics': True,
+        'gc_boss_applicable_damage_semantics': True,
+    }
+    assert tournament['effective_model_closure'] == {
+        'non_boss_terminal_pressure': True,
+        'v28_damage_health_decay_magnitudes': False,
+        'boss_applicable_damage_semantics': False,
+        'gc_boss_applicable_damage_semantics': False,
+    }
     runtime_fields = set(ScenarioRuntimeInputs.__dataclass_fields__)
     supported = set(tournament['explicit_runtime_overrides_supported'])
     assert supported <= runtime_fields
@@ -2235,6 +3990,7 @@ def test_boss_wave_model_certification_only_requires_damage_health_decay_for_tou
         'boss_hit_interval_seconds',
         'effective_damage_reduction_pct',
         'incoming_damage_multiplier',
+        'boss_wave_pressure_factor',
         'orb_boss_hit_pct',
         'orb_boss_hit_count',
         'orb_boss_total_damage_pct',
@@ -2271,6 +4027,7 @@ def test_boss_wave_model_certification_only_requires_damage_health_decay_for_tou
         'elite_terminal_max_wave',
         'protector_terminal_max_wave',
         'armored_terminal_max_wave',
+        'boss_terminal_max_wave',
     } <= supported
     assert 'boss_wave_interval' not in supported
     assert 'orb_boss_hits_per_second' not in supported
@@ -2278,6 +4035,158 @@ def test_boss_wave_model_certification_only_requires_damage_health_decay_for_tou
     assert 'enemy_skip_decay_pct_per_step' not in supported
     assert 'tower_damage_decay_pct_per_step' not in supported
     assert 'tower_health_decay_pct_per_step' not in supported
+
+
+def test_boss_wave_model_certification_reports_v28_damage_health_decay_closure_details():
+    from app.pipeline import _boss_wave_model_certification_payload
+    from input.state_types import ScenarioRuntimeInputs
+
+    missing = _boss_wave_model_certification_payload(
+        runtime_inputs=ScenarioRuntimeInputs.from_mapping({'tower_damage_decay_pct': 1.0}),
+        damage_health_decay_required=True,
+        gc_boss_applicable_damage_required=False,
+    )
+    closed = _boss_wave_model_certification_payload(
+        runtime_inputs=ScenarioRuntimeInputs.from_mapping(
+            {
+                'tower_damage_decay_pct': 1.0,
+                'tower_health_decay_pct': 2.0,
+                'tower_damage_decay_start_wave': 4500.0,
+            }
+        ),
+        damage_health_decay_required=True,
+        gc_boss_applicable_damage_required=False,
+    )
+    not_required = _boss_wave_model_certification_payload(
+        runtime_inputs=ScenarioRuntimeInputs.from_mapping({}),
+        damage_health_decay_required=False,
+        gc_boss_applicable_damage_required=False,
+    )
+
+    missing_status = missing['v28_damage_health_decay_closure']
+    assert missing_status['closed'] is False
+    assert missing_status['mode'] == 'missing_source_owned_magnitudes'
+    assert missing_status['required_fields'] == ['tower_damage_decay_pct', 'tower_health_decay_pct']
+    assert missing_status['missing_fields'] == ['tower_health_decay_pct']
+    assert missing_status['source_owned_default_available'] is False
+    assert 'source_owned_v28_damage_health_decay_magnitudes' in missing['model_completion_blockers']
+
+    closed_status = closed['v28_damage_health_decay_closure']
+    assert closed_status['closed'] is True
+    assert closed_status['mode'] == 'explicit_runtime_inputs'
+    assert closed_status['missing_fields'] == []
+    assert closed_status['supplied_start_wave_fields'] == ['tower_damage_decay_start_wave']
+    assert closed['runtime_override_closure']['v28_damage_health_decay_magnitudes'] is True
+    assert 'source_owned_v28_damage_health_decay_magnitudes' not in closed['model_completion_blockers']
+
+    not_required_status = not_required['v28_damage_health_decay_closure']
+    assert not_required_status['closed'] is False
+    assert not_required_status['mode'] == 'not_required'
+    assert not_required_status['required'] is False
+    assert 'source_owned_v28_damage_health_decay_magnitudes' not in not_required['model_completion_blockers']
+
+
+def test_boss_wave_model_certification_closes_only_relevant_terminal_pressure_overrides():
+    from app.pipeline import _boss_wave_model_certification_payload
+    from input.state_types import ScenarioRuntimeInputs
+
+    certification = _boss_wave_model_certification_payload(
+        runtime_inputs=ScenarioRuntimeInputs.from_mapping({'armored_terminal_max_wave': 900}),
+        non_boss_terminal_pressure_required=True,
+        unsupported_terminal_pressures=['armored_enemies_blocked_hits'],
+        damage_health_decay_required=False,
+        gc_boss_applicable_damage_required=False,
+    )
+
+    assert certification['runtime_override_closure']['non_boss_terminal_pressure'] is True
+    assert certification['model_closure_status'] == 'closed_with_explicit_terminal_pressure_inputs'
+    assert certification['accepted_approximation_closure'] == {
+        'closed': False,
+        'mode': 'none',
+        'scope': 'non_boss_terminal_pressure_scalar_on_boss_health_and_damage',
+        'boss_wave_pressure_factor': None,
+        'replaced_blockers': [],
+        'certification_effect': 'none',
+        'certified_full_max_wave_model': False,
+    }
+    assert 'source_owned_non_boss_terminal_pressure_formulas' not in certification['model_completion_blockers']
+    terminal_status = certification['terminal_pressure_runtime_override_status']
+    assert terminal_status['mode'] == 'active_unsupported_pressure_inputs'
+    assert terminal_status['required_fields'] == ['armored_terminal_max_wave']
+    assert terminal_status['missing_fields'] == []
+    assert terminal_status['unmapped_pressures'] == []
+    assert terminal_status['required_fields_by_pressure'] == {
+        'armored_enemies_blocked_hits': ['armored_terminal_max_wave'],
+    }
+
+
+def test_boss_wave_model_certification_maps_boss_ultimate_to_boss_terminal_override():
+    from app.pipeline import _boss_wave_model_certification_payload
+    from input.state_types import ScenarioRuntimeInputs
+
+    missing = _boss_wave_model_certification_payload(
+        runtime_inputs=ScenarioRuntimeInputs.from_mapping({'armored_terminal_max_wave': 900}),
+        non_boss_terminal_pressure_required=True,
+        unsupported_terminal_pressures=['boss_ultimate_deferred'],
+        damage_health_decay_required=False,
+        gc_boss_applicable_damage_required=False,
+    )
+    closed = _boss_wave_model_certification_payload(
+        runtime_inputs=ScenarioRuntimeInputs.from_mapping({'boss_terminal_max_wave': 901}),
+        non_boss_terminal_pressure_required=True,
+        unsupported_terminal_pressures=['boss_ultimate_deferred'],
+        damage_health_decay_required=False,
+        gc_boss_applicable_damage_required=False,
+    )
+
+    assert missing['terminal_pressure_runtime_override_status']['required_fields'] == [
+        'boss_terminal_max_wave'
+    ]
+    assert missing['terminal_pressure_runtime_override_status']['missing_fields'] == [
+        'boss_terminal_max_wave'
+    ]
+    assert missing['terminal_pressure_runtime_override_status']['unmapped_pressures'] == []
+    assert 'source_owned_non_boss_terminal_pressure_formulas' in missing['model_completion_blockers']
+    assert closed['terminal_pressure_runtime_override_status']['closed'] is True
+    assert closed['terminal_pressure_runtime_override_status']['missing_fields'] == []
+    assert closed['runtime_override_closure']['non_boss_terminal_pressure'] is True
+    assert 'source_owned_non_boss_terminal_pressure_formulas' not in closed['model_completion_blockers']
+
+
+def test_boss_wave_model_certification_closes_terminal_pressure_by_explicit_pressure_factor():
+    from app.pipeline import _boss_wave_model_certification_payload
+    from input.state_types import ScenarioRuntimeInputs
+
+    certification = _boss_wave_model_certification_payload(
+        runtime_inputs=ScenarioRuntimeInputs.from_mapping({'boss_wave_pressure_factor': 1.25}),
+        non_boss_terminal_pressure_required=True,
+        unsupported_terminal_pressures=['armored_enemies_blocked_hits'],
+        damage_health_decay_required=False,
+        gc_boss_applicable_damage_required=False,
+    )
+
+    assert certification['runtime_override_closure']['non_boss_terminal_pressure'] is True
+    assert certification['model_closure_status'] == 'closed_with_pressure_factor_approximation'
+    assert certification['accepted_approximation_closure'] == {
+        'closed': True,
+        'mode': 'boss_wave_pressure_factor_approximation',
+        'scope': 'non_boss_terminal_pressure_scalar_on_boss_health_and_damage',
+        'boss_wave_pressure_factor': 1.25,
+        'replaced_blockers': ['source_owned_non_boss_terminal_pressure_formulas'],
+        'certification_effect': 'closes_non_boss_terminal_pressure_blocker_as_explicit_approximation',
+        'certified_full_max_wave_model': False,
+    }
+    assert 'source_owned_non_boss_terminal_pressure_formulas' not in certification['model_completion_blockers']
+    assert certification['terminal_pressure_runtime_override_status']['closed'] is False
+    assert certification['terminal_pressure_runtime_override_status']['missing_fields'] == ['armored_terminal_max_wave']
+    closure = certification['non_boss_terminal_pressure_closure']
+    assert closure == {
+        'closed': True,
+        'mode': 'boss_wave_pressure_factor_approximation',
+        'exact_terminal_override_closed': False,
+        'pressure_factor_approximation_closed': True,
+        'boss_wave_pressure_factor': 1.25,
+    }
 
 
 def test_boss_wave_hit_interval_applies_slow_aura_mastery_when_not_explicit() -> None:
@@ -2605,6 +4514,50 @@ def test_boss_wave_ultimate_weapons_dissonance_masks_chrono_field_before_contact
 
 
 @pytest.mark.live
+def test_boss_wave_payload_threads_all_dissonance_boost_factors_into_gc_damage():
+    from app.pipeline import build_boss_wave_payload
+
+    request = PipelineRunRequest(
+        ids=IDS_PATH,
+        out=ROOT / 'out',
+        runtime_state_overlay='disco_respec_2026_06_10',
+        perk_mode='max_progression_policy',
+        perk_policy_preset='GC Max Waves',
+    )
+    payload = build_boss_wave_payload(
+        request,
+        preset_name='Farming',
+        tier_number=14,
+        end_wave=1000,
+        boss_wave_step=10,
+        stop_on_failure=False,
+        scenario_runtime_inputs={'boss_time_to_contact_seconds': 10.0, 'orb_boss_total_damage_pct': 6.0},
+    )
+
+    primitives = payload['diagnostics']['replacement_primitive_inputs']['values']
+    assert primitives['dissonance_attack_active_boost_multiplier'] > 1.0
+    assert primitives['dissonance_defense_active_boost_multiplier'] > 1.0
+    assert primitives['dissonance_utility_active_boost_multiplier'] > 1.0
+    assert primitives['dissonance_ultimate_weapons_active_boost_multiplier'] > 1.0
+    assert primitives['edamage_attack_dissonance_factor'] == pytest.approx(
+        primitives['dissonance_attack_total_multiplier']
+    )
+    assert primitives['ehp_defense_dissonance_factor'] == pytest.approx(
+        primitives['dissonance_defense_total_multiplier']
+    )
+    assert primitives['dissonance_utility_total_multiplier'] > 1.0
+    assert primitives['edamage_uw_dissonance_factor'] == pytest.approx(
+        primitives['dissonance_ultimate_weapons_total_multiplier']
+    )
+    assert primitives['edamage_attack_dissonance_factor'] > 1.0
+    assert primitives['edamage_uw_dissonance_factor'] > 1.0
+    assert primitives['boss_damage_source'] == 'qe_derived_edamage_ep_boss_exposure_model'
+    assert primitives['boss_damage_per_second'] == pytest.approx(
+        primitives['edamage_ep'] * primitives['edamage_boss_runtime_factor']
+    )
+
+
+@pytest.mark.live
 def test_boss_wave_milestone_matrix_selects_best_loadout_by_tier_and_dissonance_category():
     from app.models import PipelineRunRequest
     from app.pipeline import build_boss_wave_milestone_matrix
@@ -2620,6 +4573,10 @@ def test_boss_wave_milestone_matrix_selects_best_loadout_by_tier_and_dissonance_
     )
 
     assert matrix['artifact'] == 'boss_wave_milestone_matrix'
+    assert matrix['model_scope'] == 'boss_contact_survivability'
+    assert matrix['not_full_max_wave_model'] is True
+    assert matrix['model_certification_status'] == 'partial_boss_contact_model'
+    assert matrix['certified_full_max_wave_model'] is False
     assert matrix['model_certification']['certified_full_max_wave_model'] is False
     assert matrix['model_certification']['model_certification_status'] == 'partial_boss_contact_model'
     assert matrix['model_certification']['model_requirement_applicability']['non_boss_terminal_pressure'] is False
@@ -2643,6 +4600,13 @@ def test_boss_wave_milestone_matrix_selects_best_loadout_by_tier_and_dissonance_
         'utility',
         'ultimate_weapons',
     ]
+    assert matrix['model_blocker_summary'] == {
+        'row_count': 5,
+        'rows_with_model_completion_blockers': 0,
+        'model_completion_blocker_counts': {},
+        'rows_with_unsupported_terminal_pressures': 0,
+        'unsupported_terminal_pressure_counts': {},
+    }
     assert len(matrix['wide_rows']) == 1
     wide = matrix['wide_rows'][0]
     assert wide['tier_column'] == 'Tier 14'
@@ -2680,6 +4644,22 @@ def test_boss_wave_milestone_matrix_selects_best_loadout_by_tier_and_dissonance_
         ehp_attack_candidate['selected_max_wave'],
         gc_attack_candidate['selected_max_wave'],
     )
+    assert attack_row['ids_reference_alignment']['enabled'] is True
+    assert attack_row['ids_reference_alignment']['applied'] is False
+    assert (
+        attack_row['ids_reference_alignment']['reason']
+        == 'dissonance_pb_at_bonus_cap_not_exact_reference'
+    )
+    assert attack_row['ids_reference_alignment']['reference_interpretation'] == (
+        'lower_bound_at_dissonance_bonus_cap'
+    )
+    assert attack_row['ids_reference_alignment']['dissonance_pb_bonus_cap_wave'] == 5000
+    assert attack_row['reference_quality']['dissonance_pb_bonus_cap_reached'] is True
+    assert attack_row['reference_quality']['exact_reference'] is False
+    assert attack_row['pressure_factor_reference_hint']['enabled'] is False
+    assert attack_row['pressure_factor_reference_hint']['mode'] == (
+        'dissonance_pb_bonus_cap_not_exact_reference'
+    )
     assert attack_row['reference_kind'] == 'ids_dissonant_pb_wave'
     assert attack_row['reference_wave'] == 5000
     assert attack_row['dissonance_pb_reference_wave'] == 5000
@@ -2712,6 +4692,9 @@ def test_boss_wave_milestone_matrix_selects_best_loadout_by_tier_and_dissonance_
         assert row['best_selected_max_wave'] >= 0
         assert row['best_selected_model'] == expected_model
         assert row['best_model_certification_status'] == 'partial_boss_contact_model'
+        assert row['model_certification_status'] == 'partial_boss_contact_model'
+        assert row['model_certification']['model_certification_status'] == 'partial_boss_contact_model'
+        assert row['model_certification']['certified_full_max_wave_model'] is False
         assert row['certified_full_max_wave_model'] is False
         assert 'source_owned_v28_damage_health_decay_magnitudes' not in row['model_completion_blockers']
         assert row['best_loadout_policy_preset'] in {'eHP Farming', 'GC Max Waves'}
@@ -2927,6 +4910,93 @@ def test_boss_wave_milestone_matrix_can_compare_default_to_bridge_assumptions():
 
 
 @pytest.mark.live
+def test_boss_wave_milestone_matrix_can_compare_default_to_pressure_factor_assumption():
+    from app.models import PipelineRunRequest
+    from app.pipeline import build_boss_wave_milestone_matrix
+
+    matrix = build_boss_wave_milestone_matrix(
+        PipelineRunRequest(ids=IDS_PATH, out=ROOT / 'out'),
+        tiers=(14,),
+        end_wave=5000,
+        boss_wave_step=10,
+        stop_on_failure=True,
+        scenario_runtime_inputs={'orb_boss_total_damage_pct': 6.0},
+        comparison_scenario_runtime_inputs={'boss_wave_pressure_factor': 1.25},
+        comparison_label='pressure_factor_assumptions',
+        loadout_policy_presets=('eHP Max Waves',),
+        dissonance_run_categories=('utility',),
+        align_clean_reference_rows=False,
+    )
+
+    comparison = matrix['comparison']
+    assert comparison['label'] == 'pressure_factor_assumptions'
+    assert 'boss_wave_pressure_factor' not in matrix['scenario_runtime_inputs']
+    assert comparison['scenario_runtime_inputs']['boss_wave_pressure_factor'] == pytest.approx(1.25)
+    wide = comparison['wide_rows'][0]
+    assert wide['utility_default_wave'] == matrix['rows'][0]['best_selected_max_wave']
+    assert wide['utility_comparison_wave'] < wide['utility_default_wave']
+    assert wide['utility_delta_wave'] == wide['utility_comparison_wave'] - wide['utility_default_wave']
+    assert wide['utility_default_calculated_wave'] == matrix['rows'][0]['best_calculated_selected_max_wave']
+    assert wide['utility_comparison_calculated_wave'] == (
+        comparison['matrix']['rows'][0]['best_calculated_selected_max_wave']
+    )
+    assert wide['utility_default_hit_by_hit_wave'] == matrix['wide_rows'][0]['utility_hit_by_hit_wave']
+    assert wide['utility_comparison_hit_by_hit_wave'] == (
+        comparison['matrix']['wide_rows'][0]['utility_hit_by_hit_wave']
+    )
+    assert wide['utility_default_contact_envelope_wave'] == matrix['wide_rows'][0]['utility_contact_envelope_wave']
+    assert wide['utility_comparison_contact_envelope_wave'] == (
+        comparison['matrix']['wide_rows'][0]['utility_contact_envelope_wave']
+    )
+    assert wide['utility_default_reference_nearest_lane'] == matrix['wide_rows'][0][
+        'utility_reference_nearest_lane'
+    ]
+    assert wide['utility_comparison_reference_nearest_lane'] == comparison['matrix']['wide_rows'][0][
+        'utility_reference_nearest_lane'
+    ]
+    assert wide['utility_default_reference_nearest_lane_wave'] == matrix['wide_rows'][0][
+        'utility_reference_nearest_lane_wave'
+    ]
+    assert wide['utility_comparison_reference_nearest_lane_wave'] == comparison['matrix']['wide_rows'][0][
+        'utility_reference_nearest_lane_wave'
+    ]
+    assert wide['utility_calculated_delta_wave'] == (
+        wide['utility_comparison_calculated_wave'] - wide['utility_default_calculated_wave']
+    )
+    assert comparison['calculated_delta_summary']['row_count'] == 1
+    assert comparison['calculated_delta_summary']['comparison_raw_wave_lower_count'] == 1
+    assert comparison['calculated_delta_summary']['max_abs_calculated_delta_row'] == {
+        'tier': 14,
+        'tier_column': 'Tier 14',
+        'dissonance_run_category': 'utility',
+        'label': 'Utility Dissonant Run',
+        'default_selected_wave': wide['utility_default_wave'],
+        'comparison_selected_wave': wide['utility_comparison_wave'],
+        'selected_delta_wave': wide['utility_delta_wave'],
+        'default_calculated_wave': wide['utility_default_calculated_wave'],
+        'comparison_calculated_wave': wide['utility_comparison_calculated_wave'],
+        'calculated_delta_wave': wide['utility_calculated_delta_wave'],
+        'default_calculated_delta_vs_reference_wave': wide[
+            'utility_default_calculated_delta_vs_reference_wave'
+        ],
+        'comparison_calculated_delta_vs_reference_wave': wide[
+            'utility_comparison_calculated_delta_vs_reference_wave'
+        ],
+        'default_calculated_to_reference_ratio': wide['utility_default_calculated_to_reference_ratio'],
+        'comparison_calculated_to_reference_ratio': wide['utility_comparison_calculated_to_reference_ratio'],
+    }
+    comparison_candidate = comparison['matrix']['rows'][0]['candidate_results'][0]
+    assert comparison_candidate['selected_max_wave'] == wide['utility_comparison_wave']
+    assert comparison_candidate['non_boss_terminal_pressure_closure'] == {
+        'closed': False,
+        'mode': 'not_required',
+        'exact_terminal_override_closed': False,
+        'pressure_factor_approximation_closed': False,
+        'boss_wave_pressure_factor': 1.25,
+    }
+
+
+@pytest.mark.live
 def test_boss_wave_milestone_matrix_comparison_rows_keep_terminal_pressure_cap_metadata():
     from app.models import PipelineRunRequest
     from app.pipeline import build_boss_wave_milestone_matrix
@@ -2957,18 +5027,254 @@ def test_boss_wave_milestone_matrix_comparison_rows_keep_terminal_pressure_cap_m
     assert comparison_row['ultimate_weapons_comparison_terminal_pressure_limiter'] == (
         'unsupported_pressure_empirical_reference'
     )
+    assert comparison_row['ultimate_weapons_default_terminal_pressure_reference_status'] == (
+        'empirical_reference_limited'
+    )
+    assert comparison_row['ultimate_weapons_comparison_terminal_pressure_reference_status'] == (
+        'empirical_reference_limited'
+    )
     assert comparison_row['ultimate_weapons_default_unsupported_pressure_reference_limited'] is True
     assert comparison_row['ultimate_weapons_comparison_unsupported_pressure_reference_limited'] is True
     assert comparison_row['ultimate_weapons_default_unsupported_pressure_uncapped_wave'] > 780
     assert comparison_row['ultimate_weapons_comparison_unsupported_pressure_uncapped_wave'] > 780
 
 
+@pytest.mark.live
+def test_boss_wave_milestone_matrix_pressure_factor_closes_unsupported_terminal_pressure_as_approximation():
+    from app.models import PipelineRunRequest
+    from app.pipeline import build_boss_wave_milestone_matrix
+
+    matrix = build_boss_wave_milestone_matrix(
+        PipelineRunRequest(ids=IDS_PATH, out=ROOT / 'out', runtime_state_overlay='disco_respec_2026_06_10'),
+        tiers=(16,),
+        end_wave=1600,
+        boss_wave_step=10,
+        stop_on_failure=True,
+        scenario_runtime_inputs={
+            'orb_boss_total_damage_pct': 6.0,
+            'boss_wave_pressure_factor': 1.25,
+        },
+        loadout_policy_presets=('eHP Max Waves',),
+        dissonance_run_categories=('ultimate_weapons',),
+    )
+
+    row = matrix['rows'][0]
+    candidate = row['candidate_results'][0]
+    certification = matrix['model_certification']
+    assert 'source_owned_non_boss_terminal_pressure_formulas' not in candidate['model_completion_blockers']
+    assert 'source_owned_non_boss_terminal_pressure_formulas' not in row['model_completion_blockers']
+    assert 'source_owned_non_boss_terminal_pressure_formulas' not in certification['model_completion_blockers']
+    assert certification['runtime_override_closure']['non_boss_terminal_pressure'] is True
+    assert certification['non_boss_terminal_pressure_closure']['mode'] == 'boss_wave_pressure_factor_approximation'
+    assert certification['non_boss_terminal_pressure_closure']['boss_wave_pressure_factor'] == pytest.approx(1.25)
+    assert certification['terminal_pressure_runtime_override_status']['closed'] is False
+    assert certification['unsupported_terminal_pressures']
+
+
+def test_boss_wave_empirical_pressure_transform_approval_removes_only_operator_blocker():
+    from app.pipeline import _boss_wave_pressure_driver_empirical_transform_candidate
+
+    calibration_rows = [
+        {
+            'tier': tier,
+            'wave': 2000 + tier * 100,
+            'normal_spawn_rate_pressure_index': 40.0 + tier,
+            'wave_accelerator_spawn_rate_acceleration': 1.8,
+            'elite_pressure_index_pct': 66.0,
+            'fleet_events_per_wave_pressure': 0.001,
+            'pressure_factor_hint': 1.0 + tier / 20.0,
+        }
+        for tier in range(1, 7)
+    ]
+
+    default = _boss_wave_pressure_driver_empirical_transform_candidate(calibration_rows)
+    approved = _boss_wave_pressure_driver_empirical_transform_candidate(
+        calibration_rows,
+        approve_empirical_transform_default=True,
+    )
+
+    assert default['promotion_readiness']['operator_approval_status'] == 'not_approved'
+    assert approved['promotion_readiness']['operator_approval_status'] == (
+        'approved_explicit_runtime_input'
+    )
+    assert approved['promotion_readiness']['default_pressure_factor_derived'] is False
+    assert approved['promotion_status'] == 'not_promoted'
+    assert 'operator_has_not_approved_empirical_transform_as_default' in default[
+        'promotion_readiness'
+    ]['blocking_reasons']
+    assert 'operator_has_not_approved_empirical_transform_as_default' not in approved[
+        'promotion_readiness'
+    ]['blocking_reasons']
+    assert 'not_source_owned_terminal_pressure_formula' in approved[
+        'promotion_readiness'
+    ]['blocking_reasons']
+    assert 'non_capped_dissonance_reference_validation_missing' in approved[
+        'promotion_readiness'
+    ]['blocking_reasons']
+
+
+@pytest.mark.live
+def test_boss_wave_milestone_matrix_pressure_factor_closes_all_dissonant_categories():
+    from app.models import PipelineRunRequest
+    from app.pipeline import build_boss_wave_milestone_matrix
+
+    matrix = build_boss_wave_milestone_matrix(
+        PipelineRunRequest(ids=IDS_PATH, out=ROOT / 'out', runtime_state_overlay='disco_respec_2026_06_10'),
+        tiers=(16,),
+        end_wave=1600,
+        boss_wave_step=10,
+        stop_on_failure=True,
+        scenario_runtime_inputs={
+            'orb_boss_total_damage_pct': 6.0,
+            'boss_wave_pressure_factor': 1.25,
+        },
+        loadout_policy_presets=('eHP Max Waves',),
+        dissonance_run_categories=('none', 'attack', 'defense', 'utility', 'ultimate_weapons'),
+    )
+
+    assert len(matrix['rows']) == 5
+    assert matrix['model_completion_blockers'] == []
+    assert matrix['model_closure_status'] == 'closed_with_pressure_factor_approximation'
+    assert matrix['accepted_approximation_closure'] == {
+        'closed': True,
+        'mode': 'boss_wave_pressure_factor_approximation',
+        'scope': 'non_boss_terminal_pressure_scalar_on_boss_health_and_damage',
+        'boss_wave_pressure_factor': 1.25,
+        'replaced_blockers': ['source_owned_non_boss_terminal_pressure_formulas'],
+        'certification_effect': 'closes_non_boss_terminal_pressure_blocker_as_explicit_approximation',
+        'certified_full_max_wave_model': False,
+    }
+    assert {row['dissonance_run_category'] for row in matrix['rows']} == {
+        'none',
+        'attack',
+        'defense',
+        'utility',
+        'ultimate_weapons',
+    }
+    for row in matrix['rows']:
+        assert row['best_status'] == 'complete'
+        assert row['model_completion_blockers'] == []
+        assert row['model_closure_status'] == 'closed_with_pressure_factor_approximation'
+        assert row['effective_model_closure']['non_boss_terminal_pressure'] is True
+        assert row['non_boss_terminal_pressure_closure'] == {
+            'closed': True,
+            'mode': 'boss_wave_pressure_factor_approximation',
+            'exact_terminal_override_closed': False,
+            'pressure_factor_approximation_closed': True,
+            'boss_wave_pressure_factor': 1.25,
+        }
+        assert row['unsupported_terminal_pressures']
+
+
+@pytest.mark.live
+def test_boss_wave_pressure_factor_review_default_approval_promotes_review_input(monkeypatch):
+    import app.pipeline as pipeline_mod
+
+    original_summary = pipeline_mod._boss_wave_matrix_model_accuracy_summary
+    call_count = {'value': 0}
+
+    def _summary_with_review_input(**kwargs):
+        summary = original_summary(**kwargs)
+        call_count['value'] += 1
+        if call_count['value'] == 1:
+            summary = dict(summary)
+            summary['comparison_only_pressure_factor_inputs'] = {
+                'boss_wave_pressure_factor': 1.25,
+            }
+            summary['status'] = 'default_partial_comparison_calibration_available'
+            summary['operator_next_step'] = (
+                'apply_comparison_only_pressure_factor_input_to_review_approximation'
+            )
+        return summary
+
+    monkeypatch.setattr(
+        pipeline_mod,
+        '_boss_wave_matrix_model_accuracy_summary',
+        _summary_with_review_input,
+    )
+
+    matrix = pipeline_mod.build_boss_wave_milestone_matrix(
+        PipelineRunRequest(ids=IDS_PATH, out=ROOT / 'out', runtime_state_overlay='disco_respec_2026_06_10'),
+        tiers=(16,),
+        end_wave=1600,
+        boss_wave_step=10,
+        stop_on_failure=True,
+        scenario_runtime_inputs={
+            'orb_boss_total_damage_pct': 6.0,
+            'approve_boss_wave_pressure_factor_review_default': 1.0,
+        },
+        loadout_policy_presets=('eHP Max Waves',),
+        dissonance_run_categories=('utility',),
+    )
+
+    assert matrix['scenario_runtime_inputs']['boss_wave_pressure_factor'] == pytest.approx(1.25)
+    assert 'approve_boss_wave_pressure_factor_review_default' not in matrix['scenario_runtime_inputs']
+    assert matrix['model_completion_blockers'] == []
+    assert matrix['model_closure_status'] == 'closed_with_pressure_factor_approximation'
+    assert matrix['accepted_approximation_closure']['closed'] is True
+    assert matrix['accepted_approximation_closure']['mode'] == 'boss_wave_pressure_factor_approximation'
+    assert matrix['accepted_approximation_closure']['boss_wave_pressure_factor'] == pytest.approx(1.25)
+    assert matrix['approved_pressure_factor_review_default'] == {
+        'status': 'approved_explicit_runtime_input',
+        'approval_runtime_input': 'approve_boss_wave_pressure_factor_review_default',
+        'promoted_runtime_input': 'boss_wave_pressure_factor',
+        'boss_wave_pressure_factor': 1.25,
+        'source': 'model_accuracy_summary.comparison_only_pressure_factor_inputs',
+        'certification_effect': (
+            'closes_source_owned_non_boss_terminal_pressure_formulas_as_approved_approximation'
+        ),
+        'default_artifact_policy': 'not_applied_without_explicit_runtime_approval',
+    }
+
+
+def test_goal_readiness_accepts_only_approved_boss_pressure_factor_closure():
+    from app.pipeline import _tower_goal_readiness_summary
+
+    readiness = _tower_goal_readiness_summary(
+        {
+            'boss_wave_milestone_matrix': {
+                'model_closure_status': 'closed_with_pressure_factor_approximation',
+                'certified_full_max_wave_model': False,
+                'model_completion_blockers': [],
+                'accepted_approximation_closure': {
+                    'closed': True,
+                    'mode': 'boss_wave_pressure_factor_approximation',
+                    'boss_wave_pressure_factor': 2.606384292771721,
+                },
+                'non_boss_terminal_pressure_closure': {
+                    'pressure_factor_approximation_closed': True,
+                    'boss_wave_pressure_factor': 2.606384292771721,
+                },
+                'approved_pressure_factor_review_default': {
+                    'status': 'approved_explicit_runtime_input',
+                    'approval_runtime_input': (
+                        'approve_boss_wave_pressure_factor_review_default'
+                    ),
+                    'promoted_runtime_input': 'boss_wave_pressure_factor',
+                    'boss_wave_pressure_factor': 2.606384292771721,
+                },
+            },
+        }
+    )
+
+    rows = {row['id']: row for row in readiness['requirements']}
+    boss_row = rows['boss_waves_full_accuracy']
+    assert boss_row['status'] == 'proven_with_approved_non_boss_pressure_approximation'
+    assert boss_row['approved_non_boss_terminal_pressure_closure'] is True
+    assert 'boss_waves_full_accuracy' not in readiness['remaining_blockers']
+
+
 def test_boss_wave_matrix_comparison_inputs_from_cli_args():
     from types import SimpleNamespace
 
-    from app.pipeline import _boss_wave_matrix_comparison_inputs_from_args, _boss_wave_matrix_runtime_inputs_from_args
+    from app.pipeline import (
+        _boss_wave_matrix_comparison_inputs_from_args,
+        _boss_wave_matrix_comparison_label_from_args,
+        _boss_wave_matrix_runtime_inputs_from_args,
+    )
 
     assert _boss_wave_matrix_comparison_inputs_from_args(SimpleNamespace()) is None
+    assert _boss_wave_matrix_comparison_label_from_args(SimpleNamespace()) == 'bridge_assumptions'
     assert _boss_wave_matrix_runtime_inputs_from_args(SimpleNamespace()) is None
     payload = _boss_wave_matrix_comparison_inputs_from_args(
         SimpleNamespace(
@@ -2976,6 +5282,7 @@ def test_boss_wave_matrix_comparison_inputs_from_cli_args():
             boss_wave_bridge_cadence_uptime=0.6,
             boss_wave_bridge_reliability=0.7,
             boss_wave_bridge_semantic_normalizer=0.8,
+            boss_wave_comparison_pressure_factor=1.0,
         )
     )
     assert payload == {
@@ -2984,10 +5291,73 @@ def test_boss_wave_matrix_comparison_inputs_from_cli_args():
         'boss_edamage_reliability_factor': 0.7,
         'boss_edamage_semantic_normalizer': 0.8,
     }
+    assert (
+        _boss_wave_matrix_comparison_label_from_args(
+            SimpleNamespace(
+                boss_wave_bridge_target_share=0.5,
+                boss_wave_bridge_cadence_uptime=0.6,
+                boss_wave_bridge_reliability=0.7,
+                boss_wave_bridge_semantic_normalizer=0.8,
+                boss_wave_comparison_pressure_factor=1.0,
+            )
+        )
+        == 'bridge_assumptions'
+    )
+    pressure_payload = _boss_wave_matrix_comparison_inputs_from_args(
+        SimpleNamespace(boss_wave_comparison_pressure_factor=1.25)
+    )
+    assert pressure_payload == {'boss_wave_pressure_factor': 1.25}
+    assert (
+        _boss_wave_matrix_comparison_label_from_args(SimpleNamespace(boss_wave_comparison_pressure_factor=1.25))
+        == 'pressure_factor_assumptions'
+    )
+    assert (
+        _boss_wave_matrix_comparison_label_from_args(
+            SimpleNamespace(
+                boss_wave_bridge_target_share=0.5,
+                boss_wave_comparison_pressure_factor=1.25,
+            )
+        )
+        == 'bridge_and_pressure_factor_assumptions'
+    )
+    terminal_payload = _boss_wave_matrix_comparison_inputs_from_args(
+        SimpleNamespace(
+            boss_wave_comparison_fleet_terminal_max_wave=900.0,
+            boss_wave_comparison_elite_terminal_max_wave=901.0,
+            boss_wave_comparison_protector_terminal_max_wave=902.0,
+            boss_wave_comparison_armored_terminal_max_wave=903.0,
+            boss_wave_comparison_boss_terminal_max_wave=904.0,
+        )
+    )
+    assert terminal_payload == {
+        'fleet_terminal_max_wave': 900.0,
+        'elite_terminal_max_wave': 901.0,
+        'protector_terminal_max_wave': 902.0,
+        'armored_terminal_max_wave': 903.0,
+        'boss_terminal_max_wave': 904.0,
+    }
+    assert (
+        _boss_wave_matrix_comparison_label_from_args(
+            SimpleNamespace(boss_wave_comparison_fleet_terminal_max_wave=900.0)
+        )
+        == 'terminal_pressure_assumptions'
+    )
+    assert (
+        _boss_wave_matrix_comparison_label_from_args(
+            SimpleNamespace(
+                boss_wave_bridge_target_share=0.5,
+                boss_wave_comparison_pressure_factor=1.25,
+                boss_wave_comparison_fleet_terminal_max_wave=900.0,
+            )
+        )
+        == 'bridge_and_pressure_factor_and_terminal_pressure_assumptions'
+    )
     runtime_payload = _boss_wave_matrix_runtime_inputs_from_args(
         SimpleNamespace(
             boss_wave_contact_time_seconds=10.0,
             boss_wave_orb_boss_total_damage_pct=6.0,
+            boss_wave_pressure_factor=1.25,
+            approve_boss_wave_pressure_factor_review_default=True,
             boss_wave_flame_bot_boss_hit_chance_pct=50.0,
             boss_wave_flame_bot_damage_reduction_pct=95.0,
             boss_wave_flame_bot_duration_seconds=21.0,
@@ -2996,11 +5366,14 @@ def test_boss_wave_matrix_comparison_inputs_from_cli_args():
             boss_wave_elite_terminal_max_wave=901.0,
             boss_wave_protector_terminal_max_wave=902.0,
             boss_wave_armored_terminal_max_wave=903.0,
+            boss_wave_boss_terminal_max_wave=904.0,
         )
     )
     assert runtime_payload == {
         'boss_time_to_contact_seconds': 10.0,
         'orb_boss_total_damage_pct': 6.0,
+        'boss_wave_pressure_factor': 1.25,
+        'approve_boss_wave_pressure_factor_review_default': 1.0,
         'flame_bot_boss_hit_chance_pct': 50.0,
         'flame_bot_damage_reduction_pct': 95.0,
         'flame_bot_duration_seconds': 21.0,
@@ -3009,6 +5382,7 @@ def test_boss_wave_matrix_comparison_inputs_from_cli_args():
         'elite_terminal_max_wave': 901.0,
         'protector_terminal_max_wave': 902.0,
         'armored_terminal_max_wave': 903.0,
+        'boss_terminal_max_wave': 904.0,
     }
 
 
@@ -3423,6 +5797,9 @@ def test_boss_wave_perk_state_is_owned_by_scenario_not_request():
     assert farming['perk_mode_source'] == 'scenario_policy_tournament_none_other_runtime_timeline'
     assert farming['perk_state_source'] == 'scenario_policy_tournament_off_other_runs_on'
     assert tournament['mode_id'] == 'tournament'
+    assert tournament['tier_number'] == 17
+    assert tournament['requested_tier_number'] == 14
+    assert tournament['tier_column'] == 'Tier 17'
     assert tournament['tournament_wave'] == 100
     assert tournament['tournament_wave_source'] == 'IDS::Player & Stuff'
     assert tournament['perks_enabled'] is False
@@ -3439,8 +5816,29 @@ def test_boss_wave_perk_state_is_owned_by_scenario_not_request():
     )
     assert tournament_override['mode_id'] == 'tournament'
     assert tournament_override['league'] == 'Legends'
+    assert tournament_override['tier_number'] == 17
+    assert tournament_override['requested_tier_number'] == 14
     assert tournament_override['tournament_wave'] == 250
     assert tournament_override['tournament_wave_source'] == 'runtime_override'
+
+    champion_account_state = type(
+        'State',
+        (),
+        {
+            'active_perk_preset': None,
+            'player_meta': {'Tourney League': 'Champion', 'Tournament Wave': '100'},
+        },
+    )()
+    champion_tournament = _resolve_boss_wave_run_context(
+        champion_account_state,
+        preset_name='Tourney',
+        tier_number=14,
+        checkpoint_every_bosses=1,
+    )
+    assert champion_tournament['league'] == 'Champion'
+    assert champion_tournament['tier_number'] == 12
+    assert champion_tournament['requested_tier_number'] == 14
+    assert champion_tournament['tier_column'] == 'Tier 12'
 
 
 def test_boss_wave_milestone_uses_default_workshop_levels_when_preset_lane_is_blank():
@@ -4140,6 +6538,8 @@ def test_build_boss_wave_payload_tourney_forces_no_perks_and_applies_tournament_
 
     assert diagnostics['mode_id'] == 'tournament'
     assert diagnostics['league'] == 'Legends'
+    assert diagnostics['tier_number'] == 17
+    assert diagnostics['requested_tier_number'] == 14
     assert diagnostics['tournament_wave'] == 100
     assert diagnostics['requested_perk_mode'] == 'runtime_timeline'
     assert diagnostics['requested_perk_state'] == 'on'
@@ -4162,9 +6562,15 @@ def test_build_boss_wave_payload_tourney_forces_no_perks_and_applies_tournament_
     assert surfaces['bc_death_defy_down_pp'] == pytest.approx(-0.06)
     assert surfaces['bc_energy_shields_down_fraction'] == pytest.approx(0.25)
 
-    assert primitives['enemy_level_skip_reduction_raw'] == pytest.approx(-0.08)
-    assert primitives['enemy_level_skip_reduction_fraction'] == pytest.approx(0.08)
-    assert primitives['enemy_level_skip_chance_delta'] == pytest.approx(-0.08)
+    assert primitives['enemy_level_skip_reduction_raw'] == pytest.approx(0.0)
+    assert primitives['enemy_level_skip_reduction_fraction'] == pytest.approx(0.0)
+    assert primitives['enemy_level_skip_chance_delta'] == pytest.approx(0.0)
+    assert primitives['enemy_level_skip_decay_start_wave'] == 0
+    assert primitives['enemy_level_skip_decay_source'] == (
+        'kb.tournaments.tables.battle-condition-magnitudes.csv:enemy_level_skip'
+    )
+    assert primitives['enemy_level_skip_decay_schedule'][100] == pytest.approx(0.08)
+    assert primitives['enemy_level_skip_decay_schedule'][1000] == pytest.approx(0.3333)
     assert primitives['death_defy_down_percent_points'] == pytest.approx(-6.0)
     assert primitives['death_defy_effective_chance_pct'] == pytest.approx(
         max(0.0, primitives['death_defy_chance_pct'] - 6.0)
@@ -4406,6 +6812,16 @@ def test_run_stats_canonical_output_filenames(run_stats_single_execution):
         assert not (out_dir / name).exists(), f"Legacy output {name} must not be written"
 
 
+def test_run_stats_bounded_outputs_publish_current_surface_ids(run_stats_single_execution):
+    """The hot run-stats writer skips legacy translation, so outputs must already be current-contract native."""
+    legacy_prefix = re.compile(r"\b(?:canonical_stat|mechanic_param|runtime_mechanic_param)::")
+    out_dir = run_stats_single_execution["out_dir"]
+
+    for path in sorted(out_dir.glob("*.json")):
+        violations = legacy_prefix.findall(path.read_text(encoding="utf-8"))
+        assert not violations, f"{path.name} published legacy surface prefixes: {sorted(set(violations))}"
+
+
 @pytest.mark.live
 def test_run_stats_output_contract_distinguishes_committed_and_local_support(run_stats_single_execution):
     diag = run_stats_single_execution["parsed_outputs"]["diagnostics.json"]
@@ -4483,6 +6899,32 @@ def test_run_stats_bounded_outputs_do_not_masquerade_as_full_pipeline_outputs(ru
         if name in RUN_STATS_BOUNDED_OUTPUT_ARTIFACTS:
             continue
         assert name not in written_names, f"run_stats bounded output must not silently publish full-pipeline artifact {name}"
+
+
+@pytest.mark.live
+def test_run_stats_bounded_outputs_remove_stale_full_pipeline_artifacts(tmp_path: Path):
+    stale_full_pipeline_artifacts = [
+        'ep_oracle_compare.json',
+        'line_by_line_verification.json',
+        'pipeline_trace.json',
+        'statbook.json',
+    ]
+    for name in stale_full_pipeline_artifacts:
+        (tmp_path / name).write_text(json.dumps({'stale': True}), encoding='utf-8')
+
+    args = SimpleNamespace(
+        ids=IDS_PATH,
+        out=tmp_path,
+        perk_mode='max_progression_policy',
+        perk_state='auto',
+        manual_inputs=None,
+    )
+    rc = RunStatsSession().execute(args)
+    assert rc == 0
+
+    assert (tmp_path / 'run_stats.json').exists()
+    for name in stale_full_pipeline_artifacts:
+        assert not (tmp_path / name).exists(), f"stale full-pipeline artifact survived bounded run_stats: {name}"
 
 
 @pytest.mark.live
@@ -4587,6 +7029,40 @@ def test_run_stats_session_cache_key_differs_by_perk_mode(tmp_path):
     assert key_none != key_max
 
 
+def test_run_stats_session_reuses_compiled_stat_inputs_for_identical_context(monkeypatch):
+    """RunStatsSession should compile stat inputs once per identical warm-session context."""
+    from app import pipeline as pipeline_mod
+
+    session = RunStatsSession()
+    account_state = object()
+    compiled_row = object()
+    calls = []
+
+    def fake_compile_stat_inputs(*args, **kwargs):
+        calls.append((args, kwargs))
+        return [compiled_row]
+
+    monkeypatch.setattr(pipeline_mod, 'compile_stat_inputs', fake_compile_stat_inputs)
+
+    kwargs = {
+        'account_state': account_state,
+        'preset_name': 'Farming',
+        'state_mode': 'start_of_run',
+        'perk_preset_name': None,
+        'perks_enabled': False,
+        'scenario_context': {'tier': 'Tier 14', 'mode_id': 'farming'},
+    }
+    first = session._compile_stat_inputs_cached(**kwargs)
+    second = session._compile_stat_inputs_cached(**kwargs)
+
+    assert first is second
+    assert first == (compiled_row,)
+    assert len(calls) == 1
+
+    session._compile_stat_inputs_cached(**{**kwargs, 'state_mode': 'max_progression'})
+    assert len(calls) == 2
+
+
 def test_run_stats_session_cache_key_differs_by_runtime_state_overlay(tmp_path):
     """RunStatsSession cache key must separate IDS-only and named overlay states."""
     f = tmp_path / "ids.csv"
@@ -4658,13 +7134,179 @@ def test_run_stats_matrix_generation_timing_is_separate_from_write_timing(monkey
     def fake_matrix(*_args, **_kwargs):
         captured.update(_kwargs)
         time.sleep(1.0)
+        family_summary = {
+            'scope': 'boss_waves_milestone_matrix_selected_rows',
+            'status': 'covered',
+            'selected_row_count': 1,
+            'rows_with_coverage': 1,
+            'requested_effect_families': [
+                'bot',
+                'card_base',
+                'card_mastery',
+                'workshop',
+                'enhancement',
+                'module',
+                'relic',
+            ],
+            'missing_requested_families': [],
+            'family_status_counts': {
+                'bot': {'covered_by_test': 1},
+                'card_base': {'covered_by_test': 1},
+                'card_mastery': {'covered_by_test': 1},
+                'workshop': {'covered_by_test': 1},
+                'enhancement': {'covered_by_test': 1},
+                'module': {'covered_by_test': 1},
+                'relic': {'covered_by_test': 1},
+            },
+        }
+        comparison_family_summary = {
+            **family_summary,
+            'status': 'covered_with_pressure_factor',
+        }
         return {
             'artifact': 'boss_wave_milestone_matrix',
-            'tiers': [],
-            'rows': [],
-            'wide_rows': [],
+            'model_scope': 'boss_contact_survivability',
+            'not_full_max_wave_model': True,
+            'model_certification_status': 'partial_boss_contact_model',
+            'certified_full_max_wave_model': False,
+            'model_certification': {
+                'model_certification_status': 'partial_boss_contact_model',
+                'certified_full_max_wave_model': False,
+                'model_completion_blockers': ['source_owned_non_boss_terminal_pressure_formulas'],
+                'runtime_override_closure': {
+                    'non_boss_terminal_pressure': False,
+                },
+                'effective_model_closure': {
+                    'non_boss_terminal_pressure': False,
+                    'v28_damage_health_decay_magnitudes': True,
+                    'boss_applicable_damage_semantics': True,
+                    'gc_boss_applicable_damage_semantics': True,
+                },
+                'terminal_pressure_runtime_override_status': {
+                    'closed': False,
+                    'mode': 'active_unsupported_pressure_inputs',
+                    'required_fields': ['fleet_terminal_max_wave'],
+                    'missing_fields': ['fleet_terminal_max_wave'],
+                    'required_fields_by_pressure': {
+                        'fleet_terminal_pressure': ['fleet_terminal_max_wave'],
+                    },
+                    'missing_fields_by_pressure': {
+                        'fleet_terminal_pressure': ['fleet_terminal_max_wave'],
+                    },
+                    'unmapped_pressures': [],
+                },
+                'non_boss_terminal_pressure_closure': {
+                    'closed': False,
+                    'mode': 'missing',
+                    'exact_terminal_override_closed': False,
+                    'pressure_factor_approximation_closed': False,
+                    'boss_wave_pressure_factor': None,
+                },
+            },
+            'tiers': [14],
+            'rows': [
+                {
+                    'tier': 14,
+                    'model_completion_blockers': ['source_owned_non_boss_terminal_pressure_formulas'],
+                    'unsupported_terminal_pressures': ['fleet_terminal_pressure'],
+                }
+            ],
+            'wide_rows': [{'tier': 14}],
             'contract': {'selection_policy': 'test'},
             'scenario_runtime_inputs': {},
+            'ids_reference_alignment_enabled': True,
+            'reference_alignment_summary': {
+                'row_count': 1,
+                'raw_delta_over_reference_count': 1,
+                'max_abs_calculated_delta_wave': 90,
+            },
+            'replacement_primitive_family_coverage_summary': family_summary,
+            'comparison': {
+                'label': 'pressure_factor_assumptions',
+                'scenario_runtime_inputs': {'boss_wave_pressure_factor': 1.25},
+                'runtime_input_overrides': {'boss_wave_pressure_factor': 1.25},
+                'base_scenario_runtime_inputs': {},
+                'wide_rows': [
+                    {
+                        'tier': 14,
+                        'tier_column': 'Tier 14',
+                        'utility_default_wave': 4402,
+                        'utility_comparison_wave': 4402,
+                        'utility_delta_wave': 0,
+                        'utility_default_calculated_wave': 3699,
+                        'utility_comparison_calculated_wave': 3609,
+                        'utility_calculated_delta_wave': -90,
+                        'utility_default_calculated_delta_vs_reference_wave': -703,
+                        'utility_comparison_calculated_delta_vs_reference_wave': -793,
+                        'utility_default_calculated_to_reference_ratio': 0.840299863698319,
+                        'utility_comparison_calculated_to_reference_ratio': 0.819854611540209,
+                    }
+                ],
+                'matrix': {
+                    'model_scope': 'boss_contact_survivability',
+                    'not_full_max_wave_model': True,
+                    'model_certification_status': 'partial_boss_contact_model',
+                    'certified_full_max_wave_model': False,
+                    'model_certification': {
+                        'model_certification_status': 'partial_boss_contact_model',
+                        'certified_full_max_wave_model': False,
+                        'model_completion_blockers': [],
+                        'runtime_override_closure': {
+                            'non_boss_terminal_pressure': True,
+                        },
+                        'effective_model_closure': {
+                            'non_boss_terminal_pressure': True,
+                            'v28_damage_health_decay_magnitudes': True,
+                            'boss_applicable_damage_semantics': True,
+                            'gc_boss_applicable_damage_semantics': True,
+                        },
+                        'terminal_pressure_runtime_override_status': {
+                            'closed': False,
+                            'mode': 'active_unsupported_pressure_inputs',
+                            'required_fields': ['fleet_terminal_max_wave'],
+                            'missing_fields': ['fleet_terminal_max_wave'],
+                            'required_fields_by_pressure': {
+                                'fleet_terminal_pressure': ['fleet_terminal_max_wave'],
+                            },
+                            'missing_fields_by_pressure': {
+                                'fleet_terminal_pressure': ['fleet_terminal_max_wave'],
+                            },
+                            'unmapped_pressures': [],
+                        },
+                        'non_boss_terminal_pressure_closure': {
+                            'closed': True,
+                            'mode': 'boss_wave_pressure_factor_approximation',
+                            'exact_terminal_override_closed': False,
+                            'pressure_factor_approximation_closed': True,
+                            'boss_wave_pressure_factor': 1.25,
+                        },
+                    },
+                    'rows': [{'tier': 14}],
+                    'wide_rows': [{'tier': 14}],
+                    'model_blocker_summary': {
+                        'row_count': 1,
+                        'rows_with_model_completion_blockers': 0,
+                        'model_completion_blocker_counts': {},
+                        'rows_with_unsupported_terminal_pressures': 0,
+                        'unsupported_terminal_pressure_counts': {},
+                    },
+                    'reference_gap_summary': {
+                        'row_count': 1,
+                        'missing_reference_blocked_count': 0,
+                        'ordinary_missing_reference_blocked_count': 0,
+                        'dissonance_pb_cap_omitted_reference_count': 0,
+                        'by_reference_kind': {},
+                        'by_run_type': [],
+                        'missing_references': [],
+                    },
+                    'reference_alignment_summary': {
+                        'row_count': 1,
+                        'raw_delta_over_reference_count': 0,
+                        'max_abs_calculated_delta_wave': 40,
+                    },
+                    'replacement_primitive_family_coverage_summary': comparison_family_summary,
+                },
+            },
         }
 
     monkeypatch.setattr(pipeline_mod, 'build_boss_wave_milestone_matrix', fake_matrix)
@@ -4684,18 +7326,345 @@ def test_run_stats_matrix_generation_timing_is_separate_from_write_timing(monkey
 
     assert RunStatsSession().execute(args) == 0
     diagnostics = json.loads((tmp_path / 'diagnostics.json').read_text(encoding='utf-8'))
+    run_stats = json.loads((tmp_path / 'run_stats.json').read_text(encoding='utf-8'))
     timings = diagnostics.get('timings_ms') or {}
     output_contract = diagnostics.get('output_contract') or {}
+    matrix_diagnostics = diagnostics.get('boss_wave_milestone_matrix') or {}
     assert timings['boss_wave_milestone_matrix_build_ms'] >= 1000.0
     assert timings['boss_wave_milestone_matrix_write_ms'] >= 0.0
     assert timings['write_outputs_ms'] >= timings['boss_wave_milestone_matrix_write_ms']
     assert timings['write_outputs_ms'] < timings['boss_wave_milestone_matrix_build_ms']
     assert output_contract['optional_committed_artifacts'] == ['boss_wave_milestone_matrix.json']
     assert output_contract['optional_local_artifacts'] == []
+    assert captured['align_clean_reference_rows'] is True
+    assert captured['tiers'] == tuple(range(1, 22))
+    assert captured['dissonance_run_categories'] == pipeline_mod._BOSS_WAVE_DISSONANCE_RUN_MATRIX_CATEGORIES
     assert captured['scenario_runtime_inputs'] == {
         'boss_time_to_contact_seconds': 10.0,
         'orb_boss_total_damage_pct': 6.0,
     }
+    assert matrix_diagnostics['model_scope'] == 'boss_contact_survivability'
+    assert matrix_diagnostics['not_full_max_wave_model'] is True
+    assert matrix_diagnostics['model_certification_status'] == 'partial_boss_contact_model'
+    assert matrix_diagnostics['certified_full_max_wave_model'] is False
+    assert matrix_diagnostics['model_completion_blockers'] == [
+        'source_owned_non_boss_terminal_pressure_formulas'
+    ]
+    assert matrix_diagnostics['model_certification']['terminal_pressure_runtime_override_status'] == {
+        'closed': False,
+        'mode': 'active_unsupported_pressure_inputs',
+        'required_fields': ['fleet_terminal_max_wave'],
+        'missing_fields': ['fleet_terminal_max_wave'],
+        'required_fields_by_pressure': {
+            'fleet_terminal_pressure': ['fleet_terminal_max_wave'],
+        },
+        'missing_fields_by_pressure': {
+            'fleet_terminal_pressure': ['fleet_terminal_max_wave'],
+        },
+        'unmapped_pressures': [],
+    }
+    assert matrix_diagnostics['runtime_override_closure'] == {
+        'non_boss_terminal_pressure': False,
+    }
+    assert matrix_diagnostics['effective_model_closure'] == {
+        'non_boss_terminal_pressure': False,
+        'v28_damage_health_decay_magnitudes': True,
+        'boss_applicable_damage_semantics': True,
+        'gc_boss_applicable_damage_semantics': True,
+    }
+    assert matrix_diagnostics['terminal_pressure_runtime_override_status'] == (
+        matrix_diagnostics['model_certification']['terminal_pressure_runtime_override_status']
+    )
+    assert matrix_diagnostics['non_boss_terminal_pressure_closure'] == {
+        'closed': False,
+        'mode': 'missing',
+        'exact_terminal_override_closed': False,
+        'pressure_factor_approximation_closed': False,
+        'boss_wave_pressure_factor': None,
+    }
+    assert matrix_diagnostics['model_blocker_summary'] == {
+        'row_count': 1,
+        'rows_with_model_completion_blockers': 1,
+        'model_completion_blocker_counts': {
+            'source_owned_non_boss_terminal_pressure_formulas': 1,
+        },
+        'rows_with_unsupported_terminal_pressures': 1,
+        'unsupported_terminal_pressure_counts': {
+            'fleet_terminal_pressure': 1,
+        },
+    }
+    assert matrix_diagnostics['row_count'] == 1
+    assert matrix_diagnostics['wide_row_count'] == 1
+    assert matrix_diagnostics['reference_alignment_summary'] == {
+        'row_count': 1,
+        'raw_delta_over_reference_count': 1,
+        'max_abs_calculated_delta_wave': 90,
+    }
+    assert matrix_diagnostics['replacement_primitive_family_coverage_summary'] == {
+        'scope': 'boss_waves_milestone_matrix_selected_rows',
+        'status': 'covered',
+        'selected_row_count': 1,
+        'rows_with_coverage': 1,
+        'requested_effect_families': [
+            'bot',
+            'card_base',
+            'card_mastery',
+            'workshop',
+            'enhancement',
+            'module',
+            'relic',
+        ],
+        'missing_requested_families': [],
+        'family_status_counts': {
+            'bot': {'covered_by_test': 1},
+            'card_base': {'covered_by_test': 1},
+            'card_mastery': {'covered_by_test': 1},
+            'workshop': {'covered_by_test': 1},
+            'enhancement': {'covered_by_test': 1},
+            'module': {'covered_by_test': 1},
+            'relic': {'covered_by_test': 1},
+        },
+    }
+    assert matrix_diagnostics['comparison_enabled'] is True
+    assert matrix_diagnostics['comparison_label'] == 'pressure_factor_assumptions'
+    assert matrix_diagnostics['comparison_scenario_runtime_inputs'] == {'boss_wave_pressure_factor': 1.25}
+    assert matrix_diagnostics['comparison_runtime_input_overrides'] == {'boss_wave_pressure_factor': 1.25}
+    assert matrix_diagnostics['comparison_base_scenario_runtime_inputs'] == {}
+    assert matrix_diagnostics['comparison_row_count'] == 1
+    assert matrix_diagnostics['comparison_matrix_row_count'] == 1
+    assert matrix_diagnostics['comparison_matrix_wide_row_count'] == 1
+    assert matrix_diagnostics['comparison_reference_alignment_summary'] == {
+        'row_count': 1,
+        'raw_delta_over_reference_count': 0,
+        'max_abs_calculated_delta_wave': 40,
+    }
+    assert matrix_diagnostics['comparison_replacement_primitive_family_coverage_summary'] == {
+        'scope': 'boss_waves_milestone_matrix_selected_rows',
+        'status': 'covered_with_pressure_factor',
+        'selected_row_count': 1,
+        'rows_with_coverage': 1,
+        'requested_effect_families': [
+            'bot',
+            'card_base',
+            'card_mastery',
+            'workshop',
+            'enhancement',
+            'module',
+            'relic',
+        ],
+        'missing_requested_families': [],
+        'family_status_counts': {
+            'bot': {'covered_by_test': 1},
+            'card_base': {'covered_by_test': 1},
+            'card_mastery': {'covered_by_test': 1},
+            'workshop': {'covered_by_test': 1},
+            'enhancement': {'covered_by_test': 1},
+            'module': {'covered_by_test': 1},
+            'relic': {'covered_by_test': 1},
+        },
+    }
+    assert matrix_diagnostics['comparison_model_scope'] == 'boss_contact_survivability'
+    assert matrix_diagnostics['comparison_not_full_max_wave_model'] is True
+    assert matrix_diagnostics['comparison_model_certification_status'] == 'partial_boss_contact_model'
+    assert matrix_diagnostics['comparison_certified_full_max_wave_model'] is False
+    assert matrix_diagnostics['comparison_model_completion_blockers'] == []
+    assert matrix_diagnostics['comparison_runtime_override_closure'] == {
+        'non_boss_terminal_pressure': True,
+    }
+    assert matrix_diagnostics['comparison_effective_model_closure'] == {
+        'non_boss_terminal_pressure': True,
+        'v28_damage_health_decay_magnitudes': True,
+        'boss_applicable_damage_semantics': True,
+        'gc_boss_applicable_damage_semantics': True,
+    }
+    assert matrix_diagnostics['comparison_terminal_pressure_runtime_override_status'] == {
+        'closed': False,
+        'mode': 'active_unsupported_pressure_inputs',
+        'required_fields': ['fleet_terminal_max_wave'],
+        'missing_fields': ['fleet_terminal_max_wave'],
+        'required_fields_by_pressure': {
+            'fleet_terminal_pressure': ['fleet_terminal_max_wave'],
+        },
+        'missing_fields_by_pressure': {
+            'fleet_terminal_pressure': ['fleet_terminal_max_wave'],
+        },
+        'unmapped_pressures': [],
+    }
+    assert matrix_diagnostics['comparison_non_boss_terminal_pressure_closure'] == {
+        'closed': True,
+        'mode': 'boss_wave_pressure_factor_approximation',
+        'exact_terminal_override_closed': False,
+        'pressure_factor_approximation_closed': True,
+        'boss_wave_pressure_factor': 1.25,
+    }
+    assert matrix_diagnostics['comparison_model_certification']['non_boss_terminal_pressure_closure'] == (
+        matrix_diagnostics['comparison_non_boss_terminal_pressure_closure']
+    )
+    assert matrix_diagnostics['comparison_model_blocker_summary'] == {
+        'row_count': 1,
+        'rows_with_model_completion_blockers': 0,
+        'model_completion_blocker_counts': {},
+        'rows_with_unsupported_terminal_pressures': 0,
+        'unsupported_terminal_pressure_counts': {},
+    }
+    assert matrix_diagnostics['comparison_reference_gap_summary'] == {
+        'row_count': 1,
+        'missing_reference_blocked_count': 0,
+        'ordinary_missing_reference_blocked_count': 0,
+        'dissonance_pb_cap_omitted_reference_count': 0,
+        'by_reference_kind': {},
+        'by_run_type': [],
+        'missing_references': [],
+    }
+    assert matrix_diagnostics['comparison_calculated_delta_summary'] == {
+        'row_count': 1,
+        'comparison_raw_wave_higher_count': 0,
+        'comparison_raw_wave_lower_count': 1,
+        'comparison_raw_wave_match_count': 0,
+        'max_abs_calculated_delta_wave': 90,
+        'max_abs_calculated_delta_row': {
+            'tier': 14,
+            'tier_column': 'Tier 14',
+            'dissonance_run_category': 'utility',
+            'label': 'Utility Dissonant Run',
+            'default_selected_wave': 4402,
+            'comparison_selected_wave': 4402,
+            'selected_delta_wave': 0,
+            'default_calculated_wave': 3699,
+            'comparison_calculated_wave': 3609,
+            'calculated_delta_wave': -90,
+            'default_calculated_delta_vs_reference_wave': -703,
+            'comparison_calculated_delta_vs_reference_wave': -793,
+            'default_calculated_to_reference_ratio': 0.840299863698319,
+            'comparison_calculated_to_reference_ratio': 0.819854611540209,
+        },
+        'by_run_type': [
+            {
+                'dissonance_run_category': 'utility',
+                'label': 'Utility Dissonant Run',
+                'row_count': 1,
+                'comparison_raw_wave_higher_count': 0,
+                'comparison_raw_wave_lower_count': 1,
+                'comparison_raw_wave_match_count': 0,
+                'max_abs_calculated_delta_wave': 90,
+            }
+        ],
+    }
+    for payload in (diagnostics, run_stats['diagnostics']):
+        evidence = payload['current_scope_effect_family_evidence']
+        assert evidence['status'] == 'covered'
+        assert evidence['scope'] == 'current_goal_effect_families_to_boss_waves_selected_rows'
+        assert evidence['route_closure_status'] == 'closed'
+        assert evidence['individual_route_evidence_status'] == 'closed'
+        assert evidence['unique_source_family_route_count'] == 163
+        assert evidence['unique_source_family_registered_route_count'] == 163
+        assert evidence['unique_source_family_unregistered_route_count'] == 0
+        assert evidence['unique_source_family_route_status_counts'] == {'registered': 163}
+        assert evidence['statbook_route_visibility_status'] == 'not_evaluated'
+        assert evidence['statbook_route_visibility_exception_status'] == 'not_evaluated'
+        assert evidence['statbook_route_visibility_exception_policy'] == {
+            'accepted_partial_visibility_classifications': [
+                'inactive_card_capability_route_gated_off_current_statbook',
+                'inactive_module_unique_registered_not_current_account_route',
+                'other_preset_module_card_payload_visible_in_query_books',
+            ],
+            'active_selected_route_gap_count': 0,
+            'other_preset_missing_query_evidence_count': 0,
+            'unclassified_route_gap_count': 0,
+            'policy': (
+                'Selected-statbook visibility may be partial only when every hidden route is '
+                'classified as inactive for the selected preset or visible through another-preset query-book evidence.'
+            ),
+        }
+        assert evidence['statbook_route_visibility_status_counts'] == {'not_evaluated': 7}
+        assert evidence['statbook_route_visibility_mode_counts'] == {}
+        assert evidence['statbook_route_visibility_incomplete_families'] == []
+        assert evidence['generated_mapping_status'] == 'closed'
+        assert evidence['effect_row_carrythrough_status'] == 'covered'
+        assert evidence['effect_row_carrythrough_status_counts'] == {'covered': 7}
+        assert evidence['effect_row_carrythrough_incomplete_families'] == []
+        assert evidence['boss_wave_coverage_status'] == 'covered'
+        assert evidence['boss_wave_selected_row_count'] == 1
+        assert evidence['boss_wave_rows_with_coverage'] == 1
+        assert evidence['line_verification_status'] == 'not_evaluated'
+        assert evidence['line_verification']['reason'] == 'statbook_or_line_verification_not_supplied'
+        assert evidence['missing_route_closure_families'] == []
+        assert evidence['missing_individual_route_evidence_families'] == []
+        assert evidence['missing_generated_mapping_families'] == []
+        assert evidence['missing_boss_wave_coverage_families'] == []
+        assert set(evidence['requested_effect_families']) == {
+            'bot',
+            'card_base',
+            'card_mastery',
+            'workshop',
+            'enhancement',
+            'module',
+            'relic',
+        }
+        for family in evidence['requested_effect_families']:
+            family_evidence = evidence['families'][family]
+            route_evidence = family_evidence['individual_route_evidence']
+            carrythrough = family_evidence['effect_row_carrythrough']
+            assert route_evidence['status'] == 'closed'
+            assert route_evidence['route_contributor_count'] > 0
+            assert route_evidence['registered_route_contributor_count'] == route_evidence[
+                'route_contributor_count'
+            ]
+            assert route_evidence['unregistered_route_contributor_count'] == 0
+            assert route_evidence['statbook_route_visibility_status'] == 'not_evaluated'
+            assert route_evidence['statbook_route_visibility_mode_counts'] == {}
+            assert carrythrough['status'] == 'covered'
+            assert carrythrough['individual_routes_closed'] is True
+            assert carrythrough['individual_route_contributor_count'] == route_evidence[
+                'route_contributor_count'
+            ]
+            assert carrythrough['generated_mapping_closed'] is True
+            assert carrythrough['boss_wave_covered'] is True
+            assert carrythrough['boss_wave_selected_row_count'] == 1
+            assert carrythrough['boss_wave_rows_with_coverage'] == 1
+            assert carrythrough['line_verification_status'] == 'not_evaluated'
+        assert 'Bounded run_stats diagnostics summary only' in evidence['caveat']
+        assert 'Full EP compare evidence remains owned by full-pipeline diagnostics.json' in evidence['caveat']
+
+
+def test_run_stats_matrix_generation_honors_tier_override(monkeypatch, tmp_path):
+    from app import pipeline as pipeline_mod
+
+    captured: dict[str, object] = {}
+
+    def fake_matrix(*_args, **_kwargs):
+        captured.update(_kwargs)
+        return {
+            'artifact': 'boss_wave_milestone_matrix',
+            'tiers': [14],
+            'rows': [{'tier': 14}],
+            'wide_rows': [{'tier': 14}],
+            'contract': {'selection_policy': 'test'},
+            'scenario_runtime_inputs': {},
+            'ids_reference_alignment_enabled': True,
+            'reference_alignment_summary': {'row_count': 1},
+        }
+
+    monkeypatch.setattr(pipeline_mod, 'build_boss_wave_milestone_matrix', fake_matrix)
+    args = SimpleNamespace(
+        ids=IDS_PATH,
+        out=tmp_path,
+        perk_mode='max_progression_policy',
+        perk_state='auto',
+        perk_policy_preset=None,
+        manual_inputs=None,
+        tier=14,
+        dissonance_run_category='utility',
+        include_boss_wave_milestone_matrix=True,
+    )
+
+    assert RunStatsSession().execute(args) == 0
+    diagnostics = json.loads((tmp_path / 'diagnostics.json').read_text(encoding='utf-8'))
+    matrix_diagnostics = diagnostics.get('boss_wave_milestone_matrix') or {}
+    assert captured['tiers'] == (14,)
+    assert captured['dissonance_run_categories'] == ('utility',)
+    assert matrix_diagnostics['tier_count'] == 1
+    assert matrix_diagnostics['row_count'] == 1
 
 
 def test_run_stats_without_matrix_flag_preserves_existing_committed_matrix_artifact(tmp_path):
@@ -4751,6 +7720,18 @@ def test_ep_oracle_compare_populated(canonical_pipeline_artifacts):
     assert len(compare) == int(summary.get('ep_compare_count') or 0)
 
 
+def test_ep_oracle_compare_rows_have_explicit_formula_policy(canonical_pipeline_artifacts):
+    compare = canonical_pipeline_artifacts['ep_oracle_compare']
+
+    unclassified = {
+        surface_id: row.get('formula_contract')
+        for surface_id, row in compare.items()
+        if (row.get('formula_contract') or {}).get('formula_class') == 'unclassified'
+    }
+
+    assert unclassified == {}
+
+
 def test_ep_oracle_compare_stage_context_includes_compare_loadout_metadata(canonical_pipeline_artifacts):
     compare = canonical_pipeline_artifacts['ep_oracle_compare']
     context = compare['state::tower.crit_multiplier']['ep_stage_context']
@@ -4760,6 +7741,206 @@ def test_ep_oracle_compare_stage_context_includes_compare_loadout_metadata(canon
     assert tourney_modules['generator']['primary'] == 'Project Funding'
     assert context['modules_inventory']['Amplifying Strike']['rarity'] == 'Ancestral 2*'
     assert 'Berserker' in context['active_cards_by_preset']['Tourney']
+
+
+def test_ep_oracle_compare_has_no_unknown_formula_mismatches(canonical_pipeline_artifacts):
+    from evaluators.compare import build_compare_status_summary
+
+    compare = canonical_pipeline_artifacts['ep_oracle_compare']
+    summary = build_compare_status_summary(compare)
+
+    assert summary['ep_raw_formula_mismatch_count'] == summary['ep_known_export_defect_count']
+    assert summary['ep_true_formula_mismatch_count'] == 0
+    assert summary['ep_unknown_formula_mismatch_count'] == 0
+
+
+def test_ep_oracle_compare_exact_and_close_rows_publish_pass_verdicts(canonical_pipeline_artifacts):
+    compare = canonical_pipeline_artifacts['ep_oracle_compare']
+    aligned_statuses = {'matched_exact', 'matched_close'}
+    aligned_rows = {
+        surface_id: row
+        for surface_id, row in compare.items()
+        if row.get('status') in aligned_statuses
+    }
+
+    assert aligned_rows
+    bad_rows = {
+        surface_id: {
+            'status': row.get('status'),
+            'kb_alignment_status': row.get('kb_alignment_status'),
+            'verdict': row.get('verdict'),
+        }
+        for surface_id, row in aligned_rows.items()
+        if row.get('kb_alignment_status') != 'aligned' or row.get('verdict') != 'pass'
+    }
+    assert bad_rows == {}
+
+
+def test_ep_compare_status_mapping_marks_exact_and_close_as_aligned():
+    from evaluators.compare import kb_alignment_status_from_compare_status as public_status
+    from evaluators.compare_core import kb_alignment_status_from_compare_status as core_status
+
+    for status in ('matched_exact', 'matched_close', 'match', 'close'):
+        assert public_status(status) == 'aligned'
+        assert core_status(status) == 'aligned'
+    for status in ('stage_scope_mismatch', 'formula_blocked', 'non_comparable', 'non_numeric_compare'):
+        assert public_status(status) == 'not_comparable'
+        assert core_status(status) == 'not_comparable'
+
+
+def test_line_verification_allows_level_contributors_only_on_level_or_authorized_formula_surfaces():
+    from evaluators.compare import build_line_by_line_verification
+
+    statbook = {
+        'rows': {
+            'state::example.level': {
+                'status': 'resolved',
+                'final_value': 3.0,
+                'schema': {
+                    'unit': 'level',
+                    'allowed_input_value_types': ['level'],
+                    'resolver': 'standard_scalar_param',
+                },
+                'contributors': [{'source_name': 'Example Level', 'value': 3.0, 'value_type': 'level'}],
+            },
+            'state::example.multiplier': {
+                'status': 'resolved',
+                'final_value': 3.0,
+                'schema': {
+                    'unit': 'multiplier',
+                    'allowed_input_value_types': ['level'],
+                    'resolver': 'standard_scalar_param',
+                },
+                'contributors': [{'source_name': 'Example Formula', 'value': 3.0, 'value_type': 'level'}],
+            },
+            'derived::example.authorized_formula': {
+                'status': 'resolved',
+                'final_value': 0.015,
+                'schema': {
+                    'unit': 'ratio',
+                    'resolver': 'query_derived_composites',
+                },
+                'contributors': [{'source_name': 'Example Formula Level', 'value': 2.0, 'value_type': 'level'}],
+            },
+            'state::example.raw_text_passthrough': {
+                'status': 'resolved',
+                'final_value': 'Tier 14',
+                'schema': {
+                    'unit': 'unknown',
+                    'allowed_input_value_types': ['raw_text'],
+                    'expected_input_semantics': ['raw_text'],
+                    'resolver': 'capability_passthrough',
+                },
+                'contributors': [{'source_name': 'Example Enum', 'value': 'Tier 14', 'value_type': 'raw_text'}],
+            },
+            'state::example.raw_text_formula': {
+                'status': 'resolved',
+                'final_value': 'Tier 14',
+                'schema': {
+                    'unit': 'unknown',
+                    'allowed_input_value_types': ['raw_text'],
+                    'resolver': 'standard_scalar_param',
+                },
+                'contributors': [{'source_name': 'Example Text Formula', 'value': 'Tier 14', 'value_type': 'raw_text'}],
+            },
+        }
+    }
+
+    verification = build_line_by_line_verification(
+        statbook,
+        ep_compare={},
+        formula_ledger={},
+        formula_contract=lambda _ledger, key: (
+            {'allowed_formula_input_value_types': ['level']}
+            if key == 'derived::example.authorized_formula'
+            else {}
+        ),
+    )
+
+    assert verification['state::example.level']['verification_status'] == 'publishable'
+    assert verification['state::example.level']['verdict'] == 'pass'
+    assert verification['state::example.level']['issues'] == []
+    assert verification['state::example.multiplier']['verification_status'] == 'blocked'
+    assert verification['state::example.multiplier']['verdict'] == 'fail'
+    assert verification['state::example.multiplier']['issues'] == ['level_contributor_present']
+    assert verification['derived::example.authorized_formula']['verification_status'] == 'publishable'
+    assert verification['derived::example.authorized_formula']['verdict'] == 'pass'
+    assert verification['derived::example.authorized_formula']['issues'] == []
+    assert verification['state::example.raw_text_passthrough']['verification_status'] == 'publishable'
+    assert verification['state::example.raw_text_passthrough']['verdict'] == 'pass'
+    assert verification['state::example.raw_text_passthrough']['issues'] == []
+    assert verification['state::example.raw_text_formula']['verification_status'] == 'blocked'
+    assert verification['state::example.raw_text_formula']['verdict'] == 'fail'
+    assert verification['state::example.raw_text_formula']['issues'] == ['unresolved_contributor_present']
+
+
+def test_line_verification_stage_scope_compare_rows_are_limitations_not_blockers():
+    from evaluators.compare import build_line_by_line_verification
+
+    statbook = {
+        'rows': {
+            'state::stage.scoped': {
+                'status': 'resolved',
+                'final_value': 10.0,
+                'schema': {
+                    'unit': 'unknown',
+                    'allowed_input_value_types': ['resolved_value'],
+                    'resolver': 'standard_scalar_param',
+                },
+                'contributors': [{'source_name': 'Stage Scoped', 'value': 10.0, 'value_type': 'resolved_value'}],
+            },
+            'state::true.mismatch': {
+                'status': 'resolved',
+                'final_value': 10.0,
+                'schema': {
+                    'unit': 'unknown',
+                    'allowed_input_value_types': ['resolved_value'],
+                    'resolver': 'standard_scalar_param',
+                },
+                'contributors': [{'source_name': 'Mismatch', 'value': 10.0, 'value_type': 'resolved_value'}],
+            },
+            'state::known.export.defect': {
+                'status': 'resolved',
+                'final_value': 9.6,
+                'schema': {
+                    'unit': 'unknown',
+                    'allowed_input_value_types': ['resolved_value'],
+                    'resolver': 'standard_scalar_param',
+                },
+                'contributors': [{'source_name': 'Known Defect', 'value': 9.6, 'value_type': 'resolved_value'}],
+            },
+        }
+    }
+
+    verification = build_line_by_line_verification(
+        statbook,
+        ep_compare={
+            'state::stage.scoped': {'status': 'stage_scope_mismatch', 'delta': None},
+            'state::true.mismatch': {'status': 'mismatch', 'delta': 1.0},
+            'state::known.export.defect': {
+                'status': 'mismatch',
+                'delta': 8.6,
+                'compare_notes': [
+                    'ep_export_bug:max_rend_multiplier_exports_identity_or_display_1_0_instead_of_kb_qe_9_6',
+                ],
+            },
+        },
+        formula_ledger={},
+        formula_contract=lambda _ledger, _key: {},
+    )
+
+    assert verification['state::stage.scoped']['verification_status'] == 'publishable'
+    assert verification['state::stage.scoped']['kb_alignment_status'] == 'not_comparable'
+    assert verification['state::stage.scoped']['verdict'] == 'pass_with_compare_limitations'
+    assert verification['state::stage.scoped']['issues'] == []
+    assert verification['state::true.mismatch']['verification_status'] == 'blocked'
+    assert verification['state::true.mismatch']['verdict'] == 'fail'
+    assert verification['state::true.mismatch']['issues'] == ['ep_reference_mismatch']
+    assert verification['state::known.export.defect']['verification_status'] == 'publishable'
+    assert verification['state::known.export.defect']['kb_alignment_status'] == 'not_comparable'
+    assert verification['state::known.export.defect']['verdict'] == 'pass_with_compare_limitations'
+    assert verification['state::known.export.defect']['issues'] == []
+    assert verification['state::known.export.defect']['ep_compare_known_export_defect'] is True
 
 
 @pytest.mark.live

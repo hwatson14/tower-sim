@@ -1,0 +1,5 @@
+verified,createdAt,updatedAt,source,tier,wave,duration,coins,cells,killedBy,note,runDate,runTime,type,gameTime,coinsPerHour,cellsPerHour,wavesSkipped,totalEnemies,totalElites
+,2026-06-01T00:00:00Z,2026-06-01T00:00:00Z,web,14,5000,5h0m0s,900T,100K,Scatter,,2026-06-01,10:00:00,Farming,1d0h0m0s,180T,20K,2000,600000,700
+,2026-06-02T00:00:00Z,2026-06-02T00:00:00Z,web,14,5200,5h12m0s,1.04q,110K,Scatter,,2026-06-02,10:00:00,Farming,1d0h0m0s,200T,21K,2100,650000,720
+,2026-06-03T00:00:00Z,2026-06-03T00:00:00Z,web,14,5600,5h30m0s,1.16q,120K,Scatter,,2026-06-03,10:00:00,Farming,1d0h0m0s,210T,22K,2250,750000,760
+,2026-06-04T00:00:00Z,2026-06-04T00:00:00Z,web,14,6000,6h0m0s,1.32q,130K,Scatter,,2026-06-04,10:00:00,Farming,1d0h0m0s,220T,23K,2350,840000,790

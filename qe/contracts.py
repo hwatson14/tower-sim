@@ -149,6 +149,18 @@ _PLACEHOLDER_RE = re.compile(r'<[^>]+>')
 _SURFACE_ID_TOKEN_RE = re.compile(
     r'(?P<surface>(?:canonical_stat|mechanic_param|runtime_mechanic_param|environment_param|account_flag|account_context|meta_progression_param|cosmetic_bonus|capability|raw)::[A-Za-z0-9_.*<>-]+(?:\.[A-Za-z0-9_.*<>-]+)*)'
 )
+_LEGACY_SURFACE_TOKEN_MARKERS: tuple[str, ...] = (
+    'canonical_stat::',
+    'mechanic_param::',
+    'runtime_mechanic_param::',
+    'environment_param::',
+    'account_flag::',
+    'account_context::',
+    'meta_progression_param::',
+    'cosmetic_bonus::',
+    'capability::',
+    'raw::',
+)
 
 
 def _surface_id(object_type: str, destination_id: str) -> str:
@@ -332,21 +344,48 @@ def normalize_surface_token_text(value: str) -> str:
     return _SURFACE_ID_TOKEN_RE.sub(_replace, value)
 
 
+@lru_cache(maxsize=16384)
+def _normalize_contract_string(value: str) -> str:
+    if '::' not in value:
+        return value
+    if not any(marker in value for marker in _LEGACY_SURFACE_TOKEN_MARKERS):
+        return value
+    return normalize_surface_token_text(value)
+
+
+def _normalize_contract_payload_inner(value: Any) -> tuple[Any, bool]:
+    if isinstance(value, str):
+        normalized = _normalize_contract_string(value)
+        return normalized, normalized != value
+    if not isinstance(value, (dict, list, tuple)):
+        return value, False
+    if isinstance(value, dict):
+        normalized: dict[Any, Any] | None = None
+        for index, (key, item) in enumerate(value.items()):
+            normalized_key = _normalize_contract_string(key) if isinstance(key, str) else key
+            normalized_item, item_changed = _normalize_contract_payload_inner(item)
+            if normalized is None and (item_changed or normalized_key != key):
+                normalized = dict(list(value.items())[:index])
+            if normalized is not None:
+                normalized[normalized_key] = normalized_item
+        return (value, False) if normalized is None else (normalized, True)
+    if isinstance(value, list):
+        normalized_items: list[Any] | None = None
+        for index, item in enumerate(value):
+            normalized_item, item_changed = _normalize_contract_payload_inner(item)
+            if normalized_items is None and item_changed:
+                normalized_items = list(value[:index])
+            if normalized_items is not None:
+                normalized_items.append(normalized_item)
+        return (value, False) if normalized_items is None else (normalized_items, True)
+    if isinstance(value, tuple):
+        return [_normalize_contract_payload_inner(item)[0] for item in value], True
+    return value, False
+
+
 def normalize_contract_payload(value: Any) -> Any:
     """Recursively normalize generated payloads to the active naming contract."""
-    if isinstance(value, dict):
-        normalized: dict[Any, Any] = {}
-        for key, item in value.items():
-            normalized_key = normalize_surface_token_text(key) if isinstance(key, str) else key
-            normalized[normalized_key] = normalize_contract_payload(item)
-        return normalized
-    if isinstance(value, list):
-        return [normalize_contract_payload(item) for item in value]
-    if isinstance(value, tuple):
-        return [normalize_contract_payload(item) for item in value]
-    if isinstance(value, str):
-        return normalize_surface_token_text(value)
-    return value
+    return _normalize_contract_payload_inner(value)[0]
 
 
 def relpath_str(path_like) -> str:

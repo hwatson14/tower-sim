@@ -99,6 +99,7 @@ from app.pipeline import (
     execute_pipeline,
     load_streamlit_reference_data,
     resolve_fast_checkpoint,
+    _boss_wave_matrix_comparison_label_from_runtime_inputs,
 )
 from qe.contracts import normalize_surface_id_to_contract
 
@@ -146,6 +147,13 @@ BOSS_WAVE_RECOMMENDED_MODEL_ASSUMPTIONS = (
         'value': '1',
         'runtime_input': 'boss_edamage_semantic_normalizer',
         'source': 'explicit decomposed eDamage bridge',
+    },
+    {
+        'group': 'Pressure',
+        'assumption': 'Pressure factor',
+        'value': 'not a recommended default',
+        'runtime_input': 'boss_wave_pressure_factor',
+        'source': 'manual control only; matrix calibration median input is comparison-only',
     },
     {
         'group': 'Timing',
@@ -320,6 +328,13 @@ def _boss_wave_assumption_frame(
     boss_damage_source: str,
 ) -> pd.DataFrame:
     certification = dict(payload_diagnostics.get('model_certification') or {})
+    accepted_approximation_closure = dict(certification.get('accepted_approximation_closure') or {})
+    effective_model_closure = dict(certification.get('effective_model_closure') or {})
+    terminal_override_status = dict(certification.get('terminal_pressure_runtime_override_status') or {})
+    non_boss_pressure_closure = dict(certification.get('non_boss_terminal_pressure_closure') or {})
+    damage_health_decay_closure = dict(certification.get('v28_damage_health_decay_closure') or {})
+    pressure_factor_hint = dict(payload_diagnostics.get('pressure_factor_reference_hint') or {})
+    primitive_family_coverage = dict(payload_diagnostics.get('replacement_primitive_family_coverage') or {})
     contact_contract = dict((payload_diagnostics.get('contact_time_contract') or {}).get('boss_time_to_contact_seconds') or {})
     replacement_model = dict(payload_diagnostics.get('replacement_model') or {})
     timed_sources = dict(
@@ -330,7 +345,33 @@ def _boss_wave_assumption_frame(
     rows = [
         {'group': 'Result', 'assumption': 'Selected model', 'value': diagnostics.get('selected_model'), 'source': 'payload summary'},
         {'group': 'Result', 'assumption': 'Certification status', 'value': certification.get('model_certification_status'), 'source': 'model certification'},
+        {'group': 'Result', 'assumption': 'Model closure status', 'value': certification.get('model_closure_status'), 'source': 'model certification'},
+        {'group': 'Result', 'assumption': 'Accepted approximation closure', 'value': accepted_approximation_closure.get('mode'), 'source': 'model certification'},
+        {'group': 'Result', 'assumption': 'Accepted approximation effect', 'value': accepted_approximation_closure.get('certification_effect'), 'source': 'model certification'},
         {'group': 'Result', 'assumption': 'Certified full max-wave model', 'value': certification.get('certified_full_max_wave_model'), 'source': 'model certification'},
+        {'group': 'Result', 'assumption': 'Primitive family coverage', 'value': primitive_family_coverage.get('status'), 'source': 'payload diagnostics'},
+        {'group': 'Result', 'assumption': 'Primitive family gaps', 'value': primitive_family_coverage.get('missing_requested_families'), 'source': 'payload diagnostics'},
+        {'group': 'Result', 'assumption': 'Effective non-boss pressure closure', 'value': effective_model_closure.get('non_boss_terminal_pressure'), 'source': 'model certification'},
+        {'group': 'Result', 'assumption': 'Effective Damage/Health Decay closure', 'value': effective_model_closure.get('v28_damage_health_decay_magnitudes'), 'source': 'model certification'},
+        {'group': 'Result', 'assumption': 'Effective boss damage closure', 'value': effective_model_closure.get('boss_applicable_damage_semantics'), 'source': 'model certification'},
+        {'group': 'Result', 'assumption': 'Effective GC boss damage closure', 'value': effective_model_closure.get('gc_boss_applicable_damage_semantics'), 'source': 'model certification'},
+        {'group': 'Result', 'assumption': 'Terminal override mode', 'value': terminal_override_status.get('mode'), 'source': 'model certification'},
+        {'group': 'Result', 'assumption': 'Terminal override required fields', 'value': terminal_override_status.get('required_fields'), 'source': 'model certification'},
+        {'group': 'Result', 'assumption': 'Terminal override missing fields', 'value': terminal_override_status.get('missing_fields'), 'source': 'model certification'},
+        {'group': 'Result', 'assumption': 'Terminal override unmapped pressure', 'value': terminal_override_status.get('unmapped_pressures'), 'source': 'model certification'},
+        {'group': 'Result', 'assumption': 'Non-boss pressure closure', 'value': non_boss_pressure_closure.get('mode'), 'source': 'model certification'},
+        {'group': 'Result', 'assumption': 'Pressure factor closure', 'value': non_boss_pressure_closure.get('pressure_factor_approximation_closed'), 'source': 'model certification'},
+        {'group': 'Result', 'assumption': 'Pressure factor', 'value': non_boss_pressure_closure.get('boss_wave_pressure_factor'), 'source': 'model certification'},
+        {'group': 'Result', 'assumption': 'Reference pressure factor hint', 'value': pressure_factor_hint.get('rounded_boss_wave_pressure_factor') or pressure_factor_hint.get('boss_wave_pressure_factor'), 'source': 'payload diagnostics'},
+        {'group': 'Result', 'assumption': 'Reference pressure hint direction', 'value': pressure_factor_hint.get('direction'), 'source': 'payload diagnostics'},
+        {'group': 'Result', 'assumption': 'Reference pressure hint mode', 'value': pressure_factor_hint.get('mode'), 'source': 'payload diagnostics'},
+        {'group': 'Result', 'assumption': 'Reference pressure hint input', 'value': pressure_factor_hint.get('comparison_scenario_runtime_inputs'), 'source': 'payload diagnostics'},
+        {'group': 'Result', 'assumption': 'Damage/Health Decay closure', 'value': damage_health_decay_closure.get('mode'), 'source': 'model certification'},
+        {'group': 'Result', 'assumption': 'Damage/Health Decay required fields', 'value': damage_health_decay_closure.get('required_fields'), 'source': 'model certification'},
+        {'group': 'Result', 'assumption': 'Damage/Health Decay missing fields', 'value': damage_health_decay_closure.get('missing_fields'), 'source': 'model certification'},
+        {'group': 'Result', 'assumption': 'Damage/Health Decay source default', 'value': damage_health_decay_closure.get('source_owned_default_available'), 'source': 'model certification'},
+        {'group': 'Result', 'assumption': 'Damage/Health Decay supplied fields', 'value': damage_health_decay_closure.get('supplied_fields'), 'source': 'model certification'},
+        {'group': 'Result', 'assumption': 'Damage/Health Decay start fields', 'value': damage_health_decay_closure.get('supplied_start_wave_fields'), 'source': 'model certification'},
         {'group': 'Run', 'assumption': 'Start state', 'value': contract.get('start_state_basis') or diagnostics.get('state_mode'), 'source': 'payload contract'},
         {'group': 'Run', 'assumption': 'Perk timeline', 'value': contract.get('perk_timeline_mode'), 'source': 'payload contract'},
         {'group': 'Run', 'assumption': 'Free upgrades', 'value': contract.get('free_upgrade_mode'), 'source': 'payload contract'},
@@ -383,16 +424,951 @@ def _boss_wave_runtime_inputs_frame(diagnostics: dict[str, object]) -> pd.DataFr
     return pd.DataFrame(rows)
 
 
+def _boss_wave_matrix_alignment_text(matrix_row: dict[str, object]) -> object:
+    ids_alignment = matrix_row.get('ids_reference_alignment') or {}
+    if isinstance(ids_alignment, dict) and ids_alignment.get('applied'):
+        return ids_alignment.get('alignment_direction') or ''
+    return matrix_row.get('unsupported_pressure_reference_alignment_direction') or ''
+
+
+def _boss_wave_matrix_nearest_lane_text(matrix_row: dict[str, object]) -> object:
+    label = matrix_row.get('reference_nearest_lane_label') or matrix_row.get('reference_nearest_lane') or ''
+    wave = matrix_row.get('reference_nearest_lane_wave')
+    if not label:
+        return ''
+    if wave in (None, ''):
+        return label
+    return f'{label} ({wave})'
+
+
+def _boss_wave_counts_text(value: object) -> str:
+    counts = dict(value or {}) if isinstance(value, dict) else {}
+    if not counts:
+        return ''
+    return ', '.join(f'{lane}: {count}' for lane, count in sorted(counts.items()))
+
+
+def _boss_wave_alignment_calibration_values(
+    summary: dict[str, object],
+    run_type: dict[str, object] | None,
+) -> dict[str, object]:
+    calibration = dict(summary.get('calibration_reference_alignment') or {})
+    if run_type is None:
+        clean = calibration
+        excluded = calibration
+    else:
+        category = str(run_type.get('dissonance_run_category') or 'none')
+        clean = next(
+            (
+                dict(item)
+                for item in (calibration.get('by_run_type') or [])
+                if str(dict(item).get('dissonance_run_category') or 'none') == category
+            ),
+            {},
+        )
+        excluded = next(
+            (
+                dict(item)
+                for item in (calibration.get('excluded_by_run_type') or [])
+                if str(dict(item).get('dissonance_run_category') or 'none') == category
+            ),
+            {},
+        )
+    return {
+        'Calibration refs': clean.get('rows_with_reference') or 0,
+        'Calibration over': clean.get('raw_delta_over_reference_count') or 0,
+        'Calibration under': clean.get('raw_delta_under_reference_count') or 0,
+        'Calibration match': clean.get('raw_delta_match_count') or 0,
+        'Excluded refs': excluded.get('excluded_from_calibration_reference_count') or 0,
+        'Calibration worst delta': clean.get('max_abs_calculated_delta_wave') or 0,
+    }
+
+
+def _boss_wave_terminal_pressure_requirement_frame_from_status(
+    terminal_status: dict[str, object],
+) -> pd.DataFrame:
+    required_by_pressure = dict(terminal_status.get('required_fields_by_pressure') or {})
+    missing_by_pressure = dict(terminal_status.get('missing_fields_by_pressure') or {})
+    unmapped_pressures = {
+        str(value)
+        for value in (terminal_status.get('unmapped_pressures') or ())
+    }
+    pressure_ids = sorted(
+        {
+            *(str(value) for value in required_by_pressure),
+            *(str(value) for value in missing_by_pressure),
+            *unmapped_pressures,
+        }
+    )
+    rows = []
+    for pressure_id in pressure_ids:
+        rows.append(
+            {
+                'Pressure': pressure_id,
+                'Mapped': 'No' if pressure_id in unmapped_pressures else 'Yes',
+                'Required inputs': ', '.join(
+                    str(value) for value in (required_by_pressure.get(pressure_id) or ())
+                ),
+                'Missing inputs': ', '.join(
+                    str(value) for value in (missing_by_pressure.get(pressure_id) or ())
+                ),
+            }
+        )
+    return _arrow_safe_frame(
+        pd.DataFrame(rows),
+        columns=['Pressure', 'Mapped', 'Required inputs', 'Missing inputs'],
+    )
+
+
+def _boss_wave_matrix_model_blocker_frame(matrix_payload: dict[str, object]) -> pd.DataFrame:
+    contract = dict(matrix_payload.get('contract') or {})
+    certification = dict(matrix_payload.get('model_certification') or contract.get('model_certification') or {})
+    summary = dict(matrix_payload.get('model_blocker_summary') or {})
+    reference_gap_summary = dict(matrix_payload.get('reference_gap_summary') or {})
+    terminal_status = dict(
+        matrix_payload.get('terminal_pressure_runtime_override_status')
+        or certification.get('terminal_pressure_runtime_override_status')
+        or {}
+    )
+    terminal_closure = dict(
+        matrix_payload.get('non_boss_terminal_pressure_closure')
+        or certification.get('non_boss_terminal_pressure_closure')
+        or {}
+    )
+    model_scope = matrix_payload.get('model_scope') or contract.get('model_scope') or ''
+    status = matrix_payload.get('model_certification_status') or certification.get('model_certification_status') or ''
+    not_full = matrix_payload.get('not_full_max_wave_model')
+    if not_full is None:
+        not_full = contract.get('not_full_max_wave_model')
+    certified_full = matrix_payload.get('certified_full_max_wave_model')
+    if certified_full is None:
+        certified_full = certification.get('certified_full_max_wave_model')
+    if not any((
+        model_scope,
+        status,
+        summary,
+        terminal_status,
+        terminal_closure,
+        not_full is not None,
+        certified_full is not None,
+    )):
+        return _arrow_safe_frame(pd.DataFrame(), columns=['Field', 'Value'])
+    rows = [
+        {'Field': 'Model scope', 'Value': model_scope},
+        {'Field': 'Certification', 'Value': status},
+        {'Field': 'Full max-wave model', 'Value': 'No' if bool(not_full) else 'Yes'},
+        {'Field': 'Certified full model', 'Value': 'Yes' if bool(certified_full) else 'No'},
+        {'Field': 'Rows', 'Value': summary.get('row_count') or 0},
+        {'Field': 'Rows with blockers', 'Value': summary.get('rows_with_model_completion_blockers') or 0},
+        {
+            'Field': 'Blockers',
+            'Value': _boss_wave_counts_text(summary.get('model_completion_blocker_counts')),
+        },
+        {
+            'Field': 'Unsupported pressure rows',
+            'Value': summary.get('rows_with_unsupported_terminal_pressures') or 0,
+        },
+        {
+            'Field': 'Unsupported pressures',
+            'Value': _boss_wave_counts_text(summary.get('unsupported_terminal_pressure_counts')),
+        },
+    ]
+    if terminal_closure:
+        rows.append(
+            {
+                'Field': 'Terminal closure mode',
+                'Value': terminal_closure.get('mode') or '',
+            }
+        )
+        rows.append(
+            {
+                'Field': 'Terminal closure closed',
+                'Value': 'Yes' if bool(terminal_closure.get('closed')) else 'No',
+            }
+        )
+    if terminal_status:
+        rows.append(
+            {
+                'Field': 'Required terminal inputs',
+                'Value': ', '.join(str(field) for field in (terminal_status.get('required_fields') or ())),
+            }
+        )
+        rows.append(
+            {
+                'Field': 'Missing terminal inputs',
+                'Value': ', '.join(str(field) for field in (terminal_status.get('missing_fields') or ())),
+            }
+        )
+        rows.append(
+            {
+                'Field': 'Unmapped terminal pressures',
+                'Value': ', '.join(str(field) for field in (terminal_status.get('unmapped_pressures') or ())),
+            }
+        )
+    if reference_gap_summary:
+        rows.append(
+            {
+                'Field': 'Missing reference rows',
+                'Value': reference_gap_summary.get('missing_reference_blocked_count') or 0,
+            }
+        )
+        rows.append(
+            {
+                'Field': 'Cap-omitted Disco PB rows',
+                'Value': reference_gap_summary.get('dissonance_pb_cap_omitted_reference_count') or 0,
+            }
+        )
+        rows.append(
+            {
+                'Field': 'Ordinary missing reference rows',
+                'Value': reference_gap_summary.get('ordinary_missing_reference_blocked_count') or 0,
+            }
+        )
+        rows.append(
+            {
+                'Field': 'Missing reference kinds',
+                'Value': _boss_wave_counts_text(reference_gap_summary.get('by_reference_kind')),
+            }
+        )
+    return _arrow_safe_frame(pd.DataFrame(rows), columns=['Field', 'Value'])
+
+
+def _boss_wave_matrix_model_accuracy_frame(matrix_payload: dict[str, object]) -> pd.DataFrame:
+    summary = dict(matrix_payload.get('model_accuracy_summary') or {})
+    if not summary:
+        return _arrow_safe_frame(pd.DataFrame(), columns=['Field', 'Value'])
+    pressure_driver_model = dict(summary.get('non_boss_pressure_driver_model') or {})
+    rows = [
+        {'Field': 'Accuracy status', 'Value': summary.get('status') or ''},
+        {'Field': 'Model closure', 'Value': summary.get('model_closure_status') or ''},
+        {'Field': 'Certification', 'Value': summary.get('model_certification_status') or ''},
+        {
+            'Field': 'Certified full model',
+            'Value': 'Yes' if bool(summary.get('certified_full_max_wave_model')) else 'No',
+        },
+        {
+            'Field': 'Model blockers',
+            'Value': ', '.join(str(item) for item in (summary.get('model_completion_blockers') or ())),
+        },
+        {
+            'Field': 'Rows with blockers',
+            'Value': summary.get('rows_with_model_completion_blockers') or 0,
+        },
+        {
+            'Field': 'Comparison pressure input',
+            'Value': _boss_wave_assumption_text(
+                summary.get('comparison_only_pressure_factor_inputs') or {}
+            ),
+        },
+        {
+            'Field': 'Pressure driver status',
+            'Value': pressure_driver_model.get('status') or '',
+        },
+        {
+            'Field': 'Pressure driver policy',
+            'Value': pressure_driver_model.get('pressure_factor_policy') or '',
+        },
+        {
+            'Field': 'Pressure source coverage',
+            'Value': _boss_wave_assumption_text(
+                pressure_driver_model.get('source_backed_curve_coverage') or {}
+            ),
+        },
+        {
+            'Field': 'Pressure formula gaps',
+            'Value': _boss_wave_assumption_text(
+                pressure_driver_model.get('missing_source_owned_formula_links') or []
+            ),
+        },
+        {
+            'Field': 'Pressure calibration policy',
+            'Value': _boss_wave_assumption_text(
+                pressure_driver_model.get('empirical_calibration_policy') or {}
+            ),
+        },
+        {
+            'Field': 'Reference rows',
+            'Value': summary.get('reference_row_count') or 0,
+        },
+        {
+            'Field': 'Calibration candidates',
+            'Value': summary.get('calibration_candidate_count') or 0,
+        },
+        {
+            'Field': 'Missing references',
+            'Value': summary.get('missing_reference_blocked_count') or 0,
+        },
+        {
+            'Field': 'Reference caveats',
+            'Value': _boss_wave_counts_text(summary.get('reference_caveat_counts')),
+        },
+        {
+            'Field': 'Rows with caveats',
+            'Value': summary.get('rows_with_reference_caveats') or 0,
+        },
+        {'Field': 'Next step', 'Value': summary.get('operator_next_step') or ''},
+    ]
+    return _arrow_safe_frame(pd.DataFrame(rows), columns=['Field', 'Value'])
+
+
+def _boss_wave_matrix_terminal_pressure_requirement_frame(matrix_payload: dict[str, object]) -> pd.DataFrame:
+    contract = dict(matrix_payload.get('contract') or {})
+    certification = dict(matrix_payload.get('model_certification') or contract.get('model_certification') or {})
+    terminal_status = dict(
+        matrix_payload.get('terminal_pressure_runtime_override_status')
+        or certification.get('terminal_pressure_runtime_override_status')
+        or {}
+    )
+    return _boss_wave_terminal_pressure_requirement_frame_from_status(terminal_status)
+
+
+def _boss_wave_matrix_reference_gap_frame(matrix_payload: dict[str, object]) -> pd.DataFrame:
+    summary = dict(matrix_payload.get('reference_gap_summary') or {})
+    rows: list[dict[str, object]] = []
+    for item in summary.get('missing_references') or []:
+        gap = dict(item)
+        cap_context = dict(gap.get('dissonance_pb_cap_omission_context') or {})
+        cap_omitted = bool(gap.get('dissonance_pb_cap_omitted_reference'))
+        rows.append(
+            {
+                'Tier': gap.get('tier_column') or f"Tier {gap.get('tier')}",
+                'Run type': gap.get('label') or gap.get('dissonance_run_category') or '',
+                'Reference kind': gap.get('reference_kind') or '',
+                'Reference': (
+                    gap.get('reference_wave')
+                    if gap.get('reference_wave') is not None
+                    else gap.get('reference_raw_wave')
+                ),
+                'Reason': gap.get('reference_gap_reason') or '',
+                'Cap omission': 'Yes' if cap_omitted else 'No',
+                'Cap evidence': cap_context.get('evidence_source') if cap_omitted else '',
+                'Calculated': gap.get('best_calculated_selected_max_wave') or 0,
+                'Uncapped': gap.get('unsupported_pressure_uncapped_selected_max_wave') or 0,
+                'Unsupported': ', '.join(str(value) for value in (gap.get('unsupported_terminal_pressures') or ())),
+                'Required inputs': ', '.join(
+                    str(value) for value in (gap.get('terminal_pressure_required_fields') or ())
+                ),
+                'Missing inputs': ', '.join(
+                    str(value) for value in (gap.get('terminal_pressure_missing_fields') or ())
+                ),
+            }
+        )
+    return _arrow_safe_frame(
+        pd.DataFrame(rows),
+        columns=[
+            'Tier',
+            'Run type',
+            'Reference kind',
+            'Reference',
+            'Reason',
+            'Cap omission',
+            'Cap evidence',
+            'Calculated',
+            'Uncapped',
+            'Unsupported',
+            'Required inputs',
+            'Missing inputs',
+        ],
+    )
+
+
+def _boss_wave_matrix_ratio_text(value: object) -> object:
+    if value is None or value == '':
+        return ''
+    try:
+        return round(float(value), 3)
+    except (TypeError, ValueError):
+        return value
+
+
+def _boss_wave_matrix_alignment_summary_frame(matrix_payload: dict[str, object]) -> pd.DataFrame:
+    summary = dict(matrix_payload.get('reference_alignment_summary') or {})
+    rows: list[dict[str, object]] = []
+    for item in summary.get('by_run_type') or []:
+        run_type = dict(item)
+        rows.append(
+            {
+                'Run type': run_type.get('label') or run_type.get('dissonance_run_category') or '',
+                'Rows': run_type.get('row_count') or 0,
+                'Aligned': run_type.get('ids_reference_alignment_applied_count') or 0,
+                'Raw over': run_type.get('raw_delta_over_reference_count') or 0,
+                'Raw under': run_type.get('raw_delta_under_reference_count') or 0,
+                'Raw match': run_type.get('raw_delta_match_count') or 0,
+                'Nearest lanes': _boss_wave_counts_text(
+                    run_type.get('reference_nearest_lane_counts')
+                ),
+                'Worst raw delta': run_type.get('max_abs_calculated_delta_wave') or 0,
+                **_boss_wave_alignment_calibration_values(summary, run_type),
+            }
+        )
+    if not rows and summary:
+        rows.append(
+            {
+                'Run type': 'All',
+                'Rows': summary.get('row_count') or 0,
+                'Aligned': summary.get('ids_reference_alignment_applied_count') or 0,
+                'Raw over': summary.get('raw_delta_over_reference_count') or 0,
+                'Raw under': summary.get('raw_delta_under_reference_count') or 0,
+                'Raw match': summary.get('raw_delta_match_count') or 0,
+                'Nearest lanes': _boss_wave_counts_text(
+                    summary.get('reference_nearest_lane_counts')
+                ),
+                'Worst raw delta': summary.get('max_abs_calculated_delta_wave') or 0,
+                **_boss_wave_alignment_calibration_values(summary, None),
+            }
+        )
+    return _arrow_safe_frame(
+        pd.DataFrame(rows),
+        columns=[
+            'Run type',
+            'Rows',
+            'Aligned',
+            'Raw over',
+            'Raw under',
+            'Raw match',
+            'Nearest lanes',
+            'Worst raw delta',
+            'Calibration refs',
+            'Calibration over',
+            'Calibration under',
+            'Calibration match',
+            'Excluded refs',
+            'Calibration worst delta',
+        ],
+    )
+
+
+def _boss_wave_matrix_reference_quality_frame(matrix_payload: dict[str, object]) -> pd.DataFrame:
+    summary = dict(matrix_payload.get('reference_quality_summary') or {})
+    rows: list[dict[str, object]] = []
+    for item in summary.get('by_run_type') or []:
+        run_type = dict(item)
+        rows.append(
+            {
+                'Run type': run_type.get('label') or run_type.get('dissonance_run_category') or '',
+                'Reference rows': run_type.get('rows_with_reference') or 0,
+                'Calibration candidates': run_type.get('calibration_candidate_count') or 0,
+                'Below 3000': run_type.get('low_wave_reference_count') or 0,
+                'PB age unknown': run_type.get('pb_age_unknown_count') or 0,
+                'PB bonus cap': run_type.get('dissonance_pb_bonus_cap_count') or 0,
+                'Rows with caveats': run_type.get('rows_with_caveats') or 0,
+            }
+        )
+    if not rows and summary:
+        rows.append(
+            {
+                'Run type': 'All',
+                'Reference rows': summary.get('rows_with_reference') or 0,
+                'Calibration candidates': summary.get('calibration_candidate_count') or 0,
+                'Below 3000': summary.get('low_wave_reference_count') or 0,
+                'PB age unknown': summary.get('pb_age_unknown_count') or 0,
+                'PB bonus cap': summary.get('dissonance_pb_bonus_cap_count') or 0,
+                'Rows with caveats': summary.get('rows_with_caveats') or 0,
+            }
+        )
+    return _arrow_safe_frame(
+        pd.DataFrame(rows),
+        columns=[
+            'Run type',
+            'Reference rows',
+            'Calibration candidates',
+            'Below 3000',
+            'PB age unknown',
+            'PB bonus cap',
+            'Rows with caveats',
+        ],
+    )
+
+
+def _boss_wave_matrix_comparison_alignment_summary_frame(matrix_payload: dict[str, object]) -> pd.DataFrame:
+    comparison = dict(matrix_payload.get('comparison') or {})
+    comparison_matrix = dict(comparison.get('matrix') or {})
+    summary = dict(comparison_matrix.get('reference_alignment_summary') or {})
+    rows: list[dict[str, object]] = []
+    for item in summary.get('by_run_type') or []:
+        run_type = dict(item)
+        rows.append(
+            {
+                'Scenario': comparison.get('label') or '',
+                'Run type': run_type.get('label') or run_type.get('dissonance_run_category') or '',
+                'Rows': run_type.get('row_count') or 0,
+                'Aligned': run_type.get('ids_reference_alignment_applied_count') or 0,
+                'Raw over': run_type.get('raw_delta_over_reference_count') or 0,
+                'Raw under': run_type.get('raw_delta_under_reference_count') or 0,
+                'Raw match': run_type.get('raw_delta_match_count') or 0,
+                'Nearest lanes': _boss_wave_counts_text(
+                    run_type.get('reference_nearest_lane_counts')
+                ),
+                'Worst raw delta': run_type.get('max_abs_calculated_delta_wave') or 0,
+                **_boss_wave_alignment_calibration_values(summary, run_type),
+            }
+        )
+    if not rows and summary:
+        rows.append(
+            {
+                'Scenario': comparison.get('label') or '',
+                'Run type': 'All',
+                'Rows': summary.get('row_count') or 0,
+                'Aligned': summary.get('ids_reference_alignment_applied_count') or 0,
+                'Raw over': summary.get('raw_delta_over_reference_count') or 0,
+                'Raw under': summary.get('raw_delta_under_reference_count') or 0,
+                'Raw match': summary.get('raw_delta_match_count') or 0,
+                'Nearest lanes': _boss_wave_counts_text(
+                    summary.get('reference_nearest_lane_counts')
+                ),
+                'Worst raw delta': summary.get('max_abs_calculated_delta_wave') or 0,
+                **_boss_wave_alignment_calibration_values(summary, None),
+            }
+        )
+    return _arrow_safe_frame(
+        pd.DataFrame(rows),
+        columns=[
+            'Scenario',
+            'Run type',
+            'Rows',
+            'Aligned',
+            'Raw over',
+            'Raw under',
+            'Raw match',
+            'Nearest lanes',
+            'Worst raw delta',
+            'Calibration refs',
+            'Calibration over',
+            'Calibration under',
+            'Calibration match',
+            'Excluded refs',
+            'Calibration worst delta',
+        ],
+    )
+
+
+def _boss_wave_matrix_comparison_calculated_delta_summary_frame(matrix_payload: dict[str, object]) -> pd.DataFrame:
+    comparison = dict(matrix_payload.get('comparison') or {})
+    summary = dict(comparison.get('calculated_delta_summary') or {})
+    rows: list[dict[str, object]] = []
+    for item in summary.get('by_run_type') or []:
+        run_type = dict(item)
+        rows.append(
+            {
+                'Scenario': comparison.get('label') or '',
+                'Run type': run_type.get('label') or run_type.get('dissonance_run_category') or '',
+                'Rows': run_type.get('row_count') or 0,
+                'Raw higher': run_type.get('comparison_raw_wave_higher_count') or 0,
+                'Raw lower': run_type.get('comparison_raw_wave_lower_count') or 0,
+                'Raw match': run_type.get('comparison_raw_wave_match_count') or 0,
+                'Worst raw move': run_type.get('max_abs_calculated_delta_wave') or 0,
+            }
+        )
+    if not rows and summary:
+        rows.append(
+            {
+                'Scenario': comparison.get('label') or '',
+                'Run type': 'All',
+                'Rows': summary.get('row_count') or 0,
+                'Raw higher': summary.get('comparison_raw_wave_higher_count') or 0,
+                'Raw lower': summary.get('comparison_raw_wave_lower_count') or 0,
+                'Raw match': summary.get('comparison_raw_wave_match_count') or 0,
+                'Worst raw move': summary.get('max_abs_calculated_delta_wave') or 0,
+            }
+        )
+    return _arrow_safe_frame(
+        pd.DataFrame(rows),
+        columns=['Scenario', 'Run type', 'Rows', 'Raw higher', 'Raw lower', 'Raw match', 'Worst raw move'],
+    )
+
+
+def _boss_wave_matrix_pressure_factor_hint_summary_frame(matrix_payload: dict[str, object]) -> pd.DataFrame:
+    summary = dict(matrix_payload.get('pressure_factor_hint_summary') or {})
+    if not summary:
+        return _arrow_safe_frame(pd.DataFrame(), columns=['Field', 'Value'])
+    direction_counts = dict(summary.get('direction_counts') or {})
+    worst = dict(summary.get('max_factor_distance_row') or {})
+    calibration_quality = dict(summary.get('calibration_quality') or {})
+    calibration_quality_counts = dict(calibration_quality.get('direction_counts') or {})
+    calibration_quality_worst = dict(calibration_quality.get('max_factor_distance_row') or {})
+    calibration_factor_distribution = dict(calibration_quality.get('factor_distribution') or {})
+    worst_tier = worst.get('tier_column') or (f"Tier {worst.get('tier')}" if worst.get('tier') else '')
+    worst_run_type = worst.get('label') or worst.get('dissonance_run_category') or ''
+    calibration_worst_tier = calibration_quality_worst.get('tier_column') or (
+        f"Tier {calibration_quality_worst.get('tier')}" if calibration_quality_worst.get('tier') else ''
+    )
+    calibration_worst_run_type = (
+        calibration_quality_worst.get('label')
+        or calibration_quality_worst.get('dissonance_run_category')
+        or ''
+    )
+    rows = [
+        {'Field': 'Rows', 'Value': summary.get('row_count') or 0},
+        {'Field': 'Hinted rows', 'Value': summary.get('rows_with_pressure_factor_hint') or 0},
+        {'Field': 'Increase hints', 'Value': direction_counts.get('increase_pressure') or 0},
+        {'Field': 'Decrease hints', 'Value': direction_counts.get('decrease_pressure') or 0},
+        {'Field': 'No-adjustment hints', 'Value': direction_counts.get('no_adjustment') or 0},
+        {
+            'Field': 'Max factor distance',
+            'Value': _boss_wave_matrix_ratio_text(summary.get('max_factor_distance_from_one')),
+        },
+        {
+            'Field': 'Disabled hint modes',
+            'Value': _boss_wave_counts_text(summary.get('disabled_hint_mode_counts')),
+        },
+        {
+            'Field': 'Calibration-quality hinted rows',
+            'Value': calibration_quality.get('rows_with_pressure_factor_hint') or 0,
+        },
+        {
+            'Field': 'Excluded caveated hints',
+            'Value': calibration_quality.get('excluded_caveated_hint_count') or 0,
+        },
+        {
+            'Field': 'Excluded caveat reasons',
+            'Value': _boss_wave_counts_text(
+                calibration_quality.get('excluded_caveated_hint_reason_counts')
+            ),
+        },
+        {
+            'Field': 'Calibration increase hints',
+            'Value': calibration_quality_counts.get('increase_pressure') or 0,
+        },
+        {
+            'Field': 'Calibration no-adjustment hints',
+            'Value': calibration_quality_counts.get('no_adjustment') or 0,
+        },
+        {
+            'Field': 'Calibration max factor distance',
+            'Value': _boss_wave_matrix_ratio_text(
+                calibration_quality.get('max_factor_distance_from_one')
+            ),
+        },
+        {
+            'Field': 'Calibration median factor',
+            'Value': _boss_wave_matrix_ratio_text(
+                calibration_factor_distribution.get('median_factor')
+            ),
+        },
+        {
+            'Field': 'Calibration mean factor',
+            'Value': _boss_wave_matrix_ratio_text(
+                calibration_factor_distribution.get('mean_factor')
+            ),
+        },
+        {
+            'Field': 'Calibration factor range',
+            'Value': (
+                f"{_boss_wave_matrix_ratio_text(calibration_factor_distribution.get('min_factor'))}"
+                f" - {_boss_wave_matrix_ratio_text(calibration_factor_distribution.get('max_factor'))}"
+                if calibration_factor_distribution.get('min_factor') is not None
+                and calibration_factor_distribution.get('max_factor') is not None
+                else ''
+            ),
+        },
+        {
+            'Field': 'Calibration median input',
+            'Value': _boss_wave_assumption_text(
+                calibration_factor_distribution.get('comparison_scenario_runtime_inputs') or {}
+            ),
+        },
+    ]
+    if worst:
+        rows.extend(
+            [
+                {
+                    'Field': 'Worst hint row',
+                    'Value': ' / '.join(str(value) for value in (worst_tier, worst_run_type) if value),
+                },
+                {
+                    'Field': 'Worst hint factor',
+                    'Value': _boss_wave_matrix_ratio_text(worst.get('boss_wave_pressure_factor')),
+                },
+                {'Field': 'Worst hint direction', 'Value': worst.get('direction') or ''},
+                {
+                    'Field': 'Worst calculated/reference',
+                    'Value': (
+                        f"{worst.get('calculated_selected_max_wave')} / {worst.get('reference_wave')}"
+                        if worst.get('calculated_selected_max_wave') is not None
+                        and worst.get('reference_wave') is not None
+                        else ''
+                    ),
+                },
+            ]
+        )
+    if calibration_quality_worst:
+        rows.extend(
+            [
+                {
+                    'Field': 'Calibration worst row',
+                    'Value': ' / '.join(
+                        str(value)
+                        for value in (calibration_worst_tier, calibration_worst_run_type)
+                        if value
+                    ),
+                },
+                {
+                    'Field': 'Calibration worst factor',
+                    'Value': _boss_wave_matrix_ratio_text(
+                        calibration_quality_worst.get('boss_wave_pressure_factor')
+                    ),
+                },
+                {
+                    'Field': 'Calibration worst direction',
+                    'Value': calibration_quality_worst.get('direction') or '',
+                },
+            ]
+        )
+    return _arrow_safe_frame(pd.DataFrame(rows), columns=['Field', 'Value'])
+
+
+def _boss_wave_matrix_pressure_factor_hint_by_run_type_frame(matrix_payload: dict[str, object]) -> pd.DataFrame:
+    summary = dict(matrix_payload.get('pressure_factor_hint_summary') or {})
+    rows: list[dict[str, object]] = []
+    for item in summary.get('by_run_type') or []:
+        run_type = dict(item)
+        counts = dict(run_type.get('direction_counts') or {})
+        worst = dict(run_type.get('max_factor_distance_row') or {})
+        distribution = dict(run_type.get('pressure_factor_distribution') or {})
+        calibration_distribution = dict(run_type.get('calibration_quality_factor_distribution') or {})
+        comparison_input = dict(run_type.get('explicit_comparison_input_hint') or {})
+        worst_tier = worst.get('tier_column') or (f"Tier {worst.get('tier')}" if worst.get('tier') else '')
+        rows.append(
+            {
+                'Run type': run_type.get('label') or run_type.get('dissonance_run_category') or '',
+                'Rows': run_type.get('row_count') or 0,
+                'Hinted': run_type.get('rows_with_pressure_factor_hint') or 0,
+                'Evidence': run_type.get('pressure_factor_evidence_quality') or '',
+                'Median factor': _boss_wave_matrix_ratio_text(distribution.get('median_factor')),
+                'Review input': (
+                    json.dumps(comparison_input, sort_keys=True) if comparison_input else ''
+                ),
+                'Clean hints': run_type.get('calibration_quality_hint_count') or 0,
+                'Clean median': _boss_wave_matrix_ratio_text(calibration_distribution.get('median_factor')),
+                'Caveated hints': run_type.get('excluded_caveated_hint_count') or 0,
+                'Increase': counts.get('increase_pressure') or 0,
+                'Decrease': counts.get('decrease_pressure') or 0,
+                'No adjustment': counts.get('no_adjustment') or 0,
+                'Worst factor': _boss_wave_matrix_ratio_text(worst.get('boss_wave_pressure_factor')),
+                'Worst direction': worst.get('direction') or '',
+                'Worst row': worst_tier,
+                'Worst calc/ref': (
+                    f"{worst.get('calculated_selected_max_wave')} / {worst.get('reference_wave')}"
+                    if worst.get('calculated_selected_max_wave') is not None
+                    and worst.get('reference_wave') is not None
+                    else ''
+                ),
+            }
+        )
+    return _arrow_safe_frame(
+        pd.DataFrame(rows),
+        columns=[
+            'Run type',
+            'Rows',
+            'Hinted',
+            'Evidence',
+            'Median factor',
+            'Review input',
+            'Clean hints',
+            'Clean median',
+            'Caveated hints',
+            'Increase',
+            'Decrease',
+            'No adjustment',
+            'Worst factor',
+            'Worst direction',
+            'Worst row',
+            'Worst calc/ref',
+        ],
+    )
+
+
+def _boss_wave_matrix_primitive_family_coverage_frame(matrix_payload: dict[str, object]) -> pd.DataFrame:
+    summary = dict(matrix_payload.get('replacement_primitive_family_coverage_summary') or {})
+    if not summary:
+        return pd.DataFrame()
+    rows: list[dict[str, object]] = [
+        {'Metric': 'Status', 'Value': summary.get('status')},
+        {'Metric': 'Selected rows', 'Value': summary.get('selected_row_count')},
+        {'Metric': 'Rows with coverage', 'Value': summary.get('rows_with_coverage')},
+        {
+            'Metric': 'Missing families',
+            'Value': _boss_wave_assumption_text(summary.get('missing_requested_families')),
+        },
+    ]
+    family_status_counts = dict(summary.get('family_status_counts') or {})
+    for family in summary.get('requested_effect_families') or []:
+        rows.append(
+            {
+                'Metric': f'{family} status counts',
+                'Value': _boss_wave_assumption_text(family_status_counts.get(str(family)) or {}),
+            }
+        )
+    return _arrow_safe_frame(pd.DataFrame(rows), columns=['Metric', 'Value'])
+
+
+def _boss_wave_matrix_comparison_frame(matrix_payload: dict[str, object]) -> pd.DataFrame:
+    comparison = dict(matrix_payload.get('comparison') or {})
+    comparison_rows = list(comparison.get('wide_rows') or [])
+    categories = tuple(matrix_payload.get('dissonance_run_categories') or ())
+    if not categories:
+        inferred: list[str] = []
+        for row in comparison_rows:
+            for key in dict(row).keys():
+                if key.endswith('_default_wave'):
+                    prefix = key[: -len('_default_wave')]
+                    inferred.append('none' if prefix == 'regular' else prefix)
+        categories = tuple(dict.fromkeys(inferred))
+    rows: list[dict[str, object]] = []
+    for comparison_row_raw in comparison_rows:
+        comparison_row = dict(comparison_row_raw)
+        for category in categories:
+            category_key = 'regular' if category == 'none' else str(category)
+            if (
+                f'{category_key}_default_wave' not in comparison_row
+                and f'{category_key}_default_display' not in comparison_row
+            ):
+                continue
+            default_calculated_wave = comparison_row.get(f'{category_key}_default_calculated_wave')
+            comparison_calculated_wave = comparison_row.get(f'{category_key}_comparison_calculated_wave')
+            calculated_delta_wave = comparison_row.get(f'{category_key}_calculated_delta_wave')
+            default_calculated_delta = comparison_row.get(
+                f'{category_key}_default_calculated_delta_vs_reference_wave'
+            )
+            comparison_calculated_delta = comparison_row.get(
+                f'{category_key}_comparison_calculated_delta_vs_reference_wave'
+            )
+            rows.append(
+                {
+                    'Scenario': comparison.get('label') or '',
+                    'Tier': comparison_row.get('tier_column') or f"Tier {comparison_row.get('tier')}",
+                    'Run type': BOSS_WAVE_DISSONANCE_RUN_LABELS.get(str(category), str(category)),
+                    'Default': comparison_row.get(f'{category_key}_default_display')
+                    or comparison_row.get(f'{category_key}_default_wave')
+                    or 0,
+                    'Comparison': comparison_row.get(f'{category_key}_comparison_display')
+                    or comparison_row.get(f'{category_key}_comparison_wave')
+                    or 0,
+                    'Delta': comparison_row.get(f'{category_key}_delta_wave') or 0,
+                    'Default calc': default_calculated_wave if default_calculated_wave is not None else '',
+                    'Comparison calc': comparison_calculated_wave if comparison_calculated_wave is not None else '',
+                    'Calc delta': calculated_delta_wave if calculated_delta_wave is not None else '',
+                    'Default calc delta': default_calculated_delta if default_calculated_delta is not None else '',
+                    'Comparison calc delta': (
+                        comparison_calculated_delta if comparison_calculated_delta is not None else ''
+                    ),
+                    'Default calc/ref': _boss_wave_matrix_ratio_text(
+                        comparison_row.get(f'{category_key}_default_calculated_to_reference_ratio')
+                    ),
+                    'Comparison calc/ref': _boss_wave_matrix_ratio_text(
+                        comparison_row.get(f'{category_key}_comparison_calculated_to_reference_ratio')
+                    ),
+                    'Default pressure hint': _boss_wave_matrix_ratio_text(
+                        comparison_row.get(f'{category_key}_default_pressure_factor_hint')
+                    ),
+                    'Comparison pressure hint': _boss_wave_matrix_ratio_text(
+                        comparison_row.get(f'{category_key}_comparison_pressure_factor_hint')
+                    ),
+                    'Default hint direction': comparison_row.get(
+                        f'{category_key}_default_pressure_factor_hint_direction'
+                    )
+                    or '',
+                    'Comparison hint direction': comparison_row.get(
+                        f'{category_key}_comparison_pressure_factor_hint_direction'
+                    )
+                    or '',
+                    'Default limiter': comparison_row.get(f'{category_key}_default_terminal_pressure_limiter') or '',
+                    'Comparison limiter': comparison_row.get(f'{category_key}_comparison_terminal_pressure_limiter') or '',
+                    'Default pressure ref': comparison_row.get(
+                        f'{category_key}_default_terminal_pressure_reference_status'
+                    )
+                    or '',
+                    'Comparison pressure ref': comparison_row.get(
+                        f'{category_key}_comparison_terminal_pressure_reference_status'
+                    )
+                    or '',
+                    'Default alignment': comparison_row.get(
+                        f'{category_key}_default_unsupported_pressure_reference_alignment_direction'
+                    )
+                    or '',
+                    'Comparison alignment': comparison_row.get(
+                        f'{category_key}_comparison_unsupported_pressure_reference_alignment_direction'
+                    )
+                    or '',
+                    'Default uncapped': comparison_row.get(f'{category_key}_default_unsupported_pressure_uncapped_wave')
+                    or '',
+                    'Comparison uncapped': comparison_row.get(
+                        f'{category_key}_comparison_unsupported_pressure_uncapped_wave'
+                    )
+                    or '',
+                }
+            )
+    return _arrow_safe_frame(
+        pd.DataFrame(rows),
+        columns=[
+            'Scenario',
+            'Tier',
+            'Run type',
+            'Default',
+            'Comparison',
+            'Delta',
+            'Default calc',
+            'Comparison calc',
+            'Calc delta',
+            'Default calc delta',
+            'Comparison calc delta',
+            'Default calc/ref',
+            'Comparison calc/ref',
+            'Default pressure hint',
+            'Comparison pressure hint',
+            'Default hint direction',
+            'Comparison hint direction',
+            'Default limiter',
+            'Comparison limiter',
+            'Default pressure ref',
+            'Comparison pressure ref',
+            'Default alignment',
+            'Comparison alignment',
+            'Default uncapped',
+            'Comparison uncapped',
+        ],
+    )
+
+
 def _boss_wave_preset_matrix_frame(matrix_payload: dict[str, object]) -> pd.DataFrame:
     rows: list[dict[str, object]] = []
     for matrix_row in matrix_payload.get('rows') or []:
+        pressure_hint = dict(matrix_row.get('pressure_factor_reference_hint') or {})
+        reference_quality = dict(matrix_row.get('reference_quality') or {})
         row = {
             'Tier': matrix_row.get('tier_column') or f"Tier {matrix_row.get('tier')}",
+            'Run type': matrix_row.get('label') or matrix_row.get('dissonance_run_category') or '',
             'Reference': matrix_row.get('reference_wave') or '',
+            'Ref caveats': ', '.join(str(item) for item in reference_quality.get('caveats') or []),
             'Best': matrix_row.get('best_display') or '',
+            'Calculated': matrix_row.get('best_calculated_selected_max_wave') or '',
+            'Hit-by-hit': matrix_row.get('best_hit_by_hit_max_wave') or '',
+            'Contact env': matrix_row.get('best_contact_envelope_max_wave') or '',
+            'Pre-contact': matrix_row.get('best_pre_contact_boss_kill_max_wave') or '',
+            'GC pre-contact': matrix_row.get('best_gc_pre_contact_max_wave') or '',
+            'Nearest lane': _boss_wave_matrix_nearest_lane_text(matrix_row),
+            'Nearest delta': (
+                matrix_row.get('reference_nearest_lane_delta_vs_reference_wave')
+                if matrix_row.get('reference_nearest_lane_delta_vs_reference_wave') is not None
+                else ''
+            ),
             'Delta': matrix_row.get('delta_vs_reference_wave') if matrix_row.get('delta_vs_reference_wave') is not None else '',
+            'Calc delta': (
+                matrix_row.get('calculated_delta_vs_reference_wave')
+                if matrix_row.get('calculated_delta_vs_reference_wave') is not None
+                else ''
+            ),
+            'Calc/ref': _boss_wave_matrix_ratio_text(matrix_row.get('calculated_to_reference_ratio')),
+            'Pressure hint': (
+                _boss_wave_matrix_ratio_text(pressure_hint.get('boss_wave_pressure_factor'))
+                if bool(pressure_hint.get('enabled'))
+                else ''
+            ),
+            'Hint direction': pressure_hint.get('direction') or '',
             'Status': matrix_row.get('best_model_certification_status') or '',
             'Limiter': matrix_row.get('terminal_pressure_limiter') or '',
+            'Pressure ref': matrix_row.get('terminal_pressure_reference_status') or '',
+            'Alignment': _boss_wave_matrix_alignment_text(matrix_row),
             'Unsupported': ', '.join(str(item) for item in (matrix_row.get('unsupported_terminal_pressures') or ())),
         }
         for candidate in matrix_row.get('candidate_results') or []:
@@ -400,7 +1376,31 @@ def _boss_wave_preset_matrix_frame(matrix_payload: dict[str, object]) -> pd.Data
             if preset:
                 row[preset] = candidate.get('selected_max_wave') or 0
         rows.append(row)
-    columns = ['Tier', *BOSS_WAVE_PERK_POLICY_PRESETS, 'Best', 'Reference', 'Delta', 'Status', 'Limiter', 'Unsupported']
+    columns = [
+        'Tier',
+        'Run type',
+        *BOSS_WAVE_PERK_POLICY_PRESETS,
+        'Best',
+        'Calculated',
+        'Hit-by-hit',
+        'Contact env',
+        'Pre-contact',
+        'GC pre-contact',
+        'Nearest lane',
+        'Nearest delta',
+        'Reference',
+        'Ref caveats',
+        'Delta',
+        'Calc delta',
+        'Calc/ref',
+        'Pressure hint',
+        'Hint direction',
+        'Status',
+        'Limiter',
+        'Pressure ref',
+        'Alignment',
+        'Unsupported',
+    ]
     return _arrow_safe_frame(pd.DataFrame(rows), columns=columns)
 
 
@@ -1932,20 +2932,921 @@ def _render_stats(active_artifacts, comparison_artifacts: list[tuple[str, object
             st.warning(f'Stats evidence tools unavailable for this snapshot: {exc}')
 
 
+def _ep_alignment_summary_frame(diagnostics: dict[str, object]) -> pd.DataFrame:
+    summary = dict(diagnostics.get('ep_compare_summary') or {})
+    if not summary:
+        return pd.DataFrame(columns=['Metric', 'Value'])
+    rows = [
+        {'Metric': 'Alignment status', 'Value': summary.get('ep_alignment_status')},
+        {'Metric': 'Clean aligned rows', 'Value': summary.get('ep_clean_aligned_count')},
+        {
+            'Metric': 'Accounted EP scope limits',
+            'Value': summary.get('ep_accounted_stage_scope_limit_count'),
+        },
+        {
+            'Metric': 'Unaccounted alignment gaps',
+            'Value': summary.get('ep_unaccounted_alignment_gap_count'),
+        },
+        {'Metric': 'Raw formula mismatches', 'Value': summary.get('ep_raw_formula_mismatch_count')},
+        {'Metric': 'True formula mismatches', 'Value': summary.get('ep_true_formula_mismatch_count')},
+        {'Metric': 'EP compare rows', 'Value': summary.get('ep_compare_count')},
+    ]
+    return pd.DataFrame(rows)
+
+
+def _tower_goal_readiness_frame(diagnostics: dict[str, object]) -> pd.DataFrame:
+    readiness = dict(diagnostics.get('tower_goal_readiness') or {})
+    if not readiness:
+        return pd.DataFrame(columns=['Requirement', 'Status', 'Evidence', 'Proof', 'Blockers'])
+    rows = []
+    for requirement in readiness.get('requirements') or []:
+        payload = dict(requirement or {})
+        blockers = payload.get('model_completion_blockers')
+        if blockers is None:
+            blockers = payload.get('coins_per_hour_certification_blockers')
+        if blockers is None:
+            blockers = payload.get('remaining_gaps')
+        proof_counts = dict(payload.get('family_proof_counts') or {})
+        proof = ''
+        if proof_counts:
+            proof = (
+                f"families {proof_counts.get('covered_family_count')}/"
+                f"{proof_counts.get('requested_family_count')}; routes "
+                f"{proof_counts.get('registered_route_contributor_count')}/"
+                f"{proof_counts.get('route_contributor_count')}; boss rows "
+                f"{proof_counts.get('boss_wave_rows_with_coverage')}/"
+                f"{proof_counts.get('boss_wave_selected_row_count')}"
+            )
+        rows.append(
+            {
+                'Requirement': payload.get('id'),
+                'Status': payload.get('status'),
+                'Evidence': payload.get('evidence'),
+                'Proof': proof,
+                'Blockers': ', '.join(str(item) for item in (blockers or [])),
+            }
+        )
+    return pd.DataFrame(rows)
+
+
+def _effect_carrythrough_summary_frame(diagnostics: dict[str, object]) -> pd.DataFrame:
+    evidence = dict(diagnostics.get('current_scope_effect_family_evidence') or {})
+    families = dict(evidence.get('families') or {})
+    if not evidence:
+        return pd.DataFrame(
+            columns=[
+                'Family',
+                'Status',
+                'Boss rows',
+                'Covered rows',
+                'Line verification',
+                'Route contributors',
+                'Unregistered routes',
+                'Visibility policy',
+                'Exact route hits',
+                'Destination route hits',
+                'Routes not visible',
+                'Active route gaps',
+                'Other preset routes',
+                'Other preset query hits',
+                'Inactive route gaps',
+                'Other classified gaps',
+                'Unclassified route gaps',
+                'EP clean',
+                'EP scope-limited',
+                'EP unaccounted',
+            ]
+        )
+    rows = []
+    for family in evidence.get('requested_effect_families') or sorted(families):
+        payload = dict(families.get(str(family)) or {})
+        carrythrough = dict(payload.get('effect_row_carrythrough') or {})
+        route_evidence = dict(payload.get('individual_route_evidence') or {})
+        visibility_policy = dict(evidence.get('statbook_route_visibility_exception_policy') or {})
+        visibility_counts = dict(route_evidence.get('statbook_route_visibility_mode_counts') or {})
+        route_gap_counts = dict(route_evidence.get('not_visible_route_classification_counts') or {})
+        ep_counts = dict(payload.get('ep_compare_status_counts') or {})
+        other_preset_query_hits = int(
+            route_gap_counts.get('other_preset_module_card_payload_visible_in_query_books') or 0
+        )
+        other_preset_not_in_query_books = int(
+            route_gap_counts.get('other_preset_module_card_payload_not_in_committed_query_books') or 0
+        )
+        legacy_other_preset = int(
+            route_gap_counts.get('other_preset_module_card_payload_not_in_selected_statbook') or 0
+        )
+        ep_clean_count = int(ep_counts.get('matched_exact') or 0) + int(ep_counts.get('matched_close') or 0)
+        ep_scope_limited_count = int(ep_counts.get('stage_scope_mismatch') or 0)
+        ep_unaccounted_count = sum(
+            int(count or 0)
+            for status, count in ep_counts.items()
+            if str(status) not in {'matched_exact', 'matched_close', 'stage_scope_mismatch', 'not_ep_compared'}
+        )
+        rows.append(
+            {
+                'Family': str(family),
+                'Status': carrythrough.get('status') or payload.get('status') or evidence.get('status'),
+                'Boss rows': carrythrough.get('boss_wave_selected_row_count'),
+                'Covered rows': carrythrough.get('boss_wave_rows_with_coverage'),
+                'Line verification': carrythrough.get('line_verification_status') or payload.get('line_verification_status'),
+                'Route contributors': route_evidence.get('route_contributor_count'),
+                'Unregistered routes': route_evidence.get('unregistered_route_contributor_count'),
+                'Visibility policy': evidence.get('statbook_route_visibility_exception_status')
+                or visibility_policy.get('status'),
+                'Exact route hits': int(visibility_counts.get('exact_statbook_contributor') or 0),
+                'Destination route hits': int(visibility_counts.get('destination_surface_visible') or 0),
+                'Routes not visible': int(visibility_counts.get('not_visible_in_current_statbook') or 0),
+                'Active route gaps': int(
+                    route_gap_counts.get('selected_preset_module_card_payload_visible_statbook_route_missing') or 0
+                ),
+                'Other preset routes': other_preset_query_hits + other_preset_not_in_query_books + legacy_other_preset,
+                'Other preset query hits': other_preset_query_hits,
+                'Inactive route gaps': int(
+                    route_gap_counts.get('inactive_module_unique_registered_not_current_account_route') or 0
+                ) + int(
+                    route_gap_counts.get('inactive_card_capability_route_gated_off_current_statbook') or 0
+                ),
+                'Other classified gaps': int(
+                    route_gap_counts.get('card_capability_route_split_to_runtime_effect_or_combat_exception') or 0
+                ),
+                'Unclassified route gaps': int(
+                    route_gap_counts.get('unclassified_route_visibility_gap') or 0
+                )
+                + int(route_gap_counts.get('unclassified_module_route_gap') or 0),
+                'EP clean': ep_clean_count,
+                'EP scope-limited': ep_scope_limited_count,
+                'EP unaccounted': ep_unaccounted_count,
+            }
+        )
+    return pd.DataFrame(rows)
+
+
+def _boss_wave_readiness_summary_frame(diagnostics: dict[str, object]) -> pd.DataFrame:
+    matrix = dict(diagnostics.get('boss_wave_milestone_matrix') or {})
+    if not matrix:
+        return pd.DataFrame(columns=['Metric', 'Value'])
+    accuracy = dict(matrix.get('model_accuracy_summary') or {})
+    pressure_model = dict(accuracy.get('non_boss_pressure_driver_model') or {})
+    transform_readiness = dict(pressure_model.get('terminal_pressure_transform_readiness') or {})
+    calibration = dict(pressure_model.get('pressure_driver_empirical_calibration') or {})
+    transform = dict(calibration.get('empirical_transform_candidate') or {})
+    promotion_readiness = dict(transform.get('promotion_readiness') or {})
+    loo_validation = dict(transform.get('leave_one_out_validation') or {})
+    blocker_summary = dict(matrix.get('model_blocker_summary') or {})
+    calibration_policy = dict(pressure_model.get('empirical_calibration_policy') or {})
+    tracker_reference = dict(matrix.get('tracker_reference_evidence') or {})
+    tracker_dissonance_filter = dict(
+        tracker_reference.get('dissonance_tracker_calibration_filter') or {}
+    )
+    tracker_dissonance_alignment = dict(
+        tracker_reference.get('dissonance_tracker_alignment_summary') or {}
+    )
+    blockers = matrix.get('model_completion_blockers') or []
+    rows = [
+        {'Metric': 'Model closure status', 'Value': matrix.get('model_closure_status')},
+        {'Metric': 'Certified full max-wave model', 'Value': matrix.get('certified_full_max_wave_model')},
+        {'Metric': 'Model blockers', 'Value': ', '.join(str(blocker) for blocker in blockers)},
+        {
+            'Metric': 'Rows with blockers',
+            'Value': blocker_summary.get('rows_with_model_completion_blockers'),
+        },
+        {
+            'Metric': 'Unsupported pressure rows',
+            'Value': pressure_model.get('rows_with_unsupported_terminal_pressures')
+            if pressure_model
+            else blocker_summary.get('rows_with_unsupported_terminal_pressures'),
+        },
+        {'Metric': 'Pressure model status', 'Value': pressure_model.get('status')},
+        {
+            'Metric': 'Terminal pressure readiness',
+            'Value': transform_readiness.get('status'),
+        },
+        {
+            'Metric': 'Terminal pressure remaining gaps',
+            'Value': ', '.join(
+                str(item)
+                for item in (transform_readiness.get('remaining_to_certify') or [])
+            ),
+        },
+        {'Metric': 'Pressure factor policy', 'Value': pressure_model.get('pressure_factor_policy')},
+        {'Metric': 'Pressure transform status', 'Value': transform.get('validation_status')},
+        {'Metric': 'Pressure transform promoted', 'Value': transform.get('promotion_status')},
+        {'Metric': 'Pressure promotion readiness', 'Value': promotion_readiness.get('status')},
+        {
+            'Metric': 'Pressure promotion approval',
+            'Value': promotion_readiness.get('operator_approval_status'),
+        },
+        {
+            'Metric': 'Pressure promotion blockers',
+            'Value': ', '.join(
+                str(blocker)
+                for blocker in (promotion_readiness.get('blocking_reasons') or [])
+            ),
+        },
+        {
+            'Metric': 'Pressure promotion validation',
+            'Value': promotion_readiness.get('validation_basis'),
+        },
+        {
+            'Metric': 'Pressure promotion MAE',
+            'Value': promotion_readiness.get('mean_absolute_error'),
+        },
+        {
+            'Metric': 'Pressure promotion max error',
+            'Value': promotion_readiness.get('max_absolute_error'),
+        },
+        {'Metric': 'Pressure LOO MAE', 'Value': loo_validation.get('mean_absolute_error')},
+        {
+            'Metric': 'Comparison pressure review input',
+            'Value': _boss_wave_assumption_text(
+                accuracy.get('comparison_only_pressure_factor_inputs') or {}
+            ),
+        },
+        {
+            'Metric': 'Pressure review next step',
+            'Value': accuracy.get('operator_next_step'),
+        },
+        {
+            'Metric': 'Sub-3000 references',
+            'Value': calibration_policy.get('below_3000_wave_reference_count'),
+        },
+        {
+            'Metric': 'Dissonance 5000 cap refs',
+            'Value': calibration_policy.get('dissonance_pb_5000_cap_count'),
+        },
+        {'Metric': 'Tracker reference status', 'Value': tracker_reference.get('status')},
+        {'Metric': 'Tracker reference rows', 'Value': tracker_reference.get('row_count')},
+        {
+            'Metric': 'Tracker regular matches',
+            'Value': tracker_reference.get('matched_regular_reference_count'),
+        },
+        {
+            'Metric': 'Tracker unmapped Dissonance refs',
+            'Value': tracker_reference.get('unmapped_dissonance_reference_count'),
+        },
+        {
+            'Metric': 'Tracker Dissonance filter status',
+            'Value': tracker_dissonance_filter.get('status'),
+        },
+        {
+            'Metric': 'Tracker Dissonance cap refs',
+            'Value': tracker_dissonance_filter.get('dissonance_pb_5000_cap_reference_count'),
+        },
+        {
+            'Metric': 'Tracker Dissonance sub-3000 refs',
+            'Value': tracker_dissonance_filter.get('below_3000_wave_reference_count'),
+        },
+        {
+            'Metric': 'Tracker Dissonance clean candidates',
+            'Value': tracker_dissonance_filter.get('clean_tracker_calibration_candidate_count'),
+        },
+        {
+            'Metric': 'Tracker Dissonance alignment status',
+            'Value': tracker_dissonance_alignment.get('status'),
+        },
+        {
+            'Metric': 'Tracker Dissonance hinted refs',
+            'Value': tracker_dissonance_alignment.get('category_hint_reference_count'),
+        },
+        {
+            'Metric': 'Tracker Dissonance selected delta median',
+            'Value': tracker_dissonance_alignment.get('selected_delta_vs_tracker_max_wave_median'),
+        },
+        {
+            'Metric': 'Tracker Dissonance selected/tracker ratio',
+            'Value': tracker_dissonance_alignment.get('selected_to_tracker_max_wave_ratio_median'),
+        },
+    ]
+    return pd.DataFrame(rows)
+
+
+def _farming_econ_readiness_summary_frame(diagnostics: dict[str, object]) -> pd.DataFrame:
+    readiness = dict(diagnostics.get('farming_econ_model_readiness') or {})
+    if not readiness:
+        return pd.DataFrame(columns=['Metric', 'Value'])
+    anchor = dict(readiness.get('calibration_anchor') or {})
+    cph_identity = dict(readiness.get('coins_per_hour_objective_identity') or {})
+    duration_readiness = dict(readiness.get('run_duration_projection_readiness') or {})
+    cph_promotion = dict(readiness.get('coins_per_hour_promotion_readiness') or {})
+    projection = dict(readiness.get('current_timing_projection') or {})
+    tracker = dict(readiness.get('tracker_timing_alignment') or {})
+    tracker_cph = dict(readiness.get('tracker_cph_calibration_evidence') or {})
+    tracker_cph_identity = dict(readiness.get('tracker_cph_identity_evidence') or {})
+    tracker_wave_reward = dict(readiness.get('tracker_wave_reward_candidate') or {})
+    wave_skip_reward_readiness = dict(readiness.get('wave_skip_reward_readiness') or {})
+    intro_sprint_coin_window = dict(
+        readiness.get('intro_sprint_coin_window_readiness') or {}
+    )
+    wave_reward_audit = dict(
+        wave_skip_reward_readiness.get('source_audit')
+        or tracker_wave_reward.get('source_audit')
+        or {}
+    )
+    intro_reward = dict(wave_reward_audit.get('intro_sprint_coin_suppression') or {})
+    wave_skip_reward = dict(wave_reward_audit.get('wave_skip_base_reward') or {})
+    wave_skip_mastery_reward = dict(wave_reward_audit.get('wave_skip_mastery_double_skip') or {})
+    tracker_skip_reward_semantics = dict(
+        wave_reward_audit.get('tracker_skip_count_semantics') or {}
+    )
+    driver_coverage = dict(readiness.get('driver_coverage') or {})
+    sync_window = dict(readiness.get('econ_sync_window_readiness') or {})
+    overlap_integral = dict(sync_window.get('overlap_integral_readiness') or {})
+    pair_overlap = dict(sync_window.get('pair_overlap_fractions') or {})
+    tracker_econ_sources = dict(sync_window.get('tracker_econ_coin_source_evidence') or {})
+    tracker_econ_source_rows = dict(tracker_econ_sources.get('sources') or {})
+
+    def _tracker_econ_share(source_id: str) -> object:
+        source = dict(tracker_econ_source_rows.get(source_id) or {})
+        share = dict(source.get('share_of_run_coins') or {})
+        return share.get('median')
+
+    spawn_density = dict(readiness.get('spawn_density_readiness') or {})
+    tracker_density = dict(spawn_density.get('tracker_enemy_density_evidence') or {})
+    tracker_enemy_composition = dict(
+        spawn_density.get('tracker_enemy_composition_evidence') or {}
+    )
+    tracker_normal_enemy_counts = dict(
+        tracker_enemy_composition.get('normal_enemy_counts') or {}
+    )
+    tracker_elite_enemy_counts = dict(
+        tracker_enemy_composition.get('elite_enemy_counts') or {}
+    )
+
+    def _tracker_enemy_share(group: dict[str, object], enemy_id: str) -> object:
+        payload = dict(group.get(enemy_id) or {})
+        share = dict(payload.get('share_of_total_enemies') or {})
+        return share.get('median')
+
+    tracker_kill_density = dict(spawn_density.get('tracker_kill_density_transform_candidate') or {})
+    tracker_kill_density_stability = dict(
+        spawn_density.get('tracker_kill_density_stability_evidence') or {}
+    )
+    tracker_coin_density = dict(spawn_density.get('tracker_coin_density_evidence') or {})
+    tracker_coin_yield_stability = dict(
+        spawn_density.get('tracker_coin_yield_stability_evidence') or {}
+    )
+    tracker_coin_integral = dict(spawn_density.get('tracker_coin_integral_candidate') or {})
+    spawn_count_audit = dict(spawn_density.get('normal_enemy_spawn_count_source_audit') or {})
+    kill_density_transform = dict(
+        spawn_density.get('kill_density_transform_readiness') or {}
+    )
+    pressure_driver = dict(spawn_density.get('non_boss_pressure_driver_evidence') or {})
+    elite_pressure = dict(pressure_driver.get('elite_spawn_pressure') or {})
+    fleet_pressure = dict(pressure_driver.get('fleet_spawn_pressure') or {})
+    rows = [
+        {'Metric': 'Objective', 'Value': readiness.get('objective')},
+        {'Metric': 'Optimizer policy', 'Value': readiness.get('optimizer_policy')},
+        {
+            'Metric': 'CPH certification status',
+            'Value': readiness.get('coins_per_hour_certification_status'),
+        },
+        {
+            'Metric': 'CPH objective identity status',
+            'Value': cph_identity.get('status'),
+        },
+        {
+            'Metric': 'CPH objective identity',
+            'Value': cph_identity.get('formula'),
+        },
+        {
+            'Metric': 'Certified farming CPH model',
+            'Value': readiness.get('certified_farming_cph_model'),
+        },
+        {
+            'Metric': 'Certification blockers',
+            'Value': ', '.join(str(item) for item in (readiness.get('coins_per_hour_certification_blockers') or [])),
+        },
+        {'Metric': 'CPH promotion readiness', 'Value': cph_promotion.get('status')},
+        {
+            'Metric': 'CPH promotion blockers',
+            'Value': ', '.join(str(item) for item in (cph_promotion.get('blocking_reasons') or [])),
+        },
+        {
+            'Metric': 'CPH promotion validation',
+            'Value': cph_promotion.get('validation_basis'),
+        },
+        {
+            'Metric': 'CPH promotion tracker CPH',
+            'Value': cph_promotion.get('observed_median_coins_per_hour'),
+        },
+        {
+            'Metric': 'CPH promotion component ratio',
+            'Value': cph_promotion.get('component_to_tracker_cph_ratio'),
+        },
+        {
+            'Metric': 'CPH promotion run-total CPH',
+            'Value': cph_promotion.get('tracker_run_total_cph'),
+        },
+        {
+            'Metric': 'CPH promotion run-total ratio',
+            'Value': cph_promotion.get('tracker_run_total_to_reported_cph_ratio'),
+        },
+        {
+            'Metric': 'CPH promotion projected ratio',
+            'Value': cph_promotion.get('projected_to_tracker_cph_ratio'),
+        },
+        {
+            'Metric': 'Duration projection status',
+            'Value': duration_readiness.get('status'),
+        },
+        {
+            'Metric': 'Duration projection formula',
+            'Value': duration_readiness.get('formula'),
+        },
+        {
+            'Metric': 'Duration projected/anchor',
+            'Value': duration_readiness.get('projected_to_anchor_run_hours_ratio'),
+        },
+        {
+            'Metric': 'Duration tracker skip-adjusted ratio',
+            'Value': duration_readiness.get(
+                'tracker_skip_adjusted_projected_over_observed_duration_ratio'
+            ),
+        },
+        {
+            'Metric': 'Duration projection approval',
+            'Value': duration_readiness.get('operator_approval_status'),
+        },
+        {
+            'Metric': 'Duration formula link closed',
+            'Value': duration_readiness.get('approved_projection_closes_formula_link'),
+        },
+        {
+            'Metric': 'Tracker timing consistency',
+            'Value': cph_promotion.get('tracker_waves_per_hour_consistency_status'),
+        },
+        {
+            'Metric': 'Tracker game-time ratio status',
+            'Value': cph_promotion.get('tracker_game_time_ratio_status'),
+        },
+        {
+            'Metric': 'Tracker game time hours',
+            'Value': cph_promotion.get('tracker_median_game_time_hours'),
+        },
+        {
+            'Metric': 'Tracker game/real duration',
+            'Value': cph_promotion.get('tracker_game_to_real_duration_ratio'),
+        },
+        {
+            'Metric': 'Tracker reported waves/hour',
+            'Value': cph_promotion.get('tracker_reported_median_waves_per_hour'),
+        },
+        {
+            'Metric': 'Tracker reported/observed waves/hour',
+            'Value': cph_promotion.get('tracker_reported_to_observed_waves_per_hour_ratio'),
+        },
+        {
+            'Metric': 'Tracker projected duration ratio',
+            'Value': cph_promotion.get('tracker_projected_over_observed_duration_ratio'),
+        },
+        {
+            'Metric': 'Tracker skip-adjusted duration ratio',
+            'Value': cph_promotion.get(
+                'tracker_skip_adjusted_projected_over_observed_duration_ratio'
+            ),
+        },
+        {
+            'Metric': 'Tracker skip semantics inference',
+            'Value': cph_promotion.get('tracker_skip_semantics_inference_status'),
+        },
+        {
+            'Metric': 'Tracker skip semantics candidate',
+            'Value': cph_promotion.get('tracker_skip_semantics_best_candidate'),
+        },
+        {
+            'Metric': 'Tracker skip semantics distance',
+            'Value': cph_promotion.get(
+                'tracker_skip_semantics_best_candidate_distance_from_expected'
+            ),
+        },
+        {
+            'Metric': 'Tracker latest CPH',
+            'Value': cph_promotion.get('tracker_latest_coins_per_hour'),
+        },
+        {
+            'Metric': 'Tracker recent median CPH',
+            'Value': cph_promotion.get('tracker_recent_median_coins_per_hour'),
+        },
+        {
+            'Metric': 'Tracker prior median CPH',
+            'Value': cph_promotion.get('tracker_prior_median_coins_per_hour'),
+        },
+        {
+            'Metric': 'Tracker recent/prior CPH',
+            'Value': cph_promotion.get('tracker_recent_to_prior_coins_per_hour_ratio'),
+        },
+        {'Metric': 'Anchor tier', 'Value': anchor.get('tier')},
+        {'Metric': 'Anchor final wave', 'Value': anchor.get('observed_final_wave')},
+        {'Metric': 'Anchor run hours', 'Value': anchor.get('observed_run_hours')},
+        {'Metric': 'Anchor coins/hour', 'Value': anchor.get('observed_coins_per_hour')},
+        {
+            'Metric': 'Projected run hours after speed',
+            'Value': projection.get('estimated_run_hours_after_game_speed'),
+        },
+        {
+            'Metric': 'Projected run hours after intro/skip/speed',
+            'Value': projection.get('estimated_run_hours_after_wave_skip_intro_and_game_speed'),
+        },
+        {'Metric': 'Tracker alignment status', 'Value': tracker.get('status')},
+        {'Metric': 'Tracker skip gap status', 'Value': tracker.get('skip_semantics_gap_status')},
+        {'Metric': 'Tracker CPH band status', 'Value': tracker_cph.get('status')},
+        {'Metric': 'Tracker median CPH', 'Value': tracker_cph.get('observed_median_coins_per_hour')},
+        {
+            'Metric': 'Tracker / anchor CPH ratio',
+            'Value': tracker_cph.get('observed_to_anchor_coins_per_hour_ratio'),
+        },
+        {'Metric': 'Tracker CPH identity status', 'Value': tracker_cph_identity.get('status')},
+        {
+            'Metric': 'Tracker run-total CPH',
+            'Value': tracker_cph_identity.get('run_total_median_coins_per_hour'),
+        },
+        {
+            'Metric': 'Tracker run-total / reported CPH',
+            'Value': tracker_cph_identity.get('run_total_to_tracker_cph_ratio'),
+        },
+        {
+            'Metric': 'Tracker row run-total / reported CPH',
+            'Value': tracker_cph_identity.get('run_total_to_tracker_reported_row_ratio_median'),
+        },
+        {
+            'Metric': 'Tracker component CPH',
+            'Value': tracker_cph_identity.get('component_median_coins_per_hour'),
+        },
+        {
+            'Metric': 'Tracker component / reported CPH',
+            'Value': tracker_cph_identity.get('component_to_tracker_cph_ratio'),
+        },
+        {'Metric': 'Tracker wave-reward status', 'Value': tracker_wave_reward.get('status')},
+        {
+            'Metric': 'Wave Skip reward readiness',
+            'Value': wave_skip_reward_readiness.get('status'),
+        },
+        {
+            'Metric': 'Intro Sprint coin-window readiness',
+            'Value': intro_sprint_coin_window.get('status'),
+        },
+        {
+            'Metric': 'Intro Sprint coin-eligible waves',
+            'Value': intro_sprint_coin_window.get(
+                'coin_eligible_displayed_waves_after_intro_at_target'
+            ),
+        },
+        {
+            'Metric': 'Intro Sprint coin-window gaps',
+            'Value': ', '.join(
+                str(item)
+                for item in (intro_sprint_coin_window.get('remaining_to_certify') or [])
+            ),
+        },
+        {
+            'Metric': 'Intro Sprint coin-window approval',
+            'Value': intro_sprint_coin_window.get('operator_approval_status'),
+        },
+        {
+            'Metric': 'Intro Sprint formula link closed',
+            'Value': intro_sprint_coin_window.get('approved_window_closes_formula_link'),
+        },
+        {
+            'Metric': 'Wave reward source audit',
+            'Value': wave_reward_audit.get('status'),
+        },
+        {
+            'Metric': 'Intro Sprint reward source',
+            'Value': intro_reward.get('status'),
+        },
+        {
+            'Metric': 'Wave Skip reward source',
+            'Value': wave_skip_reward.get('status'),
+        },
+        {
+            'Metric': 'Wave Skip mastery reward source',
+            'Value': wave_skip_mastery_reward.get('status'),
+        },
+        {
+            'Metric': 'Tracker skip-count reward semantics',
+            'Value': tracker_skip_reward_semantics.get('status'),
+        },
+        {
+            'Metric': 'Tracker coins/non-Intro displayed wave',
+            'Value': tracker_wave_reward.get('coins_per_non_intro_displayed_wave'),
+        },
+        {
+            'Metric': 'Tracker coins/played wave after Intro',
+            'Value': tracker_wave_reward.get('coins_per_tracker_played_wave_after_intro'),
+        },
+        {
+            'Metric': 'Tracker effective skip multiplier',
+            'Value': tracker_wave_reward.get('observed_effective_skip_multiplier_after_intro'),
+        },
+        {
+            'Metric': 'Tracker Wave Skip reward fields',
+            'Value': tracker_wave_reward.get('tracker_reward_field_status'),
+        },
+        {
+            'Metric': 'Wave Skip reward approval',
+            'Value': wave_skip_reward_readiness.get('operator_approval_status'),
+        },
+        {
+            'Metric': 'Wave Skip reward formula link closed',
+            'Value': wave_skip_reward_readiness.get('approved_reward_closes_formula_link'),
+        },
+        {
+            'Metric': 'Tracker reported coins/wave',
+            'Value': tracker_wave_reward.get('tracker_reported_coins_per_wave'),
+        },
+        {
+            'Metric': 'Tracker reported/observed coins/wave',
+            'Value': tracker_wave_reward.get(
+                'tracker_reported_coins_per_wave_to_observed_ratio'
+            ),
+        },
+        {
+            'Metric': 'Tracker coins/wave semantics',
+            'Value': tracker_wave_reward.get(
+                'tracker_reported_coins_per_wave_semantics_status'
+            ),
+        },
+        {
+            'Metric': 'Tracker Wave Skip coin share',
+            'Value': tracker_wave_reward.get('tracker_reported_wave_skip_coin_share'),
+        },
+        {
+            'Metric': 'Tracker coins/skipped wave',
+            'Value': tracker_wave_reward.get('tracker_reported_coins_per_skipped_wave'),
+        },
+        {'Metric': 'Econ sync status', 'Value': sync_window.get('status')},
+        {
+            'Metric': 'Econ overlap readiness',
+            'Value': overlap_integral.get('status'),
+        },
+        {
+            'Metric': 'Econ overlap remaining gaps',
+            'Value': ', '.join(
+                str(item) for item in (overlap_integral.get('remaining_to_certify') or [])
+            ),
+        },
+        {
+            'Metric': 'Econ overlap approval',
+            'Value': overlap_integral.get('operator_approval_status'),
+        },
+        {
+            'Metric': 'Econ overlap formula link closed',
+            'Value': overlap_integral.get('approved_overlap_closes_formula_link'),
+        },
+        {'Metric': 'Econ sync phase model', 'Value': sync_window.get('phase_model')},
+        {
+            'Metric': 'Econ windows available',
+            'Value': sync_window.get('available_window_count'),
+        },
+        {
+            'Metric': 'GT/BH overlap fraction',
+            'Value': pair_overlap.get('golden_tower__black_hole_coin'),
+        },
+        {
+            'Metric': 'Diagnostic window multiplier',
+            'Value': sync_window.get('diagnostic_average_combined_multiplier_for_available_windows'),
+        },
+        {
+            'Metric': 'Tracker econ source status',
+            'Value': tracker_econ_sources.get('status'),
+        },
+        {
+            'Metric': 'Tracker econ source count',
+            'Value': tracker_econ_sources.get('available_source_count'),
+        },
+        {
+            'Metric': 'Tracker econ source sum/run coins',
+            'Value': dict(
+                tracker_econ_sources.get('tracked_source_sum_to_run_coins_ratio') or {}
+            ).get('median'),
+        },
+        {
+            'Metric': 'Tracker econ overlap evidence',
+            'Value': tracker_econ_sources.get('overlap_evidence_status'),
+        },
+        {
+            'Metric': 'Tracker GT coin share',
+            'Value': _tracker_econ_share('coins_from_golden_tower'),
+        },
+        {
+            'Metric': 'Tracker BH coin share',
+            'Value': _tracker_econ_share('coins_from_black_hole'),
+        },
+        {
+            'Metric': 'Tracker Spotlight coin share',
+            'Value': _tracker_econ_share('coins_from_spotlight'),
+        },
+        {
+            'Metric': 'Tracker Golden Bot coin share',
+            'Value': _tracker_econ_share('golden_bot_coins_earned'),
+        },
+        {'Metric': 'Spawn density status', 'Value': spawn_density.get('status')},
+        {
+            'Metric': 'Kill-density transform readiness',
+            'Value': kill_density_transform.get('status'),
+        },
+        {
+            'Metric': 'Kill-density transform gaps',
+            'Value': ', '.join(
+                str(item)
+                for item in (kill_density_transform.get('remaining_to_certify') or [])
+            ),
+        },
+        {
+            'Metric': 'Kill-density tracker candidate',
+            'Value': kill_density_transform.get('tracker_candidate_status'),
+        },
+        {
+            'Metric': 'Kill-density transform approval',
+            'Value': kill_density_transform.get('operator_approval_status'),
+        },
+        {
+            'Metric': 'Kill-density formula link closed',
+            'Value': kill_density_transform.get('approved_transform_closes_formula_link'),
+        },
+        {'Metric': 'Farming displayed spawn rate', 'Value': spawn_density.get('displayed_spawn_rate')},
+        {
+            'Metric': 'WA spawn acceleration',
+            'Value': spawn_density.get('wave_accelerator_spawn_rate_acceleration'),
+        },
+        {
+            'Metric': 'Spawn count curve available',
+            'Value': spawn_density.get('normal_enemy_spawn_count_curve_available'),
+        },
+        {
+            'Metric': 'Spawn count source audit',
+            'Value': spawn_count_audit.get('status'),
+        },
+        {
+            'Metric': 'Spawn count missing source',
+            'Value': spawn_count_audit.get('missing_source_owned_surface'),
+        },
+        {
+            'Metric': 'Pressure driver evidence status',
+            'Value': pressure_driver.get('status'),
+        },
+        {
+            'Metric': 'Elite pressure index',
+            'Value': elite_pressure.get('elite_pressure_index_pct'),
+        },
+        {
+            'Metric': 'Fleet events/wave pressure',
+            'Value': fleet_pressure.get('fleet_events_per_wave_pressure'),
+        },
+        {'Metric': 'Tracker enemy-density status', 'Value': tracker_density.get('status')},
+        {
+            'Metric': 'Tracker enemies/wave',
+            'Value': tracker_density.get('observed_median_enemies_per_wave'),
+        },
+        {
+            'Metric': 'Tracker enemy composition status',
+            'Value': tracker_enemy_composition.get('status'),
+        },
+        {
+            'Metric': 'Tracker protector share',
+            'Value': _tracker_enemy_share(tracker_normal_enemy_counts, 'protector'),
+        },
+        {
+            'Metric': 'Tracker protectors/wave',
+            'Value': dict(
+                dict(tracker_normal_enemy_counts.get('protector') or {}).get('count_per_wave')
+                or {}
+            ).get('median'),
+        },
+        {
+            'Metric': 'Tracker elite share',
+            'Value': dict(
+                tracker_enemy_composition.get('total_elites_share_of_total_enemies') or {}
+            ).get('median'),
+        },
+        {
+            'Metric': 'Tracker elite subtypes/wave',
+            'Value': dict(
+                tracker_enemy_composition.get('elite_tracked_count_per_wave') or {}
+            ).get('median'),
+        },
+        {
+            'Metric': 'Tracker vampire share',
+            'Value': _tracker_enemy_share(tracker_elite_enemy_counts, 'vampires'),
+        },
+        {
+            'Metric': 'Tracker ray share',
+            'Value': _tracker_enemy_share(tracker_elite_enemy_counts, 'rays'),
+        },
+        {
+            'Metric': 'Tracker scatter share',
+            'Value': _tracker_enemy_share(tracker_elite_enemy_counts, 'scatters'),
+        },
+        {
+            'Metric': 'Tracker density / spawn-rate ratio',
+            'Value': tracker_density.get('displayed_spawn_rate_to_observed_enemies_per_wave_ratio'),
+        },
+        {
+            'Metric': 'Tracker kill-density candidate status',
+            'Value': tracker_kill_density.get('status'),
+        },
+        {
+            'Metric': 'Tracker projected enemies/wave',
+            'Value': tracker_kill_density.get('projected_enemies_per_wave_from_tracker_ratio'),
+        },
+        {
+            'Metric': 'Tracker enemies/wave per spawn rate',
+            'Value': tracker_kill_density.get('observed_enemies_per_wave_per_displayed_spawn_rate'),
+        },
+        {
+            'Metric': 'Tracker density stability status',
+            'Value': tracker_kill_density_stability.get('status'),
+        },
+        {
+            'Metric': 'Tracker recent density/spawn',
+            'Value': tracker_kill_density_stability.get(
+                'recent_enemies_per_wave_per_displayed_spawn_rate'
+            ),
+        },
+        {
+            'Metric': 'Tracker prior density/spawn',
+            'Value': tracker_kill_density_stability.get(
+                'prior_enemies_per_wave_per_displayed_spawn_rate'
+            ),
+        },
+        {'Metric': 'Tracker coin-density status', 'Value': tracker_coin_density.get('status')},
+        {
+            'Metric': 'Tracker coins/enemy',
+            'Value': tracker_coin_density.get('observed_median_coins_per_enemy'),
+        },
+        {
+            'Metric': 'Tracker coins/wave',
+            'Value': tracker_coin_density.get('observed_median_coins_per_wave'),
+        },
+        {
+            'Metric': 'Tracker coin-yield stability status',
+            'Value': tracker_coin_yield_stability.get('status'),
+        },
+        {
+            'Metric': 'Tracker coins/enemy recent/prior',
+            'Value': tracker_coin_yield_stability.get('coins_per_enemy_median_ratio'),
+        },
+        {
+            'Metric': 'Tracker coins/wave recent/prior',
+            'Value': tracker_coin_yield_stability.get('coins_per_wave_median_ratio'),
+        },
+        {
+            'Metric': 'Tracker coin-integral status',
+            'Value': tracker_coin_integral.get('status'),
+        },
+        {
+            'Metric': 'Tracker projected coins/wave',
+            'Value': tracker_coin_integral.get('projected_coins_per_wave_from_tracker_density'),
+        },
+        {
+            'Metric': 'Tracker projected CPH',
+            'Value': tracker_coin_integral.get('projected_coins_per_hour_from_tracker_density'),
+        },
+        {
+            'Metric': 'Tracker projected / reported CPH',
+            'Value': tracker_coin_integral.get('projected_to_tracker_cph_ratio'),
+        },
+        {'Metric': 'Available drivers', 'Value': driver_coverage.get('available')},
+        {'Metric': 'Total drivers', 'Value': driver_coverage.get('total')},
+        {
+            'Metric': 'Missing formula links',
+            'Value': len(readiness.get('missing_formula_links') or []),
+        },
+    ]
+    return pd.DataFrame(rows)
+
+
 def _render_checks(active_artifacts, request: PipelineRunRequest) -> None:
     _render_verification_snapshot_controls(request)
     diagnostics = active_artifacts.get('diagnostics.json', {})
+    boss_wave_matrix = diagnostics.get('boss_wave_milestone_matrix') or {}
+    farming_econ_readiness = diagnostics.get('farming_econ_model_readiness') or {}
     st.subheader('Needs Attention')
     compare_df = compare_rows_frame(active_artifacts.get('ep_oracle_compare.json', {}))
     verification_df = verification_rows_frame(active_artifacts.get('line_by_line_verification.json', {}))
     attention = {
         'compare_mismatches': int((compare_df.get('status') == 'mismatch').sum()) if 'status' in compare_df else 0,
         'verification_non_pass': int((verification_df.get('authoritative_verdict') != 'pass').sum()) if 'authoritative_verdict' in verification_df else 0,
+        'ep_unaccounted_alignment_gaps': int((diagnostics.get('ep_compare_summary') or {}).get('ep_unaccounted_alignment_gap_count') or 0),
+        'effect_carrythrough_incomplete_families': len(
+            (diagnostics.get('current_scope_effect_family_evidence') or {}).get(
+                'effect_row_carrythrough_incomplete_families'
+            )
+            or []
+        ),
+        'boss_wave_model_blockers': len((boss_wave_matrix.get('model_completion_blockers') or [])),
+        'boss_wave_uncertified': 0 if boss_wave_matrix.get('certified_full_max_wave_model') else 1,
+        'farming_cph_uncertified': 0 if farming_econ_readiness.get('certified_farming_cph_model') else 1,
+        'farming_cph_blockers': len(farming_econ_readiness.get('coins_per_hour_certification_blockers') or []),
         'cache_invalidations': 1 if ((active_artifacts.get('pipeline_trace.json', {}).get('execution_path') or {}).get('cache_status') == 'invalid') else 0,
         'fallback_required': 1 if ((active_artifacts.get('pipeline_trace.json', {}).get('execution_path') or {}).get('fallback_required')) else 0,
         'parity_mismatches': len((((active_artifacts.get('pipeline_trace.json', {}).get('execution_path') or {}).get('parity') or {}).get('mismatches') or [])),
     }
     st.json(attention)
+    goal_readiness_frame = _tower_goal_readiness_frame(diagnostics)
+    if not goal_readiness_frame.empty:
+        st.caption('Goal readiness summary')
+        st.dataframe(goal_readiness_frame, width='stretch', hide_index=True)
     st.subheader('QE Mapping')
     qe_summary = {
         'qe_resolution_interface': diagnostics.get('qe_resolution_interface'),
@@ -1977,12 +3878,30 @@ def _render_checks(active_artifacts, request: PipelineRunRequest) -> None:
         with st.expander('Active unmapped inputs'):
             st.dataframe(pd.DataFrame(active_unmapped_inputs), width='stretch', hide_index=True)
     st.subheader('EP Compare')
+    ep_alignment_frame = _ep_alignment_summary_frame(diagnostics)
+    if not ep_alignment_frame.empty:
+        st.caption('EP alignment summary')
+        st.dataframe(ep_alignment_frame, width='stretch', hide_index=True)
     st.dataframe(compare_df, width='stretch', hide_index=True)
+    st.subheader('Boss Waves Readiness')
+    boss_wave_readiness_frame = _boss_wave_readiness_summary_frame(diagnostics)
+    if not boss_wave_readiness_frame.empty:
+        st.caption('Boss Waves readiness summary')
+        st.dataframe(boss_wave_readiness_frame, width='stretch', hide_index=True)
+    st.subheader('Farming Econ Readiness')
+    farming_econ_readiness_frame = _farming_econ_readiness_summary_frame(diagnostics)
+    if not farming_econ_readiness_frame.empty:
+        st.caption('Farming CPH readiness summary')
+        st.dataframe(farming_econ_readiness_frame, width='stretch', hide_index=True)
     st.subheader('Line Verification')
     st.dataframe(verification_df, width='stretch', hide_index=True)
     st.subheader('State Matrix')
     st.json(active_artifacts.get('state_matrix.json', {}))
     st.subheader('Family Completeness')
+    effect_carrythrough_frame = _effect_carrythrough_summary_frame(diagnostics)
+    if not effect_carrythrough_frame.empty:
+        st.caption('Effect carry-through to Boss Waves')
+        st.dataframe(effect_carrythrough_frame, width='stretch', hide_index=True)
     st.json(active_artifacts.get('family_completeness_matrix.json', {}))
     st.subheader('Audit Surface Manifest')
     st.json(active_artifacts.get('audit_surface_manifest.json', {}))
@@ -2176,12 +4095,13 @@ def _render_boss_waves(request: PipelineRunRequest) -> None:
         st.dataframe(_boss_wave_recommended_model_assumption_frame(), width='stretch', hide_index=True)
 
     with st.expander('Combat assumptions', expanded=False):
-        runtime_cols = st.columns(5)
+        runtime_cols = st.columns(6)
         orb_boss_total_damage_pct = runtime_cols[0].number_input('Orb damage to boss (total %)', min_value=0.0, max_value=100.0, value=6.0, step=0.1)
         electron_total_damage_pct = runtime_cols[1].number_input('Electron damage override (total %)', min_value=0.0, max_value=100.0, value=0.0, step=0.1)
         flame_bot_damage_reduction_pct = runtime_cols[2].number_input('Flame Bot DR override (%)', min_value=0.0, max_value=100.0, value=0.0, step=1.0)
         boss_time_to_contact_seconds = runtime_cols[3].number_input('Boss time to contact override (s)', min_value=0.0, max_value=120.0, value=0.0, step=0.1)
-        death_wave_health_max_wave = runtime_cols[4].number_input('Death Wave maxed wave', min_value=1, value=1000, step=10)
+        boss_wave_pressure_factor = runtime_cols[4].number_input('Pressure factor (boss HP + damage)', min_value=0.0, value=1.0, step=0.1)
+        death_wave_health_max_wave = runtime_cols[5].number_input('Death Wave maxed wave', min_value=1, value=1000, step=10)
         use_manual_damage_calibration = st.toggle('Override boss damage calibration', value=False)
         boss_applicable_damage_factor = 0.0
         boss_edamage_target_share = 0.0
@@ -2196,11 +4116,12 @@ def _render_boss_waves(request: PipelineRunRequest) -> None:
             boss_edamage_cadence_uptime_factor = bridge_cols[1].number_input('Boss cadence uptime', min_value=0.0, value=0.0, step=0.0001, format='%.6f')
             boss_edamage_reliability_factor = bridge_cols[2].number_input('Boss reliability', min_value=0.0, value=0.0, step=0.0001, format='%.6f')
             boss_edamage_semantic_normalizer = bridge_cols[3].number_input('Boss semantic normalizer', min_value=0.0, value=0.0, step=0.0001, format='%.6f')
-        terminal_cols = st.columns(4)
+        terminal_cols = st.columns(5)
         fleet_terminal_max_wave = terminal_cols[0].number_input('Fleet terminal wave', min_value=0, value=0, step=10)
         elite_terminal_max_wave = terminal_cols[1].number_input('Elite terminal wave', min_value=0, value=0, step=10)
         protector_terminal_max_wave = terminal_cols[2].number_input('Protector terminal wave', min_value=0, value=0, step=10)
         armored_terminal_max_wave = terminal_cols[3].number_input('Armored terminal wave', min_value=0, value=0, step=10)
+        boss_terminal_max_wave = terminal_cols[4].number_input('Boss terminal wave', min_value=0, value=0, step=10)
     decomposed_bridge_inputs = {
         **({'boss_edamage_target_share': boss_edamage_target_share} if boss_edamage_target_share > 0.0 else {}),
         **({'boss_edamage_cadence_uptime_factor': boss_edamage_cadence_uptime_factor} if boss_edamage_cadence_uptime_factor > 0.0 else {}),
@@ -2211,6 +4132,7 @@ def _render_boss_waves(request: PipelineRunRequest) -> None:
         'orb_boss_total_damage_pct': orb_boss_total_damage_pct,
         **({'electron_total_damage_pct': electron_total_damage_pct} if electron_total_damage_pct > 0.0 else {}),
         **({'flame_bot_damage_reduction_pct': flame_bot_damage_reduction_pct} if flame_bot_damage_reduction_pct > 0.0 else {}),
+        **({'boss_wave_pressure_factor': boss_wave_pressure_factor} if boss_wave_pressure_factor != 1.0 else {}),
         **({'boss_applicable_damage_factor': boss_applicable_damage_factor} if boss_applicable_damage_factor > 0.0 else {}),
         **decomposed_bridge_inputs,
         **({'boss_time_to_contact_seconds': boss_time_to_contact_seconds} if boss_time_to_contact_seconds > 0.0 else {}),
@@ -2218,6 +4140,7 @@ def _render_boss_waves(request: PipelineRunRequest) -> None:
         **({'elite_terminal_max_wave': elite_terminal_max_wave} if elite_terminal_max_wave > 0 else {}),
         **({'protector_terminal_max_wave': protector_terminal_max_wave} if protector_terminal_max_wave > 0 else {}),
         **({'armored_terminal_max_wave': armored_terminal_max_wave} if armored_terminal_max_wave > 0 else {}),
+        **({'boss_terminal_max_wave': boss_terminal_max_wave} if boss_terminal_max_wave > 0 else {}),
         **({'tournament_wave': int(tournament_wave_override)} if preset_name == 'Tourney' and int(tournament_wave_override) > 0 else {}),
         'death_wave_health_max_wave': death_wave_health_max_wave,
     }
@@ -2304,6 +4227,14 @@ def _render_boss_waves(request: PipelineRunRequest) -> None:
             payload_summary.get('unsupported_pressure_missing_reference_blocked')
             or payload_diagnostics.get('unsupported_pressure_missing_reference_blocked')
         ),
+        'unsupported_pressure_reference_aligned': bool(
+            payload_summary.get('unsupported_pressure_reference_aligned')
+            or payload_diagnostics.get('unsupported_pressure_reference_aligned')
+        ),
+        'unsupported_pressure_reference_alignment_direction': (
+            payload_summary.get('unsupported_pressure_reference_alignment_direction')
+            or payload_diagnostics.get('unsupported_pressure_reference_alignment_direction')
+        ),
         'unsupported_pressure_reference_limit': dict(
             payload_summary.get('unsupported_pressure_reference_limit')
             or payload_diagnostics.get('unsupported_pressure_reference_limit')
@@ -2333,6 +4264,13 @@ def _render_boss_waves(request: PipelineRunRequest) -> None:
                 f"Capped by `{diagnostics['terminal_pressure_limiter']}`; "
                 f"uncapped boss-only wave `{cap.get('uncapped_selected_max_wave') or '—'}`."
             )
+    elif diagnostics['unsupported_pressure_reference_aligned']:
+        cap = diagnostics['unsupported_pressure_reference_limit']
+        st.caption(
+            f"Aligned to IDS empirical reference "
+            f"`{diagnostics['unsupported_pressure_reference_alignment_direction']}`; "
+            f"uncapped boss-only wave `{cap.get('uncapped_selected_max_wave') or '-'}`."
+        )
     st.caption(f"Result uses `{diagnostics['selected_model']}`. Calculated in `{boss_calc_elapsed:.2f}s`.")
     st.caption(
         f"`{diagnostics['preset_name']}` loadout; `{perk_policy_preset}` perk plan; "
@@ -2396,7 +4334,7 @@ def _render_boss_waves(request: PipelineRunRequest) -> None:
     )
     with st.expander('All-tier preset matrix'):
         st.caption('Runs the four Boss Waves perk presets across all tiers using the same assumptions as this tab.')
-        matrix_cols = st.columns(2)
+        matrix_cols = st.columns(6)
         matrix_end_wave = matrix_cols[0].number_input(
             'Matrix end wave',
             min_value=100,
@@ -2410,17 +4348,80 @@ def _render_boss_waves(request: PipelineRunRequest) -> None:
             value=max(10, int(boss_wave_step)),
             step=1,
         )
-        if st.button('Build all-tier 4-preset matrix'):
+        align_clean_reference_rows = matrix_cols[2].checkbox('Align clean rows to IDS references', value=True)
+        matrix_all_run_types = matrix_cols[3].checkbox('All run types', value=True)
+        matrix_all_tiers = matrix_cols[4].checkbox('All tiers', value=True)
+        comparison_pressure_factor = matrix_cols[5].number_input(
+            'Comparison pressure factor',
+            min_value=0.0,
+            value=1.0,
+            step=0.1,
+        )
+        comparison_terminal_cols = st.columns(5)
+        comparison_fleet_terminal_max_wave = comparison_terminal_cols[0].number_input(
+            'Compare fleet terminal wave',
+            min_value=0,
+            value=0,
+            step=10,
+        )
+        comparison_elite_terminal_max_wave = comparison_terminal_cols[1].number_input(
+            'Compare elite terminal wave',
+            min_value=0,
+            value=0,
+            step=10,
+        )
+        comparison_protector_terminal_max_wave = comparison_terminal_cols[2].number_input(
+            'Compare protector terminal wave',
+            min_value=0,
+            value=0,
+            step=10,
+        )
+        comparison_armored_terminal_max_wave = comparison_terminal_cols[3].number_input(
+            'Compare armored terminal wave',
+            min_value=0,
+            value=0,
+            step=10,
+        )
+        comparison_boss_terminal_max_wave = comparison_terminal_cols[4].number_input(
+            'Compare boss terminal wave',
+            min_value=0,
+            value=0,
+            step=10,
+        )
+        matrix_comparison_inputs = {
+            **(
+                {'boss_wave_pressure_factor': comparison_pressure_factor}
+                if comparison_pressure_factor > 0.0 and comparison_pressure_factor != 1.0
+                else {}
+            ),
+            **({'fleet_terminal_max_wave': comparison_fleet_terminal_max_wave} if comparison_fleet_terminal_max_wave > 0 else {}),
+            **({'elite_terminal_max_wave': comparison_elite_terminal_max_wave} if comparison_elite_terminal_max_wave > 0 else {}),
+            **({'protector_terminal_max_wave': comparison_protector_terminal_max_wave} if comparison_protector_terminal_max_wave > 0 else {}),
+            **({'armored_terminal_max_wave': comparison_armored_terminal_max_wave} if comparison_armored_terminal_max_wave > 0 else {}),
+            **({'boss_terminal_max_wave': comparison_boss_terminal_max_wave} if comparison_boss_terminal_max_wave > 0 else {}),
+        }
+        matrix_run_categories = (
+            ('none', *BOSS_WAVE_DISSONANCE_RUN_CATEGORIES)
+            if bool(matrix_all_run_types)
+            else (dissonance_run_category,)
+        )
+        matrix_tiers = tuple(range(1, 22)) if bool(matrix_all_tiers) else (int(tier_number),)
+        if st.button('Build 4-preset matrix'):
             matrix_start = time.perf_counter()
             matrix_payload = build_boss_wave_milestone_matrix(
                 scenario_request,
-                tiers=tuple(range(1, 22)),
+                tiers=matrix_tiers,
                 end_wave=int(matrix_end_wave),
                 boss_wave_step=max(1, int(matrix_boss_wave_step)),
                 stop_on_failure=True,
                 scenario_runtime_inputs=scenario_runtime_inputs,
+                comparison_scenario_runtime_inputs=matrix_comparison_inputs or None,
+                comparison_label=_boss_wave_matrix_comparison_label_from_runtime_inputs(
+                    matrix_comparison_inputs
+                ),
                 loadout_policy_presets=BOSS_WAVE_PERK_POLICY_PRESETS,
-                dissonance_run_categories=(dissonance_run_category,),
+                dissonance_run_categories=matrix_run_categories,
+                align_clean_reference_rows=bool(align_clean_reference_rows),
             )
             matrix_elapsed = time.perf_counter() - matrix_start
             matrix_rows = matrix_payload.get('rows') or []
@@ -2432,7 +4433,73 @@ def _render_boss_waves(request: PipelineRunRequest) -> None:
                 )
             else:
                 st.caption(f"Calculated in `{matrix_elapsed:.2f}s`.")
+            model_blocker_frame = _boss_wave_matrix_model_blocker_frame(matrix_payload)
+            if not model_blocker_frame.empty:
+                st.dataframe(model_blocker_frame, width='stretch', hide_index=True)
+            model_accuracy_frame = _boss_wave_matrix_model_accuracy_frame(matrix_payload)
+            if not model_accuracy_frame.empty:
+                st.caption('Model accuracy posture')
+                st.dataframe(model_accuracy_frame, width='stretch', hide_index=True)
+            primitive_family_frame = _boss_wave_matrix_primitive_family_coverage_frame(matrix_payload)
+            if not primitive_family_frame.empty:
+                st.caption('Primitive family coverage')
+                st.dataframe(primitive_family_frame, width='stretch', hide_index=True)
+            terminal_requirement_frame = _boss_wave_matrix_terminal_pressure_requirement_frame(matrix_payload)
+            if not terminal_requirement_frame.empty:
+                st.caption('Terminal pressure inputs')
+                st.dataframe(terminal_requirement_frame, width='stretch', hide_index=True)
+            reference_gap_frame = _boss_wave_matrix_reference_gap_frame(matrix_payload)
+            if not reference_gap_frame.empty:
+                st.dataframe(reference_gap_frame, width='stretch', hide_index=True)
+            reference_quality_frame = _boss_wave_matrix_reference_quality_frame(matrix_payload)
+            if not reference_quality_frame.empty:
+                st.caption('Reference quality')
+                st.dataframe(reference_quality_frame, width='stretch', hide_index=True)
+            st.dataframe(_boss_wave_matrix_alignment_summary_frame(matrix_payload), width='stretch', hide_index=True)
+            pressure_hint_summary_frame = _boss_wave_matrix_pressure_factor_hint_summary_frame(matrix_payload)
+            if not pressure_hint_summary_frame.empty:
+                st.caption('Pressure factor hints')
+                st.dataframe(pressure_hint_summary_frame, width='stretch', hide_index=True)
+            pressure_hint_by_run_type_frame = _boss_wave_matrix_pressure_factor_hint_by_run_type_frame(matrix_payload)
+            if not pressure_hint_by_run_type_frame.empty:
+                st.dataframe(pressure_hint_by_run_type_frame, width='stretch', hide_index=True)
             st.dataframe(_boss_wave_preset_matrix_frame(matrix_payload), width='stretch', hide_index=True)
+            comparison_summary_frame = _boss_wave_matrix_comparison_alignment_summary_frame(matrix_payload)
+            if not comparison_summary_frame.empty:
+                st.dataframe(comparison_summary_frame, width='stretch', hide_index=True)
+            comparison_calculated_summary_frame = _boss_wave_matrix_comparison_calculated_delta_summary_frame(
+                matrix_payload
+            )
+            if not comparison_calculated_summary_frame.empty:
+                st.dataframe(comparison_calculated_summary_frame, width='stretch', hide_index=True)
+            comparison_matrix = dict(dict(matrix_payload.get('comparison') or {}).get('matrix') or {})
+            comparison_model_blocker_frame = _boss_wave_matrix_model_blocker_frame(comparison_matrix)
+            if not comparison_model_blocker_frame.empty:
+                st.caption('Comparison model status')
+                st.dataframe(comparison_model_blocker_frame, width='stretch', hide_index=True)
+            comparison_model_accuracy_frame = _boss_wave_matrix_model_accuracy_frame(comparison_matrix)
+            if not comparison_model_accuracy_frame.empty:
+                st.caption('Comparison accuracy posture')
+                st.dataframe(comparison_model_accuracy_frame, width='stretch', hide_index=True)
+            comparison_terminal_requirement_frame = _boss_wave_matrix_terminal_pressure_requirement_frame(
+                comparison_matrix
+            )
+            if not comparison_terminal_requirement_frame.empty:
+                st.caption('Comparison terminal pressure inputs')
+                st.dataframe(comparison_terminal_requirement_frame, width='stretch', hide_index=True)
+            comparison_reference_gap_frame = _boss_wave_matrix_reference_gap_frame(comparison_matrix)
+            if not comparison_reference_gap_frame.empty:
+                st.caption('Comparison missing references')
+                st.dataframe(comparison_reference_gap_frame, width='stretch', hide_index=True)
+            comparison_pressure_hint_frame = _boss_wave_matrix_pressure_factor_hint_by_run_type_frame(
+                comparison_matrix
+            )
+            if not comparison_pressure_hint_frame.empty:
+                st.caption('Comparison pressure factor hints')
+                st.dataframe(comparison_pressure_hint_frame, width='stretch', hide_index=True)
+            comparison_frame = _boss_wave_matrix_comparison_frame(matrix_payload)
+            if not comparison_frame.empty:
+                st.dataframe(comparison_frame, width='stretch', hide_index=True)
     with st.expander('Model assumptions'):
         st.dataframe(
             _boss_wave_assumption_frame(
@@ -2449,6 +4516,17 @@ def _render_boss_waves(request: PipelineRunRequest) -> None:
         if not runtime_frame.empty:
             st.caption('Runtime inputs')
             st.dataframe(runtime_frame, width='stretch', hide_index=True)
+        terminal_requirement_frame = _boss_wave_terminal_pressure_requirement_frame_from_status(
+            dict(
+                dict(payload_diagnostics.get('model_certification') or {}).get(
+                    'terminal_pressure_runtime_override_status'
+                )
+                or {}
+            )
+        )
+        if not terminal_requirement_frame.empty:
+            st.caption('Terminal pressure inputs')
+            st.dataframe(terminal_requirement_frame, width='stretch', hide_index=True)
         st.caption(
             "Boss Waves is a bounded runtime estimate. The checkpoint table reflects the DR/contact assumptions used by the current run, "
             "including visible wall regen contribution."
@@ -2472,6 +4550,7 @@ def _render_boss_waves(request: PipelineRunRequest) -> None:
                 'contract': boss_payload.get('contract') or {},
                 'runtime_inputs_used': diagnostics['scenario_runtime_inputs'],
                 'replacement_primitive_inputs': primitive_inputs,
+                'replacement_primitive_family_coverage': payload_diagnostics.get('replacement_primitive_family_coverage') or {},
                 'replacement_primitive_semantics_ledger': payload_diagnostics.get('replacement_primitive_semantics_ledger') or {},
                 'execution_counts': {
                     'qe_resolution_count': diagnostics['qe_resolution_count'],

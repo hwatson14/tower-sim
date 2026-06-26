@@ -74,6 +74,28 @@ def test_publish_derived_composites_publishes_v28_dissonant_echo_multipliers() -
     assert rows['derived::dissonance.attack.echo_multiplier'].value_type == 'ratio'
     assert '10.5%' in (rows['derived::dissonance.attack.echo_multiplier'].notes or '')
     assert 'active-tier PB is excluded from Echo' in (rows['derived::dissonance.attack.echo_bonus_multiplier'].notes or '')
+    assert {
+        contributor['source_name']
+        for contributor in rows['derived::dissonance.attack.echo_bonus_multiplier'].contributors
+    } == {
+        'state::dissonance.attack.echo_source_bonus',
+        'derived::dissonance.attack.echo_multiplier',
+    }
+    assert {
+        contributor['source_name']
+        for contributor in rows['derived::dissonance.attack.total_multiplier'].contributors
+    } == {
+        'state::dissonance.attack.active_boost_multiplier',
+        'derived::dissonance.attack.echo_bonus_multiplier',
+    }
+    assert all(
+        contributor.get('value_type') != 'level'
+        for contributor in rows['derived::dissonance.attack.echo_bonus_multiplier'].contributors
+    )
+    assert all(
+        contributor.get('value_type') != 'level'
+        for contributor in rows['derived::dissonance.attack.total_multiplier'].contributors
+    )
 
 
 def test_publish_derived_composites_applies_v28_utility_dissonance_to_eecon() -> None:
@@ -170,6 +192,30 @@ def test_publish_derived_composites_applies_v28_attack_dissonance_restrictions()
     assert rows['derived::edamage.rapidfire_factor'].final_value == pytest.approx(1.0)
     assert rows['derived::edamage.range_dpm_factor'].final_value == pytest.approx(1.0)
     assert rows['derived::edamage.rend_factor'].final_value == pytest.approx(1.0)
+
+
+def test_publish_derived_composites_consumes_being_annihilator_canonical_surface() -> None:
+    rows = {
+        'state::tower.crit_chance_pct': StatRow(stat_name='state::tower.crit_chance_pct', final_value=80.0, value_type='pct', source_count=1, status='resolved', contributors=[], schema=None),
+        'state::tower.crit_multiplier': StatRow(stat_name='state::tower.crit_multiplier', final_value=60.0, value_type='multiplier', source_count=1, status='resolved', contributors=[], schema=None),
+        'state::tower.supercrit_chance_pct': StatRow(stat_name='state::tower.supercrit_chance_pct', final_value=20.0, value_type='pct', source_count=1, status='resolved', contributors=[], schema=None),
+        'state::tower.supercrit_multiplier': StatRow(stat_name='state::tower.supercrit_multiplier', final_value=10.0, value_type='multiplier', source_count=1, status='resolved', contributors=[], schema=None),
+        'state::module.being_annihilator.guaranteed_supercrits_after_supercrit_attacks': StatRow(stat_name='state::module.being_annihilator.guaranteed_supercrits_after_supercrit_attacks', final_value=6.0, value_type='count', source_count=1, status='resolved', contributors=[], schema=None),
+    }
+    rows_without_being = {
+        key: value
+        for key, value in rows.items()
+        if key != 'state::module.being_annihilator.guaranteed_supercrits_after_supercrit_attacks'
+    }
+
+    derived.publish_derived_composites(rows)
+    derived.publish_derived_composites(rows_without_being)
+
+    expected = derived._ep_critical(80.0, 60.0, 20.0, 10.0, 6.0)
+    assert rows['derived::edamage.bullet_crit_factor'].final_value == pytest.approx(expected)
+    assert rows['derived::edamage.bullet_crit_factor'].final_value > (
+        rows_without_being['derived::edamage.bullet_crit_factor'].final_value
+    )
 
 
 def test_publish_derived_composites_publishes_cl_only_boss_applicable_damage_lane() -> None:

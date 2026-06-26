@@ -168,6 +168,27 @@ def test_run_stats_main_threads_tier_override_to_pipeline(monkeypatch):
     assert captured["tier"] == 14
 
 
+def test_run_stats_main_threads_run_tracker_csv_to_pipeline(monkeypatch):
+    import app.pipeline as pipeline_mod
+    import app.run_stats as run_stats_mod
+
+    captured = {}
+
+    def _pipeline(args):
+        captured["run_tracker_csv"] = args.run_tracker_csv
+        return 0
+
+    monkeypatch.setattr(pipeline_mod, "run_stats_pipeline", _pipeline)
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        ["app.run_stats", "--run-tracker-csv", "input/imports/runs.csv"],
+    )
+
+    assert run_stats_mod.main() == 0
+    assert captured["run_tracker_csv"] == Path("input/imports/runs.csv")
+
+
 def test_run_stats_main_threads_boss_wave_milestone_matrix_flag_to_pipeline(monkeypatch):
     import app.pipeline as pipeline_mod
     import app.run_stats as run_stats_mod
@@ -183,6 +204,57 @@ def test_run_stats_main_threads_boss_wave_milestone_matrix_flag_to_pipeline(monk
 
     assert run_stats_mod.main() == 0
     assert captured["include_boss_wave_milestone_matrix"] is True
+
+
+def test_run_stats_main_threads_clean_reference_alignment_flag_to_pipeline(monkeypatch):
+    import app.pipeline as pipeline_mod
+    import app.run_stats as run_stats_mod
+
+    captured = {}
+
+    def _pipeline(args):
+        captured["align_clean_reference_rows"] = args.boss_wave_align_clean_reference_rows
+        return 0
+
+    monkeypatch.setattr(pipeline_mod, "run_stats_pipeline", _pipeline)
+    monkeypatch.setattr(sys, "argv", ["app.run_stats", "--boss-wave-align-clean-reference-rows"])
+
+    assert run_stats_mod.main() == 0
+    assert captured["align_clean_reference_rows"] is True
+
+
+def test_run_stats_main_defaults_clean_reference_alignment_to_pipeline(monkeypatch):
+    import app.pipeline as pipeline_mod
+    import app.run_stats as run_stats_mod
+
+    captured = {}
+
+    def _pipeline(args):
+        captured["align_clean_reference_rows"] = args.boss_wave_align_clean_reference_rows
+        return 0
+
+    monkeypatch.setattr(pipeline_mod, "run_stats_pipeline", _pipeline)
+    monkeypatch.setattr(sys, "argv", ["app.run_stats"])
+
+    assert run_stats_mod.main() == 0
+    assert captured["align_clean_reference_rows"] is True
+
+
+def test_run_stats_main_can_request_clean_reference_comparison_only(monkeypatch):
+    import app.pipeline as pipeline_mod
+    import app.run_stats as run_stats_mod
+
+    captured = {}
+
+    def _pipeline(args):
+        captured["align_clean_reference_rows"] = args.boss_wave_align_clean_reference_rows
+        return 0
+
+    monkeypatch.setattr(pipeline_mod, "run_stats_pipeline", _pipeline)
+    monkeypatch.setattr(sys, "argv", ["app.run_stats", "--boss-wave-compare-clean-reference-rows"])
+
+    assert run_stats_mod.main() == 0
+    assert captured["align_clean_reference_rows"] is False
 
 
 def test_run_stats_main_threads_boss_wave_bridge_comparison_factors_to_pipeline(monkeypatch):
@@ -224,6 +296,74 @@ def test_run_stats_main_threads_boss_wave_bridge_comparison_factors_to_pipeline(
     }
 
 
+def test_run_stats_main_threads_boss_wave_comparison_pressure_factor_to_pipeline(monkeypatch):
+    import app.pipeline as pipeline_mod
+    import app.run_stats as run_stats_mod
+
+    captured = {}
+
+    def _pipeline(args):
+        captured["comparison_pressure_factor"] = args.boss_wave_comparison_pressure_factor
+        return 0
+
+    monkeypatch.setattr(pipeline_mod, "run_stats_pipeline", _pipeline)
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        [
+            "app.run_stats",
+            "--boss-wave-comparison-pressure-factor",
+            "1.25",
+        ],
+    )
+
+    assert run_stats_mod.main() == 0
+    assert captured == {"comparison_pressure_factor": 1.25}
+
+
+def test_run_stats_main_threads_boss_wave_comparison_terminal_closures_to_pipeline(monkeypatch):
+    import app.pipeline as pipeline_mod
+    import app.run_stats as run_stats_mod
+
+    captured = {}
+
+    def _pipeline(args):
+        captured["fleet"] = args.boss_wave_comparison_fleet_terminal_max_wave
+        captured["elite"] = args.boss_wave_comparison_elite_terminal_max_wave
+        captured["protector"] = args.boss_wave_comparison_protector_terminal_max_wave
+        captured["armored"] = args.boss_wave_comparison_armored_terminal_max_wave
+        captured["boss"] = args.boss_wave_comparison_boss_terminal_max_wave
+        return 0
+
+    monkeypatch.setattr(pipeline_mod, "run_stats_pipeline", _pipeline)
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        [
+            "app.run_stats",
+            "--boss-wave-comparison-fleet-terminal-max-wave",
+            "900",
+            "--boss-wave-comparison-elite-terminal-max-wave",
+            "901",
+            "--boss-wave-comparison-protector-terminal-max-wave",
+            "902",
+            "--boss-wave-comparison-armored-terminal-max-wave",
+            "903",
+            "--boss-wave-comparison-boss-terminal-max-wave",
+            "904",
+        ],
+    )
+
+    assert run_stats_mod.main() == 0
+    assert captured == {
+        "fleet": 900.0,
+        "elite": 901.0,
+        "protector": 902.0,
+        "armored": 903.0,
+        "boss": 904.0,
+    }
+
+
 def test_run_stats_main_threads_boss_wave_terminal_pressure_closures_to_pipeline(monkeypatch):
     import app.pipeline as pipeline_mod
     import app.run_stats as run_stats_mod
@@ -235,6 +375,7 @@ def test_run_stats_main_threads_boss_wave_terminal_pressure_closures_to_pipeline
         captured["elite"] = args.boss_wave_elite_terminal_max_wave
         captured["protector"] = args.boss_wave_protector_terminal_max_wave
         captured["armored"] = args.boss_wave_armored_terminal_max_wave
+        captured["boss"] = args.boss_wave_boss_terminal_max_wave
         return 0
 
     monkeypatch.setattr(pipeline_mod, "run_stats_pipeline", _pipeline)
@@ -251,6 +392,8 @@ def test_run_stats_main_threads_boss_wave_terminal_pressure_closures_to_pipeline
             "902",
             "--boss-wave-armored-terminal-max-wave",
             "903",
+            "--boss-wave-boss-terminal-max-wave",
+            "904",
         ],
     )
 
@@ -260,4 +403,119 @@ def test_run_stats_main_threads_boss_wave_terminal_pressure_closures_to_pipeline
         "elite": 901.0,
         "protector": 902.0,
         "armored": 903.0,
+        "boss": 904.0,
+    }
+
+
+def test_run_stats_main_threads_boss_wave_pressure_factor_to_pipeline(monkeypatch):
+    import app.pipeline as pipeline_mod
+    import app.run_stats as run_stats_mod
+
+    captured = {}
+
+    def _pipeline(args):
+        captured["pressure_factor"] = args.boss_wave_pressure_factor
+        return 0
+
+    monkeypatch.setattr(pipeline_mod, "run_stats_pipeline", _pipeline)
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        [
+            "app.run_stats",
+            "--boss-wave-pressure-factor",
+            "1.25",
+        ],
+    )
+
+    assert run_stats_mod.main() == 0
+    assert captured == {
+        "pressure_factor": 1.25,
+    }
+
+
+def test_run_stats_main_threads_boss_wave_pressure_factor_review_default_approval(monkeypatch):
+    import app.pipeline as pipeline_mod
+    import app.run_stats as run_stats_mod
+
+    captured = {}
+
+    def _pipeline(args):
+        captured["approve_review_default"] = args.approve_boss_wave_pressure_factor_review_default
+        return 0
+
+    monkeypatch.setattr(pipeline_mod, "run_stats_pipeline", _pipeline)
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        [
+            "app.run_stats",
+            "--approve-boss-wave-pressure-factor-review-default",
+        ],
+    )
+
+    assert run_stats_mod.main() == 0
+    assert captured == {
+        "approve_review_default": True,
+    }
+
+
+def test_run_stats_main_threads_tracker_wave_skip_intro_semantics_approval(monkeypatch):
+    import app.pipeline as pipeline_mod
+    import app.run_stats as run_stats_mod
+
+    captured = {}
+
+    def _pipeline(args):
+        captured["approve_skip_intro_semantics"] = (
+            args.approve_tracker_wave_skip_intro_semantics
+        )
+        return 0
+
+    monkeypatch.setattr(pipeline_mod, "run_stats_pipeline", _pipeline)
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        [
+            "app.run_stats",
+            "--approve-tracker-wave-skip-intro-semantics",
+        ],
+    )
+
+    assert run_stats_mod.main() == 0
+    assert captured == {
+        "approve_skip_intro_semantics": True,
+    }
+
+
+def test_run_stats_main_threads_final_tracker_cph_approvals(monkeypatch):
+    import app.pipeline as pipeline_mod
+    import app.run_stats as run_stats_mod
+
+    captured = {}
+
+    def _pipeline(args):
+        captured["approve_integrals"] = (
+            args.approve_tracker_empirical_run_coin_duration_integrals
+        )
+        captured["approve_validation"] = (
+            args.approve_tracker_current_export_account_state_validation
+        )
+        return 0
+
+    monkeypatch.setattr(pipeline_mod, "run_stats_pipeline", _pipeline)
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        [
+            "app.run_stats",
+            "--approve-tracker-empirical-run-coin-duration-integrals",
+            "--approve-tracker-current-export-account-state-validation",
+        ],
+    )
+
+    assert run_stats_mod.main() == 0
+    assert captured == {
+        "approve_integrals": True,
+        "approve_validation": True,
     }

@@ -1,0 +1,875 @@
+{
+  "survivor_order": [
+    "state::tower.regen",
+    "state::tower.hp",
+    "state::tower.defense_absolute",
+    "state::tower.damage",
+    "state::wall.hp",
+    "state::wall.regen"
+  ],
+  "rows": [
+    {
+      "destination": "state::tower.regen",
+      "verification_status": "publishable",
+      "issues": [],
+      "final_value": 24196450950564.406,
+      "ep_compare_value": null,
+      "ep_reference_value": null,
+      "delta": null,
+      "relative_delta_pct": null,
+      "compare_preset": null,
+      "compare_perk_state": null,
+      "package_value_source_state_mode": null,
+      "ep_stage_context": null,
+      "note": "primary_upstream_survivor"
+    },
+    {
+      "destination": "state::tower.hp",
+      "verification_status": "publishable",
+      "issues": [],
+      "final_value": 7442109853123.904,
+      "ep_compare_value": null,
+      "ep_reference_value": null,
+      "delta": null,
+      "relative_delta_pct": null,
+      "compare_preset": null,
+      "compare_perk_state": null,
+      "package_value_source_state_mode": null,
+      "ep_stage_context": null,
+      "note": "primary_upstream_survivor"
+    },
+    {
+      "destination": "state::tower.defense_absolute",
+      "verification_status": "publishable",
+      "issues": [],
+      "final_value": 323915725.7531188,
+      "ep_compare_value": 323915725.7531188,
+      "ep_reference_value": 323915725.75311893,
+      "delta": -1.1920928955078125e-07,
+      "relative_delta_pct": -3.680256315855434e-14,
+      "compare_preset": "Farming",
+      "compare_perk_state": "on",
+      "package_value_source_state_mode": "max_progression",
+      "ep_stage_context": {
+        "compare_preset": "Farming",
+        "compare_perk_state": "on",
+        "ep_progression_state": "max_progression",
+        "ep_workshop_state": "max_workshop",
+        "ep_run_state": "farming_perks_on",
+        "package_progression_state": "projected_max_progression",
+        "package_workshop_state": "projected_max_workshop",
+        "package_run_state": "farming_perks_on",
+        "unsupported_facets": [
+          "ep_export_bug:defense_absolute_includes_banned_defense_absolute_perk_x2_1875"
+        ],
+        "notes": [
+          "EP export row has a known export limitation and is treated as compare-limited, not formula truth.",
+          "EP export shortcut context only: eDamage rows use Tournament loadout; eHP/eEcon rows use Farming loadout and account Farming Tier Dissonance. TowerSim runtime surfaces remain preset/tier/scenario parameterized."
+        ],
+        "active_cards_by_preset": {
+          "Farming": [
+            "Enemy Balance",
+            "Extra Defense",
+            "Health",
+            "Coins",
+            "Plasma Cannon",
+            "Attack Speed",
+            "Wave Skip",
+            "Health Regen",
+            "Wave Accelerator",
+            "Critical Coin",
+            "Second Wind",
+            "Energy Shield",
+            "Recovery Package Chance",
+            "Intro Sprint",
+            "Extra Orb",
+            "Land Mine Stun",
+            "Cash",
+            "Free Upgrades"
+          ],
+          "Tourney": [
+            "Attack Speed",
+            "Damage",
+            "Berserker",
+            "Critical Chance",
+            "Health",
+            "Health Regen",
+            "Plasma Cannon",
+            "Wave Skip",
+            "Energy Shield",
+            "Ultimate Crit",
+            "Extra Orb",
+            "Recovery Package Chance",
+            "Extra Defense",
+            "Slow Aura",
+            "Energy Net",
+            "Land Mine Stun",
+            "Second Wind",
+            "Super Tower"
+          ]
+        },
+        "active_modules_by_preset": {
+          "Farming": {
+            "cannon": {
+              "primary": "Amplifying Strike",
+              "assist": null
+            },
+            "armor": {
+              "primary": "Sharp Fortitude",
+              "assist": "Orbital Augment"
+            },
+            "generator": {
+              "primary": "Singularity Harness",
+              "assist": "Black Hole Digestor"
+            },
+            "core": {
+              "primary": "Primordial Collapse",
+              "assist": "Om Chip"
+            }
+          },
+          "Tourney": {
+            "cannon": {
+              "primary": "Amplifying Strike",
+              "assist": null
+            },
+            "armor": {
+              "primary": "Anti-Cube Portal",
+              "assist": "Orbital Augment"
+            },
+            "generator": {
+              "primary": "Project Funding",
+              "assist": "Galaxy Compressor"
+            },
+            "core": {
+              "primary": "Dimension Core",
+              "assist": "Om Chip"
+            }
+          }
+        },
+        "modules_inventory": {
+          "Astral Deliverance": {
+            "name": "Astral Deliverance",
+            "slot_type": "cannon",
+            "rarity": "Mythic+",
+            "level": 160,
+            "stat": "8.19",
+            "substats": []
+          },
+          "Being Annihilator": {
+            "name": "Being Annihilator",
+            "slot_type": "cannon",
+            "rarity": "Ancestral",
+            "level": 180,
+            "stat": "12.24",
+            "substats": [
+              {
+                "name": "Attack Speed",
+                "value": "+3",
+                "raw_token": "3"
+              },
+              {
+                "name": "Multishot Targets",
+                "value": "+3",
+                "raw_token": "3"
+              },
+              {
+                "name": "Critical Factor",
+                "value": "+12x",
+                "raw_token": "12"
+              },
+              {
+                "name": "Bounce Shot Chance",
+                "value": "+9%",
+                "raw_token": "0.09"
+              }
+            ]
+          },
+          "Death Penalty": {
+            "name": "Death Penalty",
+            "slot_type": "cannon",
+            "rarity": "Ancestral",
+            "level": 180,
+            "stat": "12.24",
+            "substats": [
+              {
+                "name": "MultiShot Chance",
+                "value": "+10%",
+                "raw_token": "0.1"
+              },
+              {
+                "name": "Bounce Shot Chance",
+                "value": "+9%",
+                "raw_token": "0.09"
+              },
+              {
+                "name": "Bounce Shot Targets",
+                "value": "+3",
+                "raw_token": "3"
+              },
+              {
+                "name": "Multishot Targets",
+                "value": "+3",
+                "raw_token": "3"
+              }
+            ]
+          },
+          "Havoc Bringer": {
+            "name": "Havoc Bringer",
+            "slot_type": "cannon",
+            "rarity": "Ancestral 2*",
+            "level": 180,
+            "stat": "13.139",
+            "substats": []
+          },
+          "Shrink Ray": {
+            "name": "Shrink Ray",
+            "slot_type": "cannon",
+            "rarity": "Mythic+",
+            "level": 160,
+            "stat": "8.19",
+            "substats": []
+          },
+          "Amplifying Strike": {
+            "name": "Amplifying Strike",
+            "slot_type": "cannon",
+            "rarity": "Ancestral 2*",
+            "level": 180,
+            "stat": "13.139",
+            "substats": [
+              {
+                "name": "Super Crit Multi",
+                "value": "+7x",
+                "raw_token": "7"
+              },
+              {
+                "name": "Bounce Shot Chance",
+                "value": "+12%",
+                "raw_token": "0.12"
+              },
+              {
+                "name": "Multishot Targets",
+                "value": "+4",
+                "raw_token": "4"
+              },
+              {
+                "name": "Critical Factor",
+                "value": "+15x",
+                "raw_token": "15"
+              },
+              {
+                "name": "Super Crit Chance",
+                "value": "+10%",
+                "raw_token": "0.1"
+              },
+              {
+                "name": "Critical Chance",
+                "value": "+8%",
+                "raw_token": "0.08"
+              }
+            ]
+          },
+          "Any Other": {
+            "name": "Any Other",
+            "slot_type": "core",
+            "rarity": "Epic",
+            "level": 60,
+            "stat": "2.17",
+            "substats": []
+          },
+          "Any Other 2": {
+            "name": "Any Other 2",
+            "slot_type": "core",
+            "rarity": "Common",
+            "level": 20,
+            "stat": "1.23",
+            "substats": []
+          },
+          "Anti-Cube Portal": {
+            "name": "Anti-Cube Portal",
+            "slot_type": "armor",
+            "rarity": "Ancestral 2*",
+            "level": 161,
+            "stat": "9.035",
+            "substats": [
+              {
+                "name": "Orbs",
+                "value": "+2",
+                "raw_token": "2"
+              },
+              {
+                "name": "Wall Rebuild",
+                "value": "-40s",
+                "raw_token": "-40"
+              },
+              {
+                "name": "Defense %",
+                "value": "+2%",
+                "raw_token": "0.02"
+              },
+              {
+                "name": "Orb Speed",
+                "value": "+2",
+                "raw_token": "2"
+              },
+              {
+                "name": "Shockwave Frequency",
+                "value": "-4s",
+                "raw_token": "-4"
+              },
+              {
+                "name": "Death Defy",
+                "value": "+5%",
+                "raw_token": "0.05"
+              }
+            ]
+          },
+          "Negative Mass Projector": {
+            "name": "Negative Mass Projector",
+            "slot_type": "armor",
+            "rarity": "Mythic+",
+            "level": 160,
+            "stat": "8.19",
+            "substats": []
+          },
+          "Space Displacer": {
+            "name": "Space Displacer",
+            "slot_type": "armor",
+            "rarity": "Ancestral 3*",
+            "level": 161,
+            "stat": "9.333",
+            "substats": []
+          },
+          "Wormhole Redirector": {
+            "name": "Wormhole Redirector",
+            "slot_type": "armor",
+            "rarity": "Mythic+",
+            "level": 160,
+            "stat": "8.19",
+            "substats": [
+              {
+                "name": "Defense %",
+                "value": "+5%",
+                "raw_token": "0.05"
+              },
+              {
+                "name": "Wall Health",
+                "value": "+40%",
+                "raw_token": "0.4"
+              },
+              {
+                "name": "Health Regen",
+                "value": "+100%",
+                "raw_token": "1"
+              }
+            ]
+          },
+          "Sharp Fortitude": {
+            "name": "Sharp Fortitude",
+            "slot_type": "armor",
+            "rarity": "Ancestral 1*",
+            "level": 161,
+            "stat": "8.738",
+            "substats": [
+              {
+                "name": "Health Regen",
+                "value": "+400%",
+                "raw_token": "4"
+              },
+              {
+                "name": "Knockback Force",
+                "value": "+0.9",
+                "raw_token": "0.9"
+              },
+              {
+                "name": "Defense %",
+                "value": "+8%",
+                "raw_token": "0.08"
+              },
+              {
+                "name": "Wall Health",
+                "value": "+120%",
+                "raw_token": "1.2"
+              },
+              {
+                "name": "Thorns Damage",
+                "value": "+10%",
+                "raw_token": "0.1"
+              },
+              {
+                "name": "Orb Speed",
+                "value": "+1",
+                "raw_token": "1"
+              }
+            ]
+          },
+          "Orbital Augment": {
+            "name": "Orbital Augment",
+            "slot_type": "armor",
+            "rarity": "Ancestral 4*",
+            "level": 161,
+            "stat": "9.63",
+            "substats": [
+              {
+                "name": "Defense %",
+                "value": "+8%",
+                "raw_token": "0.08"
+              },
+              {
+                "name": "Health Regen",
+                "value": "+400%",
+                "raw_token": "4"
+              },
+              {
+                "name": "Wall Health",
+                "value": "+120%",
+                "raw_token": "1.2"
+              },
+              {
+                "name": "Thorns Damage",
+                "value": "+10%",
+                "raw_token": "0.1"
+              },
+              {
+                "name": "Knockback Force",
+                "value": "+0.4",
+                "raw_token": "0.4"
+              },
+              {
+                "name": "Land Mine Radius",
+                "value": "+0.10",
+                "raw_token": "0.1"
+              }
+            ]
+          },
+          "Black Hole Digestor": {
+            "name": "Black Hole Digestor",
+            "slot_type": "generator",
+            "rarity": "Mythic+",
+            "level": 160,
+            "stat": "1.665",
+            "substats": [
+              {
+                "name": "Package Chance",
+                "value": "+11%",
+                "raw_token": "0.11"
+              },
+              {
+                "name": "Enemy Attack Level Skip",
+                "value": "+6%",
+                "raw_token": "0.06"
+              },
+              {
+                "name": "Free Utility Upgrade",
+                "value": "+4%",
+                "raw_token": "0.04"
+              },
+              {
+                "name": "Enemy Health Level Skip",
+                "value": "+6%",
+                "raw_token": "0.06"
+              },
+              {
+                "name": "Coins / Kill Bonus",
+                "value": "+0.4x",
+                "raw_token": "0.4"
+              }
+            ]
+          },
+          "Galaxy Compressor": {
+            "name": "Galaxy Compressor",
+            "slot_type": "generator",
+            "rarity": "Mythic+",
+            "level": 160,
+            "stat": "1.665",
+            "substats": [
+              {
+                "name": "Package Chance",
+                "value": "+11%",
+                "raw_token": "0.11"
+              },
+              {
+                "name": "Enemy Attack Level Skip",
+                "value": "+6%",
+                "raw_token": "0.06"
+              },
+              {
+                "name": "Free Utility Upgrade",
+                "value": "+10%",
+                "raw_token": "0.1"
+              },
+              {
+                "name": "Enemy Health Level Skip",
+                "value": "+6%",
+                "raw_token": "0.06"
+              },
+              {
+                "name": "Cash Bonus",
+                "value": "+0.3x",
+                "raw_token": "0.3"
+              }
+            ]
+          },
+          "Singularity Harness": {
+            "name": "Singularity Harness",
+            "slot_type": "generator",
+            "rarity": "Ancestral 2*",
+            "level": 178,
+            "stat": "1.918",
+            "substats": [
+              {
+                "name": "Coins / Kill Bonus",
+                "value": "+0.6x",
+                "raw_token": "0.6"
+              },
+              {
+                "name": "Free Utility Upgrade",
+                "value": "+10%",
+                "raw_token": "0.1"
+              },
+              {
+                "name": "Enemy Health Level Skip",
+                "value": "+8%",
+                "raw_token": "0.08"
+              },
+              {
+                "name": "Enemy Attack Level Skip",
+                "value": "+8%",
+                "raw_token": "0.08"
+              },
+              {
+                "name": "Free Attack Upgrade",
+                "value": "+6%",
+                "raw_token": "0.06"
+              },
+              {
+                "name": "Package Chance",
+                "value": "+15%",
+                "raw_token": "0.15"
+              }
+            ]
+          },
+          "Pulsar Harvester": {
+            "name": "Pulsar Harvester",
+            "slot_type": "generator",
+            "rarity": "Ancestral 3*",
+            "level": 178,
+            "stat": "1.952",
+            "substats": [
+              {
+                "name": "Free Utility Upgrade",
+                "value": "+12%",
+                "raw_token": "0.12"
+              },
+              {
+                "name": "Enemy Attack Level Skip",
+                "value": "+8%",
+                "raw_token": "0.08"
+              },
+              {
+                "name": "Coins / Kill Bonus",
+                "value": "+0.6x",
+                "raw_token": "0.6"
+              },
+              {
+                "name": "Enemy Health Level Skip",
+                "value": "+8%",
+                "raw_token": "0.08"
+              },
+              {
+                "name": "Package Chance",
+                "value": "+5%",
+                "raw_token": "0.05"
+              },
+              {
+                "name": "Free Defense Upgrade",
+                "value": "+12%",
+                "raw_token": "0.12"
+              }
+            ]
+          },
+          "Project Funding": {
+            "name": "Project Funding",
+            "slot_type": "generator",
+            "rarity": "Ancestral",
+            "level": 178,
+            "stat": "1.85",
+            "substats": [
+              {
+                "name": "Enemy Health Level Skip",
+                "value": "+8%",
+                "raw_token": "0.08"
+              },
+              {
+                "name": "Package Chance",
+                "value": "+15%",
+                "raw_token": "0.15"
+              },
+              {
+                "name": "Coins / Kill Bonus",
+                "value": "+0.5x",
+                "raw_token": "0.5"
+              },
+              {
+                "name": "Free Utility Upgrade",
+                "value": "+2%",
+                "raw_token": "0.02"
+              },
+              {
+                "name": "Free Defense Upgrade",
+                "value": "+4%",
+                "raw_token": "0.04"
+              },
+              {
+                "name": "Recovery Amount",
+                "value": "+3%",
+                "raw_token": "0.03"
+              }
+            ]
+          },
+          "Restorative Bonus": {
+            "name": "Restorative Bonus",
+            "slot_type": "generator",
+            "rarity": "Ancestral 2*",
+            "level": 178,
+            "stat": "1.918",
+            "substats": [
+              {
+                "name": "Enemy Health Level Skip",
+                "value": "+6%",
+                "raw_token": "0.06"
+              },
+              {
+                "name": "Enemy Attack Level Skip",
+                "value": "+6%",
+                "raw_token": "0.06"
+              },
+              {
+                "name": "Free Utility Upgrade",
+                "value": "+8%",
+                "raw_token": "0.08"
+              },
+              {
+                "name": "Package Chance",
+                "value": "+11%",
+                "raw_token": "0.11"
+              }
+            ]
+          },
+          "Multiverse Nexus": {
+            "name": "Multiverse Nexus",
+            "slot_type": "core",
+            "rarity": "Ancestral 3*",
+            "level": 163,
+            "stat": "13.096",
+            "substats": [
+              {
+                "name": "Golden Tower - Bonus",
+                "value": null,
+                "raw_token": null
+              },
+              {
+                "name": "Death Wave - Quantity",
+                "value": "+3",
+                "raw_token": "3"
+              },
+              {
+                "name": "Death Wave - Cooldown",
+                "value": "-13s",
+                "raw_token": "-13"
+              },
+              {
+                "name": "Spotlight - Angle",
+                "value": null,
+                "raw_token": null
+              },
+              {
+                "name": "Golden Tower - Cooldown",
+                "value": "-12s",
+                "raw_token": "-12"
+              },
+              {
+                "name": "Chrono Field - Speed Reduction",
+                "value": null,
+                "raw_token": null
+              },
+              {
+                "name": "Golden Tower - Duration",
+                "value": null,
+                "raw_token": null
+              }
+            ]
+          },
+          "Dimension Core": {
+            "name": "Dimension Core",
+            "slot_type": "core",
+            "rarity": "Ancestral",
+            "level": 163,
+            "stat": "11.8",
+            "substats": [
+              {
+                "name": "Spotlight - Angle",
+                "value": "+15?",
+                "raw_token": "15"
+              },
+              {
+                "name": "Spotlight - Bonus",
+                "value": "+20x",
+                "raw_token": "20"
+              },
+              {
+                "name": "Chain Lightning - Damage",
+                "value": "+15x",
+                "raw_token": "15"
+              },
+              {
+                "name": "Chrono Field - Speed Reduction",
+                "value": "+15%",
+                "raw_token": "0.15"
+              },
+              {
+                "name": "Chain Lightning - Chance",
+                "value": "+12%",
+                "raw_token": "0.12"
+              },
+              {
+                "name": "Chain Lightning - Quantity",
+                "value": "+4",
+                "raw_token": "4"
+              }
+            ]
+          },
+          "Harmony Conductor": {
+            "name": "Harmony Conductor",
+            "slot_type": "core",
+            "rarity": "Ancestral 5*",
+            "level": 163,
+            "stat": "13.96",
+            "substats": []
+          },
+          "Om Chip": {
+            "name": "Om Chip",
+            "slot_type": "core",
+            "rarity": "Ancestral 2*",
+            "level": 163,
+            "stat": "12.664",
+            "substats": [
+              {
+                "name": "Spotlight - Angle",
+                "value": "+15?",
+                "raw_token": "15"
+              },
+              {
+                "name": "Chrono Field - Speed Reduction",
+                "value": "+15%",
+                "raw_token": "0.15"
+              },
+              {
+                "name": "Chain Lightning - Chance",
+                "value": "+6%",
+                "raw_token": "0.06"
+              },
+              {
+                "name": "Spotlight - Bonus",
+                "value": "+15x",
+                "raw_token": "15"
+              }
+            ]
+          },
+          "Magnetic Hook": {
+            "name": "Magnetic Hook",
+            "slot_type": "core",
+            "rarity": "Ancestral 4*",
+            "level": 163,
+            "stat": "13.528",
+            "substats": []
+          },
+          "Primordial Collapse": {
+            "name": "Primordial Collapse",
+            "slot_type": "core",
+            "rarity": "Ancestral 4*",
+            "level": 163,
+            "stat": "13.528",
+            "substats": [
+              {
+                "name": "Black Hole - Duration",
+                "value": "+4s",
+                "raw_token": "4"
+              },
+              {
+                "name": "Black Hole - Cooldown",
+                "value": "-4s",
+                "raw_token": "-4"
+              },
+              {
+                "name": "Golden Tower - Bonus",
+                "value": "+4x",
+                "raw_token": "4"
+              },
+              {
+                "name": "Spotlight - Angle",
+                "value": "+15?",
+                "raw_token": "15"
+              },
+              {
+                "name": "Inner Land Mines - Damage",
+                "value": "+25x",
+                "raw_token": "25"
+              },
+              {
+                "name": "Death Wave - Quantity",
+                "value": "+2",
+                "raw_token": "2"
+              }
+            ]
+          }
+        }
+      },
+      "note": "primary_upstream_survivor"
+    },
+    {
+      "destination": "state::tower.damage",
+      "verification_status": "publishable",
+      "issues": [],
+      "final_value": 12226791312.248617,
+      "ep_compare_value": null,
+      "ep_reference_value": null,
+      "delta": null,
+      "relative_delta_pct": null,
+      "compare_preset": null,
+      "compare_perk_state": null,
+      "package_value_source_state_mode": null,
+      "ep_stage_context": null,
+      "note": "primary_upstream_survivor"
+    },
+    {
+      "destination": "state::wall.hp",
+      "verification_status": "publishable",
+      "issues": [],
+      "final_value": 202048.00000000006,
+      "ep_compare_value": null,
+      "ep_reference_value": null,
+      "delta": null,
+      "relative_delta_pct": null,
+      "compare_preset": null,
+      "compare_perk_state": null,
+      "package_value_source_state_mode": null,
+      "ep_stage_context": null,
+      "note": "downstream_reflection_of_tower_residue"
+    },
+    {
+      "destination": "state::wall.regen",
+      "verification_status": "publishable",
+      "issues": [],
+      "final_value": 550.0,
+      "ep_compare_value": null,
+      "ep_reference_value": null,
+      "delta": null,
+      "relative_delta_pct": null,
+      "compare_preset": null,
+      "compare_perk_state": null,
+      "package_value_source_state_mode": null,
+      "ep_stage_context": null,
+      "note": "downstream_reflection_of_tower_residue"
+    }
+  ]
+}

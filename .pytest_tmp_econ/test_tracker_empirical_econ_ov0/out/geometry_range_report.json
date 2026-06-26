@@ -1,0 +1,56 @@
+{
+  "artifact": "geometry_range_report.json",
+  "schema_version": 1,
+  "owner": "simulators.geometry",
+  "rows": [
+    {
+      "preset": "Farming",
+      "state_mode": "start_of_run",
+      "status": "partial_displayed_proxy",
+      "tower_range_input_surface_id": "state::tower.range_m",
+      "tower_range_theoretical_m": 69.5,
+      "tower_range_displayed_m": 69.5,
+      "displayed_delta_m": 0.0,
+      "displayed_to_theoretical_ratio": 1.0,
+      "transform_status": "identity_to_80"
+    },
+    {
+      "preset": "Farming",
+      "state_mode": "max_progression",
+      "status": "partial_displayed_proxy",
+      "tower_range_input_surface_id": "state::tower.range_m",
+      "tower_range_theoretical_m": 69.5,
+      "tower_range_displayed_m": 69.5,
+      "displayed_delta_m": 0.0,
+      "displayed_to_theoretical_ratio": 1.0,
+      "transform_status": "identity_to_80"
+    },
+    {
+      "preset": "Tourney",
+      "state_mode": "start_of_run",
+      "status": "partial_displayed_proxy",
+      "tower_range_input_surface_id": "state::tower.range_m",
+      "tower_range_theoretical_m": 130.66,
+      "tower_range_displayed_m": 121.40406875139999,
+      "displayed_delta_m": -9.255931248600007,
+      "displayed_to_theoretical_ratio": 0.9291601771881218,
+      "transform_status": "compressed_above_80"
+    },
+    {
+      "preset": "Tourney",
+      "state_mode": "max_progression",
+      "status": "partial_displayed_proxy",
+      "tower_range_input_surface_id": "state::tower.range_m",
+      "tower_range_theoretical_m": 130.66,
+      "tower_range_displayed_m": 121.40406875139999,
+      "displayed_delta_m": -9.255931248600007,
+      "displayed_to_theoretical_ratio": 0.9291601771881218,
+      "transform_status": "compressed_above_80"
+    }
+  ],
+  "diagnostics": {
+    "row_count": 4,
+    "unresolved_count": 0,
+    "surface_split": "tower_range_theoretical_m -> tower_range_displayed_m"
+  }
+}

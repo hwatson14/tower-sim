@@ -1,0 +1,242 @@
+schema_revision: 1
+kind: account_metadata
+purpose: Typed account/system metadata, account flags, cosmetic bonus helpers, and meta progression parameters that are not canonical target stats or mechanic parameters.
+notes:
+  - Account metadata rows describe imported account state, display settings, unlock flags, and meta progression helpers.
+  - Keep mechanic formulas in canonical stat, mechanic, environment, or simulator-owned contracts.
+entries:
+  - id: account_flag.ad_gems_stack_multiplier
+    domain: account_flag
+    unit: multiplier
+    resolver: capability_passthrough
+    status: keep_now
+  - id: account_flag.auto_charge_berzerker
+    domain: account_flag
+    unit: bool
+    resolver: capability_passthrough
+    status: keep_now
+  - id: account_flag.auto_restart_run
+    domain: account_flag
+    unit: bool
+    resolver: capability_passthrough
+    status: keep_now
+  - id: account_flag.auto_shatter_rare_modules
+    domain: account_flag
+    unit: bool
+    resolver: capability_passthrough
+    status: keep_now
+  - id: account_flag.bot_cooldown_sliders
+    domain: account_flag
+    unit: bool
+    resolver: capability_passthrough
+    status: keep_now
+  - id: account_flag.bot_presets
+    domain: account_flag
+    unit: bool
+    resolver: capability_passthrough
+    status: keep_now
+  - id: account_flag.bot_respec_discount_pct
+    domain: account_flag
+    unit: pct
+    resolver: capability_passthrough
+    status: keep_now
+  - id: account_flag.daily_mission_set_shard_type
+    domain: account_flag
+    unit: bool
+    resolver: capability_passthrough
+    status: keep_now
+  - id: account_flag.damage_cap_slider
+    domain: account_flag
+    unit: bool
+    resolver: capability_passthrough
+    status: keep_now
+  - id: account_flag.demon_mode_automation
+    domain: account_flag
+    unit: bool
+    resolver: capability_passthrough
+    status: keep_now
+  - id: account_flag.disable_ads
+    domain: account_flag
+    unit: bool
+    resolver: capability_passthrough
+    status: keep_now
+  - id: account_flag.discount_enhancements_pct
+    domain: account_flag
+    unit: pct
+    resolver: capability_passthrough
+    status: keep_now
+  - id: account_flag.discount_rerolls_pct
+    domain: account_flag
+    unit: pct
+    resolver: capability_passthrough
+    status: keep_now
+  - id: account_flag.epic_pack
+    domain: account_flag
+    unit: bool
+    resolver: capability_passthrough
+    status: keep_now
+  - id: account_flag.free_mission_reroll
+    domain: account_flag
+    unit: bool
+    resolver: capability_passthrough
+    status: keep_now
+  - id: account_flag.missile_barrage_automation
+    domain: account_flag
+    unit: bool
+    resolver: capability_passthrough
+    status: keep_now
+  - id: account_flag.nuke_automation
+    domain: account_flag
+    unit: bool
+    resolver: capability_passthrough
+    status: keep_now
+  - id: account_flag.smart_demon_mode_automation
+    domain: account_flag
+    unit: bool
+    resolver: capability_passthrough
+    status: keep_now
+  - id: account_flag.smart_missile_barrage_automation
+    domain: account_flag
+    unit: bool
+    resolver: capability_passthrough
+    status: keep_now
+  - id: account_flag.smart_nuke_automation
+    domain: account_flag
+    unit: bool
+    resolver: capability_passthrough
+    status: keep_now
+  - id: account_flag.starter_pack
+    domain: account_flag
+    unit: bool
+    resolver: capability_passthrough
+    status: keep_now
+  - id: account_flag.workshop_orb_adjuster
+    domain: account_flag
+    unit: bool
+    resolver: capability_passthrough
+    status: keep_now
+  - id: account_flag.workshop_presets
+    domain: account_flag
+    unit: bool
+    resolver: capability_passthrough
+    status: keep_now
+  - id: account_flag.workshop_respec_discount_pct
+    domain: account_flag
+    unit: pct
+    resolver: capability_passthrough
+    status: keep_now
+  - id: account_meta.buy_multiplier
+    domain: account_meta
+    unit: multiplier
+    resolver: standard_scalar_param
+    status: keep_now
+  - id: account_meta.card_presets
+    domain: account_meta
+    unit: bool
+    resolver: capability_passthrough
+    status: keep_now
+  - id: account_meta.event_relic_count
+    domain: account_meta
+    unit: count
+    resolver: standard_scalar_param
+    status: keep_now
+  - id: account_meta.guild_relic_count
+    domain: account_meta
+    unit: count
+    resolver: standard_scalar_param
+    status: keep_now
+  - id: account_meta.keys_spent
+    domain: account_meta
+    unit: count
+    resolver: standard_scalar_param
+    status: keep_now
+  - id: account_meta.more_round_stats
+    domain: account_meta
+    unit: bool
+    resolver: capability_passthrough
+    status: keep_now
+  - id: account_meta.other_relic_count
+    domain: account_meta
+    unit: count
+    resolver: standard_scalar_param
+    status: keep_now
+  - id: account_meta.reroll_daily_mission
+    domain: account_meta
+    unit: bool
+    resolver: capability_passthrough
+    status: keep_now
+  - id: account_meta.total_relic_count
+    domain: account_meta
+    unit: count
+    resolver: standard_scalar_param
+    status: keep_now
+  - id: account_meta.workshop_respec
+    domain: account_meta
+    unit: bool
+    resolver: capability_passthrough
+    status: keep_now
+  - id: account_context.coin_multiplier_display
+    domain: account_context
+    unit: multiplier
+    resolver: capability_passthrough
+    status: keep_now
+  - id: account_context.farming_tier
+    domain: account_context
+    unit: enum
+    resolver: capability_passthrough
+    status: keep_now
+  - id: cosmetic_bonus.theme_song_coin_multiplier
+    domain: cosmetic_bonus
+    unit: multiplier
+    resolver: standard_scalar_stat
+    status: keep_now
+  - id: enhancement_attack_cost_reduction_pct
+    domain: meta_progression
+    unit: pct
+    resolver: standard_scalar_param
+    status: keep_now
+  - id: enhancement_defense_cost_reduction_pct
+    domain: meta_progression
+    unit: pct
+    resolver: standard_scalar_param
+    status: keep_now
+  - id: enhancement_utility_cost_reduction_pct
+    domain: meta_progression
+    unit: pct
+    resolver: standard_scalar_param
+    status: keep_now
+  - id: game_runtime.speed_multiplier
+    domain: game_runtime
+    unit: multiplier
+    resolver: standard_scalar_param
+    status: keep_now
+  - id: lab_coin_cost_reduction_pct
+    domain: meta_progression
+    unit: pct
+    resolver: standard_scalar_param
+    status: keep_now
+  - id: laboratory.speed_multiplier
+    domain: meta_progression
+    unit: multiplier
+    resolver: standard_scalar_param
+    status: keep_now
+  - id: milestones.waves_required_delta
+    domain: meta_progression
+    unit: waves
+    resolver: standard_scalar_param
+    status: keep_now
+  - id: workshop_attack_cost_reduction_pct
+    domain: meta_progression
+    unit: pct
+    resolver: standard_scalar_param
+    status: keep_now
+  - id: workshop_defense_cost_reduction_pct
+    domain: meta_progression
+    unit: pct
+    resolver: standard_scalar_param
+    status: keep_now
+  - id: workshop_utility_cost_reduction_pct
+    domain: meta_progression
+    unit: pct
+    resolver: standard_scalar_param
+    status: keep_now

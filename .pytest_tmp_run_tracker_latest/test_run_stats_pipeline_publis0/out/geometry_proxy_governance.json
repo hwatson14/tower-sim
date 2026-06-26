@@ -1,0 +1,24 @@
+{
+  "artifact": "geometry_proxy_governance.json",
+  "schema_version": 1,
+  "geometry_proxy_governance": {
+    "status": "active",
+    "owner": "simulators.geometry",
+    "allowed_uses": [
+      "coverage_proxy_weighting",
+      "overlap_proxy_weighting",
+      "relative_exposure_comparison",
+      "range_sensitive_contact_time_proxy_base",
+      "diagnostic_reporting"
+    ],
+    "blocked_uses": [
+      "boss_contact_time_truth",
+      "wall_contact_truth",
+      "effective_damage_reduction_truth",
+      "tagged_enemy_fraction_truth",
+      "density_weighted_coin_truth",
+      "exact_boss_path_modulation",
+      "wall_contact_scaffold_truth"
+    ]
+  }
+}

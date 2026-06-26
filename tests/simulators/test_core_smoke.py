@@ -98,6 +98,21 @@ def test_timing_engine_owns_boss_contact_dr_and_damage_windows():
     assert components['energy_net_hold_seconds'] == pytest.approx(4.3)
     assert contact_time == pytest.approx((2.0 / 0.75) + 4.3)
 
+    fast_contact_time, fast_source, fast_components = boss_contact_time_seconds(
+        chrono_field_duration_seconds=50.0,
+        chrono_field_cooldown_seconds=60.0,
+        chrono_field_slow_pct=30.0,
+        enemy_speed_increase_pct=120.0,
+        boss_speed_multiplier=1.5,
+        energy_net_duration_seconds=4.3,
+    )
+    assert fast_source == 'derived_base_2s_cf_slow_aura_enemy_speed_energy_net'
+    assert fast_components['enemy_speed_increase_fraction'] == pytest.approx(1.2)
+    assert fast_components['boss_speed_multiplier'] == pytest.approx(1.5)
+    assert fast_components['movement_speed_multiplier'] == pytest.approx(3.3)
+    assert fast_components['speed_remaining_fraction'] == pytest.approx(0.75 * 3.3)
+    assert fast_contact_time == pytest.approx((2.0 / (0.75 * 3.3)) + 4.3)
+
     geometry_contact_time, geometry_source, geometry_components = boss_contact_time_seconds(
         chrono_field_duration_seconds=50.0,
         chrono_field_cooldown_seconds=60.0,
@@ -243,6 +258,91 @@ def test_scenario_surface_flags_unsupported_terminal_pressure_by_tier():
         'boss_ultimate_deferred',
         'mass_enforcement_deferred',
     } <= set(t17.unsupported_terminal_pressures)
+
+
+def test_non_boss_pressure_driver_probe_uses_kb_spawn_elite_and_fleet_curves():
+    from simulators.scenario import (
+        elite_spawn_pressure_driver,
+        fleet_spawn_pressure_driver,
+        non_boss_pressure_driver_probe,
+        non_boss_pressure_driver_source_summary,
+        normal_spawn_rate_pressure_driver,
+    )
+
+    normal = normal_spawn_rate_pressure_driver(
+        wave=2778,
+        enemy_balance_spawn_multiplier=1.9,
+        wave_accelerator_spawn_rate_acceleration=1.8,
+        more_enemies_pct=25.0,
+    )
+    assert normal['displayed_spawn_rate'] == pytest.approx(50.0)
+    assert normal['threshold_standard_wave'] == 5000
+    assert normal['threshold_actual_wave_with_wave_accelerator'] == 2778
+    assert normal['next_displayed_spawn_rate'] == pytest.approx(52.0)
+    assert normal['normal_spawn_rate_pressure_index'] == pytest.approx(50.0 * 1.9 * 1.25)
+    assert normal['formula_status'] == (
+        'source_spawn_rate_curve_available_terminal_pressure_transform_missing'
+    )
+
+    elite = elite_spawn_pressure_driver(
+        tier=14,
+        wave=2033,
+        enemy_balance_mastery_double_elite_chance_pct=12.0,
+    )
+    assert elite['single_elite_displayed_chance_pct'] == pytest.approx(33.0)
+    assert elite['double_elite_displayed_chance_pct'] == pytest.approx(0.33)
+    assert elite['elite_pressure_index_pct'] == pytest.approx(45.33)
+    assert elite['formula_status'] == 'source_spawn_curve_available_terminal_pressure_transform_missing'
+
+    fleet = fleet_spawn_pressure_driver(tier=21, wave=10000)
+    assert fleet['regular']['active'] is True
+    assert fleet['regular']['count_per_event'] == pytest.approx(2.0)
+    assert fleet['regular']['events_per_wave_pressure'] == pytest.approx(0.2)
+    assert fleet['regular']['related_enemy_group_count_min'] == pytest.approx(10.0)
+    assert fleet['regular']['related_enemy_group_count_max'] == pytest.approx(14.0)
+    assert fleet['regular']['related_enemy_group_expected_count'] == pytest.approx(12.0)
+    assert fleet['regular']['related_enemy_group_expected_enemies_per_wave_pressure'] == pytest.approx(2.4)
+    assert fleet['bonus']['active'] is True
+    assert fleet['bonus']['events_per_wave_pressure'] == pytest.approx(0.01)
+    assert fleet['fleet_events_per_wave_pressure'] == pytest.approx(0.21)
+    assert fleet['fleet_related_enemy_group_expected_enemies_per_wave_pressure'] == pytest.approx(2.52)
+    assert fleet['fleet_related_enemy_group_count_range'] == [10, 14]
+
+    probe = non_boss_pressure_driver_probe(
+        tier=21,
+        wave=10000,
+        scenario_surfaces={'bc_more_enemies_pct': 25.0},
+        enemy_balance_spawn_multiplier=1.9,
+        wave_accelerator_spawn_rate_acceleration=1.8,
+        enemy_balance_mastery_double_elite_chance_pct=12.0,
+    )
+    assert probe['status'] == 'driver_inputs_available_terminal_transform_missing'
+    assert probe['enemy_spawn_rate_multiplier_pressure'] == pytest.approx(1.9 * 1.8 * 1.25)
+    assert probe['normal_spawn_rate_pressure']['displayed_spawn_rate'] == pytest.approx(56.0)
+    assert probe['normal_spawn_rate_pressure']['normal_spawn_rate_pressure_index'] == pytest.approx(
+        56.0 * 1.9 * 1.25
+    )
+    assert probe['normal_enemy_spawn_rate_curve_available'] is True
+    assert probe['normal_enemy_spawn_count_curve_available'] is False
+    assert probe['source_backed_curve_coverage'] == {
+        'normal_spawn_rate_curve_by_wave_and_wave_accelerator': True,
+        'elite_spawn_curve_by_tier_and_wave': True,
+        'fleet_spawn_curve_by_tier_and_wave': True,
+        'fleet_related_enemy_group_count_range': True,
+        'normal_enemy_spawn_count_curve_by_tier_wave_and_spawn_phase': False,
+    }
+    assert 'normal_spawn_rate_value_to_terminal_pressure' in probe['missing_terminal_formula_links']
+    assert 'normal_enemy_spawn_count_curve_by_tier_wave_and_spawn_phase' not in probe[
+        'missing_terminal_formula_links'
+    ]
+
+    source_summary = non_boss_pressure_driver_source_summary()
+    assert source_summary['source_table_counts'] == {
+        'normal_spawn_rate_wave_threshold_rows': 28,
+        'elite_spawn_threshold_rows': 21,
+        'fleet_spawn_tier_rows': 21,
+    }
+    assert source_summary['status'] == 'source_driver_curves_partially_available_terminal_transform_missing'
 
 
 def test_simulator_modules_reference_qe_imports__expected_qe_strings_present():
@@ -747,17 +847,32 @@ def test_run_stats_progression_bundle__resolves_declared_surfaces():
     )
 
     surface_ids = {row.surface_id for row in response.resolved_surface_rows}
+    resolved = {row.surface_id: row for row in response.resolved_surface_rows}
     assert response.family_id == 'progression_start_of_run'
     assert 'state::tower.hp' in surface_ids
     assert 'state::tower.defense_pct' in surface_ids
     assert 'state::tower.free_attack_upgrade_chance_pct' in surface_ids
+    assert resolved['state::economy.interest_per_wave_pct'].status == 'resolved'
+    assert resolved['state::economy.interest_per_wave_pct'].final_value == pytest.approx(7.16)
+    expected_bot_plus = {
+        'state::bot.plus.wildfire.unlocked': False,
+        'state::bot.plus.titan_shock.unlocked': False,
+        'state::bot.plus.bonus_cell.unlocked': False,
+        'state::bot.plus.echoing_shot.unlocked': False,
+        'state::bot.plus.maximum_power.unlocked': True,
+    }
+    for surface_id, expected_value in expected_bot_plus.items():
+        assert surface_id in surface_ids
+        assert resolved[surface_id].status == 'resolved'
+        assert resolved[surface_id].value_type == 'bool'
+        assert resolved[surface_id].final_value is expected_value
 
 
 def test_run_stats_progression_bundle__applies_exact_max_rend_formula():
     from simulators.progression import resolve_run_stats_progression_bundle
 
     state = _base_account_state()
-    response = resolve_run_stats_progression_bundle(
+    start_response = resolve_run_stats_progression_bundle(
         account_state=state,
         family_id='progression_start_of_run',
         preset_name=state.default_preset,
@@ -766,7 +881,26 @@ def test_run_stats_progression_bundle__applies_exact_max_rend_formula():
         trace_mode='contributors',
     )
 
+    start_resolved = {row.surface_id: row for row in start_response.resolved_surface_rows}
+    assert start_resolved['state::tower.rend_armor_chance_pct'].status == 'resolved'
+    assert start_resolved['state::tower.rend_armor_chance_pct'].final_value == pytest.approx(0.0)
+    assert start_resolved['state::tower.rend_armor_multiplier'].status == 'resolved'
+    assert start_resolved['state::tower.rend_armor_multiplier'].final_value == pytest.approx(0.0)
+
+    response = resolve_run_stats_progression_bundle(
+        account_state=state,
+        family_id='progression_start_of_run',
+        preset_name=state.default_preset,
+        perks_enabled=False,
+        state_mode='max_progression',
+        trace_mode='contributors',
+    )
+
     resolved = {row.surface_id: row for row in response.resolved_surface_rows}
+    assert resolved['state::tower.rend_armor_chance_pct'].status == 'resolved'
+    assert resolved['state::tower.rend_armor_chance_pct'].final_value == pytest.approx(36.0)
+    assert resolved['state::tower.rend_armor_multiplier'].status == 'resolved'
+    assert resolved['state::tower.rend_armor_multiplier'].final_value == pytest.approx(0.3672)
     assert resolved['state::tower.max_rend_multiplier'].status == 'resolved'
     assert resolved['state::tower.max_rend_multiplier'].final_value == pytest.approx(9.6)
 

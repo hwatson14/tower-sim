@@ -120,23 +120,39 @@ def build_line_by_line_verification(statbook_dict, ep_compare, formula_ledger, f
     for key, row in rows.items():
         contributors = row.get('contributors', [])
         schema = row.get('schema') or {}
+        contract = formula_contract(formula_ledger, key)
         allowed = set(schema.get('allowed_input_value_types') or [])
+        allowed_formula_inputs = contract.get('allowed_formula_input_value_types') or []
+        if isinstance(allowed_formula_inputs, str):
+            allowed_formula_inputs = [allowed_formula_inputs]
+        allowed_formula_input_value_types = {str(value) for value in allowed_formula_inputs}
+        level_formula_input_allowed = (
+            'level' in allowed_formula_input_value_types
+            or contract.get('allow_level_contributors') is True
+        )
         issues = []
         unresolved = []
         level_rows = []
         semantic_mismatch = []
+        level_surface = schema.get('unit') == 'level' or key.endswith('.level') or key.endswith('_level')
+        raw_text_surface = 'raw_text' in set(schema.get('expected_input_semantics') or [])
         for c in contributors:
             vt = c.get('value_type')
             notes = str(c.get('notes') or '').lower()
             defaulted_if_missing = c.get('defaulted_if_missing') is True
-            if vt == 'level':
+            if vt == 'level' and not level_surface and not level_formula_input_allowed:
                 level_rows.append(c.get('source_name') or c.get('stat_name'))
             if (
                 not defaulted_if_missing
-                and (c.get('value') is None or 'unresolved' in notes or vt in {'missing_inventory', 'raw_text', 'display_token'})
+                and (
+                    c.get('value') is None
+                    or 'unresolved' in notes
+                    or vt in {'missing_inventory', 'display_token'}
+                    or (vt == 'raw_text' and not raw_text_surface)
+                )
             ):
                 unresolved.append(c.get('source_name') or c.get('stat_name'))
-            if allowed and vt is not None and vt not in allowed:
+            if allowed and vt is not None and vt not in allowed and vt not in allowed_formula_input_value_types:
                 semantic_mismatch.append({
                     'source': c.get('source_name') or c.get('stat_name'),
                     'value_type': vt,
@@ -147,7 +163,6 @@ def build_line_by_line_verification(statbook_dict, ep_compare, formula_ledger, f
             issues.append('unresolved_contributor_present')
         if semantic_mismatch:
             issues.append('semantically_incompatible_contributor_present')
-        contract = formula_contract(formula_ledger, key)
         consumed_contributors = None
         notes_text = str(row.get('notes') or '')
         match = re.search(r'Consumed\s+(\d+)\/(\d+)\s+contributors', notes_text)
@@ -159,8 +174,6 @@ def build_line_by_line_verification(statbook_dict, ep_compare, formula_ledger, f
         compare_status = None if compare is None else compare.get('status')
         if compare_status == 'mismatch':
             issues.append('ep_reference_mismatch')
-        if compare_status == 'stage_scope_mismatch':
-            issues.append('ep_reference_stage_scope_mismatch')
         verification_status = 'publishable'
         publish_policy = str(contract.get('publish_policy') or '').strip()
         row_status = row.get('status')

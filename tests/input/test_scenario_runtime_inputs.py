@@ -50,6 +50,8 @@ def test_contract_field_set__matches_expected_dataclass_fields():
         "boss_hit_interval_seconds",
         "effective_damage_reduction_pct",
         "incoming_damage_multiplier",
+        "boss_wave_pressure_factor",
+        "approve_boss_wave_empirical_pressure_transform",
         "flame_bot_damage_reduction_pct",
         "flame_bot_boss_hit_chance_pct",
         "flame_bot_duration_seconds",
@@ -82,6 +84,7 @@ def test_contract_field_set__matches_expected_dataclass_fields():
         "elite_terminal_max_wave",
         "protector_terminal_max_wave",
         "armored_terminal_max_wave",
+        "boss_terminal_max_wave",
     }
     assert fields == expected
 
@@ -128,6 +131,16 @@ def test_boss_applicable_damage_bridge_fields_are_explicit_runtime_inputs():
     assert runtime_inputs.boss_edamage_cadence_uptime_factor == pytest.approx(0.6)
     assert runtime_inputs.boss_edamage_reliability_factor == pytest.approx(0.7)
     assert runtime_inputs.boss_edamage_semantic_normalizer == pytest.approx(0.8)
+
+
+def test_boss_wave_pressure_factor_is_explicit_runtime_input():
+    runtime_inputs = ScenarioRuntimeInputs.from_mapping(
+        {
+            "boss_wave_difficulty_factor": 1.75,
+        }
+    )
+
+    assert runtime_inputs.boss_wave_pressure_factor == pytest.approx(1.75)
 
 
 def test_non_positive_rate_field__raises_value_error():

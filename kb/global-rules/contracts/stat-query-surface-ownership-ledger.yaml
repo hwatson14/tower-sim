@@ -350,12 +350,32 @@ surface_nodes:
   ownership_status: query_owned
   governed_by: canonical_query_engine
   downstream_policy: consume_only_no_rederivation
+- node_id: state::cards.enemy_balance.mastery_effect
+  ownership_class: environment
+  ownership_status: query_owned
+  governed_by: canonical_query_engine
+  downstream_policy: consume_only_no_rederivation
 - node_id: state::cards.intro_sprint.waves
   ownership_class: environment
   ownership_status: query_owned
   governed_by: canonical_query_engine
   downstream_policy: consume_only_no_rederivation
 - node_id: state::cards.wave_skip.chance_pct
+  ownership_class: environment
+  ownership_status: query_owned
+  governed_by: canonical_query_engine
+  downstream_policy: consume_only_no_rederivation
+- node_id: state::cards.wave_skip.mastery_effect
+  ownership_class: environment
+  ownership_status: query_owned
+  governed_by: canonical_query_engine
+  downstream_policy: consume_only_no_rederivation
+- node_id: state::meta.game_speed_multiplier
+  ownership_class: environment
+  ownership_status: query_owned
+  governed_by: canonical_query_engine
+  downstream_policy: consume_only_no_rederivation
+- node_id: state::perk.max_game_speed
   ownership_class: environment
   ownership_status: query_owned
   governed_by: canonical_query_engine
@@ -696,6 +716,11 @@ surface_nodes:
   governed_by: canonical_query_engine
   downstream_policy: consume_only_no_rederivation
 - node_id: state::module.anti_cube_portal.shockwave_damage_taken_mult_x
+  ownership_class: surface
+  ownership_status: query_owned
+  governed_by: canonical_query_engine
+  downstream_policy: consume_only_no_rederivation
+- node_id: state::module.being_annihilator.guaranteed_supercrits_after_supercrit_attacks
   ownership_class: surface
   ownership_status: query_owned
   governed_by: canonical_query_engine

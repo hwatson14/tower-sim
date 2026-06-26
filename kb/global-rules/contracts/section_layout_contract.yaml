@@ -391,6 +391,9 @@ sections:
         surface_id: state::cards.berserker.assumed_bonus_multiplier
       - label: Coins Card
         surface_id: state::cards.coins.multiplier
+        source_surface_id: state::economy.coins_multiplier
+        contributor_source_class: cards
+        contributor_id: card.coins.loadout_resolved
       - label: Plasma Cannon
         surface_id: state::cards.plasma_cannon.effect_pct
       - label: Super Tower

@@ -24,6 +24,18 @@ class PipelineRunRequest:
     tier: int | None = None
     dissonance_run_category: str | None = None
     include_boss_wave_milestone_matrix: bool = False
+    boss_wave_align_clean_reference_rows: bool = True
+    run_tracker_csv: Path | None = None
+    approve_tracker_empirical_farming_cph: bool = False
+    approve_tracker_empirical_run_coin_duration_integrals: bool = False
+    approve_tracker_current_export_account_state_validation: bool = False
+    approve_tracker_empirical_run_duration_projection: bool = False
+    approve_tracker_empirical_wave_skip_reward: bool = False
+    approve_tracker_wave_skip_intro_semantics: bool = False
+    approve_source_intro_sprint_coin_window: bool = False
+    approve_tracker_empirical_econ_window_overlap: bool = False
+    approve_tracker_empirical_kill_density_transform: bool = False
+    approve_boss_wave_pressure_factor_review_default: bool = False
 
 
 def _run_stats_args_from_payload(payload: dict[str, object]):
@@ -46,6 +58,38 @@ def _run_stats_args_from_payload(payload: dict[str, object]):
             else None
         ),
         include_boss_wave_milestone_matrix=bool(payload.get('include_boss_wave_milestone_matrix', False)),
+        boss_wave_align_clean_reference_rows=bool(payload.get('boss_wave_align_clean_reference_rows', True)),
+        run_tracker_csv=Path(str(payload['run_tracker_csv'])) if payload.get('run_tracker_csv') else None,
+        approve_tracker_empirical_farming_cph=bool(
+            payload.get('approve_tracker_empirical_farming_cph', False)
+        ),
+        approve_tracker_empirical_run_coin_duration_integrals=bool(
+            payload.get('approve_tracker_empirical_run_coin_duration_integrals', False)
+        ),
+        approve_tracker_current_export_account_state_validation=bool(
+            payload.get('approve_tracker_current_export_account_state_validation', False)
+        ),
+        approve_tracker_empirical_run_duration_projection=bool(
+            payload.get('approve_tracker_empirical_run_duration_projection', False)
+        ),
+        approve_tracker_empirical_wave_skip_reward=bool(
+            payload.get('approve_tracker_empirical_wave_skip_reward', False)
+        ),
+        approve_tracker_wave_skip_intro_semantics=bool(
+            payload.get('approve_tracker_wave_skip_intro_semantics', False)
+        ),
+        approve_source_intro_sprint_coin_window=bool(
+            payload.get('approve_source_intro_sprint_coin_window', False)
+        ),
+        approve_tracker_empirical_econ_window_overlap=bool(
+            payload.get('approve_tracker_empirical_econ_window_overlap', False)
+        ),
+        approve_tracker_empirical_kill_density_transform=bool(
+            payload.get('approve_tracker_empirical_kill_density_transform', False)
+        ),
+        approve_boss_wave_pressure_factor_review_default=bool(
+            payload.get('approve_boss_wave_pressure_factor_review_default', False)
+        ),
     )
 
 

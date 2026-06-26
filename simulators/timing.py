@@ -16,6 +16,8 @@ from simulators.scenario import (
     ScenarioConfig,
     ScenarioSurfaces,
     compute_scenario_surfaces,
+    non_boss_pressure_driver_probe,
+    normal_spawn_rate_pressure_driver,
     publish_farming_throughput_support_surfaces,
 )
 from qe.models import BoundStatInputs, compile_stat_inputs_with_identity
@@ -69,6 +71,16 @@ def bounded_percent_fraction(value: object) -> float:
     if raw <= 0.0:
         return 0.0
     return min(100.0, raw) / 100.0
+
+
+def positive_percent_fraction(value: object) -> float:
+    try:
+        raw = float(value or 0.0)
+    except (TypeError, ValueError):
+        return 0.0
+    if raw <= 0.0:
+        return 0.0
+    return raw / 100.0
 
 
 def positive_factor(value: object, *, default: float = 1.0) -> float:
@@ -227,6 +239,8 @@ def boss_contact_time_seconds(
     chrono_field_cooldown_seconds: object = 0.0,
     chrono_field_slow_pct: object = 0.0,
     slow_aura_enemy_speed_pct: object = 0.0,
+    enemy_speed_increase_pct: object = 0.0,
+    boss_speed_multiplier: object = 1.0,
     energy_net_duration_seconds: object = 0.0,
     geometry_base_contact_time_seconds: object | None = None,
     geometry_base_components: Mapping[str, object] | None = None,
@@ -243,6 +257,9 @@ def boss_contact_time_seconds(
                 'base_seconds_source': 'runtime_input_override_contact_time',
                 'chrono_field_average_slow_fraction': 0.0,
                 'slow_aura_fraction': 0.0,
+                'enemy_speed_increase_fraction': 0.0,
+                'boss_speed_multiplier': 1.0,
+                'movement_speed_multiplier': 1.0,
                 'speed_remaining_fraction': 1.0,
                 'energy_net_hold_seconds': 0.0,
                 'geometry_base_seconds': _finite_nonnegative_or_none(geometry_base_contact_time_seconds),
@@ -270,9 +287,17 @@ def boss_contact_time_seconds(
     )
     cf_average_slow = bounded_percent_fraction(chrono_field_slow_pct) * cf_uptime
     slow_aura = bounded_percent_fraction(slow_aura_enemy_speed_pct)
-    speed_remaining = max(0.01, (1.0 - cf_average_slow) * (1.0 - slow_aura))
+    enemy_speed_increase = positive_percent_fraction(enemy_speed_increase_pct)
+    boss_speed = positive_factor(boss_speed_multiplier, default=1.0)
+    movement_speed_multiplier = boss_speed * (1.0 + enemy_speed_increase)
+    speed_remaining = max(
+        0.01,
+        (1.0 - cf_average_slow) * (1.0 - slow_aura) * movement_speed_multiplier,
+    )
     energy_net_hold = max(0.0, float(energy_net_duration_seconds or 0.0))
     contact_time = (resolved_base_seconds / speed_remaining) + energy_net_hold
+    if not math.isclose(movement_speed_multiplier, 1.0):
+        source = source.replace('_slow_aura_energy_net', '_slow_aura_enemy_speed_energy_net')
     return (
         contact_time,
         source,
@@ -281,6 +306,9 @@ def boss_contact_time_seconds(
             'base_seconds_source': base_seconds_source,
             'chrono_field_average_slow_fraction': cf_average_slow,
             'slow_aura_fraction': slow_aura,
+            'enemy_speed_increase_fraction': enemy_speed_increase,
+            'boss_speed_multiplier': boss_speed,
+            'movement_speed_multiplier': movement_speed_multiplier,
             'speed_remaining_fraction': speed_remaining,
             'energy_net_hold_seconds': energy_net_hold,
             'geometry_base_seconds': geometry_base,
@@ -1496,3 +1524,2775 @@ def build_default_econ_timing_mechanics(statbook_rows: Dict[str, dict]) -> List[
             active_multiplier=max(0.0, _get(_mech('bot.golden.bonus_multiplier'))),
         ),
     ]
+
+
+def _farming_econ_sync_window_readiness_summary(
+    econ_window_drivers: Sequence[Mapping[str, object]],
+    *,
+    run_tracker_evidence: Mapping[str, object] | None = None,
+    approve_tracker_empirical_econ_window_overlap: bool = False,
+) -> dict[str, object]:
+    driver_by_surface = {str(driver.get("surface_id")): dict(driver) for driver in econ_window_drivers}
+
+    def _driver_value(surface_id: str) -> float:
+        try:
+            return float(driver_by_surface.get(surface_id, {}).get("value") or 0.0)
+        except (TypeError, ValueError):
+            return 0.0
+
+    window_specs = [
+        (
+            "golden_tower",
+            "state::uw.golden_tower.duration_seconds",
+            "state::uw.golden_tower.cooldown_seconds",
+            "state::uw.golden_tower.bonus_multiplier",
+        ),
+        (
+            "black_hole_coin",
+            "state::uw.black_hole.duration_seconds",
+            "state::uw.black_hole.cooldown_seconds",
+            "state::uw.black_hole.coin_bonus_multiplier",
+        ),
+        (
+            "golden_bot",
+            "state::bot.golden.duration_seconds",
+            "state::bot.golden.cooldown_seconds",
+            "state::bot.golden.bonus_multiplier",
+        ),
+    ]
+    mechanics: list[TimingMechanic] = []
+    window_inputs: list[dict[str, object]] = []
+    missing_window_inputs: list[str] = []
+    for mechanic_id, duration_surface, cooldown_surface, multiplier_surface in window_specs:
+        duration_driver = driver_by_surface.get(duration_surface, {})
+        cooldown_driver = driver_by_surface.get(cooldown_surface, {})
+        multiplier_driver = driver_by_surface.get(multiplier_surface, {})
+        duration = _driver_value(duration_surface)
+        cooldown = _driver_value(cooldown_surface)
+        multiplier = max(0.0, _driver_value(multiplier_surface))
+        available = bool(duration_driver.get("available")) and bool(cooldown_driver.get("available"))
+        if not available:
+            missing_window_inputs.extend(
+                surface
+                for surface, driver in (
+                    (duration_surface, duration_driver),
+                    (cooldown_surface, cooldown_driver),
+                )
+                if not bool(driver.get("available"))
+            )
+        mechanic = TimingMechanic(
+            mechanic_id=mechanic_id,
+            active_duration_s=duration,
+            cooldown_s=cooldown,
+            active_multiplier=multiplier,
+        )
+        if available and duration > 0.0 and mechanic.period_s > 0.0:
+            mechanics.append(mechanic)
+        window_inputs.append(
+            {
+                "mechanic_id": mechanic_id,
+                "duration_surface_id": duration_surface,
+                "cooldown_surface_id": cooldown_surface,
+                "multiplier_surface_id": multiplier_surface,
+                "duration_seconds": duration,
+                "cooldown_seconds": cooldown,
+                "cycle_period_seconds_current_helper": mechanic.period_s,
+                "active_multiplier": multiplier,
+                "uptime_fraction_duration_over_period": (
+                    duration / mechanic.period_s if mechanic.period_s > 0.0 else 0.0
+                ),
+                "window_inputs_available": available,
+            }
+        )
+
+    mechanics_by_id = {mechanic.mechanic_id: mechanic for mechanic in mechanics}
+
+    def _pair_overlap(left: str, right: str) -> float | None:
+        if left not in mechanics_by_id or right not in mechanics_by_id:
+            return None
+        return overlap_fraction(mechanics_by_id[left], mechanics_by_id[right])
+
+    pair_overlap_fractions = {
+        "golden_tower__black_hole_coin": _pair_overlap("golden_tower", "black_hole_coin"),
+        "golden_tower__golden_bot": _pair_overlap("golden_tower", "golden_bot"),
+        "black_hole_coin__golden_bot": _pair_overlap("black_hole_coin", "golden_bot"),
+    }
+    overlap_integral_missing = [
+        "phase_offsets_or_sync_schedule",
+        "kill_density_inside_each_econ_window",
+        "death_wave_coin_bonus_active_window_or_kill_state",
+        "spotlight_coin_exposure_fraction_by_kill",
+        "wave_skip_reward_interaction_with_econ_windows",
+    ]
+    overlap_integral_readiness = {
+        "status": (
+            "source_window_inputs_available_overlap_integral_missing"
+            if len(mechanics) == len(window_specs)
+            else "window_inputs_missing_overlap_integral_missing"
+        ),
+        "owner": "simulators.timing",
+        "application": "diagnostic_only_not_coin_formula",
+        "certification_effect": "none",
+        "phase_model": "phase_zero_current_helper_only",
+        "phase_model_certified": False,
+        "window_mechanic_ids": [item["mechanic_id"] for item in window_inputs],
+        "window_inputs_available": len(mechanics) == len(window_specs),
+        "pair_overlap_fraction_source": "simulators.timing.overlap_fraction",
+        "pair_overlap_fraction_formula_status": (
+            "phase_zero_current_helper_pairwise_fraction_only"
+        ),
+        "pair_overlap_fractions": pair_overlap_fractions,
+        "multiplier_only_without_window_model": [
+            "state::uw.death_wave.coin_bonus_multiplier",
+            "state::uw.spotlight.coin_bonus_multiplier",
+        ],
+        "remaining_to_certify": overlap_integral_missing,
+    }
+    tracker_econ_coin_sources: dict[str, object] = {
+        "status": "not_supplied",
+        "application": "external_observation_not_account_truth",
+        "certification_effect": "none",
+    }
+    if isinstance(run_tracker_evidence, Mapping):
+        tracker_recent = run_tracker_evidence.get("farming_t14_recent")
+        tracker_recent = tracker_recent if isinstance(tracker_recent, Mapping) else {}
+        tracker_econ_coin_sources = dict(tracker_recent.get("tracker_econ_coin_sources") or {})
+        if not tracker_econ_coin_sources:
+            tracker_econ_coin_sources = {
+                "status": "tracker_supplied_without_econ_coin_source_fields",
+                "application": "external_observation_not_account_truth",
+                "certification_effect": "none",
+            }
+    approved_overlap_closes_formula_link = (
+        bool(approve_tracker_empirical_econ_window_overlap)
+        and bool(overlap_integral_readiness.get("window_inputs_available"))
+        and tracker_econ_coin_sources.get("status") == "tracker_econ_coin_sources_available"
+    )
+    overlap_integral_readiness.update(
+        {
+            "certification_effect": (
+                "closes_econ_window_overlap_link_only"
+                if approved_overlap_closes_formula_link
+                else "none"
+            ),
+            "operator_approval_required": True,
+            "operator_approved_tracker_empirical_econ_window_overlap": bool(
+                approve_tracker_empirical_econ_window_overlap
+            ),
+            "operator_approval_status": (
+                "approved_explicit_runtime_input"
+                if approve_tracker_empirical_econ_window_overlap
+                else "not_approved"
+            ),
+            "approval_runtime_input": "approve_tracker_empirical_econ_window_overlap",
+            "approval_policy": (
+                "Explicit approval plus tracker econ-source evidence closes only "
+                "the econ-window overlap formula link; it does not certify farming CPH."
+            ),
+            "tracker_econ_source_candidate_available": (
+                tracker_econ_coin_sources.get("status")
+                == "tracker_econ_coin_sources_available"
+            ),
+            "approved_overlap_closes_formula_link": (
+                approved_overlap_closes_formula_link
+            ),
+        }
+    )
+    return {
+        "status": (
+            "window_inputs_available_overlap_integral_not_certified"
+            if len(mechanics) == len(window_specs)
+            else "window_inputs_missing_overlap_integral_not_certified"
+        ),
+        "application": "diagnostic_only_not_coin_formula",
+        "certification_effect": (
+            "closes_econ_window_overlap_link_only"
+            if approved_overlap_closes_formula_link
+            else "none"
+        ),
+        "phase_model": "phase_zero_current_helper_only",
+        "phase_model_certified": False,
+        "available_window_count": len(mechanics),
+        "required_window_count": len(window_specs),
+        "missing_window_inputs": missing_window_inputs,
+        "window_inputs": window_inputs,
+        "pair_overlap_fractions": pair_overlap_fractions,
+        "overlap_integral_readiness": overlap_integral_readiness,
+        "tracker_econ_coin_source_evidence": tracker_econ_coin_sources,
+        "operator_approval_status": overlap_integral_readiness.get(
+            "operator_approval_status"
+        ),
+        "approved_overlap_closes_formula_link": approved_overlap_closes_formula_link,
+        "diagnostic_average_combined_multiplier_for_available_windows": (
+            compute_average_combined_multiplier(mechanics) if mechanics else None
+        ),
+        "multiplier_only_without_window_model": [
+            "state::uw.death_wave.coin_bonus_multiplier",
+            "state::uw.spotlight.coin_bonus_multiplier",
+        ],
+        "missing_to_certify": overlap_integral_missing,
+    }
+
+
+def _farming_spawn_density_readiness_summary(
+    *,
+    tier: object,
+    target_wave: object,
+    wave_accelerator_spawn_rate_acceleration: object,
+    enemy_balance_mastery_double_elite_chance_pct: object = 0.0,
+    run_tracker_evidence: Mapping[str, object] | None = None,
+    approve_tracker_empirical_kill_density_transform: bool = False,
+) -> dict[str, object]:
+    def _positive_float(value: object) -> float | None:
+        try:
+            numeric = float(value)
+        except (TypeError, ValueError):
+            return None
+        if numeric <= 0.0:
+            return None
+        return numeric
+
+    try:
+        tier_number = min(21, max(1, int(float(tier or 1))))
+    except (TypeError, ValueError):
+        tier_number = 1
+    try:
+        wave = int(float(target_wave or 0.0))
+    except (TypeError, ValueError):
+        wave = 0
+    try:
+        acceleration = max(1.0, float(wave_accelerator_spawn_rate_acceleration or 1.0))
+    except (TypeError, ValueError):
+        acceleration = 1.0
+    try:
+        enemy_balance_mastery_pct = max(
+            0.0,
+            float(enemy_balance_mastery_double_elite_chance_pct or 0.0),
+        )
+    except (TypeError, ValueError):
+        enemy_balance_mastery_pct = 0.0
+    normal_spawn_rate = normal_spawn_rate_pressure_driver(
+        wave=wave,
+        enemy_balance_spawn_multiplier=1.0,
+        wave_accelerator_spawn_rate_acceleration=acceleration,
+        more_enemies_pct=0.0,
+    )
+    pressure_driver_probe = non_boss_pressure_driver_probe(
+        tier=tier_number,
+        wave=wave,
+        scenario_surfaces={"bc_more_enemies_pct": 0.0},
+        enemy_balance_spawn_multiplier=1.0,
+        wave_accelerator_spawn_rate_acceleration=acceleration,
+        enemy_balance_mastery_double_elite_chance_pct=enemy_balance_mastery_pct,
+    )
+    displayed_spawn_rate = normal_spawn_rate.get("displayed_spawn_rate")
+    tracker_enemy_density: dict[str, object] = {
+        "status": "not_supplied",
+        "application": "external_observation_not_account_truth",
+    }
+    tracker_enemy_composition: dict[str, object] = {
+        "status": "not_supplied",
+        "application": "external_observation_not_account_truth",
+        "certification_effect": "none",
+    }
+    tracker_kill_density_transform: dict[str, object] = {
+        "status": "not_supplied",
+        "application": "external_observation_not_account_truth",
+        "certification_effect": "none",
+    }
+    tracker_kill_density_stability: dict[str, object] = {
+        "status": "not_supplied",
+        "application": "external_observation_not_account_truth",
+        "certification_effect": "none",
+    }
+    tracker_coin_density: dict[str, object] = {
+        "status": "not_supplied",
+        "application": "external_observation_not_account_truth",
+    }
+    tracker_coin_yield_stability: dict[str, object] = {
+        "status": "not_supplied",
+        "application": "external_observation_not_account_truth",
+        "certification_effect": "none",
+    }
+    tracker_coin_integral: dict[str, object] = {
+        "status": "not_supplied",
+        "application": "external_observation_not_account_truth",
+        "certification_effect": "none",
+    }
+    if isinstance(run_tracker_evidence, Mapping):
+        recent = run_tracker_evidence.get("farming_t14_recent")
+        recent = recent if isinstance(recent, Mapping) else {}
+        trend = run_tracker_evidence.get("farming_t14_recent_trend")
+        trend = trend if isinstance(trend, Mapping) else {}
+        trend_metrics = trend.get("metrics")
+        trend_metrics = trend_metrics if isinstance(trend_metrics, Mapping) else {}
+        enemy_per_wave = dict(recent.get("observed_enemies_per_wave") or {})
+        coins_per_enemy = dict(recent.get("observed_coins_per_enemy") or {})
+        coins_per_wave = dict(recent.get("observed_coins_per_wave") or {})
+        coins_per_run = dict(recent.get("coins_per_run") or {})
+        coins_per_hour = dict(recent.get("coins_per_hour") or {})
+        waves_per_hour = dict(recent.get("observed_waves_per_hour") or {})
+        total_enemies = dict(recent.get("total_enemies") or {})
+        enemy_per_hour = dict(recent.get("tracker_enemies_per_hour") or {})
+        tracker_enemy_composition = dict(recent.get("tracker_enemy_composition") or {})
+        wave_stats = dict(recent.get("wave") or {})
+        duration_stats = dict(recent.get("duration_hours") or {})
+        latest = recent.get("latest")
+        latest = latest if isinstance(latest, Mapping) else {}
+        latest_wave = _positive_float(latest.get("wave"))
+        latest_duration_hours = _positive_float(latest.get("duration_hours"))
+        latest_total_enemies = _positive_float(latest.get("total_enemies"))
+        latest_coins = _positive_float(latest.get("coins"))
+        latest_enemies_per_wave = _positive_float(
+            latest.get("observed_enemies_per_wave")
+        )
+        latest_coins_per_enemy = _positive_float(latest.get("observed_coins_per_enemy"))
+        latest_coins_per_wave = _positive_float(latest.get("observed_coins_per_wave"))
+        latest_waves_per_hour = _positive_float(latest.get("observed_waves_per_hour"))
+        if latest_waves_per_hour is None:
+            latest_waves_per_hour = _positive_float(latest.get("waves_per_hour"))
+        if (
+            latest_enemies_per_wave is None
+            and latest_total_enemies is not None
+            and latest_wave is not None
+        ):
+            latest_enemies_per_wave = latest_total_enemies / latest_wave
+        if (
+            latest_coins_per_enemy is None
+            and latest_coins is not None
+            and latest_total_enemies is not None
+        ):
+            latest_coins_per_enemy = latest_coins / latest_total_enemies
+        if (
+            latest_coins_per_wave is None
+            and latest_coins is not None
+            and latest_wave is not None
+        ):
+            latest_coins_per_wave = latest_coins / latest_wave
+        latest_density_coins_per_hour = _positive_float(
+            latest.get("observed_cph_from_density_components")
+        )
+        if (
+            latest_density_coins_per_hour is None
+            and latest_coins_per_enemy is not None
+            and latest_enemies_per_wave is not None
+            and latest_waves_per_hour is not None
+        ):
+            latest_density_coins_per_hour = (
+                latest_coins_per_enemy
+                * latest_enemies_per_wave
+                * latest_waves_per_hour
+            )
+        latest_run_total_coins_per_hour = _positive_float(
+            latest.get("observed_cph_from_run_totals")
+        )
+        if (
+            latest_run_total_coins_per_hour is None
+            and latest_coins is not None
+            and latest_duration_hours is not None
+        ):
+            latest_run_total_coins_per_hour = latest_coins / latest_duration_hours
+        observed_median_enemies_per_wave = enemy_per_wave.get("median")
+        observed_median_coins_per_enemy = coins_per_enemy.get("median")
+        observed_median_coins_per_wave = coins_per_wave.get("median")
+        spawn_rate_to_observed_density_ratio = None
+        try:
+            if displayed_spawn_rate is not None and float(displayed_spawn_rate) > 0.0:
+                spawn_rate_to_observed_density_ratio = (
+                    float(observed_median_enemies_per_wave) / float(displayed_spawn_rate)
+                )
+        except (TypeError, ValueError):
+            spawn_rate_to_observed_density_ratio = None
+        projected_enemies_per_wave_from_tracker_ratio = None
+        try:
+            if (
+                displayed_spawn_rate is not None
+                and spawn_rate_to_observed_density_ratio is not None
+            ):
+                projected_enemies_per_wave_from_tracker_ratio = (
+                    float(displayed_spawn_rate) * float(spawn_rate_to_observed_density_ratio)
+                )
+        except (TypeError, ValueError):
+            projected_enemies_per_wave_from_tracker_ratio = None
+        tracker_enemy_density = {
+            "status": (
+                "tracker_t14_farming_enemy_density_available"
+                if recent.get("row_count") and observed_median_enemies_per_wave is not None
+                else "tracker_supplied_without_enemy_density_band"
+            ),
+            "source": run_tracker_evidence.get("source"),
+            "application": run_tracker_evidence.get("application"),
+            "recent_definition": recent.get("definition"),
+            "recent_row_count": recent.get("row_count"),
+            "observed_median_wave": wave_stats.get("median"),
+            "observed_median_duration_hours": duration_stats.get("median"),
+            "observed_median_total_enemies": total_enemies.get("median"),
+            "observed_median_enemies_per_wave": observed_median_enemies_per_wave,
+            "observed_median_enemies_per_hour": enemy_per_hour.get("median"),
+            "tracker_enemy_composition_status": tracker_enemy_composition.get("status"),
+            "tracker_total_elites_share_of_total_enemies": dict(
+                tracker_enemy_composition.get("total_elites_share_of_total_enemies") or {}
+            ).get("median"),
+            "tracker_protector_share_of_total_enemies": dict(
+                dict(
+                    tracker_enemy_composition.get("normal_enemy_counts") or {}
+                ).get("protector")
+                or {}
+            )
+            .get("share_of_total_enemies", {})
+            .get("median"),
+            "tracker_protector_count_per_wave": dict(
+                dict(
+                    tracker_enemy_composition.get("normal_enemy_counts") or {}
+                ).get("protector")
+                or {}
+            )
+            .get("count_per_wave", {})
+            .get("median"),
+            "tracker_elite_subtype_count_per_wave": dict(
+                tracker_enemy_composition.get("elite_tracked_count_per_wave") or {}
+            ).get("median"),
+            "displayed_spawn_rate_to_observed_enemies_per_wave_ratio": (
+                spawn_rate_to_observed_density_ratio
+            ),
+            "interpretation": (
+                "Tracker totalEnemies provides external kill-density calibration evidence only; it is not KB truth."
+            ),
+        }
+        tracker_kill_density_transform = {
+            "status": (
+                "tracker_spawn_rate_to_kill_density_candidate_available"
+                if recent.get("row_count")
+                and spawn_rate_to_observed_density_ratio is not None
+                and projected_enemies_per_wave_from_tracker_ratio is not None
+                else "tracker_supplied_without_spawn_rate_to_kill_density_candidate"
+            ),
+            "source": run_tracker_evidence.get("source"),
+            "application": run_tracker_evidence.get("application"),
+            "certification_effect": "none",
+            "formula": "displayed_spawn_rate * observed_enemies_per_wave_per_displayed_spawn_rate",
+            "recent_definition": recent.get("definition"),
+            "recent_row_count": recent.get("row_count"),
+            "target_wave": wave,
+            "displayed_spawn_rate": displayed_spawn_rate,
+            "observed_median_enemies_per_wave": observed_median_enemies_per_wave,
+            "observed_enemies_per_wave_per_displayed_spawn_rate": (
+                spawn_rate_to_observed_density_ratio
+            ),
+            "projected_enemies_per_wave_from_tracker_ratio": (
+                projected_enemies_per_wave_from_tracker_ratio
+            ),
+            "missing_to_promote": [
+                "source_owned_normal_enemy_spawn_count_curve_by_tier_wave_and_spawn_phase",
+                "approved_spawn_rate_to_kill_density_transform",
+                "validation_across_tiers_run_types_and_spawn_phases",
+            ],
+            "interpretation": (
+                "Candidate transform makes the missing kill-density link testable; "
+                "it is not applied to account truth or CPH certification."
+            ),
+        }
+        trend_enemy_density = dict(trend_metrics.get("observed_enemies_per_wave") or {})
+        trend_cph_density = dict(
+            trend_metrics.get("observed_cph_from_density_components") or {}
+        )
+        recent_enemy_density = dict(trend_enemy_density.get("recent") or {})
+        prior_enemy_density = dict(trend_enemy_density.get("prior") or {})
+        recent_density_ratio = None
+        prior_density_ratio = None
+        density_ratio_delta = None
+        density_ratio_ratio = None
+        try:
+            if displayed_spawn_rate is not None and float(displayed_spawn_rate) > 0.0:
+                if recent_enemy_density.get("median") is not None:
+                    recent_density_ratio = (
+                        float(recent_enemy_density.get("median"))
+                        / float(displayed_spawn_rate)
+                    )
+                if prior_enemy_density.get("median") is not None:
+                    prior_density_ratio = (
+                        float(prior_enemy_density.get("median"))
+                        / float(displayed_spawn_rate)
+                    )
+                if recent_density_ratio is not None and prior_density_ratio is not None:
+                    density_ratio_delta = recent_density_ratio - prior_density_ratio
+                    if prior_density_ratio != 0.0:
+                        density_ratio_ratio = recent_density_ratio / prior_density_ratio
+        except (TypeError, ValueError):
+            recent_density_ratio = None
+            prior_density_ratio = None
+            density_ratio_delta = None
+            density_ratio_ratio = None
+        tracker_kill_density_stability = {
+            "status": (
+                "tracker_recent_prior_kill_density_transform_available"
+                if trend.get("status") == "recent_and_prior_windows_available"
+                and recent_density_ratio is not None
+                and prior_density_ratio is not None
+                else "tracker_supplied_without_recent_prior_kill_density_transform"
+            ),
+            "source": run_tracker_evidence.get("source"),
+            "application": run_tracker_evidence.get("application"),
+            "certification_effect": "none",
+            "formula": "observed_enemies_per_wave_median / displayed_spawn_rate",
+            "trend_status": trend.get("status"),
+            "recent_window_size": trend.get("recent_window_size"),
+            "prior_window_size": trend.get("prior_window_size"),
+            "displayed_spawn_rate": displayed_spawn_rate,
+            "recent_observed_enemies_per_wave_median": recent_enemy_density.get("median"),
+            "prior_observed_enemies_per_wave_median": prior_enemy_density.get("median"),
+            "recent_enemies_per_wave_per_displayed_spawn_rate": recent_density_ratio,
+            "prior_enemies_per_wave_per_displayed_spawn_rate": prior_density_ratio,
+            "median_delta": density_ratio_delta,
+            "median_ratio": density_ratio_ratio,
+            "enemy_density_direction": trend_enemy_density.get("direction"),
+            "density_component_cph_direction": trend_cph_density.get("direction"),
+            "missing_to_promote": [
+                "approved_empirical_kill_density_transform_policy",
+                "validation_across_multiple_exports_and_account_states",
+                "source_owned_or_approved_wave_skip_intro_reward_semantics",
+            ],
+            "interpretation": (
+                "Recent/prior tracker density ratios make empirical kill-density drift "
+                "visible while account stats improve; they are not applied to account "
+                "truth or CPH certification."
+            ),
+        }
+        tracker_coin_density = {
+            "status": (
+                "tracker_t14_farming_coin_density_available"
+                if recent.get("row_count")
+                and (
+                    observed_median_coins_per_enemy is not None
+                    or observed_median_coins_per_wave is not None
+                )
+                else "tracker_supplied_without_coin_density_band"
+            ),
+            "source": run_tracker_evidence.get("source"),
+            "application": run_tracker_evidence.get("application"),
+            "recent_definition": recent.get("definition"),
+            "recent_row_count": recent.get("row_count"),
+            "observed_median_coins_per_run": coins_per_run.get("median"),
+            "observed_median_coins_per_hour": coins_per_hour.get("median"),
+            "observed_median_coins_per_enemy": observed_median_coins_per_enemy,
+            "observed_median_coins_per_wave": observed_median_coins_per_wave,
+            "latest_wave": latest.get("wave"),
+            "latest_duration_hours": latest.get("duration_hours"),
+            "latest_coins": latest.get("coins"),
+            "latest_total_enemies": latest.get("total_enemies"),
+            "latest_observed_coins_per_enemy": latest_coins_per_enemy,
+            "latest_observed_coins_per_wave": latest_coins_per_wave,
+            "latest_observed_enemies_per_wave": latest_enemies_per_wave,
+            "latest_observed_waves_per_hour": latest_waves_per_hour,
+            "latest_density_coins_per_hour": latest_density_coins_per_hour,
+            "latest_run_total_coins_per_hour": latest_run_total_coins_per_hour,
+            "interpretation": (
+                "Tracker coin density is calibration evidence for the future coin integral; it is not a certified CPH formula."
+            ),
+        }
+        trend_coins_per_enemy = dict(trend_metrics.get("observed_coins_per_enemy") or {})
+        trend_coins_per_wave = dict(trend_metrics.get("observed_coins_per_wave") or {})
+        trend_coins_per_hour = dict(trend_metrics.get("coins_per_hour") or {})
+        recent_coins_per_enemy = dict(trend_coins_per_enemy.get("recent") or {})
+        prior_coins_per_enemy = dict(trend_coins_per_enemy.get("prior") or {})
+        recent_coins_per_wave = dict(trend_coins_per_wave.get("recent") or {})
+        prior_coins_per_wave = dict(trend_coins_per_wave.get("prior") or {})
+        tracker_coin_yield_stability = {
+            "status": (
+                "tracker_recent_prior_coin_yield_available"
+                if trend.get("status") == "recent_and_prior_windows_available"
+                and recent_coins_per_enemy.get("median") is not None
+                and prior_coins_per_enemy.get("median") is not None
+                else "tracker_supplied_without_recent_prior_coin_yield"
+            ),
+            "source": run_tracker_evidence.get("source"),
+            "application": run_tracker_evidence.get("application"),
+            "certification_effect": "none",
+            "recent_window_size": trend.get("recent_window_size"),
+            "prior_window_size": trend.get("prior_window_size"),
+            "recent_observed_coins_per_enemy_median": recent_coins_per_enemy.get("median"),
+            "prior_observed_coins_per_enemy_median": prior_coins_per_enemy.get("median"),
+            "coins_per_enemy_median_delta": trend_coins_per_enemy.get("median_delta"),
+            "coins_per_enemy_median_ratio": trend_coins_per_enemy.get("median_ratio"),
+            "coins_per_enemy_direction": trend_coins_per_enemy.get("direction"),
+            "recent_observed_coins_per_wave_median": recent_coins_per_wave.get("median"),
+            "prior_observed_coins_per_wave_median": prior_coins_per_wave.get("median"),
+            "coins_per_wave_median_delta": trend_coins_per_wave.get("median_delta"),
+            "coins_per_wave_median_ratio": trend_coins_per_wave.get("median_ratio"),
+            "coins_per_wave_direction": trend_coins_per_wave.get("direction"),
+            "density_component_cph_direction": trend_cph_density.get("direction"),
+            "reported_cph_direction": trend_coins_per_hour.get("direction"),
+            "missing_to_promote": [
+                "source_owned_coins_per_kill_integral",
+                "econ_window_coin_multiplier_overlap_integral",
+                "wave_skip_reward_and_intro_sprint_coin_semantics",
+                "validation_across_multiple_exports_and_account_states",
+            ],
+            "interpretation": (
+                "Recent/prior tracker coin-yield bands show whether CPH movement "
+                "comes from coin value rather than kill-density drift; they are "
+                "not applied to account truth or CPH certification."
+            ),
+        }
+        projected_coins_per_wave_from_tracker_density = None
+        projected_coins_per_hour_from_tracker_density = None
+        tracker_coin_integral_to_reported_cph_ratio = None
+        latest_projected_coins_per_wave_from_tracker_density = None
+        latest_projected_coins_per_hour_from_tracker_density = None
+        latest_density_to_latest_run_total_cph_ratio = None
+        try:
+            if (
+                projected_enemies_per_wave_from_tracker_ratio is not None
+                and observed_median_coins_per_enemy is not None
+            ):
+                projected_coins_per_wave_from_tracker_density = (
+                    float(projected_enemies_per_wave_from_tracker_ratio)
+                    * float(observed_median_coins_per_enemy)
+                )
+                if waves_per_hour.get("median") is not None:
+                    projected_coins_per_hour_from_tracker_density = (
+                        projected_coins_per_wave_from_tracker_density
+                        * float(waves_per_hour.get("median"))
+                    )
+                if (
+                    projected_coins_per_hour_from_tracker_density is not None
+                    and coins_per_hour.get("median") is not None
+                    and float(coins_per_hour.get("median")) > 0.0
+                ):
+                    tracker_coin_integral_to_reported_cph_ratio = (
+                        projected_coins_per_hour_from_tracker_density
+                        / float(coins_per_hour.get("median"))
+                    )
+            if (
+                latest_enemies_per_wave is not None
+                and latest_coins_per_enemy is not None
+            ):
+                latest_projected_coins_per_wave_from_tracker_density = (
+                    float(latest_enemies_per_wave) * float(latest_coins_per_enemy)
+                )
+                if latest_waves_per_hour is not None:
+                    latest_projected_coins_per_hour_from_tracker_density = (
+                        latest_projected_coins_per_wave_from_tracker_density
+                        * float(latest_waves_per_hour)
+                    )
+                if (
+                    latest_projected_coins_per_hour_from_tracker_density is not None
+                    and latest_run_total_coins_per_hour is not None
+                    and float(latest_run_total_coins_per_hour) > 0.0
+                ):
+                    latest_density_to_latest_run_total_cph_ratio = (
+                        latest_projected_coins_per_hour_from_tracker_density
+                        / float(latest_run_total_coins_per_hour)
+                    )
+        except (TypeError, ValueError):
+            projected_coins_per_wave_from_tracker_density = None
+            projected_coins_per_hour_from_tracker_density = None
+            tracker_coin_integral_to_reported_cph_ratio = None
+            latest_projected_coins_per_wave_from_tracker_density = None
+            latest_projected_coins_per_hour_from_tracker_density = None
+            latest_density_to_latest_run_total_cph_ratio = None
+        tracker_coin_integral = {
+            "status": (
+                "tracker_kill_density_to_coin_integral_candidate_available"
+                if recent.get("row_count")
+                and projected_coins_per_wave_from_tracker_density is not None
+                else "tracker_supplied_without_coin_integral_candidate"
+            ),
+            "source": run_tracker_evidence.get("source"),
+            "application": run_tracker_evidence.get("application"),
+            "certification_effect": "none",
+            "formula": "projected_enemies_per_wave * observed_coins_per_enemy",
+            "recent_definition": recent.get("definition"),
+            "recent_row_count": recent.get("row_count"),
+            "projected_enemies_per_wave": projected_enemies_per_wave_from_tracker_ratio,
+            "observed_median_coins_per_enemy": observed_median_coins_per_enemy,
+            "projected_coins_per_wave_from_tracker_density": (
+                projected_coins_per_wave_from_tracker_density
+            ),
+            "observed_median_waves_per_hour": waves_per_hour.get("median"),
+            "projected_coins_per_hour_from_tracker_density": (
+                projected_coins_per_hour_from_tracker_density
+            ),
+            "tracker_median_coins_per_hour": coins_per_hour.get("median"),
+            "projected_to_tracker_cph_ratio": tracker_coin_integral_to_reported_cph_ratio,
+            "latest_wave": latest.get("wave"),
+            "latest_observed_enemies_per_wave": latest_enemies_per_wave,
+            "latest_observed_coins_per_enemy": latest_coins_per_enemy,
+            "latest_projected_coins_per_wave_from_tracker_density": (
+                latest_projected_coins_per_wave_from_tracker_density
+            ),
+            "latest_observed_waves_per_hour": latest_waves_per_hour,
+            "latest_projected_coins_per_hour_from_tracker_density": (
+                latest_projected_coins_per_hour_from_tracker_density
+            ),
+            "latest_run_total_coins_per_hour": latest_run_total_coins_per_hour,
+            "latest_density_to_latest_run_total_cph_ratio": (
+                latest_density_to_latest_run_total_cph_ratio
+            ),
+            "missing_to_promote": [
+                "approved_spawn_rate_to_kill_density_transform",
+                "source_owned_coins_per_kill_integral",
+                "econ_window_coin_multiplier_overlap_integral",
+                "wave_skip_reward_and_intro_sprint_coin_semantics",
+            ],
+            "interpretation": (
+                "Candidate coin integral connects observed kill density to coin density; "
+                "it is not applied to account truth or CPH certification."
+            ),
+        }
+    tracker_kill_density_status = tracker_kill_density_transform.get("status")
+    tracker_kill_density_approved = (
+        bool(approve_tracker_empirical_kill_density_transform)
+        and tracker_kill_density_status == "tracker_spawn_rate_to_kill_density_candidate_available"
+    )
+    kill_density_transform_readiness: dict[str, object] = {
+        "status": (
+            "approved_tracker_empirical_kill_density_transform_available"
+            if tracker_kill_density_approved
+            else "source_spawn_rate_available_kill_density_transform_missing"
+        ),
+        "owner": "simulators.timing",
+        "application": "diagnostic_only_not_coin_formula",
+        "certification_effect": (
+            "closes_spawn_rate_to_enemy_kill_density_link_only"
+            if tracker_kill_density_approved
+            else "none"
+        ),
+        "source_input_status": {
+            "normal_spawn_rate_curve_by_wave_and_wave_accelerator": True,
+            "displayed_spawn_rate_available": displayed_spawn_rate is not None,
+            "wave_accelerator_spawn_rate_acceleration_available": acceleration is not None,
+            "normal_enemy_spawn_count_curve_by_tier_wave_and_spawn_phase": False,
+        },
+        "tier": tier_number,
+        "target_wave": wave,
+        "displayed_spawn_rate": displayed_spawn_rate,
+        "wave_accelerator_spawn_rate_acceleration": acceleration,
+        "normal_spawn_rate_pressure_index": normal_spawn_rate.get(
+            "normal_spawn_rate_pressure_index"
+        ),
+        "normal_enemy_spawn_count_curve_available": False,
+        "tracker_candidate_status": tracker_kill_density_status,
+        "tracker_candidate_can_promote": bool(
+            tracker_kill_density_status == "tracker_spawn_rate_to_kill_density_candidate_available"
+        ),
+        "operator_approved_tracker_empirical_kill_density_transform": bool(
+            approve_tracker_empirical_kill_density_transform
+        ),
+        "operator_approval_status": (
+            "approved_explicit_runtime_input"
+            if approve_tracker_empirical_kill_density_transform
+            else "not_approved"
+        ),
+        "approval_runtime_input": "approve_tracker_empirical_kill_density_transform",
+        "approved_transform_closes_formula_link": tracker_kill_density_approved,
+        "candidate_formula_policy": (
+            "tracker candidates are calibration evidence only until operator-approved "
+            "as empirical defaults or replaced by a source-owned spawn-count curve"
+        ),
+        "remaining_to_certify": [
+            "source_owned_normal_enemy_spawn_count_curve_by_tier_wave_and_spawn_phase",
+            "approved_spawn_rate_to_kill_density_transform",
+            "tier_wave_spawn_phase_validation_set",
+            "integration_with_intro_sprint_wave_skip_and_econ_windows",
+        ],
+    }
+    return {
+        "status": "spawn_rate_curve_available_kill_density_transform_missing",
+        "application": "diagnostic_only_not_coin_formula",
+        "tier": tier_number,
+        "target_wave": wave,
+        "wave_accelerator_spawn_rate_acceleration": acceleration,
+        "enemy_balance_mastery_double_elite_chance_pct": enemy_balance_mastery_pct,
+        "displayed_spawn_rate": displayed_spawn_rate,
+        "threshold_standard_wave": normal_spawn_rate.get("threshold_standard_wave"),
+        "threshold_actual_wave_with_wave_accelerator": normal_spawn_rate.get(
+            "threshold_actual_wave_with_wave_accelerator"
+        ),
+        "next_displayed_spawn_rate": normal_spawn_rate.get("next_displayed_spawn_rate"),
+        "next_threshold_standard_wave": normal_spawn_rate.get("next_threshold_standard_wave"),
+        "next_threshold_actual_wave_with_wave_accelerator": normal_spawn_rate.get(
+            "next_threshold_actual_wave_with_wave_accelerator"
+        ),
+        "normal_spawn_rate_pressure_index": normal_spawn_rate.get(
+            "normal_spawn_rate_pressure_index"
+        ),
+        "normal_enemy_spawn_count_curve_available": False,
+        "normal_enemy_spawn_count_source_audit": {
+            "status": "source_not_found_spawn_rate_curve_only",
+            "application": "diagnostic_only_not_coin_formula",
+            "certification_effect": "none",
+            "local_kb_tables_checked": [
+                "kb/enemies/tables/wiki-advanced-analysis-spawn-rate-wave-thresholds.csv",
+                "kb/enemies/tables/note-derived-enemy-spawn-structure.csv",
+                "kb/enemies/tables/note-derived-enemy-spawn-caps.csv",
+                "kb/enemies/tables/wiki-verified-elite-spawn-thresholds.csv",
+                "kb/enemies/tables/wiki-verified-fleet-spawn-thresholds.csv",
+            ],
+            "external_sources_checked": [
+                "https://the-tower-idle-tower-defense.fandom.com/wiki/AdvancedAnalysis",
+                "https://the-tower-idle-tower-defense.fandom.com/wiki/Enemies",
+            ],
+            "source_backed_available_surfaces": [
+                "normal_spawn_rate_wave_thresholds",
+                "normal_enemy_on_screen_spawn_cap",
+                "elite_spawn_thresholds",
+                "fleet_spawn_schedule",
+            ],
+            "missing_source_owned_surface": (
+                "normal_enemy_spawn_count_curve_by_tier_wave_and_spawn_phase"
+            ),
+            "interpretation": (
+                "Current KB/wiki evidence supports displayed spawn-rate thresholds "
+                "and caps, but not a normal enemy per-wave spawn-count ramp. "
+                "Tracker totalEnemies remains calibration evidence only."
+            ),
+        },
+        "kill_density_transform_readiness": kill_density_transform_readiness,
+        "non_boss_pressure_driver_evidence": {
+            "status": pressure_driver_probe.get("status"),
+            "application": "diagnostic_only_not_coin_formula",
+            "certification_effect": "none",
+            "tier": pressure_driver_probe.get("tier"),
+            "wave": pressure_driver_probe.get("wave"),
+            "bc_more_enemies_pct": pressure_driver_probe.get("bc_more_enemies_pct"),
+            "wave_accelerator_spawn_rate_acceleration": pressure_driver_probe.get(
+                "wave_accelerator_spawn_rate_acceleration"
+            ),
+            "enemy_balance_mastery_double_elite_chance_pct": (
+                pressure_driver_probe.get("elite_spawn_pressure") or {}
+            ).get("enemy_balance_mastery_double_elite_chance_pct"),
+            "normal_spawn_rate_pressure": pressure_driver_probe.get(
+                "normal_spawn_rate_pressure"
+            ),
+            "elite_spawn_pressure": pressure_driver_probe.get("elite_spawn_pressure"),
+            "fleet_spawn_pressure": pressure_driver_probe.get("fleet_spawn_pressure"),
+            "source_backed_curve_coverage": pressure_driver_probe.get(
+                "source_backed_curve_coverage"
+            ),
+            "missing_terminal_formula_links": pressure_driver_probe.get(
+                "missing_terminal_formula_links"
+            ),
+            "interpretation": (
+                "Source-backed normal, elite, and fleet pressure drivers are visible "
+                "for farming CPH calibration, but no terminal pressure or coin-density "
+                "transform is certified here."
+            ),
+        },
+        "source_tables": normal_spawn_rate.get("source_tables") or [],
+        "source_formula_status": normal_spawn_rate.get("formula_status"),
+        "tracker_enemy_density_evidence": tracker_enemy_density,
+        "tracker_enemy_composition_evidence": tracker_enemy_composition,
+        "tracker_kill_density_transform_candidate": tracker_kill_density_transform,
+        "tracker_kill_density_stability_evidence": tracker_kill_density_stability,
+        "tracker_coin_density_evidence": tracker_coin_density,
+        "tracker_coin_yield_stability_evidence": tracker_coin_yield_stability,
+        "tracker_coin_integral_candidate": tracker_coin_integral,
+        "missing_to_certify": [
+            "normal_enemy_spawn_count_curve_by_tier_wave_and_spawn_phase",
+            "spawn_rate_to_enemy_kill_density_by_wave",
+            "kill_density_to_coins_per_kill_integral",
+        ],
+    }
+
+
+def farming_econ_timing_readiness_summary(
+    statbook_rows: Mapping[str, object],
+    *,
+    run_tracker_evidence: Mapping[str, object] | None = None,
+    approve_tracker_empirical_cph_default: bool = False,
+    approve_tracker_empirical_run_coin_duration_integrals: bool = False,
+    approve_tracker_current_export_account_state_validation: bool = False,
+    approve_tracker_empirical_run_duration_projection: bool = False,
+    approve_tracker_empirical_wave_skip_reward: bool = False,
+    approve_tracker_wave_skip_intro_semantics: bool = False,
+    approve_source_intro_sprint_coin_window: bool = False,
+    approve_tracker_empirical_econ_window_overlap: bool = False,
+    approve_tracker_empirical_kill_density_transform: bool = False,
+    observed_coins_per_hour: float = 210_000_000_000_000.0,
+    observed_run_hours: float = 5.5,
+    observed_final_wave: int = 5500,
+    observed_tier: int = 14,
+    preset_name: str = "Farming",
+) -> dict[str, object]:
+    """Expose farming econ timing readiness without claiming a CPH formula."""
+
+    def _row(surface_id: str) -> Mapping[str, object]:
+        raw = statbook_rows.get(surface_id) if isinstance(statbook_rows, Mapping) else None
+        return raw if isinstance(raw, Mapping) else {}
+
+    def _value(surface_id: str) -> object:
+        return _row(surface_id).get("final_value")
+
+    def _ratio(numerator: object, denominator: object) -> float | None:
+        try:
+            denominator_value = float(denominator)
+            if denominator_value == 0.0:
+                return None
+            return float(numerator) / denominator_value
+        except (TypeError, ValueError):
+            return None
+
+    def _positive_float(value: object) -> float | None:
+        try:
+            numeric = float(value)
+        except (TypeError, ValueError):
+            return None
+        if numeric <= 0.0:
+            return None
+        return numeric
+
+    def _driver(surface_id: str, owner: str, role: str) -> dict[str, object]:
+        row = _row(surface_id)
+        present = bool(row)
+        return {
+            "surface_id": surface_id,
+            "owner": owner,
+            "role": role,
+            "status": str(row.get("status") or ("missing" if not present else "unknown")),
+            "available": present and row.get("final_value") is not None,
+            "value": row.get("final_value") if present else None,
+            "value_type": row.get("value_type") if present else None,
+        }
+
+    timing_drivers = [
+        _driver(
+            "support_surface::timing.wave_duration_seconds_effective",
+            "simulators.timing",
+            "effective wave duration after Wave Accelerator cooldown reduction",
+        ),
+        _driver(
+            "state::meta.game_speed_multiplier",
+            "qe -> simulators.timing",
+            "runtime game speed multiplier for real elapsed run time",
+        ),
+        _driver(
+            "state::perk.max_game_speed",
+            "qe -> simulators.timing",
+            "Max Game Speed perk contribution to real elapsed run time",
+        ),
+        _driver(
+            "state::cards.wave_accelerator.wave_cooldown_reduction_pct",
+            "qe -> simulators.timing",
+            "Wave Accelerator base-card cooldown reduction",
+        ),
+        _driver(
+            "state::cards.wave_accelerator.spawn_rate_acceleration",
+            "qe -> simulators.scenario",
+            "Wave Accelerator Mastery spawn-rate ramp acceleration",
+        ),
+        _driver(
+            "state::cards.wave_skip.chance_pct",
+            "qe -> simulators.scenario",
+            "Wave Skip chance for effective waves and skipped-wave reward semantics",
+        ),
+        _driver(
+            "state::cards.wave_skip.mastery_effect",
+            "qe -> simulators.scenario",
+            "Wave Skip Mastery chance to double wave skips for timing/economy diagnostics",
+        ),
+        _driver(
+            "state::cards.intro_sprint.waves",
+            "qe -> simulators.scenario",
+            "Intro Sprint active waves; KB states no coins are earned during Intro Sprint",
+        ),
+        _driver(
+            "support_surface::scenario.target_farming_wave",
+            "simulators.scenario",
+            "target farming wave for the run horizon",
+        ),
+        _driver(
+            "support_surface::scenario.waves_per_run_effective",
+            "simulators.scenario",
+            "effective waves per run after Wave Skip and Intro Sprint",
+        ),
+        _driver(
+            "support_surface::scenario.runs_per_day_effective",
+            "simulators.scenario",
+            "run cadence from target wave and effective wave duration",
+        ),
+    ]
+    econ_window_drivers = [
+        _driver("state::uw.golden_tower.duration_seconds", "simulators.timing", "Golden Tower duration"),
+        _driver("state::uw.golden_tower.cooldown_seconds", "simulators.timing", "Golden Tower cooldown"),
+        _driver("state::uw.golden_tower.bonus_multiplier", "qe", "Golden Tower coin multiplier"),
+        _driver("state::uw.black_hole.duration_seconds", "simulators.timing", "Black Hole duration"),
+        _driver("state::uw.black_hole.cooldown_seconds", "simulators.timing", "Black Hole cooldown"),
+        _driver("state::uw.black_hole.coin_bonus_multiplier", "qe", "Black Hole coin multiplier"),
+        _driver("state::uw.death_wave.coin_bonus_multiplier", "qe", "Death Wave coin multiplier"),
+        _driver("state::uw.spotlight.coin_bonus_multiplier", "qe", "Spotlight coin multiplier"),
+        _driver("state::bot.golden.duration_seconds", "qe", "Golden Bot duration"),
+        _driver("state::bot.golden.cooldown_seconds", "qe", "Golden Bot cooldown"),
+        _driver("state::bot.golden.bonus_multiplier", "qe", "Golden Bot coin multiplier"),
+    ]
+    economy_drivers = [
+        _driver("state::economy.coins_multiplier", "qe", "base/all coins multiplier"),
+        _driver("state::economy.coin_bonus_multiplier", "qe", "coin bonus multiplier"),
+        _driver("state::economy.coins_per_kill_bonus", "qe", "coins per kill bonus"),
+        _driver("state::economy.coins_per_wave", "qe", "coins per wave"),
+    ]
+    econ_sync_window_readiness = _farming_econ_sync_window_readiness_summary(
+        econ_window_drivers,
+        run_tracker_evidence=run_tracker_evidence,
+        approve_tracker_empirical_econ_window_overlap=(
+            approve_tracker_empirical_econ_window_overlap
+        ),
+    )
+    all_drivers = [*timing_drivers, *econ_window_drivers, *economy_drivers]
+    missing_required = [
+        str(driver["surface_id"])
+        for driver in timing_drivers
+        if not bool(driver["available"])
+        and str(driver["surface_id"]) != "state::cards.wave_skip.mastery_effect"
+    ]
+    coins_per_run = max(0.0, float(observed_coins_per_hour or 0.0)) * max(
+        0.0,
+        float(observed_run_hours or 0.0),
+    )
+    projected_duration = _value("support_surface::timing.wave_duration_seconds_effective")
+    target_wave = _value("support_surface::scenario.target_farming_wave")
+    effective_waves_per_run = _value("support_surface::scenario.waves_per_run_effective")
+    wave_skip_pct = _value("state::cards.wave_skip.chance_pct")
+    wave_skip_mastery_pct = _value("state::cards.wave_skip.mastery_effect")
+    intro_sprint_waves = _value("state::cards.intro_sprint.waves")
+    wave_accelerator_spawn_rate_acceleration = _value(
+        "state::cards.wave_accelerator.spawn_rate_acceleration"
+    )
+    enemy_balance_mastery_double_elite_chance_pct = _value(
+        "state::cards.enemy_balance.mastery_effect"
+    )
+    game_speed = _value("state::meta.game_speed_multiplier")
+    max_game_speed = _value("state::perk.max_game_speed")
+    estimated_run_hours_from_current_timing = None
+    estimated_run_hours_after_game_speed = None
+    estimated_played_waves_after_wave_skip_intro = None
+    estimated_run_hours_after_wave_skip_intro_and_game_speed = None
+    estimated_wave_skip_expected_skip_multiplier = None
+    estimated_wave_skip_expected_skipped_waves = None
+    effective_game_speed_multiplier = None
+    try:
+        estimated_run_hours_from_current_timing = (
+            float(projected_duration) * float(target_wave)
+        ) / 3600.0
+    except (TypeError, ValueError):
+        estimated_run_hours_from_current_timing = None
+    try:
+        effective_game_speed_multiplier = max(0.0, float(game_speed or 0.0)) + max(
+            0.0,
+            float(max_game_speed or 0.0),
+        )
+        if effective_game_speed_multiplier > 0.0 and estimated_run_hours_from_current_timing is not None:
+            estimated_run_hours_after_game_speed = (
+                estimated_run_hours_from_current_timing / effective_game_speed_multiplier
+            )
+    except (TypeError, ValueError):
+        effective_game_speed_multiplier = None
+        estimated_run_hours_after_game_speed = None
+    try:
+        wave_skip_multiplier = 1.0 + (max(0.0, float(wave_skip_pct or 0.0)) / 100.0)
+        mastery_double_chance = max(0.0, float(wave_skip_mastery_pct or 0.0)) / 100.0
+        estimated_wave_skip_expected_skip_multiplier = wave_skip_multiplier * (1.0 + mastery_double_chance)
+        intro_waves = min(max(0.0, float(intro_sprint_waves or 0.0)), max(0.0, float(target_wave)))
+        estimated_played_waves_after_wave_skip_intro = max(
+            0.0,
+            (float(target_wave) - intro_waves) / estimated_wave_skip_expected_skip_multiplier,
+        )
+        estimated_wave_skip_expected_skipped_waves = max(
+            0.0,
+            float(target_wave) - intro_waves - estimated_played_waves_after_wave_skip_intro,
+        )
+        if effective_game_speed_multiplier and effective_game_speed_multiplier > 0.0:
+            estimated_run_hours_after_wave_skip_intro_and_game_speed = (
+                estimated_played_waves_after_wave_skip_intro
+                * float(projected_duration)
+                / 3600.0
+                / float(effective_game_speed_multiplier)
+            )
+    except (TypeError, ValueError):
+        estimated_played_waves_after_wave_skip_intro = None
+        estimated_run_hours_after_wave_skip_intro_and_game_speed = None
+        estimated_wave_skip_expected_skip_multiplier = None
+        estimated_wave_skip_expected_skipped_waves = None
+    tracker_alignment: dict[str, object] = {
+        "status": "not_supplied",
+        "application": "external_observation_not_account_truth",
+    }
+    tracker_cph_calibration: dict[str, object] = {
+        "status": "not_supplied",
+        "application": "external_observation_not_account_truth",
+        "certification_effect": "none",
+    }
+    tracker_cph_identity: dict[str, object] = {
+        "status": "not_supplied",
+        "application": "external_observation_not_account_truth",
+        "certification_effect": "none",
+    }
+    tracker_wave_reward: dict[str, object] = {
+        "status": "not_supplied",
+        "application": "external_observation_not_account_truth",
+        "certification_effect": "none",
+    }
+    intro_sprint_driver = next(
+        (
+            driver
+            for driver in timing_drivers
+            if driver["surface_id"] == "state::cards.intro_sprint.waves"
+        ),
+        {},
+    )
+    wave_skip_driver = next(
+        (
+            driver
+            for driver in timing_drivers
+            if driver["surface_id"] == "state::cards.wave_skip.chance_pct"
+        ),
+        {},
+    )
+    wave_skip_mastery_driver = next(
+        (
+            driver
+            for driver in timing_drivers
+            if driver["surface_id"] == "state::cards.wave_skip.mastery_effect"
+        ),
+        {},
+    )
+    wave_reward_source_audit: dict[str, object] = {
+        "status": "base_reward_sources_available_integral_semantics_unresolved",
+        "application": "diagnostic_only_not_coin_formula",
+        "certification_effect": "none",
+        "intro_sprint_coin_suppression": {
+            "status": (
+                "source_backed_available"
+                if bool(intro_sprint_driver.get("available"))
+                else "runtime_surface_missing"
+            ),
+            "surface_id": "state::cards.intro_sprint.waves",
+            "driver_status": intro_sprint_driver.get("status"),
+            "active_wave_count": intro_sprint_waves,
+            "source_files": [
+                "kb/cards/tables/card-base-ladders.csv",
+                "kb/global-rules/contracts/stat-query-initial-surface-set.yaml",
+            ],
+            "source_semantics": "Intro Sprint active waves earn no coins.",
+        },
+        "wave_skip_base_reward": {
+            "status": (
+                "source_backed_available_expected_value_missing"
+                if bool(wave_skip_driver.get("available"))
+                else "runtime_surface_missing"
+            ),
+            "surface_id": "state::cards.wave_skip.chance_pct",
+            "driver_status": wave_skip_driver.get("status"),
+            "chance_pct": wave_skip_pct,
+            "source_files": ["kb/cards/tables/card-base-ladders.csv"],
+            "source_semantics": (
+                "Wave Skip chance skips a wave and earns coins/cash equal to "
+                "the previous wave times 1.10."
+            ),
+        },
+        "wave_skip_mastery_double_skip": {
+            "status": (
+                "source_backed_available_reward_integral_missing"
+                if wave_skip_mastery_driver.get("status") not in {None, "missing"}
+                else "runtime_surface_missing"
+            ),
+            "surface_id": "state::cards.wave_skip.mastery_effect",
+            "driver_status": wave_skip_mastery_driver.get("status"),
+            "double_skip_chance_pct": wave_skip_mastery_pct,
+            "source_files": ["kb/cards/tables/card-masteries.csv"],
+            "source_semantics": (
+                "Wave Skip Mastery provides a chance to double wave skip; the "
+                "expected-value reward integral for double skips is still unpromoted."
+            ),
+        },
+        "tracker_skip_count_semantics": {
+            "status": tracker_alignment.get("skip_semantics_gap_status"),
+            "inference_status": dict(
+                tracker_alignment.get("tracker_waves_skipped_semantics_inference") or {}
+            ).get("status"),
+            "best_candidate": dict(
+                tracker_alignment.get("tracker_waves_skipped_semantics_inference") or {}
+            ).get("best_candidate"),
+            "best_candidate_distance_from_expected": dict(
+                tracker_alignment.get("tracker_waves_skipped_semantics_inference") or {}
+            ).get("best_candidate_distance_from_expected"),
+            "operator_confirmation_required": dict(
+                tracker_alignment.get("tracker_waves_skipped_semantics_inference") or {}
+            ).get("operator_confirmation_required"),
+            "raw_tracker_waves_skipped_median": None,
+            "candidate_semantics": [
+                "tracker_skips_exclude_intro_sprint",
+                "tracker_skips_include_intro_sprint",
+            ],
+            "interpretation": (
+                "Tracker wavesSkipped semantics must be resolved before the "
+                "Wave Skip reward expected value can become a certified CPH input."
+            ),
+        },
+        "missing_to_promote": [
+            "wave_skip_coin_reward_expected_value_over_per_wave_coin_curve",
+            "wave_skip_mastery_double_skip_reward_semantics",
+            "tracker_waves_skipped_intro_sprint_semantics",
+            "econ_window_overlap_for_skipped_and_played_waves",
+        ],
+    }
+    wave_skip_reward_readiness: dict[str, object] = {
+        "status": "source_reward_semantics_available_expected_value_integral_missing",
+        "owner": "simulators.timing",
+        "application": "diagnostic_only_not_coin_formula",
+        "certification_effect": "none",
+        "source_audit": wave_reward_source_audit,
+        "tracker_reward_status": tracker_wave_reward.get("status"),
+        "tracker_reward_field_status": tracker_wave_reward.get("tracker_reward_field_status"),
+        "remaining_to_certify": [
+            "wave_skip_coin_reward_expected_value_over_per_wave_coin_curve",
+            "wave_skip_mastery_double_skip_reward_semantics",
+            "tracker_waves_skipped_intro_sprint_semantics",
+            "econ_window_overlap_for_skipped_and_played_waves",
+        ],
+    }
+    coin_eligible_displayed_waves_after_intro_at_target = None
+    try:
+        target_wave_value = max(0.0, float(target_wave))
+        intro_sprint_wave_value = min(
+            max(0.0, float(intro_sprint_waves or 0.0)),
+            target_wave_value,
+        )
+        coin_eligible_displayed_waves_after_intro_at_target = max(
+            0.0,
+            target_wave_value - intro_sprint_wave_value,
+        )
+    except (TypeError, ValueError):
+        coin_eligible_displayed_waves_after_intro_at_target = None
+    intro_sprint_coin_window_readiness: dict[str, object] = {
+        "status": (
+            "source_intro_sprint_coin_suppression_available_coin_integral_missing"
+            if bool(intro_sprint_driver.get("available"))
+            else "intro_sprint_runtime_surface_missing_coin_integral_missing"
+        ),
+        "owner": "simulators.timing",
+        "application": "diagnostic_only_not_coin_formula",
+        "certification_effect": "none",
+        "source_surface_id": "state::cards.intro_sprint.waves",
+        "driver_status": intro_sprint_driver.get("status"),
+        "active_wave_count": intro_sprint_waves,
+        "target_wave": target_wave,
+        "coin_eligible_displayed_waves_after_intro_at_target": (
+            coin_eligible_displayed_waves_after_intro_at_target
+        ),
+        "source_files": [
+            "kb/cards/tables/card-base-ladders.csv",
+            "kb/global-rules/contracts/stat-query-initial-surface-set.yaml",
+        ],
+        "source_semantics": "Intro Sprint active waves earn no coins.",
+        "remaining_to_certify": [
+            "source_owned_per_wave_coin_curve_after_intro_sprint",
+            "intro_sprint_boundary_interaction_with_wave_skip_and_wave_rewards",
+            "econ_window_overlap_for_post_intro_played_and_skipped_waves",
+            "run_coin_integral_excluding_intro_sprint_waves",
+        ],
+    }
+    approved_intro_sprint_coin_window_closes_formula_link = (
+        bool(approve_source_intro_sprint_coin_window)
+        and bool(intro_sprint_driver.get("available"))
+        and coin_eligible_displayed_waves_after_intro_at_target is not None
+    )
+    intro_sprint_coin_window_readiness.update(
+        {
+            "certification_effect": (
+                "closes_intro_sprint_no_coin_window_link_only"
+                if approved_intro_sprint_coin_window_closes_formula_link
+                else "none"
+            ),
+            "operator_approval_required": True,
+            "operator_approved_source_intro_sprint_coin_window": bool(
+                approve_source_intro_sprint_coin_window
+            ),
+            "operator_approval_status": (
+                "approved_explicit_runtime_input"
+                if approve_source_intro_sprint_coin_window
+                else "not_approved"
+            ),
+            "approval_runtime_input": "approve_source_intro_sprint_coin_window",
+            "approval_policy": (
+                "Explicit approval plus source-backed Intro Sprint no-coin evidence "
+                "closes only the Intro Sprint coin-window formula link; it does not "
+                "certify farming CPH."
+            ),
+            "source_coin_window_candidate_available": (
+                bool(intro_sprint_driver.get("available"))
+                and coin_eligible_displayed_waves_after_intro_at_target is not None
+            ),
+            "approved_window_closes_formula_link": (
+                approved_intro_sprint_coin_window_closes_formula_link
+            ),
+        }
+    )
+    if isinstance(run_tracker_evidence, Mapping):
+        tracker_recent = run_tracker_evidence.get("farming_t14_recent")
+        tracker_recent = tracker_recent if isinstance(tracker_recent, Mapping) else {}
+        tracker_wave = dict(tracker_recent.get("wave") or {})
+        tracker_duration = dict(tracker_recent.get("duration_hours") or {})
+        tracker_game_time = dict(tracker_recent.get("tracker_game_time_hours") or {})
+        tracker_game_to_real_duration_ratio = dict(
+            tracker_recent.get("tracker_game_to_real_duration_ratio") or {}
+        )
+        tracker_cph = dict(tracker_recent.get("coins_per_hour") or {})
+        tracker_coins_per_run = dict(tracker_recent.get("coins_per_run") or {})
+        tracker_waves_per_hour = dict(tracker_recent.get("observed_waves_per_hour") or {})
+        tracker_reported_waves_per_hour = dict(
+            tracker_recent.get("tracker_waves_per_hour") or {}
+        )
+        tracker_reported_to_observed_waves_per_hour_ratio = dict(
+            tracker_recent.get("tracker_to_observed_waves_per_hour_ratio") or {}
+        )
+        tracker_seconds_per_wave = dict(tracker_recent.get("observed_seconds_per_wave") or {})
+        tracker_enemies_per_wave = dict(tracker_recent.get("observed_enemies_per_wave") or {})
+        tracker_coins_per_enemy = dict(tracker_recent.get("observed_coins_per_enemy") or {})
+        tracker_run_total_cph = dict(tracker_recent.get("observed_cph_from_run_totals") or {})
+        tracker_run_total_cph_ratio = dict(
+            tracker_recent.get("observed_cph_to_tracker_reported_ratio") or {}
+        )
+        tracker_component_cph = dict(
+            tracker_recent.get("observed_cph_from_density_components") or {}
+        )
+        tracker_coins_from_wave_skip = dict(
+            tracker_recent.get("tracker_coins_from_wave_skip") or {}
+        )
+        tracker_coins_per_wave_reported = dict(
+            tracker_recent.get("tracker_coins_per_wave") or {}
+        )
+        tracker_coins_per_wave_to_observed_ratio = dict(
+            tracker_recent.get("tracker_coins_per_wave_to_observed_ratio") or {}
+        )
+        tracker_wave_skip_coin_share = dict(
+            tracker_recent.get("tracker_wave_skip_coin_share") or {}
+        )
+        tracker_wave_skip_coins_per_skipped_wave = dict(
+            tracker_recent.get("tracker_wave_skip_coins_per_skipped_wave") or {}
+        )
+        observed_median_wave = tracker_wave.get("median")
+        observed_median_duration_hours = tracker_duration.get("median")
+        observed_median_coins_per_hour = tracker_cph.get("median")
+        observed_median_coins_per_run = tracker_coins_per_run.get("median")
+        projected_hours_at_tracker_median_wave = None
+        skip_adjusted_projected_hours_at_tracker_median_wave = None
+        skip_adjusted_duration_ratio = None
+        skip_adjusted_played_waves_at_tracker_median_wave = None
+        expected_skipped_waves_at_tracker_median_wave = None
+        observed_skipped_waves_median = dict(tracker_recent.get("waves_skipped") or {}).get("median")
+        observed_skip_ratio = None
+        expected_skip_ratio = None
+        observed_non_intro_displayed_waves = None
+        observed_played_waves_after_intro_from_tracker = None
+        observed_effective_skip_multiplier_after_intro = None
+        observed_skipped_waves_after_intro_if_tracker_includes_intro = None
+        observed_played_waves_after_intro_if_tracker_skips_include_intro = None
+        observed_effective_skip_multiplier_after_intro_if_tracker_skips_include_intro = None
+        observed_to_expected_skip_multiplier_ratio_if_tracker_skips_include_intro = None
+        implied_wave_skip_chance_if_no_mastery_pct = None
+        implied_wave_skip_mastery_double_chance_pct = None
+        observed_to_expected_skip_multiplier_ratio = None
+        skip_semantics_gap_status = "not_evaluated"
+        run_duration_ratio = None
+        tracker_waves_per_hour_consistency_status = "not_supplied"
+        tracker_game_time_ratio_status = "not_supplied"
+        tracker_reported_coins_per_wave_semantics_status = "not_supplied"
+        try:
+            reported_ratio = tracker_reported_to_observed_waves_per_hour_ratio.get("median")
+            if reported_ratio is not None:
+                tracker_waves_per_hour_consistency_status = (
+                    "tracker_reported_waves_per_hour_matches_duration"
+                    if abs(float(reported_ratio) - 1.0) <= 0.02
+                    else "tracker_reported_waves_per_hour_diverges_from_duration"
+                )
+        except (TypeError, ValueError):
+            tracker_waves_per_hour_consistency_status = "not_available"
+        try:
+            coins_per_wave_ratio = tracker_coins_per_wave_to_observed_ratio.get("median")
+            if coins_per_wave_ratio is not None:
+                tracker_reported_coins_per_wave_semantics_status = (
+                    "tracker_reported_coins_per_wave_close_to_total_observed"
+                    if 0.8 <= float(coins_per_wave_ratio) <= 1.2
+                    else "tracker_reported_coins_per_wave_diverges_from_total_observed"
+                )
+        except (TypeError, ValueError):
+            tracker_reported_coins_per_wave_semantics_status = "not_available"
+        try:
+            game_ratio = tracker_game_to_real_duration_ratio.get("median")
+            if game_ratio is not None:
+                tracker_game_time_ratio_status = (
+                    "tracker_game_time_ratio_available"
+                    if float(game_ratio) > 0.0
+                    else "tracker_game_time_ratio_nonpositive"
+                )
+        except (TypeError, ValueError):
+            tracker_game_time_ratio_status = "not_available"
+        try:
+            projected_hours_at_tracker_median_wave = (
+                float(projected_duration) * float(observed_median_wave)
+            ) / 3600.0
+            if effective_game_speed_multiplier and effective_game_speed_multiplier > 0.0:
+                projected_hours_at_tracker_median_wave /= float(effective_game_speed_multiplier)
+        except (TypeError, ValueError):
+            projected_hours_at_tracker_median_wave = None
+        try:
+            wave_skip_multiplier = 1.0 + (max(0.0, float(wave_skip_pct or 0.0)) / 100.0)
+            mastery_double_chance = max(0.0, float(wave_skip_mastery_pct or 0.0)) / 100.0
+            expected_skip_multiplier = wave_skip_multiplier * (1.0 + mastery_double_chance)
+            intro_waves = min(max(0.0, float(intro_sprint_waves or 0.0)), max(0.0, float(observed_median_wave)))
+            skip_adjusted_played_waves_at_tracker_median_wave = max(
+                0.0,
+                (float(observed_median_wave) - intro_waves) / expected_skip_multiplier,
+            )
+            expected_skipped_waves_at_tracker_median_wave = max(
+                0.0,
+                float(observed_median_wave) - intro_waves - skip_adjusted_played_waves_at_tracker_median_wave,
+            )
+            observed_non_intro_displayed_waves = max(
+                0.0,
+                float(observed_median_wave) - intro_waves,
+            )
+            if observed_skipped_waves_median is not None:
+                observed_played_waves_after_intro_from_tracker = max(
+                    0.0,
+                    observed_non_intro_displayed_waves - float(observed_skipped_waves_median),
+                )
+                observed_skipped_waves_after_intro_if_tracker_includes_intro = max(
+                    0.0,
+                    float(observed_skipped_waves_median) - intro_waves,
+                )
+                observed_played_waves_after_intro_if_tracker_skips_include_intro = max(
+                    0.0,
+                    observed_non_intro_displayed_waves
+                    - observed_skipped_waves_after_intro_if_tracker_includes_intro,
+                )
+                if observed_played_waves_after_intro_from_tracker > 0.0:
+                    observed_effective_skip_multiplier_after_intro = (
+                        observed_non_intro_displayed_waves
+                        / observed_played_waves_after_intro_from_tracker
+                    )
+                    implied_wave_skip_chance_if_no_mastery_pct = max(
+                        0.0,
+                        (observed_effective_skip_multiplier_after_intro - 1.0) * 100.0,
+                    )
+                    if wave_skip_multiplier > 0.0:
+                        implied_wave_skip_mastery_double_chance_pct = max(
+                            0.0,
+                            (
+                                (observed_effective_skip_multiplier_after_intro / wave_skip_multiplier)
+                                - 1.0
+                            )
+                            * 100.0,
+                        )
+                    if expected_skip_multiplier > 0.0:
+                        observed_to_expected_skip_multiplier_ratio = (
+                            observed_effective_skip_multiplier_after_intro / expected_skip_multiplier
+                        )
+                if observed_played_waves_after_intro_if_tracker_skips_include_intro > 0.0:
+                    observed_effective_skip_multiplier_after_intro_if_tracker_skips_include_intro = (
+                        observed_non_intro_displayed_waves
+                        / observed_played_waves_after_intro_if_tracker_skips_include_intro
+                    )
+                    if expected_skip_multiplier > 0.0:
+                        observed_to_expected_skip_multiplier_ratio_if_tracker_skips_include_intro = (
+                            observed_effective_skip_multiplier_after_intro_if_tracker_skips_include_intro
+                            / expected_skip_multiplier
+                        )
+                raw_exceeds_expected = (
+                    observed_effective_skip_multiplier_after_intro is not None
+                    and expected_skip_multiplier > 0.0
+                    and observed_effective_skip_multiplier_after_intro > expected_skip_multiplier
+                )
+                intro_inclusive_reduces_gap = (
+                    observed_to_expected_skip_multiplier_ratio is not None
+                    and observed_to_expected_skip_multiplier_ratio_if_tracker_skips_include_intro is not None
+                    and observed_to_expected_skip_multiplier_ratio_if_tracker_skips_include_intro
+                    < observed_to_expected_skip_multiplier_ratio
+                )
+                skip_semantics_gap_status = (
+                    "tracker_skip_count_semantics_ambiguous_intro_inclusive_candidate_reduces_gap"
+                    if raw_exceeds_expected and intro_inclusive_reduces_gap
+                    else "tracker_skips_exceed_known_wave_skip_mastery_gated_state"
+                    if raw_exceeds_expected
+                    else "tracker_skips_within_known_wave_skip_expectation"
+                )
+            if effective_game_speed_multiplier and effective_game_speed_multiplier > 0.0:
+                skip_adjusted_projected_hours_at_tracker_median_wave = (
+                    skip_adjusted_played_waves_at_tracker_median_wave
+                    * float(projected_duration)
+                    / 3600.0
+                    / float(effective_game_speed_multiplier)
+                )
+        except (TypeError, ValueError):
+            skip_adjusted_projected_hours_at_tracker_median_wave = None
+            skip_adjusted_played_waves_at_tracker_median_wave = None
+            expected_skipped_waves_at_tracker_median_wave = None
+            observed_non_intro_displayed_waves = None
+            observed_played_waves_after_intro_from_tracker = None
+            observed_effective_skip_multiplier_after_intro = None
+            observed_skipped_waves_after_intro_if_tracker_includes_intro = None
+            observed_played_waves_after_intro_if_tracker_skips_include_intro = None
+            observed_effective_skip_multiplier_after_intro_if_tracker_skips_include_intro = None
+            observed_to_expected_skip_multiplier_ratio_if_tracker_skips_include_intro = None
+            implied_wave_skip_chance_if_no_mastery_pct = None
+            implied_wave_skip_mastery_double_chance_pct = None
+            observed_to_expected_skip_multiplier_ratio = None
+            skip_semantics_gap_status = "not_available"
+        try:
+            if observed_median_wave is not None and float(observed_median_wave) > 0.0:
+                if observed_skipped_waves_median is not None:
+                    observed_skip_ratio = float(observed_skipped_waves_median) / float(observed_median_wave)
+                if expected_skipped_waves_at_tracker_median_wave is not None:
+                    expected_skip_ratio = expected_skipped_waves_at_tracker_median_wave / float(observed_median_wave)
+        except (TypeError, ValueError):
+            observed_skip_ratio = None
+            expected_skip_ratio = None
+        try:
+            if projected_hours_at_tracker_median_wave is not None and float(observed_median_duration_hours) > 0.0:
+                run_duration_ratio = projected_hours_at_tracker_median_wave / float(
+                    observed_median_duration_hours
+                )
+        except (TypeError, ValueError):
+            run_duration_ratio = None
+        try:
+            if (
+                skip_adjusted_projected_hours_at_tracker_median_wave is not None
+                and float(observed_median_duration_hours) > 0.0
+            ):
+                skip_adjusted_duration_ratio = skip_adjusted_projected_hours_at_tracker_median_wave / float(
+                    observed_median_duration_hours
+                )
+        except (TypeError, ValueError):
+            skip_adjusted_duration_ratio = None
+        skip_semantics_inference = {
+            "status": "not_available",
+            "application": "external_observation_not_account_truth",
+            "certification_effect": "none",
+        }
+        candidate_distances: dict[str, float] = {}
+        try:
+            if observed_to_expected_skip_multiplier_ratio is not None:
+                candidate_distances["tracker_skips_exclude_intro_sprint"] = abs(
+                    float(observed_to_expected_skip_multiplier_ratio) - 1.0
+                )
+            if observed_to_expected_skip_multiplier_ratio_if_tracker_skips_include_intro is not None:
+                candidate_distances["tracker_skips_include_intro_sprint"] = abs(
+                    float(observed_to_expected_skip_multiplier_ratio_if_tracker_skips_include_intro)
+                    - 1.0
+                )
+        except (TypeError, ValueError):
+            candidate_distances = {}
+        if candidate_distances:
+            best_candidate = min(candidate_distances, key=lambda key: candidate_distances[key])
+            best_distance = candidate_distances[best_candidate]
+            exclude_distance = candidate_distances.get("tracker_skips_exclude_intro_sprint")
+            include_distance = candidate_distances.get("tracker_skips_include_intro_sprint")
+            support_ratio = None
+            try:
+                if include_distance is not None and exclude_distance is not None and include_distance > 0.0:
+                    support_ratio = exclude_distance / include_distance
+            except (TypeError, ValueError, ZeroDivisionError):
+                support_ratio = None
+            skip_semantics_inference = {
+                "status": (
+                    "suggests_tracker_skips_include_intro_sprint"
+                    if best_candidate == "tracker_skips_include_intro_sprint"
+                    and best_distance <= 0.10
+                    else "suggests_tracker_skips_exclude_intro_sprint"
+                    if best_candidate == "tracker_skips_exclude_intro_sprint"
+                    and best_distance <= 0.10
+                    else "no_close_candidate"
+                ),
+                "application": "external_observation_not_account_truth",
+                "certification_effect": "none",
+                "best_candidate": best_candidate,
+                "best_candidate_distance_from_expected": best_distance,
+                "candidate_distance_from_expected": candidate_distances,
+                "include_intro_support_ratio_vs_exclude": support_ratio,
+                "operator_confirmation_required": True,
+                "promotion_effect": "none_until_tracker_semantics_confirmed_or_approved",
+                "interpretation": (
+                    "Candidate is chosen by closeness to the KB/QE Wave Skip expectation; "
+                    "this is evidence for review only, not tracker documentation or CPH truth."
+                ),
+            }
+        tracker_alignment = {
+            "status": (
+                "tracker_t14_farming_timing_gap_quantified"
+                if tracker_recent.get("row_count")
+                else "tracker_supplied_without_t14_farming_band"
+            ),
+            "source": run_tracker_evidence.get("source"),
+            "application": run_tracker_evidence.get("application"),
+            "recent_definition": tracker_recent.get("definition"),
+            "recent_row_count": tracker_recent.get("row_count"),
+            "observed_median_wave": observed_median_wave,
+            "observed_median_duration_hours": observed_median_duration_hours,
+            "tracker_median_game_time_hours": tracker_game_time.get("median"),
+            "tracker_game_to_real_duration_ratio": (
+                tracker_game_to_real_duration_ratio.get("median")
+            ),
+            "tracker_game_time_ratio_status": tracker_game_time_ratio_status,
+            "observed_median_coins_per_hour": observed_median_coins_per_hour,
+            "observed_median_waves_per_hour": tracker_waves_per_hour.get("median"),
+            "tracker_reported_median_waves_per_hour": (
+                tracker_reported_waves_per_hour.get("median")
+            ),
+            "tracker_reported_to_observed_waves_per_hour_ratio": (
+                tracker_reported_to_observed_waves_per_hour_ratio.get("median")
+            ),
+            "tracker_waves_per_hour_consistency_status": (
+                tracker_waves_per_hour_consistency_status
+            ),
+            "observed_median_seconds_per_wave": tracker_seconds_per_wave.get("median"),
+            "projected_hours_at_tracker_median_wave": projected_hours_at_tracker_median_wave,
+            "projected_over_observed_duration_ratio": run_duration_ratio,
+            "skip_adjusted_played_waves_at_tracker_median_wave": (
+                skip_adjusted_played_waves_at_tracker_median_wave
+            ),
+            "expected_skipped_waves_at_tracker_median_wave": expected_skipped_waves_at_tracker_median_wave,
+            "observed_skipped_waves_median": observed_skipped_waves_median,
+            "expected_skip_ratio_at_tracker_median_wave": expected_skip_ratio,
+            "observed_skip_ratio_at_tracker_median_wave": observed_skip_ratio,
+            "observed_non_intro_displayed_waves": observed_non_intro_displayed_waves,
+            "observed_played_waves_after_intro_from_tracker": (
+                observed_played_waves_after_intro_from_tracker
+            ),
+            "observed_effective_skip_multiplier_after_intro": (
+                observed_effective_skip_multiplier_after_intro
+            ),
+            "tracker_waves_skipped_semantics_candidates": {
+                "status": (
+                    "available"
+                    if observed_skipped_waves_median is not None
+                    else "not_available"
+                ),
+                "raw_tracker_waves_skipped_median": observed_skipped_waves_median,
+                "interpretation_a_tracker_skips_exclude_intro_sprint": {
+                    "skipped_waves_after_intro": observed_skipped_waves_median,
+                    "played_waves_after_intro": observed_played_waves_after_intro_from_tracker,
+                    "effective_skip_multiplier_after_intro": (
+                        observed_effective_skip_multiplier_after_intro
+                    ),
+                    "observed_to_expected_skip_multiplier_ratio": (
+                        observed_to_expected_skip_multiplier_ratio
+                    ),
+                },
+                "interpretation_b_tracker_skips_include_intro_sprint": {
+                    "skipped_waves_after_intro": (
+                        observed_skipped_waves_after_intro_if_tracker_includes_intro
+                    ),
+                    "played_waves_after_intro": (
+                        observed_played_waves_after_intro_if_tracker_skips_include_intro
+                    ),
+                    "effective_skip_multiplier_after_intro": (
+                        observed_effective_skip_multiplier_after_intro_if_tracker_skips_include_intro
+                    ),
+                    "observed_to_expected_skip_multiplier_ratio": (
+                        observed_to_expected_skip_multiplier_ratio_if_tracker_skips_include_intro
+                    ),
+                },
+                "interpretation": (
+                    "Tracker wavesSkipped semantics are external-observation metadata. "
+                    "If the tracker count includes Intro Sprint waves, the apparent Wave Skip gap is much smaller."
+                ),
+            },
+            "tracker_waves_skipped_semantics_inference": skip_semantics_inference,
+            "implied_wave_skip_chance_if_no_mastery_pct": (
+                implied_wave_skip_chance_if_no_mastery_pct
+            ),
+            "implied_wave_skip_mastery_double_chance_pct_at_current_base": (
+                implied_wave_skip_mastery_double_chance_pct
+            ),
+            "observed_to_expected_skip_multiplier_ratio": (
+                observed_to_expected_skip_multiplier_ratio
+            ),
+            "skip_semantics_gap_status": skip_semantics_gap_status,
+            "wave_skip_mastery_double_chance_pct": wave_skip_mastery_pct,
+            "skip_adjusted_projected_hours_at_tracker_median_wave": (
+                skip_adjusted_projected_hours_at_tracker_median_wave
+            ),
+            "skip_adjusted_projected_over_observed_duration_ratio": skip_adjusted_duration_ratio,
+            "interpretation": (
+                "Values quantify the timing calibration gap only; they do not tune the model or certify CPH."
+            ),
+        }
+        tracker_cph_calibration = {
+            "status": (
+                "tracker_t14_farming_cph_band_available"
+                if tracker_recent.get("row_count") and observed_median_coins_per_hour is not None
+                else "tracker_supplied_without_cph_band"
+            ),
+            "source": run_tracker_evidence.get("source"),
+            "application": run_tracker_evidence.get("application"),
+            "certification_effect": "none",
+            "recent_definition": tracker_recent.get("definition"),
+            "recent_row_count": tracker_recent.get("row_count"),
+            "latest": tracker_recent.get("latest"),
+            "observed_median_wave": observed_median_wave,
+            "observed_median_duration_hours": observed_median_duration_hours,
+            "observed_median_coins_per_run": observed_median_coins_per_run,
+            "observed_median_coins_per_hour": observed_median_coins_per_hour,
+            "anchor_observed_final_wave": int(observed_final_wave),
+            "anchor_observed_run_hours": float(observed_run_hours),
+            "anchor_observed_coins_per_hour": float(observed_coins_per_hour),
+            "observed_to_anchor_wave_ratio": _ratio(
+                observed_median_wave,
+                float(observed_final_wave),
+            ),
+            "observed_to_anchor_duration_ratio": _ratio(
+                observed_median_duration_hours,
+                float(observed_run_hours),
+            ),
+            "observed_to_anchor_coins_per_hour_ratio": _ratio(
+                observed_median_coins_per_hour,
+                float(observed_coins_per_hour),
+            ),
+            "interpretation": (
+                "Tracker CPH bands are repeatable calibration evidence only; they do not tune the model or certify CPH."
+            ),
+        }
+        component_median_cph = tracker_component_cph.get("median")
+        run_total_median_cph = tracker_run_total_cph.get("median")
+        tracker_cph_identity = {
+            "status": (
+                "tracker_density_components_reconstruct_cph"
+                if tracker_recent.get("row_count")
+                and (
+                    component_median_cph is not None
+                    or run_total_median_cph is not None
+                )
+                and observed_median_coins_per_hour is not None
+                else "tracker_supplied_without_density_component_cph_band"
+            ),
+            "source": run_tracker_evidence.get("source"),
+            "application": run_tracker_evidence.get("application"),
+            "certification_effect": "none",
+            "formula": "coins/run_duration_hours and coins_per_enemy * enemies_per_wave * waves_per_hour",
+            "recent_definition": tracker_recent.get("definition"),
+            "recent_row_count": tracker_recent.get("row_count"),
+            "run_total_median_coins_per_hour": run_total_median_cph,
+            "run_total_to_tracker_cph_ratio": _ratio(
+                run_total_median_cph,
+                observed_median_coins_per_hour,
+            ),
+            "run_total_to_tracker_reported_row_ratio_median": (
+                tracker_run_total_cph_ratio.get("median")
+            ),
+            "observed_median_coins_per_enemy": tracker_coins_per_enemy.get("median"),
+            "observed_median_enemies_per_wave": tracker_enemies_per_wave.get("median"),
+            "observed_median_waves_per_hour": tracker_waves_per_hour.get("median"),
+            "component_median_coins_per_hour": component_median_cph,
+            "tracker_median_coins_per_hour": observed_median_coins_per_hour,
+            "component_to_tracker_cph_ratio": _ratio(
+                component_median_cph,
+                observed_median_coins_per_hour,
+            ),
+            "interpretation": (
+                "This proves the empirical CPH decomposition on tracker observations only; "
+                "it does not provide a source-owned run-duration, spawn/kill, or coin integral."
+            ),
+        }
+        coins_per_non_intro_displayed_wave = None
+        coins_per_tracker_played_wave_after_intro = None
+        try:
+            if (
+                observed_median_coins_per_run is not None
+                and observed_non_intro_displayed_waves is not None
+                and float(observed_non_intro_displayed_waves) > 0.0
+            ):
+                coins_per_non_intro_displayed_wave = (
+                    float(observed_median_coins_per_run)
+                    / float(observed_non_intro_displayed_waves)
+                )
+            if (
+                observed_median_coins_per_run is not None
+                and observed_played_waves_after_intro_from_tracker is not None
+                and float(observed_played_waves_after_intro_from_tracker) > 0.0
+            ):
+                coins_per_tracker_played_wave_after_intro = (
+                    float(observed_median_coins_per_run)
+                    / float(observed_played_waves_after_intro_from_tracker)
+                )
+        except (TypeError, ValueError):
+            coins_per_non_intro_displayed_wave = None
+            coins_per_tracker_played_wave_after_intro = None
+        wave_reward_source_audit["tracker_skip_count_semantics"] = {
+            "status": skip_semantics_gap_status,
+            "inference_status": skip_semantics_inference.get("status"),
+            "best_candidate": skip_semantics_inference.get("best_candidate"),
+            "best_candidate_distance_from_expected": skip_semantics_inference.get(
+                "best_candidate_distance_from_expected"
+            ),
+            "operator_confirmation_required": skip_semantics_inference.get(
+                "operator_confirmation_required"
+            ),
+            "raw_tracker_waves_skipped_median": observed_skipped_waves_median,
+            "candidate_semantics": [
+                "tracker_skips_exclude_intro_sprint",
+                "tracker_skips_include_intro_sprint",
+            ],
+            "interpretation": (
+                "Tracker wavesSkipped semantics must be resolved before the "
+                "Wave Skip reward expected value can become a certified CPH input."
+            ),
+        }
+        tracker_wave_reward = {
+            "status": (
+                "tracker_intro_wave_skip_reward_candidate_available"
+                if tracker_recent.get("row_count")
+                and coins_per_non_intro_displayed_wave is not None
+                else "tracker_supplied_without_wave_reward_candidate"
+            ),
+            "source": run_tracker_evidence.get("source"),
+            "application": run_tracker_evidence.get("application"),
+            "certification_effect": "none",
+            "formula": "coins_per_run over non_intro_displayed_waves and tracker_played_waves_after_intro",
+            "recent_definition": tracker_recent.get("definition"),
+            "recent_row_count": tracker_recent.get("row_count"),
+            "intro_sprint_waves": intro_sprint_waves,
+            "observed_median_wave": observed_median_wave,
+            "observed_median_coins_per_run": observed_median_coins_per_run,
+            "observed_skipped_waves_median": observed_skipped_waves_median,
+            "coin_eligible_displayed_waves_after_intro": observed_non_intro_displayed_waves,
+            "tracker_played_waves_after_intro": observed_played_waves_after_intro_from_tracker,
+            "observed_effective_skip_multiplier_after_intro": (
+                observed_effective_skip_multiplier_after_intro
+            ),
+            "coins_per_non_intro_displayed_wave": coins_per_non_intro_displayed_wave,
+            "coins_per_tracker_played_wave_after_intro": (
+                coins_per_tracker_played_wave_after_intro
+            ),
+            "tracker_reported_coins_from_wave_skip": tracker_coins_from_wave_skip.get("median"),
+            "tracker_reported_coins_per_wave": tracker_coins_per_wave_reported.get("median"),
+            "tracker_reported_coins_per_wave_to_observed_ratio": (
+                tracker_coins_per_wave_to_observed_ratio.get("median")
+            ),
+            "tracker_reported_coins_per_wave_semantics_status": (
+                tracker_reported_coins_per_wave_semantics_status
+            ),
+            "tracker_reported_wave_skip_coin_share": tracker_wave_skip_coin_share.get("median"),
+            "tracker_reported_coins_per_skipped_wave": (
+                tracker_wave_skip_coins_per_skipped_wave.get("median")
+            ),
+            "tracker_reward_field_status": (
+                "tracker_wave_skip_reward_fields_available"
+                if tracker_coins_from_wave_skip.get("count")
+                and tracker_wave_skip_coins_per_skipped_wave.get("count")
+                else "tracker_wave_skip_reward_fields_missing"
+            ),
+            "source_audit": wave_reward_source_audit,
+            "missing_to_promote": [
+                "wave_skip_coin_reward_expected_value_over_per_wave_coin_curve",
+                "wave_skip_mastery_double_skip_reward_semantics",
+                "tracker_waves_skipped_intro_sprint_semantics",
+                "econ_window_overlap_for_skipped_and_played_waves",
+            ],
+            "interpretation": (
+                "Candidate partitions tracker run coins across coin-eligible displayed and played waves; "
+                "it does not certify Intro Sprint or Wave Skip reward semantics."
+            ),
+        }
+        wave_skip_reward_readiness.update(
+            {
+                "tracker_reward_status": tracker_wave_reward.get("status"),
+                "tracker_reward_field_status": tracker_wave_reward.get(
+                    "tracker_reward_field_status"
+                ),
+                "tracker_reported_wave_skip_coin_share": tracker_wave_reward.get(
+                    "tracker_reported_wave_skip_coin_share"
+                ),
+                "tracker_reported_coins_per_skipped_wave": tracker_wave_reward.get(
+                    "tracker_reported_coins_per_skipped_wave"
+                ),
+                "tracker_skip_semantics_status": skip_semantics_gap_status,
+                "tracker_skip_semantics_inference_status": skip_semantics_inference.get(
+                    "status"
+                ),
+                "tracker_skip_semantics_best_candidate": skip_semantics_inference.get(
+                    "best_candidate"
+                ),
+                "tracker_skip_semantics_best_candidate_distance_from_expected": (
+                    skip_semantics_inference.get(
+                        "best_candidate_distance_from_expected"
+                    )
+                ),
+            }
+        )
+    approved_wave_skip_reward_closes_formula_link = (
+        bool(approve_tracker_empirical_wave_skip_reward)
+        and tracker_wave_reward.get("status")
+        == "tracker_intro_wave_skip_reward_candidate_available"
+        and tracker_wave_reward.get("tracker_reward_field_status")
+        == "tracker_wave_skip_reward_fields_available"
+    )
+    skip_semantics_inference_for_approval = dict(
+        tracker_alignment.get("tracker_waves_skipped_semantics_inference") or {}
+    )
+    skip_semantics_best_candidate = skip_semantics_inference_for_approval.get(
+        "best_candidate"
+    )
+    skip_semantics_best_distance = skip_semantics_inference_for_approval.get(
+        "best_candidate_distance_from_expected"
+    )
+    try:
+        skip_semantics_candidate_close = (
+            skip_semantics_best_candidate
+            in {
+                "tracker_skips_include_intro_sprint",
+                "tracker_skips_exclude_intro_sprint",
+            }
+            and float(skip_semantics_best_distance) <= 0.10
+        )
+    except (TypeError, ValueError):
+        skip_semantics_candidate_close = False
+    approved_tracker_wave_skip_intro_semantics_closes_blocker = (
+        bool(approve_tracker_wave_skip_intro_semantics)
+        and skip_semantics_candidate_close
+        and str(skip_semantics_inference_for_approval.get("status") or "").startswith(
+            "suggests_tracker_skips_"
+        )
+    )
+    wave_skip_reward_readiness.update(
+        {
+            "certification_effect": (
+                "closes_wave_skip_reward_expected_value_link_only"
+                if approved_wave_skip_reward_closes_formula_link
+                else "none"
+            ),
+            "operator_approval_required": True,
+            "operator_approved_tracker_empirical_wave_skip_reward": bool(
+                approve_tracker_empirical_wave_skip_reward
+            ),
+            "operator_approval_status": (
+                "approved_explicit_runtime_input"
+                if approve_tracker_empirical_wave_skip_reward
+                else "not_approved"
+            ),
+            "approval_runtime_input": "approve_tracker_empirical_wave_skip_reward",
+            "approval_policy": (
+                "Explicit approval plus tracker Wave Skip reward fields closes only "
+                "the Wave Skip reward expected-value formula link; it does not certify "
+                "farming CPH."
+            ),
+            "tracker_reward_candidate_available": (
+                tracker_wave_reward.get("status")
+                == "tracker_intro_wave_skip_reward_candidate_available"
+            ),
+            "approved_reward_closes_formula_link": (
+                approved_wave_skip_reward_closes_formula_link
+            ),
+            "tracker_skip_intro_semantics_approval": {
+                "operator_approval_required": True,
+                "operator_approved_tracker_wave_skip_intro_semantics": bool(
+                    approve_tracker_wave_skip_intro_semantics
+                ),
+                "operator_approval_status": (
+                    "approved_explicit_runtime_input"
+                    if approve_tracker_wave_skip_intro_semantics
+                    else "not_approved"
+                ),
+                "approval_runtime_input": (
+                    "approve_tracker_wave_skip_intro_semantics"
+                ),
+                "approved_semantics_closes_validation_blocker": (
+                    approved_tracker_wave_skip_intro_semantics_closes_blocker
+                ),
+                "approved_tracker_waves_skipped_semantics": (
+                    skip_semantics_best_candidate
+                    if approved_tracker_wave_skip_intro_semantics_closes_blocker
+                    else None
+                ),
+                "candidate_distance_from_expected": skip_semantics_best_distance,
+                "approval_policy": (
+                    "Explicit approval plus a close tracker wavesSkipped semantics "
+                    "inference closes only the Wave Skip/Intro Sprint tracker "
+                    "semantics validation blocker; it does not certify farming CPH."
+                ),
+            },
+        }
+    )
+    coins_per_hour_objective_identity = {
+        "status": "source_owned_identity_available",
+        "formula": "coins_per_hour = coins_per_run / run_duration_hours",
+        "owner": "simulators.timing",
+        "application": "objective_conversion_only_not_coin_or_duration_integral",
+        "certification_effect": "closes_objective_conversion_link_only",
+        "required_inputs": ["coins_per_run", "run_duration_hours"],
+        "remaining_to_certify": [
+            "coins_per_run_integral",
+            "run_duration_integral_after_intro_sprint_wave_skip_and_game_speed",
+        ],
+    }
+    duration_projection_ratio_to_anchor = _ratio(
+        estimated_run_hours_after_wave_skip_intro_and_game_speed,
+        observed_run_hours,
+    )
+    duration_projection_delta_hours_vs_anchor = None
+    try:
+        if estimated_run_hours_after_wave_skip_intro_and_game_speed is not None:
+            duration_projection_delta_hours_vs_anchor = (
+                float(estimated_run_hours_after_wave_skip_intro_and_game_speed)
+                - float(observed_run_hours)
+            )
+    except (TypeError, ValueError):
+        duration_projection_delta_hours_vs_anchor = None
+    tracker_duration_ratio = tracker_alignment.get(
+        "skip_adjusted_projected_over_observed_duration_ratio"
+    )
+    approved_run_duration_projection_closes_formula_link = (
+        bool(approve_tracker_empirical_run_duration_projection)
+        and not missing_required
+        and estimated_run_hours_after_wave_skip_intro_and_game_speed is not None
+        and tracker_duration_ratio is not None
+    )
+    duration_projection_readiness = {
+        "status": (
+            "timing_driver_inputs_missing"
+            if missing_required
+            else (
+                "source_timing_projection_available_tracker_comparison_available"
+                if tracker_duration_ratio is not None
+                else "source_timing_projection_available_anchor_delta_reported"
+            )
+        ),
+        "formula": (
+            "played_non_intro_waves_after_expected_wave_skip * "
+            "effective_wave_duration_seconds / effective_game_speed_multiplier"
+        ),
+        "owner": "simulators.timing",
+        "application": "duration_projection_only_not_certified_cph",
+        "certification_effect": (
+            "closes_run_duration_link_only"
+            if approved_run_duration_projection_closes_formula_link
+            else "none"
+        ),
+        "operator_approval_required": True,
+        "operator_approved_tracker_empirical_run_duration_projection": bool(
+            approve_tracker_empirical_run_duration_projection
+        ),
+        "operator_approval_status": (
+            "approved_explicit_runtime_input"
+            if approve_tracker_empirical_run_duration_projection
+            else "not_approved"
+        ),
+        "approval_runtime_input": (
+            "approve_tracker_empirical_run_duration_projection"
+        ),
+        "approval_policy": (
+            "Explicit approval plus tracker duration evidence closes only the "
+            "calibrated run-duration formula link; it does not certify farming CPH."
+        ),
+        "tracker_duration_candidate_available": tracker_duration_ratio is not None,
+        "approved_projection_closes_formula_link": (
+            approved_run_duration_projection_closes_formula_link
+        ),
+        "source_driver_status": "available" if not missing_required else "missing_required_inputs",
+        "missing_required_timing_surfaces": missing_required,
+        "target_wave": target_wave,
+        "intro_sprint_waves": intro_sprint_waves,
+        "wave_skip_expected_skip_multiplier": estimated_wave_skip_expected_skip_multiplier,
+        "estimated_played_waves_after_wave_skip_intro": (
+            estimated_played_waves_after_wave_skip_intro
+        ),
+        "effective_wave_duration_seconds": projected_duration,
+        "effective_game_speed_multiplier": effective_game_speed_multiplier,
+        "projected_run_hours": estimated_run_hours_after_wave_skip_intro_and_game_speed,
+        "anchor_run_hours": float(observed_run_hours),
+        "projected_to_anchor_run_hours_ratio": duration_projection_ratio_to_anchor,
+        "projected_delta_hours_vs_anchor": duration_projection_delta_hours_vs_anchor,
+        "tracker_skip_adjusted_projected_over_observed_duration_ratio": tracker_duration_ratio,
+        "remaining_to_certify": [
+            "source_confirmed_wave_duration_semantics",
+            "source_confirmed_intro_sprint_timing_and_coin_window_semantics",
+            "source_confirmed_wave_skip_timing_reward_expected_value",
+            "validation_across_tracker_exports_and_account_states",
+        ],
+    }
+    cph_missing_formula_links = [
+        "calibrated_real_run_duration_after_intro_sprint_wave_skip_and_game_speed",
+        "spawn_rate_to_enemy_kill_density_by_wave",
+        "intro_sprint_no_coin_window_to_run_coin_integral",
+        "wave_skip_reward_and_mastery_expected_value",
+        "gt_bh_dw_spotlight_golden_bot_overlap_coin_integral",
+    ]
+    cph_certification_blockers = list(cph_missing_formula_links)
+    if approved_run_duration_projection_closes_formula_link:
+        cph_missing_formula_links = [
+            link
+            for link in cph_missing_formula_links
+            if link
+            != "calibrated_real_run_duration_after_intro_sprint_wave_skip_and_game_speed"
+        ]
+        cph_certification_blockers = [
+            blocker
+            for blocker in cph_certification_blockers
+            if blocker
+            != "calibrated_real_run_duration_after_intro_sprint_wave_skip_and_game_speed"
+        ]
+    if approved_wave_skip_reward_closes_formula_link:
+        cph_missing_formula_links = [
+            link
+            for link in cph_missing_formula_links
+            if link != "wave_skip_reward_and_mastery_expected_value"
+        ]
+        cph_certification_blockers = [
+            blocker
+            for blocker in cph_certification_blockers
+            if blocker != "wave_skip_reward_and_mastery_expected_value"
+        ]
+    if approved_intro_sprint_coin_window_closes_formula_link:
+        cph_missing_formula_links = [
+            link
+            for link in cph_missing_formula_links
+            if link != "intro_sprint_no_coin_window_to_run_coin_integral"
+        ]
+        cph_certification_blockers = [
+            blocker
+            for blocker in cph_certification_blockers
+            if blocker != "intro_sprint_no_coin_window_to_run_coin_integral"
+        ]
+    overlap_integral_readiness = dict(
+        econ_sync_window_readiness.get("overlap_integral_readiness") or {}
+    )
+    approved_econ_window_overlap_closes_formula_link = bool(
+        overlap_integral_readiness.get("approved_overlap_closes_formula_link")
+    )
+    if approved_econ_window_overlap_closes_formula_link:
+        cph_missing_formula_links = [
+            link
+            for link in cph_missing_formula_links
+            if link != "gt_bh_dw_spotlight_golden_bot_overlap_coin_integral"
+        ]
+        cph_certification_blockers = [
+            blocker
+            for blocker in cph_certification_blockers
+            if blocker != "gt_bh_dw_spotlight_golden_bot_overlap_coin_integral"
+        ]
+    if missing_required:
+        cph_certification_blockers.append("required_timing_driver_inputs_missing")
+    if tracker_alignment.get("skip_semantics_gap_status") in {
+        "tracker_skip_count_semantics_ambiguous_intro_inclusive_candidate_reduces_gap",
+        "tracker_skips_exceed_known_wave_skip_mastery_gated_state",
+        "not_available",
+    } and not approved_tracker_wave_skip_intro_semantics_closes_blocker:
+        cph_certification_blockers.append("tracker_wave_skip_intro_semantics_gap")
+    spawn_density_readiness = _farming_spawn_density_readiness_summary(
+        tier=observed_tier,
+        target_wave=target_wave,
+        wave_accelerator_spawn_rate_acceleration=wave_accelerator_spawn_rate_acceleration,
+        enemy_balance_mastery_double_elite_chance_pct=enemy_balance_mastery_double_elite_chance_pct,
+        run_tracker_evidence=run_tracker_evidence,
+        approve_tracker_empirical_kill_density_transform=(
+            approve_tracker_empirical_kill_density_transform
+        ),
+    )
+    tracker_coin_integral = dict(
+        spawn_density_readiness.get("tracker_coin_integral_candidate") or {}
+    )
+    tracker_kill_density = dict(
+        spawn_density_readiness.get("tracker_kill_density_transform_candidate") or {}
+    )
+    tracker_kill_density_stability = dict(
+        spawn_density_readiness.get("tracker_kill_density_stability_evidence") or {}
+    )
+    tracker_coin_yield_stability = dict(
+        spawn_density_readiness.get("tracker_coin_yield_stability_evidence") or {}
+    )
+    kill_density_transform_readiness = dict(
+        spawn_density_readiness.get("kill_density_transform_readiness") or {}
+    )
+    if bool(kill_density_transform_readiness.get("approved_transform_closes_formula_link")):
+        cph_missing_formula_links = [
+            link
+            for link in cph_missing_formula_links
+            if link != "spawn_rate_to_enemy_kill_density_by_wave"
+        ]
+        cph_certification_blockers = [
+            blocker
+            for blocker in cph_certification_blockers
+            if blocker != "spawn_rate_to_enemy_kill_density_by_wave"
+        ]
+    cph_promotion_blockers = [
+        "not_source_owned_run_coin_and_duration_integrals",
+    ]
+    if not approve_tracker_empirical_cph_default:
+        cph_promotion_blockers.append(
+            "operator_has_not_approved_tracker_empirical_cph_as_default"
+        )
+    if tracker_cph_calibration.get("status") != "tracker_t14_farming_cph_band_available":
+        cph_promotion_blockers.append("tracker_t14_farming_cph_band_missing")
+    if tracker_cph_identity.get("status") != "tracker_density_components_reconstruct_cph":
+        cph_promotion_blockers.append("tracker_density_component_identity_missing")
+    if tracker_kill_density.get("status") != "tracker_spawn_rate_to_kill_density_candidate_available":
+        cph_promotion_blockers.append("tracker_spawn_rate_to_kill_density_candidate_missing")
+    if tracker_coin_integral.get("status") != "tracker_kill_density_to_coin_integral_candidate_available":
+        cph_promotion_blockers.append("tracker_kill_density_to_coin_integral_candidate_missing")
+    if tracker_kill_density_stability.get("status") != "tracker_recent_prior_kill_density_transform_available":
+        cph_promotion_blockers.append("recent_prior_kill_density_stability_missing")
+    if tracker_coin_yield_stability.get("status") != "tracker_recent_prior_coin_yield_available":
+        cph_promotion_blockers.append("recent_prior_coin_yield_stability_missing")
+    if tracker_alignment.get("skip_semantics_gap_status") in {
+        "tracker_skip_count_semantics_ambiguous_intro_inclusive_candidate_reduces_gap",
+        "tracker_skips_exceed_known_wave_skip_mastery_gated_state",
+        "not_available",
+    } and not approved_tracker_wave_skip_intro_semantics_closes_blocker:
+        cph_promotion_blockers.append("tracker_wave_skip_intro_semantics_gap")
+    if tracker_wave_reward.get("tracker_reward_field_status") != (
+        "tracker_wave_skip_reward_fields_available"
+    ):
+        cph_promotion_blockers.append("tracker_wave_skip_reward_fields_missing")
+    tracker_econ_source_evidence = dict(
+        econ_sync_window_readiness.get("tracker_econ_coin_source_evidence") or {}
+    )
+    if tracker_econ_source_evidence.get("status") != "tracker_econ_coin_sources_available":
+        cph_promotion_blockers.append("tracker_econ_coin_source_fields_missing")
+    if not approved_wave_skip_reward_closes_formula_link:
+        cph_promotion_blockers.append("wave_skip_reward_expected_value_missing")
+    if not approved_econ_window_overlap_closes_formula_link:
+        cph_promotion_blockers.append("econ_window_overlap_coin_integral_missing")
+    cph_promotion_blockers.append(
+        "validation_across_multiple_exports_and_account_states_missing"
+    )
+    if run_tracker_evidence is None:
+        cph_validation_basis = "no_tracker_export_supplied"
+    elif (
+        tracker_kill_density_stability.get("status")
+        == "tracker_recent_prior_kill_density_transform_available"
+        and tracker_coin_yield_stability.get("status")
+        == "tracker_recent_prior_coin_yield_available"
+    ):
+        cph_validation_basis = "tracker_t14_recent_and_prior_windows"
+    else:
+        cph_validation_basis = "tracker_t14_recent_window_only"
+    tracker_trend = (
+        dict(run_tracker_evidence.get("farming_t14_recent_trend") or {})
+        if isinstance(run_tracker_evidence, Mapping)
+        else {}
+    )
+    tracker_anchor_hint = dict(tracker_trend.get("calibration_anchor_hint") or {})
+    current_timing_run_hours = _positive_float(
+        estimated_run_hours_after_wave_skip_intro_and_game_speed
+    )
+    target_wave_value = _positive_float(target_wave)
+    current_displayed_waves_per_hour = None
+    if current_timing_run_hours is not None and target_wave_value is not None:
+        current_displayed_waves_per_hour = target_wave_value / current_timing_run_hours
+    median_projected_coins_per_wave = _positive_float(
+        tracker_coin_integral.get("projected_coins_per_wave_from_tracker_density")
+    )
+    latest_projected_coins_per_wave = _positive_float(
+        tracker_coin_integral.get("latest_projected_coins_per_wave_from_tracker_density")
+    )
+    median_current_timing_coins_per_run = None
+    median_current_timing_coins_per_hour = None
+    latest_current_timing_coins_per_run = None
+    latest_current_timing_coins_per_hour = None
+    latest_intro_excluded_coins_per_run = None
+    latest_intro_excluded_coins_per_hour = None
+    latest_wave_horizon_run_hours = None
+    latest_wave_horizon_coins_per_run = None
+    latest_wave_horizon_coins_per_hour = None
+    latest_wave_horizon_intro_excluded_coins_per_run = None
+    latest_wave_horizon_intro_excluded_coins_per_hour = None
+    latest_observed_wave_value = _positive_float(tracker_coin_integral.get("latest_wave"))
+    try:
+        if median_projected_coins_per_wave is not None and target_wave_value is not None:
+            median_current_timing_coins_per_run = (
+                median_projected_coins_per_wave * target_wave_value
+            )
+            if current_timing_run_hours is not None:
+                median_current_timing_coins_per_hour = (
+                    median_current_timing_coins_per_run / current_timing_run_hours
+                )
+        if latest_projected_coins_per_wave is not None and target_wave_value is not None:
+            latest_current_timing_coins_per_run = (
+                latest_projected_coins_per_wave * target_wave_value
+            )
+            if current_timing_run_hours is not None:
+                latest_current_timing_coins_per_hour = (
+                    latest_current_timing_coins_per_run / current_timing_run_hours
+                )
+            if coin_eligible_displayed_waves_after_intro_at_target is not None:
+                latest_intro_excluded_coins_per_run = (
+                    latest_projected_coins_per_wave
+                    * float(coin_eligible_displayed_waves_after_intro_at_target)
+                )
+                if current_timing_run_hours is not None:
+                    latest_intro_excluded_coins_per_hour = (
+                        latest_intro_excluded_coins_per_run / current_timing_run_hours
+                    )
+        if (
+            latest_projected_coins_per_wave is not None
+            and latest_observed_wave_value is not None
+            and projected_duration is not None
+            and effective_game_speed_multiplier is not None
+            and float(effective_game_speed_multiplier) > 0.0
+        ):
+            latest_horizon_intro_waves = min(
+                max(0.0, float(intro_sprint_waves or 0.0)),
+                latest_observed_wave_value,
+            )
+            latest_horizon_skip_multiplier = (
+                float(estimated_wave_skip_expected_skip_multiplier)
+                if estimated_wave_skip_expected_skip_multiplier is not None
+                else 1.0
+            )
+            if latest_horizon_skip_multiplier <= 0.0:
+                latest_horizon_skip_multiplier = 1.0
+            latest_horizon_played_waves = max(
+                0.0,
+                (latest_observed_wave_value - latest_horizon_intro_waves)
+                / latest_horizon_skip_multiplier,
+            )
+            latest_wave_horizon_run_hours = (
+                latest_horizon_played_waves
+                * float(projected_duration)
+                / 3600.0
+                / float(effective_game_speed_multiplier)
+            )
+            latest_wave_horizon_coins_per_run = (
+                latest_projected_coins_per_wave * latest_observed_wave_value
+            )
+            if latest_wave_horizon_run_hours > 0.0:
+                latest_wave_horizon_coins_per_hour = (
+                    latest_wave_horizon_coins_per_run / latest_wave_horizon_run_hours
+                )
+            latest_wave_horizon_intro_excluded_coins_per_run = (
+                latest_projected_coins_per_wave
+                * max(0.0, latest_observed_wave_value - latest_horizon_intro_waves)
+            )
+            if latest_wave_horizon_run_hours > 0.0:
+                latest_wave_horizon_intro_excluded_coins_per_hour = (
+                    latest_wave_horizon_intro_excluded_coins_per_run
+                    / latest_wave_horizon_run_hours
+                )
+    except (TypeError, ValueError):
+        median_current_timing_coins_per_run = None
+        median_current_timing_coins_per_hour = None
+        latest_current_timing_coins_per_run = None
+        latest_current_timing_coins_per_hour = None
+        latest_intro_excluded_coins_per_run = None
+        latest_intro_excluded_coins_per_hour = None
+        latest_wave_horizon_run_hours = None
+        latest_wave_horizon_coins_per_run = None
+        latest_wave_horizon_coins_per_hour = None
+        latest_wave_horizon_intro_excluded_coins_per_run = None
+        latest_wave_horizon_intro_excluded_coins_per_hour = None
+    selected_cph_basis = None
+    selected_cph = None
+    selected_coins_per_run = None
+    selected_coins_per_wave = None
+    if latest_current_timing_coins_per_hour is not None:
+        selected_cph_basis = "latest_tracker_coin_density_current_timing"
+        selected_cph = latest_current_timing_coins_per_hour
+        selected_coins_per_run = latest_current_timing_coins_per_run
+        selected_coins_per_wave = latest_projected_coins_per_wave
+    elif median_current_timing_coins_per_hour is not None:
+        selected_cph_basis = "recent_median_tracker_coin_density_current_timing"
+        selected_cph = median_current_timing_coins_per_hour
+        selected_coins_per_run = median_current_timing_coins_per_run
+        selected_coins_per_wave = median_projected_coins_per_wave
+    current_coin_density_cph_estimate = {
+        "status": (
+            "tracker_coin_density_current_timing_calculator_available"
+            if selected_cph is not None
+            else "not_available"
+        ),
+        "application": "calculator_estimate_not_account_truth",
+        "basis": selected_cph_basis,
+        "formula": (
+            "coins_per_hour = tracker_density_coins_per_wave * "
+            "target_displayed_waves / current_timing_run_hours"
+        ),
+        "target_wave": target_wave,
+        "current_timing_run_hours": current_timing_run_hours,
+        "current_displayed_waves_per_hour": current_displayed_waves_per_hour,
+        "selected_projected_coins_per_wave": selected_coins_per_wave,
+        "selected_projected_coins_per_run": selected_coins_per_run,
+        "selected_projected_coins_per_hour": selected_cph,
+        "latest_observed_wave": tracker_coin_integral.get("latest_wave"),
+        "latest_observed_coins_per_enemy": tracker_coin_integral.get(
+            "latest_observed_coins_per_enemy"
+        ),
+        "latest_observed_enemies_per_wave": tracker_coin_integral.get(
+            "latest_observed_enemies_per_wave"
+        ),
+        "latest_observed_waves_per_hour": tracker_coin_integral.get(
+            "latest_observed_waves_per_hour"
+        ),
+        "latest_density_tracker_run_coins_per_hour": tracker_coin_integral.get(
+            "latest_projected_coins_per_hour_from_tracker_density"
+        ),
+        "latest_run_total_coins_per_hour": tracker_coin_integral.get(
+            "latest_run_total_coins_per_hour"
+        ),
+        "latest_projected_coins_per_wave": latest_projected_coins_per_wave,
+        "latest_current_timing_projected_coins_per_run": (
+            latest_current_timing_coins_per_run
+        ),
+        "latest_current_timing_projected_coins_per_hour": (
+            latest_current_timing_coins_per_hour
+        ),
+        "latest_intro_excluded_projected_coins_per_run": (
+            latest_intro_excluded_coins_per_run
+        ),
+        "latest_intro_excluded_projected_coins_per_hour": (
+            latest_intro_excluded_coins_per_hour
+        ),
+        "latest_tracker_wave_horizon": latest_observed_wave_value,
+        "latest_tracker_wave_horizon_current_timing_run_hours": (
+            latest_wave_horizon_run_hours
+        ),
+        "latest_tracker_wave_horizon_projected_coins_per_run": (
+            latest_wave_horizon_coins_per_run
+        ),
+        "latest_tracker_wave_horizon_projected_coins_per_hour": (
+            latest_wave_horizon_coins_per_hour
+        ),
+        "latest_tracker_wave_horizon_intro_excluded_projected_coins_per_run": (
+            latest_wave_horizon_intro_excluded_coins_per_run
+        ),
+        "latest_tracker_wave_horizon_intro_excluded_projected_coins_per_hour": (
+            latest_wave_horizon_intro_excluded_coins_per_hour
+        ),
+        "median_projected_coins_per_wave": median_projected_coins_per_wave,
+        "median_current_timing_projected_coins_per_run": (
+            median_current_timing_coins_per_run
+        ),
+        "median_current_timing_projected_coins_per_hour": (
+            median_current_timing_coins_per_hour
+        ),
+        "tracker_median_density_coins_per_hour": tracker_coin_integral.get(
+            "projected_coins_per_hour_from_tracker_density"
+        ),
+        "tracker_median_reported_coins_per_hour": tracker_coin_integral.get(
+            "tracker_median_coins_per_hour"
+        ),
+        "interpretation": (
+            "Automatic calculator estimate uses latest tracker coin density when present, "
+            "then applies the current timing projection. Median density remains visible "
+            "as a stability comparator."
+        ),
+    }
+    tracker_integrated_cph_identity_available = (
+        tracker_cph_calibration.get("status") == "tracker_t14_farming_cph_band_available"
+        and tracker_cph_identity.get("status") == "tracker_density_components_reconstruct_cph"
+        and tracker_coin_integral.get("status")
+        == "tracker_kill_density_to_coin_integral_candidate_available"
+        and not cph_missing_formula_links
+    )
+    approved_tracker_run_coin_duration_integrals_close_blocker = (
+        bool(approve_tracker_empirical_run_coin_duration_integrals)
+        and tracker_integrated_cph_identity_available
+    )
+    approved_tracker_current_export_validation_closes_blocker = (
+        bool(approve_tracker_current_export_account_state_validation)
+        and tracker_cph_calibration.get("status") == "tracker_t14_farming_cph_band_available"
+        and tracker_cph_identity.get("status") == "tracker_density_components_reconstruct_cph"
+        and tracker_alignment.get("tracker_waves_per_hour_consistency_status")
+        == "tracker_reported_waves_per_hour_matches_duration"
+        and tracker_alignment.get("tracker_game_time_ratio_status")
+        == "tracker_game_time_ratio_available"
+    )
+    if approved_tracker_run_coin_duration_integrals_close_blocker:
+        cph_promotion_blockers = [
+            blocker
+            for blocker in cph_promotion_blockers
+            if blocker != "not_source_owned_run_coin_and_duration_integrals"
+        ]
+    if approved_tracker_current_export_validation_closes_blocker:
+        cph_promotion_blockers = [
+            blocker
+            for blocker in cph_promotion_blockers
+            if blocker != "validation_across_multiple_exports_and_account_states_missing"
+        ]
+    cph_promotion_status = (
+        "ready_with_approved_tracker_empirical_cph_model"
+        if not cph_promotion_blockers
+        else "not_ready"
+    )
+    coins_per_hour_promotion_readiness = {
+        "status": cph_promotion_status,
+        "application": "diagnostic_only_not_account_truth",
+        "default_cph_derived": False,
+        "operator_approval_required": True,
+        "operator_approved_tracker_empirical_cph_default": bool(
+            approve_tracker_empirical_cph_default
+        ),
+        "operator_approval_status": (
+            "approved_explicit_runtime_input"
+            if approve_tracker_empirical_cph_default
+            else "not_approved"
+        ),
+        "approval_runtime_input": "approve_tracker_empirical_farming_cph",
+        "approval_policy": (
+            "Explicit approval removes only the operator-approval blocker; "
+            "source-owned or tracker-backed formula validation blockers still apply."
+        ),
+        "run_coin_duration_integral_approval": {
+            "operator_approval_required": True,
+            "operator_approved_tracker_empirical_run_coin_duration_integrals": bool(
+                approve_tracker_empirical_run_coin_duration_integrals
+            ),
+            "operator_approval_status": (
+                "approved_explicit_runtime_input"
+                if approve_tracker_empirical_run_coin_duration_integrals
+                else "not_approved"
+            ),
+            "approval_runtime_input": (
+                "approve_tracker_empirical_run_coin_duration_integrals"
+            ),
+            "tracker_integrated_cph_identity_available": (
+                tracker_integrated_cph_identity_available
+            ),
+            "approved_integrals_close_blocker": (
+                approved_tracker_run_coin_duration_integrals_close_blocker
+            ),
+            "certification_effect": (
+                "closes_run_coin_duration_integral_blocker"
+                if approved_tracker_run_coin_duration_integrals_close_blocker
+                else "none"
+            ),
+        },
+        "current_export_account_state_validation_approval": {
+            "operator_approval_required": True,
+            "operator_approved_current_export_account_state_validation": bool(
+                approve_tracker_current_export_account_state_validation
+            ),
+            "operator_approval_status": (
+                "approved_explicit_runtime_input"
+                if approve_tracker_current_export_account_state_validation
+                else "not_approved"
+            ),
+            "approval_runtime_input": (
+                "approve_tracker_current_export_account_state_validation"
+            ),
+            "approved_validation_closes_blocker": (
+                approved_tracker_current_export_validation_closes_blocker
+            ),
+            "validation_basis": cph_validation_basis,
+            "certification_effect": (
+                "closes_current_export_account_state_validation_blocker"
+                if approved_tracker_current_export_validation_closes_blocker
+                else "none"
+            ),
+        },
+        "validation_basis": cph_validation_basis,
+        "blocking_reasons": cph_promotion_blockers,
+        "tracker_cph_status": tracker_cph_calibration.get("status"),
+        "tracker_cph_identity_status": tracker_cph_identity.get("status"),
+        "tracker_run_total_cph": tracker_cph_identity.get("run_total_median_coins_per_hour"),
+        "tracker_run_total_to_reported_cph_ratio": tracker_cph_identity.get(
+            "run_total_to_tracker_cph_ratio"
+        ),
+        "tracker_run_total_to_reported_row_ratio_median": tracker_cph_identity.get(
+            "run_total_to_tracker_reported_row_ratio_median"
+        ),
+        "tracker_kill_density_status": tracker_kill_density.get("status"),
+        "tracker_kill_density_stability_status": tracker_kill_density_stability.get("status"),
+        "tracker_coin_integral_status": tracker_coin_integral.get("status"),
+        "tracker_coin_yield_stability_status": tracker_coin_yield_stability.get("status"),
+        "tracker_wave_reward_status": tracker_wave_reward.get("status"),
+        "tracker_wave_skip_reward_field_status": tracker_wave_reward.get(
+            "tracker_reward_field_status"
+        ),
+        "tracker_reported_wave_skip_coin_share": tracker_wave_reward.get(
+            "tracker_reported_wave_skip_coin_share"
+        ),
+        "tracker_reported_coins_per_skipped_wave": tracker_wave_reward.get(
+            "tracker_reported_coins_per_skipped_wave"
+        ),
+        "tracker_reported_coins_from_wave_skip": tracker_wave_reward.get(
+            "tracker_reported_coins_from_wave_skip"
+        ),
+        "tracker_reported_coins_per_wave": tracker_wave_reward.get(
+            "tracker_reported_coins_per_wave"
+        ),
+        "tracker_reported_coins_per_wave_to_observed_ratio": tracker_wave_reward.get(
+            "tracker_reported_coins_per_wave_to_observed_ratio"
+        ),
+        "tracker_reported_coins_per_wave_semantics_status": tracker_wave_reward.get(
+            "tracker_reported_coins_per_wave_semantics_status"
+        ),
+        "tracker_econ_coin_source_status": tracker_econ_source_evidence.get("status"),
+        "tracker_econ_coin_source_available_count": tracker_econ_source_evidence.get(
+            "available_source_count"
+        ),
+        "tracker_econ_source_sum_to_run_coins_ratio": dict(
+            tracker_econ_source_evidence.get("tracked_source_sum_to_run_coins_ratio") or {}
+        ).get("median"),
+        "tracker_econ_overlap_evidence_status": tracker_econ_source_evidence.get(
+            "overlap_evidence_status"
+        ),
+        "tracker_skip_semantics_status": tracker_alignment.get("skip_semantics_gap_status"),
+        "tracker_timing_status": tracker_alignment.get("status"),
+        "tracker_waves_per_hour_consistency_status": tracker_alignment.get(
+            "tracker_waves_per_hour_consistency_status"
+        ),
+        "tracker_game_time_ratio_status": tracker_alignment.get(
+            "tracker_game_time_ratio_status"
+        ),
+        "tracker_median_game_time_hours": tracker_alignment.get(
+            "tracker_median_game_time_hours"
+        ),
+        "tracker_game_to_real_duration_ratio": tracker_alignment.get(
+            "tracker_game_to_real_duration_ratio"
+        ),
+        "tracker_reported_median_waves_per_hour": tracker_alignment.get(
+            "tracker_reported_median_waves_per_hour"
+        ),
+        "tracker_reported_to_observed_waves_per_hour_ratio": tracker_alignment.get(
+            "tracker_reported_to_observed_waves_per_hour_ratio"
+        ),
+        "tracker_projected_over_observed_duration_ratio": tracker_alignment.get(
+            "projected_over_observed_duration_ratio"
+        ),
+        "tracker_skip_adjusted_projected_over_observed_duration_ratio": (
+            tracker_alignment.get("skip_adjusted_projected_over_observed_duration_ratio")
+        ),
+        "run_duration_projection_status": duration_projection_readiness.get("status"),
+        "run_duration_projected_to_anchor_ratio": duration_projection_readiness.get(
+            "projected_to_anchor_run_hours_ratio"
+        ),
+        "run_duration_tracker_skip_adjusted_ratio": duration_projection_readiness.get(
+            "tracker_skip_adjusted_projected_over_observed_duration_ratio"
+        ),
+        "tracker_skip_semantics_inference_status": dict(
+            tracker_alignment.get("tracker_waves_skipped_semantics_inference") or {}
+        ).get("status"),
+        "tracker_skip_semantics_best_candidate": dict(
+            tracker_alignment.get("tracker_waves_skipped_semantics_inference") or {}
+        ).get("best_candidate"),
+        "tracker_skip_semantics_best_candidate_distance_from_expected": dict(
+            tracker_alignment.get("tracker_waves_skipped_semantics_inference") or {}
+        ).get("best_candidate_distance_from_expected"),
+        "tracker_skip_intro_semantics_approval": dict(
+            wave_skip_reward_readiness.get("tracker_skip_intro_semantics_approval") or {}
+        ),
+        "observed_median_coins_per_hour": tracker_cph_calibration.get(
+            "observed_median_coins_per_hour"
+        ),
+        "component_to_tracker_cph_ratio": tracker_cph_identity.get(
+            "component_to_tracker_cph_ratio"
+        ),
+        "projected_to_tracker_cph_ratio": tracker_coin_integral.get(
+            "projected_to_tracker_cph_ratio"
+        ),
+        "tracker_calibration_anchor_hint": tracker_anchor_hint,
+        "tracker_latest_coins_per_hour": tracker_anchor_hint.get("latest_coins_per_hour"),
+        "tracker_recent_median_coins_per_hour": tracker_anchor_hint.get(
+            "recent_median_coins_per_hour"
+        ),
+        "tracker_prior_median_coins_per_hour": tracker_anchor_hint.get(
+            "prior_median_coins_per_hour"
+        ),
+        "tracker_recent_to_prior_coins_per_hour_ratio": tracker_anchor_hint.get(
+            "recent_to_prior_coins_per_hour_ratio"
+        ),
+        "auto_current_cph_estimate": current_coin_density_cph_estimate,
+        "recent_density_to_prior_density_ratio": tracker_kill_density_stability.get(
+            "median_ratio"
+        ),
+        "recent_coins_per_enemy_to_prior_ratio": tracker_coin_yield_stability.get(
+            "coins_per_enemy_median_ratio"
+        ),
+        "missing_formula_links": cph_missing_formula_links,
+        "interpretation": (
+            "Tracker evidence can validate candidate CPH decomposition, but it is "
+            "not promoted to account truth until the missing formula links are "
+            "source-owned or explicitly approved as empirical defaults."
+        ),
+    }
+    cph_final_certification_blockers = (
+        list(cph_certification_blockers)
+        if cph_certification_blockers
+        else list(cph_promotion_blockers)
+    )
+    cph_certified = not cph_final_certification_blockers
+    cph_certification_status = (
+        "certified_tracker_empirical_cph_model"
+        if cph_certified
+        else (
+            "not_certified_pending_empirical_validation"
+            if not cph_missing_formula_links
+            else "not_certified_missing_formula_links"
+        )
+    )
+
+    return {
+        "status": (
+            "timing_drivers_available_formula_not_certified"
+            if not missing_required
+            else "timing_driver_inputs_missing"
+        ),
+        "objective": "coins_per_hour",
+        "coins_per_hour_certification_status": cph_certification_status,
+        "coins_per_hour_objective_identity": coins_per_hour_objective_identity,
+        "run_duration_projection_readiness": duration_projection_readiness,
+        "wave_skip_reward_readiness": wave_skip_reward_readiness,
+        "intro_sprint_coin_window_readiness": intro_sprint_coin_window_readiness,
+        "coins_per_hour_promotion_readiness": coins_per_hour_promotion_readiness,
+        "coins_per_hour_optimization_target": True,
+        "coins_per_hour_certification_blockers": cph_final_certification_blockers,
+        "preset": preset_name,
+        "calibration_anchor": {
+            "source": "user_reported_2026-06-13",
+            "tier": int(observed_tier),
+            "preset": preset_name,
+            "observed_final_wave": int(observed_final_wave),
+            "observed_run_hours": float(observed_run_hours),
+            "observed_coins_per_hour": float(observed_coins_per_hour),
+            "implied_coins_per_run": coins_per_run,
+            "application": "calibration_target_only_not_account_truth",
+        },
+        "current_timing_projection": {
+            "target_farming_wave": target_wave,
+            "effective_waves_per_run": effective_waves_per_run,
+            "effective_wave_duration_seconds": projected_duration,
+            "wave_skip_chance_pct": wave_skip_pct,
+            "wave_skip_mastery_double_chance_pct": wave_skip_mastery_pct,
+            "wave_skip_expected_skip_multiplier": estimated_wave_skip_expected_skip_multiplier,
+            "wave_skip_expected_skipped_waves": estimated_wave_skip_expected_skipped_waves,
+            "intro_sprint_waves": intro_sprint_waves,
+            "base_game_speed_multiplier": game_speed,
+            "max_game_speed_additive": max_game_speed,
+            "effective_game_speed_multiplier_for_diagnostic": effective_game_speed_multiplier,
+            "estimated_run_hours_from_current_timing": estimated_run_hours_from_current_timing,
+            "estimated_run_hours_after_game_speed": estimated_run_hours_after_game_speed,
+            "estimated_played_waves_after_wave_skip_intro": (
+                estimated_played_waves_after_wave_skip_intro
+            ),
+            "estimated_run_hours_after_wave_skip_intro_and_game_speed": (
+                estimated_run_hours_after_wave_skip_intro_and_game_speed
+            ),
+            "observed_run_hours": float(observed_run_hours),
+        },
+        "tracker_timing_alignment": tracker_alignment,
+        "tracker_cph_calibration_evidence": tracker_cph_calibration,
+        "tracker_cph_identity_evidence": tracker_cph_identity,
+        "tracker_wave_reward_candidate": tracker_wave_reward,
+        "econ_sync_window_readiness": econ_sync_window_readiness,
+        "spawn_density_readiness": spawn_density_readiness,
+        "current_coin_density_cph_estimate": current_coin_density_cph_estimate,
+        "timing_drivers": timing_drivers,
+        "econ_window_drivers": econ_window_drivers,
+        "economy_drivers": economy_drivers,
+        "driver_coverage": {
+            "available": sum(1 for driver in all_drivers if bool(driver["available"])),
+            "total": len(all_drivers),
+            "missing_required_timing_surfaces": missing_required,
+        },
+        "kb_reward_semantics_required_for_formula": [
+            "Intro Sprint active waves produce no coins",
+            "Wave Skip can award prior-wave coins and cash at x1.10",
+            "Wave Skip Mastery can double wave skips",
+            "Wave Accelerator Mastery shifts spawn-rate thresholds earlier",
+            "game speed and Max Game Speed perk must convert wave duration to real elapsed time",
+            "spawn-rate ramp must be converted to kill density before coins/hour certification",
+        ],
+        "missing_formula_links": cph_missing_formula_links,
+        "optimizer_policy": "farming_should_optimize_coins_per_hour_not_longest_wave",
+        "certified_farming_cph_model": cph_certified,
+    }

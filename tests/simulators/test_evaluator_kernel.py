@@ -524,6 +524,39 @@ def test_cf_and_bh_duration_perk_contributions_recompute_timed_dr_per_row():
     assert table2.rows[1].damage_reduction_pct > table2.rows[0].damage_reduction_pct
 
 
+def test_perk_contribution_summary_cache_preserves_formula_and_validation_semantics():
+    from simulators.evaluator_kernel import (
+        KernelAmbiguityError,
+        _perk_contribution_pair,
+        _perk_contribution_sum,
+        _validated_perk_contribution_summary,
+    )
+
+    _validated_perk_contribution_summary.cache_clear()
+    contributions = {
+        "PERK_STANDARD_DAMAGE:wall_hp_multiplier": 1.25,
+        "PERK_STANDARD_HEALTH:wall_hp_flat": 100.0,
+        "PERK_RANDOM_ULTIMATE_WEAPON:wall_hp_flat": 50.0,
+    }
+
+    assert _perk_contribution_pair(
+        contributions,
+        flat_effect_id="wall_hp_flat",
+        multiplier_effect_id="wall_hp_multiplier",
+    ) == pytest.approx((150.0, 1.25))
+    assert _perk_contribution_sum(dict(reversed(tuple(contributions.items()))), "wall_hp_flat") == pytest.approx(150.0)
+    assert _validated_perk_contribution_summary.cache_info().hits >= 1
+
+    with pytest.raises(KernelAmbiguityError, match="unsupported perk contribution effect"):
+        _perk_contribution_sum({"PERK_BAD:generic_multiplier": 1.0}, "generic_multiplier")
+    with pytest.raises(KernelAmbiguityError, match="multiplier cannot be negative"):
+        _perk_contribution_pair(
+            {"PERK_STANDARD_DAMAGE:wall_hp_multiplier": -1.0},
+            flat_effect_id="wall_hp_flat",
+            multiplier_effect_id="wall_hp_multiplier",
+        )
+
+
 def test_black_hole_explicit_uptime_overrides_duration_cooldown_average():
     from qe.run_plan import CommonTrajectoryInputs, build_common_trajectory
     from simulators.evaluator_kernel import ScenarioOverlayInputs, build_scenario_overlay_table

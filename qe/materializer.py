@@ -57,6 +57,10 @@ _COMPATIBILITY_SURFACE_ID_ALIASES = {
     legacy_mechanic_surface_id('cards.ultimate_crit.chance_pct'): 'state::cards.ultimate_crit.chance_pct',
     legacy_mechanic_surface_id('cards.plasma_cannon.effect_pct'): 'state::cards.plasma_cannon.effect_pct',
     legacy_mechanic_surface_id('module.anti_cube_portal.shockwave_damage_taken_mult_x'): 'state::module.anti_cube_portal.shockwave_damage_taken_mult_x',
+    _raw_surface_id_for_alias(
+        'mechanic_param',
+        'module.being_annihilator.guaranteed_supercrits_after_supercrit_attacks',
+    ): 'state::module.being_annihilator.guaranteed_supercrits_after_supercrit_attacks',
     legacy_mechanic_surface_id('module.dimension_core.max_shock_stacks'): 'state::module.dimension_core.max_shock_stacks',
     legacy_mechanic_surface_id('module.project_funding.cash_digit_multiplier_pct'): 'state::module.project_funding.cash_digit_multiplier_pct',
     legacy_mechanic_surface_id('shock.damage_multiplier'): 'state::shock.damage_multiplier',
@@ -69,6 +73,25 @@ _COMPATIBILITY_SURFACE_ID_ALIASES = {
     # The alias bridges the two so the materializer can include the contributor.
     legacy_mechanic_surface_id('module.primordial_collapse.in_bh_enemy_damage_reduction_pct'): legacy_mechanic_surface_id('module.primordial_collapse.bh_damage_reduction_pct'),
 }
+
+
+def materialized_surface_id_for_contract(surface_id: str) -> str:
+    """Return the QE materialized surface id for a contract-normalized surface id."""
+    normalized = normalize_surface_id_to_contract(str(surface_id or '').strip())
+    return _COMPATIBILITY_SURFACE_ID_ALIASES.get(normalized, normalized)
+
+
+_QUERY_EVIDENCE_SURFACE_ID_ALIASES = {
+    'state::module.anti_cube_portal.damage_multiplier': 'state::module.anti_cube_portal.shockwave_damage_taken_mult_x',
+    'state::module.galaxy_compressor.uw_cooldown_reduction_on_package_s': 'support_surface::timing.gcomp_cooldown_reduction_seconds',
+}
+
+
+def query_evidence_surface_id_for_contract(surface_id: str) -> str:
+    """Return the query-row surface that proves an equivalent routed contract."""
+    materialized = materialized_surface_id_for_contract(surface_id)
+    return _QUERY_EVIDENCE_SURFACE_ID_ALIASES.get(materialized, materialized)
+
 
 # PH4-C tranche 1: free_upgrade_package stats.
 # The enhancement "Free Upgrades" routes to support_surface::free_upgrade_multiplier as a

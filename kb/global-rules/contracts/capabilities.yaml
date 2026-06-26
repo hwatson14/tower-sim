@@ -44,6 +44,21 @@ entries:
   - id: capability.inner_land_mines.enabled
     type: boolean
     status: keep_now
+  - id: capability.extra_orb_adjuster
+    type: boolean
+    status: keep_now
+  - id: capability.target_priority
+    type: enum
+    status: keep_now
+  - id: capability.tower.double_death_ray
+    type: boolean
+    status: keep_now
+  - id: capability.tower.garlic_thorns
+    type: boolean
+    status: keep_now
+  - id: capability.tower.light_speed_shots
+    type: boolean
+    status: keep_now
   - id: capability.bot.golden.enabled
     type: boolean
     status: keep_now
@@ -78,10 +93,49 @@ entries:
   - id: capability.additional_card_slot.count
     type: count
     status: keep_now
+  - id: capability.modules.effect_bans.armor
+    type: count
+    status: keep_now
+  - id: capability.modules.effect_bans.cannon
+    type: count
+    status: keep_now
+  - id: capability.modules.effect_bans.core
+    type: count
+    status: keep_now
+  - id: capability.modules.effect_bans.generator
+    type: count
+    status: keep_now
+  - id: capability.modules.unmerge
+    type: boolean
+    status: keep_now
+  - id: capability.perks.auto_pick
+    type: boolean
+    status: keep_now
+  - id: capability.perks.auto_pick_ranking
+    type: enum
+    status: keep_now
+  - id: capability.perks.ban_count
+    type: count
+    status: keep_now
+  - id: capability.perks.first_choice
+    type: enum
+    status: keep_now
+  - id: capability.perks.option_quantity
+    type: count
+    status: keep_now
+  - id: capability.perks.unlock
+    type: boolean
+    status: keep_now
+  - id: capability.random_uw_unlock.enabled
+    type: boolean
+    status: keep_now
   - id: capability.orb_boss_hit.enabled
     type: boolean
     status: keep_now
   - id: capability.plasma_cannon.enabled
+    type: boolean
+    status: keep_now
+  - id: capability.recovery_package.after_boss
     type: boolean
     status: keep_now
   - id: capability.uw.black_hole.enabled
@@ -102,12 +156,24 @@ entries:
   - id: capability.uw.chrono_field.damage_reduction.enabled
     type: boolean
     status: keep_now
+  - id: capability.uw.inner_land_mines.stun
+    type: boolean
+    status: keep_now
   - id: capability.uw.poison_swamp.stun
+    type: boolean
+    status: keep_now
+  - id: capability.uw.poison_swamp.rend
+    type: boolean
+    status: keep_now
+  - id: capability.uw.smart_missiles.barrage
     type: boolean
     status: keep_now
   - id: capability.uw.smart_missiles.explosion
     type: boolean
     status: keep_now
   - id: capability.guardian.enabled
+    type: boolean
+    status: keep_now
+  - id: capability.workshop.enhancements_unlock
     type: boolean
     status: keep_now

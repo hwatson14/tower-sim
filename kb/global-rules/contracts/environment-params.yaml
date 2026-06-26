@@ -46,6 +46,138 @@ domains:
       unit: multiplier
       resolver: environment_scalar
       status: retired_synthetic_global
+    - id: enemy.damage_multiplier
+      unit: multiplier
+      resolver: standard_scalar_param
+      status: keep_now
+    - id: enemy.health_multiplier
+      unit: multiplier
+      resolver: standard_scalar_param
+      status: keep_now
+    - id: enemy.ranged.attack_distance_rule
+      unit: raw_text
+      resolver: raw_text_passthrough
+      status: keep_now
+    - id: enemy.basic.ultimate_enabled
+      unit: bool
+      resolver: standard_scalar_param
+      status: keep_now
+    - id: enemy.boss.attack_multiplier
+      unit: multiplier
+      resolver: standard_scalar_param
+      status: keep_now
+    - id: enemy.boss.health_multiplier
+      unit: multiplier
+      resolver: standard_scalar_param
+      status: keep_now
+    - id: enemy.boss.health_multiplier_lab
+      unit: multiplier
+      resolver: standard_scalar_param
+      status: keep_now
+    - id: enemy.boss.speed_multiplier
+      unit: multiplier
+      resolver: standard_scalar_param
+      status: keep_now
+    - id: enemy.boss.ultimate_enabled
+      unit: bool
+      resolver: standard_scalar_param
+      status: keep_now
+    - id: enemy.common.attack_multiplier
+      unit: multiplier
+      resolver: standard_scalar_param
+      status: keep_now
+    - id: enemy.common.health_multiplier
+      unit: multiplier
+      resolver: standard_scalar_param
+      status: keep_now
+    - id: enemy.fast.attack_multiplier
+      unit: multiplier
+      resolver: standard_scalar_param
+      status: keep_now
+    - id: enemy.fast.health_multiplier
+      unit: multiplier
+      resolver: standard_scalar_param
+      status: keep_now
+    - id: enemy.fast.speed_multiplier
+      unit: multiplier
+      resolver: standard_scalar_param
+      status: keep_now
+    - id: enemy.fast.ultimate_enabled
+      unit: bool
+      resolver: standard_scalar_param
+      status: keep_now
+    - id: enemy.protector.damage_reduction_pct
+      unit: pct
+      resolver: standard_scalar_param
+      status: keep_now
+    - id: enemy.protector.health_multiplier
+      unit: multiplier
+      resolver: standard_scalar_param
+      status: keep_now
+    - id: enemy.protector.radius_m
+      unit: m
+      resolver: standard_scalar_param
+      status: keep_now
+    - id: enemy.protector.ultimate_enabled
+      unit: bool
+      resolver: standard_scalar_param
+      status: keep_now
+    - id: enemy.ranged.attack_multiplier
+      unit: multiplier
+      resolver: standard_scalar_param
+      status: keep_now
+    - id: enemy.ranged.damage_multiplier
+      unit: multiplier
+      resolver: standard_scalar_param
+      status: keep_now
+    - id: enemy.ranged.health_multiplier
+      unit: multiplier
+      resolver: standard_scalar_param
+      status: keep_now
+    - id: enemy.ranged.range_multiplier
+      unit: multiplier
+      resolver: standard_scalar_param
+      status: keep_now
+    - id: enemy.ranged.ultimate_enabled
+      unit: bool
+      resolver: standard_scalar_param
+      status: keep_now
+    - id: enemy.ray.attack_multiplier
+      unit: multiplier
+      resolver: standard_scalar_param
+      status: keep_now
+    - id: enemy.ray.health_multiplier
+      unit: multiplier
+      resolver: standard_scalar_param
+      status: keep_now
+    - id: enemy.scatter.attack_multiplier
+      unit: multiplier
+      resolver: standard_scalar_param
+      status: keep_now
+    - id: enemy.scatter.health_multiplier
+      unit: multiplier
+      resolver: standard_scalar_param
+      status: keep_now
+    - id: enemy.tank.attack_multiplier
+      unit: multiplier
+      resolver: standard_scalar_param
+      status: keep_now
+    - id: enemy.tank.health_multiplier
+      unit: multiplier
+      resolver: standard_scalar_param
+      status: keep_now
+    - id: enemy.tank.ultimate_enabled
+      unit: bool
+      resolver: standard_scalar_param
+      status: keep_now
+    - id: enemy.vampire.attack_multiplier
+      unit: multiplier
+      resolver: standard_scalar_param
+      status: keep_now
+    - id: enemy.vampire.health_multiplier
+      unit: multiplier
+      resolver: standard_scalar_param
+      status: keep_now
   boss:
     - id: boss.spawn_interval_waves
       unit: waves
@@ -125,6 +257,10 @@ domains:
       resolver: bc_effective_value
       status: keep_now
     - id: bc.death_defy_down_pct
+      unit: pct
+      resolver: bc_effective_value
+      status: keep_now
+    - id: bc.enemy_level_skip_reduction_pp
       unit: pct
       resolver: bc_effective_value
       status: keep_now

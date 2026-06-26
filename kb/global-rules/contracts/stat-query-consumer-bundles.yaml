@@ -160,11 +160,13 @@ consumers:
     - state::bot.plus.echoing_shot.unlocked
     - state::bot.plus.maximum_power.unlocked
     - state::module.anti_cube_portal.shockwave_damage_taken_mult_x
+    - state::module.being_annihilator.guaranteed_supercrits_after_supercrit_attacks
     - state::module.dimension_core.max_shock_stacks
     - state::module.project_funding.cash_digit_multiplier_pct
     - support_surface::module.project_funding.current_cash
     - state::shock.damage_multiplier
     - state::cards.damage.mastery_effect
+    - state::cards.enemy_balance.mastery_effect
     - state::cards.berserker.assumed_bonus_multiplier
     - state::cards.super_tower.active
     - state::cards.super_tower.bonus_multiplier
@@ -257,6 +259,7 @@ consumers:
     - state::cards.wave_accelerator.wave_cooldown_reduction_pct
     - state::cards.wave_accelerator.spawn_rate_acceleration
     - state::cards.wave_skip.chance_pct
+    - state::cards.wave_skip.mastery_effect
     - state::tower.package_chance_pct
     minimum_trace_mode: contributors
     overlays_allowed: true
@@ -390,6 +393,7 @@ consumers:
     optional_surface_ids:
     - state::cards.wave_accelerator.wave_cooldown_reduction_pct
     - state::cards.wave_accelerator.spawn_rate_acceleration
+    - state::cards.wave_skip.chance_pct
     minimum_trace_mode: contributors
     overlays_allowed: false
     publish_default: true
@@ -430,9 +434,18 @@ consumers:
     - state::tower.free_utility_upgrade_chance_pct
     - state::tower.enemy_attack_level_skip_pct
     - state::tower.enemy_health_level_skip_pct
+    - state::labs.dissonant_echo.attack.level
+    - state::dissonance.attack.active_boost_multiplier
+    - state::dissonance.attack.echo_source_bonus
     - state::labs.dissonant_echo.defense.level
     - state::dissonance.defense.active_boost_multiplier
     - state::dissonance.defense.echo_source_bonus
+    - state::labs.dissonant_echo.utility.level
+    - state::dissonance.utility.active_boost_multiplier
+    - state::dissonance.utility.echo_source_bonus
+    - state::labs.dissonant_echo.ultimate_weapons.level
+    - state::dissonance.ultimate_weapons.active_boost_multiplier
+    - state::dissonance.ultimate_weapons.echo_source_bonus
     - state::uw.chrono_field.slow_pct
     - state::uw.chain_lightning.max_enemy_damage_reduction_pct
     - state::uw.death_wave.effect_wave_count
@@ -464,6 +477,7 @@ consumers:
     - state::tower.supercrit_multiplier
     - state::tower.max_rend_multiplier
     - state::cards.damage.mastery_effect
+    - state::cards.enemy_balance.mastery_effect
     - state::cards.berserker.assumed_bonus_multiplier
     - state::cards.slow_aura.enemy_speed_pct
     - state::cards.slow_aura.mastery_effect
@@ -486,6 +500,7 @@ consumers:
     - state::uw.golden_tower.base_duration_seconds
     - state::uw.golden_tower.base_cooldown_seconds
     - state::module.anti_cube_portal.shockwave_damage_taken_mult_x
+    - state::module.being_annihilator.guaranteed_supercrits_after_supercrit_attacks
     - state::module.dimension_core.max_shock_stacks
     - state::module.project_funding.cash_digit_multiplier_pct
     - support_surface::module.project_funding.current_cash

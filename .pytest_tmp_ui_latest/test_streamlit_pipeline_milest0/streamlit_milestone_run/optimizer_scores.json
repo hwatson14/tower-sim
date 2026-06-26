@@ -1,0 +1,12 @@
+{
+  "objectives": {},
+  "meta": {
+    "version": "v4",
+    "status": "unavailable",
+    "reason": "missing_governed_surface",
+    "message": "'Missing governed derived surface: derived::eecon. Optimizer must consume Query Engine-owned objective surfaces only.'",
+    "requires": "derived::ehp, derived::edamage, and derived::eecon must already be published by Query Engine surfaces",
+    "missing_surface_policy": "fail_closed",
+    "local_canonical_formula_fallback": false
+  }
+}

@@ -10,7 +10,7 @@ from __future__ import annotations
 from collections import Counter, defaultdict
 from functools import lru_cache
 from pathlib import Path
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List, Mapping, Sequence, Tuple
 
 from qe.compat.legacy_surface_ids import (
     legacy_capability_surface_id as _compat_cap,
@@ -31,6 +31,8 @@ CONTRACT_PATHS = [
     ROOT / 'kb' / 'global-rules' / 'contracts' / 'canonical-stats.yaml',
     ROOT / 'kb' / 'global-rules' / 'contracts' / 'mechanic-params.yaml',
     ROOT / 'kb' / 'global-rules' / 'contracts' / 'environment-params.yaml',
+    ROOT / 'kb' / 'global-rules' / 'contracts' / 'capabilities.yaml',
+    ROOT / 'kb' / 'global-rules' / 'contracts' / 'account-metadata.yaml',
 ]
 
 _DELTA_SUCCESSORS_BY_BUCKET_KEY: dict[str, tuple[str, ...]] = {
@@ -101,12 +103,24 @@ def _load_canonical_stats() -> Dict[str, Dict[str, str]]:
     out: Dict[str, Dict[str, str]] = {}
     for path in CONTRACT_PATHS:
         data = load_yaml_contract(str(path))
-        for domain, entries in data['domains'].items():
-            for entry in entries:
+        if 'domains' in data:
+            for domain, entries in data['domains'].items():
+                for entry in entries:
+                    out[entry['id']] = {
+                        'domain': domain,
+                        'unit': entry['unit'],
+                        'resolver': entry['resolver'],
+                    }
+            continue
+        if 'entries' in data:
+            default_domain = 'capability' if data.get('kind') == 'capabilities' else data.get('kind', 'metadata')
+            for entry in data.get('entries') or []:
+                entry_type = str(entry.get('type') or '').strip()
+                unit = entry.get('unit') or ('bool' if entry_type == 'boolean' else entry_type)
                 out[entry['id']] = {
-                    'domain': domain,
-                    'unit': entry['unit'],
-                    'resolver': entry['resolver'],
+                    'domain': entry.get('domain') or default_domain,
+                    'unit': unit,
+                    'resolver': entry.get('resolver') or 'capability_passthrough',
                 }
     return out
 
@@ -114,7 +128,7 @@ def _load_canonical_stats() -> Dict[str, Dict[str, str]]:
 def _destination_type_schema(destination_id: str, meta: Dict[str, str]) -> Dict[str, object]:
     unit = meta.get('unit', 'unknown')
     resolver = meta.get('resolver', 'unknown')
-    allowed = {'resolved_value', 'flat', 'pct', 'multiplier', 'percent_display', 'multiplier_display', 'bool', 'count'}
+    allowed = {'resolved_value', 'flat', 'pct', 'ratio', 'multiplier', 'percent_display', 'multiplier_display', 'bool', 'count'}
     # Native bounded timing/runtime rows already carry concrete unit value_types such as
     # "seconds"; allow those exact unit tokens through the publish gate instead of forcing
     # them to masquerade as generic resolved_value rows.
@@ -574,13 +588,27 @@ def _build_stat_row(
     return StatRow(
         stat_name=bucket_key,
         final_value=final_value,
-        value_type=meta['unit'],
+        value_type=_resolved_statbook_value_type(meta, contributors),
         source_count=len(contributors),
         status=status,
         notes=notes,
         contributors=[c.to_dict() for c in contributors],
         schema=schema,
     )
+
+
+def _resolved_statbook_value_type(meta: Mapping[str, object], contributors: Sequence[StatInput]) -> str:
+    unit = str(meta.get('unit') or '').strip()
+    if unit and unit != 'unknown':
+        return unit
+    value_types = {
+        str(row.value_type or '').strip()
+        for row in contributors
+        if str(row.value_type or '').strip() and str(row.value_type or '').strip() != 'unknown'
+    }
+    if len(value_types) == 1:
+        return next(iter(value_types))
+    return 'unknown'
 
 
 def _resolve_mapped_rows(
