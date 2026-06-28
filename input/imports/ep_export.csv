@@ -26,14 +26,14 @@ context,eecon_tier_num,eEcon tier number derived,derived,tier,14,derived,,
 context,preset_alignment_status,Preset alignment status,derived,text,mixed,derived,,
 context,tier_alignment_status,Tier alignment status,derived,text,mixed,derived,,
 ,,,,,,,,
-edmg,edmg_total_raw,eDMG/sec total raw,raw,damage/sec,3.085329457411131e+34,eDamage,,
-edmg,base_damage_raw,Base damage,raw,damage,36436167357598990,eDamage,,
+edmg,edmg_total_raw,eDMG/sec total raw,raw,damage/sec,4.0771159153330336e+34,eDamage,,
+edmg,base_damage_raw,Base damage,raw,damage,36654348000458860,eDamage,,
 edmg,crit_chance,Critical chance,chance,ratio,1.07,eDamage,,
-edmg,crit_factor,Critical factor,multiplier,x,219.57606,eDamage,,
+edmg,crit_factor,Critical factor,multiplier,x,220.85266499999997,eDamage,,
 edmg,super_crit_chance,Super crit chance,chance,ratio,0.369,eDamage,,
-edmg,super_crit_multiplier,Super crit multiplier,multiplier,x,42.11088,eDamage,,
-edmg,crit_multiplier_effective,Crit multiplier effective,multiplier,x,3550.5261647536036,eDamage,,
-edmg,uw_crit_multiplier_effective,UW crit multiplier effective,multiplier,x,4158.941678756487,eDamage,,
+edmg,super_crit_multiplier,Super crit multiplier,multiplier,x,42.61824000000001,eDamage,,
+edmg,crit_multiplier_effective,Crit multiplier effective,multiplier,x,3612.5158759289425,eDamage,,
+edmg,uw_crit_multiplier_effective,UW crit multiplier effective,multiplier,x,4230.557727204233,eDamage,,
 edmg,multishot_effective,Multishot effective,multiplier,x,6.9399999999999995,eDamage,,
 edmg,bounce_shot_effective_ad,Bounce shot effective incl AD,multiplier,x,4.328911360000001,eDamage,,
 edmg,bounce_shot_effective_no_ad,Bounce shot effective excl AD,multiplier,x,4.328911360000001,eDamage,,
@@ -46,26 +46,26 @@ edmg,super_tower_bonus,Super Tower bonus,multiplier,x,12.112424045138889,eDamage
 edmg,super_tower_uw,Super Tower UW,multiplier,x,2.2041666666666666,eDamage,,
 edmg,max_rend_multiplier,Max rend multiplier,multiplier,x,1,eDamage,,
 edmg,bullet_damage_multiplier,Bullet damage multiplier,multiplier,x,3206461.1184027265,eDamage,,
-edmg,disco_uw_multiplier,Disco UW multiplier,multiplier,x,2.1574955046872235,eDamage,,
+edmg,disco_uw_multiplier,Disco UW multiplier,multiplier,x,2.446869380859029,eDamage,,
 edmg,avg_time_boost,Average time boost,multiplier,x,0.8034894398530763,eDamage,,
-edmg,spotlight_multiplier,Spotlight multiplier,multiplier,x,57.73387222005565,eDamage,,
+edmg,spotlight_multiplier,Spotlight multiplier,multiplier,x,65.40616840006956,eDamage,,
 edmg,death_wave_dps,Death Wave DPS,dps,damage/sec,10.4544,eDamage,,
 edmg,chain_lightning_dps,Chain Lightning DPS,dps,damage/sec,110660972.43657446,eDamage,,
 edmg,smart_missile_dps,Smart Missile DPS,dps,damage/sec,0,eDamage,,
-edmg,spotlight_missile_dps,Spotlight Missile DPS,dps,damage/sec,7065.025621564768,eDamage,,
+edmg,spotlight_missile_dps,Spotlight Missile DPS,dps,damage/sec,8012.62150064017,eDamage,,
 edmg,smart_missile_heatup,Smart Missile heatup,multiplier,x,5.5,eDamage,,
 edmg,poison_swamp_dps,Poison Swamp DPS,dps,damage/sec,0,eDamage,,
 edmg,poison_swamp_dc,Poison Swamp DC,effect,x,22.75,eDamage,,
 edmg,inner_land_mines_dps,Inner Land Mines DPS,dps,damage/sec,0,eDamage,,
 edmg,ilm_heat_multiplier,ILM heat multiplier,multiplier,x,0.5,eDamage,,
 edmg,core_multiplier,Core multiplier,multiplier,x,38.85884,eDamage,,
-edmg,uws_total_raw,UWs total raw,raw,damage/sec,25959335301477.266,eDamage,,
+edmg,uws_total_raw,UWs total raw,raw,damage/sec,33522608056151.105,eDamage,,
 edmg,chrono_field_multiplier,Chrono Field multiplier,multiplier,x,7.843137254901957,eDamage,,
 edmg,chrono_field_plus_multiplier,Chrono Field+ multiplier,multiplier,x,1,eDamage,,
 edmg,slow_multiplier,Slow multiplier,multiplier,x,7.843137254901957,eDamage,,
 ,,,,,,,,
-ehp,ehp_total_raw,eHP total raw,raw,hp,1020747127430161400,eHP,,
-ehp,health_raw,Health raw,raw,hp,2658597998691.2705,eHP,,
+ehp,ehp_total_raw,eHP total raw,raw,hp,1610258674687630800,eHP,,
+ehp,health_raw,Health raw,raw,hp,4177796855086.281,eHP,,
 ehp,armor_multiplier,Armor multiplier,multiplier,x,12.792208279999999,eHP,,
 ehp,defense_absolute_raw,Defense absolute raw,raw,hp,356307298.3284308,eHP,,
 ehp,defense_percent_multiplier,Defense percent multiplier,multiplier,x,49.99999999999996,eHP,,
@@ -74,12 +74,12 @@ ehp,improved_tradeoff_perks_multiplier,Improved trade-off perks multiplier,multi
 ehp,chrono_field_reduction_multiplier,Chrono Field reduction multiplier,multiplier,x,1.25,eHP,,
 ehp,chain_thunder_multiplier,Chain Thunder multiplier,multiplier,x,1.0169491525423728,eHP,,
 ehp,health_regen_raw,Health regen raw,parsed_raw,hp/sec,241960000000000,eHP,,
-ehp,wall_health_raw,Wall health raw,parsed_raw,hp,602370000000000,eHP,,
-ehp,wall_fortification_raw,Wall fortification raw,parsed_raw,hp,6390000000000000,eHP,,
+ehp,wall_health_raw,Wall health raw,parsed_raw,hp,946590000000000,eHP,,
+ehp,wall_fortification_raw,Wall fortification raw,parsed_raw,hp,10030000000000000,eHP,,
 ehp,wall_regen_raw_per_sec,Wall regen per sec raw,raw,hp/sec,1330804802281042.2,eRegen,,
 ,,,,,,,,
-eecon,cpk_average_raw,Average CpK raw,raw,coins/kill,3284718536.0208726,eEcon,,
-eecon,coins_per_kill_bonus,Coins per kill bonus,bonus,x,49.32723757500001,eEcon,,
+eecon,cpk_average_raw,Average CpK raw,raw,coins/kill,3518195408.1027083,eEcon,,
+eecon,coins_per_kill_bonus,Coins per kill bonus,bonus,x,48.63248775000002,eEcon,,
 eecon,free_attack_upgrade,Free attack upgrade,chance,ratio,1.2797999999999998,eEcon,,
 eecon,free_defense_upgrade,Free defense upgrade,chance,ratio,1.16523,eEcon,,
 eecon,free_utility_upgrade,Free utility upgrade,chance,ratio,1.192242,eEcon,,
@@ -137,7 +137,7 @@ ehp,ehp_guess_enemies_attacking_together,eHP enemies attacking together,guess,co
 ehp,ehp_guess_cl_dmg_pct_total,eHP CL damage percent of total,guess,ratio,0.01,eHP,active,Direct eHP modelling assumption for CL contribution.
 ehp,ehp_guess_ignore_target_levels,eHP ignore target levels,guess,boolean,false,eHP,active,EP source-state flag; affects interpretation of target-level values.
 ehp,ehp_guess_cards_enabled,eHP cards enabled,guess,boolean,true,eHP,active,Direct card-state assumption for eHP calculations.
-ehp,ehp_guess_compare_masteries_at,eHP compare masteries at,guess,level,5.833333333333333,eHP,optional,"Mastery comparison helper; useful for optimiser context, not base tower state."
+ehp,ehp_guess_compare_masteries_at,eHP compare masteries at,guess,level,6,eHP,optional,"Mastery comparison helper; useful for optimiser context, not base tower state."
 ehp,ehp_perk_health_quantity,eHP health perk quantity,guess,count,5,eHP,active,Perk assumption quantity.
 ehp,ehp_perk_health_value,eHP health perk value,guess,multiplier,2.5,eHP,active,Perk assumption value.
 ehp,ehp_perk_health_active,eHP health perk active,guess,boolean,true,eHP,active,Perk active flag.
@@ -169,7 +169,7 @@ eecon,eecon_guess_enemies_killed_per_second_gt_plus,eEcon enemies killed per sec
 eecon,eecon_guess_boss_spawns_every_waves,eEcon boss spawns every waves,guess,waves,9,eEcon,active,Run mechanics assumption.
 eecon,eecon_guess_extra_orb_pct_enemies_tagged,eEcon extra orb percent enemies tagged,guess,ratio,0.9,eEcon,active,Direct econ assumption for extra-orb tagging.
 eecon,eecon_guess_cards_enabled,eEcon cards enabled,guess,boolean,true,eEcon,active,Direct card-state assumption for eEcon calculations.
-eecon,eecon_guess_compare_masteries_at,eEcon compare masteries at,guess,level,5.833333333333333,eEcon,optional,"Mastery comparison helper; useful for optimiser context, not base tower state."
+eecon,eecon_guess_compare_masteries_at,eEcon compare masteries at,guess,level,6,eEcon,optional,"Mastery comparison helper; useful for optimiser context, not base tower state."
 ,,,,,,,,
 uw,uw_death_wave_damage,Death Wave final damage,uw_stat,damage,63,eDamage,active,Final UW stat from EP.
 uw,uw_death_wave_quantity,Death Wave final quantity,uw_stat,count,3,eDamage,active,Final UW stat from EP.
@@ -180,10 +180,10 @@ uw,uw_chain_lightning_chance,Chain Lightning final chance,uw_stat,ratio,0.314,eD
 uw,uw_smart_missile_damage,Smart Missile final damage,uw_stat,damage,,eDamage,optional,Blank when Smart Missile is unavailable/not relevant.
 uw,uw_smart_missile_quantity,Smart Missile final quantity,uw_stat,count,,eDamage,optional,Blank when Smart Missile is unavailable/not relevant.
 uw,uw_smart_missile_cooldown,Smart Missile final cooldown,uw_stat,seconds,,eDamage,optional,Blank when Smart Missile is unavailable/not relevant.
-uw,uw_spotlight_bonus,Spotlight final bonus,uw_stat,x,122.03226073611873,eDamage,active,Final UW stat from EP.
+uw,uw_spotlight_bonus,Spotlight final bonus,uw_stat,x,138.3998259201484,eDamage,active,Final UW stat from EP.
 uw,uw_spotlight_angle,Spotlight final angle,uw_stat,degrees,56.25,eDamage,active,Final UW stat from EP.
 uw,uw_spotlight_quantity,Spotlight final quantity,uw_stat,count,3,eDamage,active,Final UW stat from EP.
-uw,uw_spotlight_missiles_damage,Spotlight Missiles final damage,uw_stat,damage,1220.3226073611872,eDamage,active,Final UW stat from EP.
+uw,uw_spotlight_missiles_damage,Spotlight Missiles final damage,uw_stat,damage,1383.998259201484,eDamage,active,Final UW stat from EP.
 uw,uw_spotlight_missiles_quantity,Spotlight Missiles final quantity,uw_stat,count,1,eDamage,active,Final UW stat from EP.
 uw,uw_spotlight_missiles_cooldown,Spotlight Missiles final cooldown,uw_stat,seconds,19,eDamage,active,Final UW timing stat from EP.
 uw,uw_inner_land_mines_damage,Inner Land Mines final damage,uw_stat,damage,,eDamage,optional,Blank when ILM is unavailable/not relevant.
