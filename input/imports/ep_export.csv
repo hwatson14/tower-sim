@@ -26,8 +26,8 @@ context,eecon_tier_num,eEcon tier number derived,derived,tier,14,derived,,
 context,preset_alignment_status,Preset alignment status,derived,text,mixed,derived,,
 context,tier_alignment_status,Tier alignment status,derived,text,mixed,derived,,
 ,,,,,,,,
-edmg,edmg_total_raw,eDMG/sec total raw,raw,damage/sec,4.5758024860053535e+33,eDamage,,
-edmg,base_damage_raw,Base damage,raw,damage,45939619344176740,eDamage,,
+edmg,edmg_total_raw,eDMG/sec total raw,raw,damage/sec,7.287387156802335e+33,eDamage,,
+edmg,base_damage_raw,Base damage,raw,damage,51344280443491650,eDamage,,
 edmg,crit_chance,Critical chance,chance,ratio,1.07,eDamage,,
 edmg,crit_factor,Critical factor,multiplier,x,230.13455039999997,eDamage,,
 edmg,super_crit_chance,Super crit chance,chance,ratio,0.369,eDamage,,
@@ -42,10 +42,10 @@ edmg,bullets_per_second,Bullets per second,rate,1/sec,378.7546325016116,eDamage,
 edmg,range_m,Range metres,raw,m,140.6950238065217,eDamage,,
 edmg,damage_per_meter,Damage per metre,bonus,%/m,0.14205312,eDamage,,
 edmg,range_dpm_effective,Range DPM effective,multiplier,x,5.996541775047671,eDamage,,
-edmg,super_tower_bonus,Super Tower bonus,multiplier,x,13.723026041666664,eDamage,,
-edmg,super_tower_uw,Super Tower UW,multiplier,x,2.3875,eDamage,,
+edmg,super_tower_bonus,Super Tower bonus,multiplier,x,17.96403472222222,eDamage,,
+edmg,super_tower_uw,Super Tower UW,multiplier,x,2.8499999999999996,eDamage,,
 edmg,max_rend_multiplier,Max rend multiplier,multiplier,x,1,eDamage,,
-edmg,bullet_damage_multiplier,Bullet damage multiplier,multiplier,x,3741549.704546926,eDamage,,
+edmg,bullet_damage_multiplier,Bullet damage multiplier,multiplier,x,4897850.416032454,eDamage,,
 edmg,disco_uw_multiplier,Disco UW multiplier,multiplier,x,2.446901003635631,eDamage,,
 edmg,avg_time_boost,Average time boost,multiplier,x,0.8034894398530763,eDamage,,
 edmg,spotlight_multiplier,Spotlight multiplier,multiplier,x,64.26199337385025,eDamage,,
@@ -59,14 +59,14 @@ edmg,poison_swamp_dc,Poison Swamp DC,effect,x,22.75,eDamage,,
 edmg,inner_land_mines_dps,Inner Land Mines DPS,dps,damage/sec,0,eDamage,,
 edmg,ilm_heat_multiplier,ILM heat multiplier,multiplier,x,0.5,eDamage,,
 edmg,core_multiplier,Core multiplier,multiplier,x,43.15896,eDamage,,
-edmg,uws_total_raw,UWs total raw,raw,damage/sec,2849068089729.7153,eDamage,,
+edmg,uws_total_raw,UWs total raw,raw,damage/sec,4059805883489.505,eDamage,,
 edmg,chrono_field_multiplier,Chrono Field multiplier,multiplier,x,7.843137254901957,eDamage,,
 edmg,chrono_field_plus_multiplier,Chrono Field+ multiplier,multiplier,x,1,eDamage,,
 edmg,slow_multiplier,Slow multiplier,multiplier,x,7.843137254901957,eDamage,,
 ,,,,,,,,
-ehp,ehp_total_raw,eHP total raw,raw,hp,1210067009875890400,eHP,,
-ehp,health_raw,Health raw,raw,hp,4231017197189.2905,eHP,,
-ehp,armor_multiplier,Armor multiplier,multiplier,x,9.4920894,eHP,,
+ehp,ehp_total_raw,eHP total raw,raw,hp,1751352523997175800,eHP,,
+ehp,health_raw,Health raw,raw,hp,4319885055827.7373,eHP,,
+ehp,armor_multiplier,Armor multiplier,multiplier,x,13.455460799999999,eHP,,
 ehp,defense_absolute_raw,Defense absolute raw,raw,hp,356307298.3284308,eHP,,
 ehp,defense_percent_multiplier,Defense percent multiplier,multiplier,x,49.99999999999996,eHP,,
 ehp,wall_fortification_multiplier,Wall fortification multiplier,multiplier,x,187.74720000000005,eHP,,
@@ -74,16 +74,16 @@ ehp,improved_tradeoff_perks_multiplier,Improved trade-off perks multiplier,multi
 ehp,chrono_field_reduction_multiplier,Chrono Field reduction multiplier,multiplier,x,1.25,eHP,,
 ehp,chain_thunder_multiplier,Chain Thunder multiplier,multiplier,x,1.0169491525423728,eHP,,
 ehp,health_regen_raw,Health regen raw,parsed_raw,hp/sec,309270000000000,eHP,,
-ehp,wall_health_raw,Wall health raw,parsed_raw,hp,711340000000000,eHP,,
-ehp,wall_fortification_raw,Wall fortification raw,parsed_raw,hp,7540000000000000,eHP,,
+ehp,wall_health_raw,Wall health raw,parsed_raw,hp,1030000000000000,eHP,,
+ehp,wall_fortification_raw,Wall fortification raw,parsed_raw,hp,10910000000000000,eHP,,
 ehp,wall_regen_raw_per_sec,Wall regen per sec raw,raw,hp/sec,1778295444224526.8,eRegen,,
 ,,,,,,,,
-eecon,cpk_average_raw,Average CpK raw,raw,coins/kill,5473496157.812357,eEcon,,
-eecon,coins_per_kill_bonus,Coins per kill bonus,bonus,x,49.32723757500001,eEcon,,
+eecon,cpk_average_raw,Average CpK raw,raw,coins/kill,6820579706.662075,eEcon,,
+eecon,coins_per_kill_bonus,Coins per kill bonus,bonus,x,50.33383739999999,eEcon,,
 eecon,free_attack_upgrade,Free attack upgrade,chance,ratio,1.29165,eEcon,,
 eecon,free_defense_upgrade,Free defense upgrade,chance,ratio,1.16523,eEcon,,
-eecon,free_utility_upgrade,Free utility upgrade,chance,ratio,1.192242,eEcon,,
-eecon,recovery_package_chance,Recovery package chance,chance,ratio,0.831,eEcon,,
+eecon,free_utility_upgrade,Free utility upgrade,chance,ratio,1.1870100000000001,eEcon,,
+eecon,recovery_package_chance,Recovery package chance,chance,ratio,0.835,eEcon,,
 eecon,package_after_boss_score,Package After Boss score,helper_score,score,,eEcon,,
 eecon,package_after_boss_equiv,Package After Boss equivalent,helper_equiv,equiv,,eEcon,,
 eecon,standard_perk_bonus_score,Standard Perk Bonus score,helper_score,score,,eEcon,,
@@ -160,7 +160,7 @@ ehp,ehp_perk_regen_health_tradeoff_value,eHP regen/health tradeoff value,guess,m
 ehp,ehp_perk_regen_health_tradeoff_active,eHP regen/health tradeoff active,guess,boolean,true,eHP,active,Tradeoff perk active flag.
 ,,,,,,,,
 eecon,eecon_guess_pct_enemies_die_bh_active,eEcon percent enemies die in BH active,guess,ratio,1,eEcon,active,Direct econ assumption for BH kill share.
-eecon,eecon_guess_pct_enemies_die_gb_active,eEcon percent enemies die in GB active,guess,ratio,0.7944444444444445,eEcon,active,Direct econ assumption for GB kill share.
+eecon,eecon_guess_pct_enemies_die_gb_active,eEcon percent enemies die in GB active,guess,ratio,0.763888888888889,eEcon,active,Direct econ assumption for GB kill share.
 eecon,eecon_guess_gb_sync_desired_ratio,eEcon GB sync desired ratio,guess,ratio,1,eEcon,active,Parsed numeric ratio from EP text ratio.
 eecon,eecon_guess_ignore_lab_target_levels,eEcon ignore lab target levels,guess,boolean,false,eEcon,active,EP source-state flag; affects interpretation of lab target values.
 eecon,eecon_guess_ignore_uw_target_levels,eEcon ignore UW target levels,guess,boolean,false,eEcon,active,EP source-state flag; affects interpretation of UW target values.
@@ -169,7 +169,7 @@ eecon,eecon_guess_enemies_killed_per_second_gt_plus,eEcon enemies killed per sec
 eecon,eecon_guess_boss_spawns_every_waves,eEcon boss spawns every waves,guess,waves,9,eEcon,active,Run mechanics assumption.
 eecon,eecon_guess_extra_orb_pct_enemies_tagged,eEcon extra orb percent enemies tagged,guess,ratio,0.87,eEcon,active,Direct econ assumption for extra-orb tagging.
 eecon,eecon_guess_cards_enabled,eEcon cards enabled,guess,boolean,true,eEcon,active,Direct card-state assumption for eEcon calculations.
-eecon,eecon_guess_compare_masteries_at,eEcon compare masteries at,guess,level,6.5,eEcon,optional,"Mastery comparison helper; useful for optimiser context, not base tower state."
+eecon,eecon_guess_compare_masteries_at,eEcon compare masteries at,guess,level,6.857142857142857,eEcon,optional,"Mastery comparison helper; useful for optimiser context, not base tower state."
 ,,,,,,,,
 uw,uw_death_wave_damage,Death Wave final damage,uw_stat,damage,85,eDamage,active,Final UW stat from EP.
 uw,uw_death_wave_quantity,Death Wave final quantity,uw_stat,count,3,eDamage,active,Final UW stat from EP.
@@ -229,24 +229,24 @@ eecon,eecon_perk_death_wave_quantity_active,eEcon perk Death Wave quantity activ
 ,,,,,,,,
 uw,uw_gt_coin_bonus,Golden Tower coin bonus,uw_stat,x,29.325,eEcon,active,eEcon final UW/econ summary.
 uw,uw_gt_duration,Golden Tower duration,uw_stat,seconds,42,eEcon,active,eEcon final Golden Tower duration.
-uw,uw_gt_cooldown,Golden Tower cooldown,uw_stat,seconds,75.5,eEcon,active,eEcon final Golden Tower cooldown.
-uw,uw_gt_uptime,Golden Tower uptime,uw_stat,ratio,0.5562913907284768,eEcon,active,eEcon final uptime summary.
+uw,uw_gt_cooldown,Golden Tower cooldown,uw_stat,seconds,75.3,eEcon,active,eEcon final Golden Tower cooldown.
+uw,uw_gt_uptime,Golden Tower uptime,uw_stat,ratio,0.5577689243027889,eEcon,active,eEcon final uptime summary.
 uw,uw_bh_coin_bonus,Black Hole coin bonus,uw_stat,x,11,eEcon,active,eEcon final UW/econ summary.
 uw,uw_bh_duration,Black Hole duration,uw_stat,seconds,44.6,eEcon,active,eEcon final Black Hole duration.
-uw,uw_bh_cooldown,Black Hole cooldown,uw_stat,seconds,75.5,eEcon,active,eEcon final Black Hole cooldown.
-uw,uw_bh_uptime,Black Hole uptime,uw_stat,ratio,0.5907284768211921,eEcon,active,eEcon final uptime summary.
+uw,uw_bh_cooldown,Black Hole cooldown,uw_stat,seconds,75.3,eEcon,active,eEcon final Black Hole cooldown.
+uw,uw_bh_uptime,Black Hole uptime,uw_stat,ratio,0.5922974767596282,eEcon,active,eEcon final uptime summary.
 uw,uw_dw_coin_bonus,Death Wave coin bonus,uw_stat,x,2.5,eEcon,active,eEcon final UW/econ summary.
 uw,uw_dw_quantity,Death Wave quantity,uw_stat,count,7,eEcon,active,eEcon final Death Wave quantity.
-uw,uw_dw_cooldown,Death Wave cooldown,uw_stat,seconds,75.5,eEcon,active,eEcon final Death Wave cooldown.
-uw,uw_dw_uptime,Death Wave uptime,uw_stat,ratio,0.3708609271523179,eEcon,active,eEcon final uptime summary.
+uw,uw_dw_cooldown,Death Wave cooldown,uw_stat,seconds,75.3,eEcon,active,eEcon final Death Wave cooldown.
+uw,uw_dw_uptime,Death Wave uptime,uw_stat,ratio,0.37184594953519257,eEcon,active,eEcon final uptime summary.
 uw,uw_sl_coin_bonus,Spotlight coin bonus,uw_stat,x,3,eEcon,active,eEcon final UW/econ summary.
 uw,uw_sl_angle,Spotlight angle,uw_stat,degrees,55.25,eEcon,active,eEcon final Spotlight angle.
 uw,uw_sl_quantity,Spotlight quantity,uw_stat,count,3,eEcon,active,eEcon final Spotlight quantity.
 uw,uw_sl_uptime,Spotlight uptime,uw_stat,ratio,0.46041666666666664,eEcon,active,eEcon final uptime summary.
-uw,bot_golden_bot_coin_bonus,Golden Bot coin bonus,uw_stat,x,5.92555555555556,eEcon,active,eEcon final bot/econ summary.
+uw,bot_golden_bot_coin_bonus,Golden Bot coin bonus,uw_stat,x,5.736111111111115,eEcon,active,eEcon final bot/econ summary.
 uw,bot_golden_bot_duration,Golden Bot duration,uw_stat,seconds,36,eEcon,active,eEcon final Golden Bot duration.
-uw,bot_golden_bot_cooldown,Golden Bot cooldown,uw_stat,seconds,52,eEcon,active,eEcon final Golden Bot cooldown.
-uw,bot_golden_bot_uptime,Golden Bot uptime,uw_stat,ratio,0.6923076923076923,eEcon,active,eEcon final uptime summary.
+uw,bot_golden_bot_cooldown,Golden Bot cooldown,uw_stat,seconds,50,eEcon,active,eEcon final Golden Bot cooldown.
+uw,bot_golden_bot_uptime,Golden Bot uptime,uw_stat,ratio,0.72,eEcon,active,eEcon final uptime summary.
 ,,,,,,,,
 ,,,,,,,,
 ,,,,,,,,
