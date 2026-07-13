@@ -1,10 +1,10 @@
 Oracle Outputs (Effective Paths),,,,,,,,
-EP id,1OzMEDLJaxJIvBIXE3p2KRMxD4AnLquRSIvGsdh4CsBg,,,,,,,
-EP Base URL,https://docs.google.com/spreadsheets/d/1OzMEDLJaxJIvBIXE3p2KRMxD4AnLquRSIvGsdh4CsBg,,,,,,,
+EP id,1IiM86FKceIiVPzLTgY_9S0GiIjFXdx37HcpmgwdjtAw,,,,,,,
+EP Base URL,https://docs.google.com/spreadsheets/d/1IiM86FKceIiVPzLTgY_9S0GiIjFXdx37HcpmgwdjtAw,,,,,,,
 Note: Machine-facing EP bridge for TowerSim. Do not optimise for visual review. Use key/type/unit/value as the stable contract.,,,,,,,,
 Types: raw=direct numeric source; parsed_raw=numeric parsed from EP notation; multiplier=effective factor; chance=probability/percent; rate=frequency/per-second; dps=damage contribution; bonus=bonus value; effect=non-multiplier effect value; preset/scenario=context fields; helper_score/equiv/ratio=EP helper metric.,,,,,,,,
 suite,key,label,type,unit,value,source_tab,status,audit_note
-qa,blank_required_value_count,Blank required values in export rows,raw,count,12,EP Export,,
+qa,blank_required_value_count,Blank required values in export rows,raw,count,0,EP Export,,
 qa,error_value_count,Error values in export rows,raw,count,0,EP Export,,
 qa,duplicate_key_count,Duplicate keys in export rows,raw,count,0,EP Export,,
 ,,,,,,,,
@@ -21,19 +21,19 @@ context,ehp_tier_num,eHP tier number derived,derived,tier,14,derived,,
 context,eecon_workshop_preset,eEcon workshop preset,preset,text,Farming (fixed),eEcon,,
 context,eecon_card_preset,eEcon card preset,preset,text,Farming (fixed),eEcon,,
 context,eecon_module_preset,eEcon module preset,preset,text,Farming (fixed),eEcon,,
-context,eecon_scenario_or_tier,eEcon scenario or tier,scenario,text,Tier 14,eEcon,,
-context,eecon_tier_num,eEcon tier number derived,derived,tier,14,derived,,
+context,eecon_scenario_or_tier,eEcon scenario or tier,scenario,text,Farming,eEcon,,
+context,eecon_tier_num,eEcon tier number derived,derived,tier,,derived,,
 context,preset_alignment_status,Preset alignment status,derived,text,mixed,derived,,
 context,tier_alignment_status,Tier alignment status,derived,text,mixed,derived,,
 ,,,,,,,,
-edmg,edmg_total_raw,eDMG/sec total raw,raw,damage/sec,7.287387156802335e+33,eDamage,,
-edmg,base_damage_raw,Base damage,raw,damage,51344280443491650,eDamage,,
+edmg,edmg_total_raw,eDMG/sec total raw,raw,damage/sec,4.0903036845784805e+35,eDamage,,
+edmg,base_damage_raw,Base damage,raw,damage,52797451056839570,eDamage,,
 edmg,crit_chance,Critical chance,chance,ratio,1.07,eDamage,,
-edmg,crit_factor,Critical factor,multiplier,x,230.13455039999997,eDamage,,
+edmg,crit_factor,Critical factor,multiplier,x,232.73494079999998,eDamage,,
 edmg,super_crit_chance,Super crit chance,chance,ratio,0.369,eDamage,,
-edmg,super_crit_multiplier,Super crit multiplier,multiplier,x,43.125600000000006,eDamage,,
-edmg,crit_multiplier_effective,Crit multiplier effective,multiplier,x,3807.4257204258583,eDamage,,
-edmg,uw_crit_multiplier_effective,UW crit multiplier effective,multiplier,x,4457.136416390448,eDamage,,
+edmg,super_crit_multiplier,Super crit multiplier,multiplier,x,43.37928,eDamage,,
+edmg,crit_multiplier_effective,Crit multiplier effective,multiplier,x,3872.233313698304,eDamage,,
+edmg,uw_crit_multiplier_effective,UW crit multiplier effective,multiplier,x,4532.338603153057,eDamage,,
 edmg,multishot_effective,Multishot effective,multiplier,x,6.9399999999999995,eDamage,,
 edmg,bounce_shot_effective_ad,Bounce shot effective incl AD,multiplier,x,4.328911360000001,eDamage,,
 edmg,bounce_shot_effective_no_ad,Bounce shot effective excl AD,multiplier,x,4.328911360000001,eDamage,,
@@ -50,7 +50,7 @@ edmg,disco_uw_multiplier,Disco UW multiplier,multiplier,x,2.446901003635631,eDam
 edmg,avg_time_boost,Average time boost,multiplier,x,0.8034894398530763,eDamage,,
 edmg,spotlight_multiplier,Spotlight multiplier,multiplier,x,64.26199337385025,eDamage,,
 edmg,death_wave_dps,Death Wave DPS,dps,damage/sec,14.105142857142859,eDamage,,
-edmg,chain_lightning_dps,Chain Lightning DPS,dps,damage/sec,7085966.325902696,eDamage,,
+edmg,chain_lightning_dps,Chain Lightning DPS,dps,damage/sec,357470685.9908535,eDamage,,
 edmg,smart_missile_dps,Smart Missile DPS,dps,damage/sec,0,eDamage,,
 edmg,spotlight_missile_dps,Spotlight Missile DPS,dps,damage/sec,8012.725053915917,eDamage,,
 edmg,smart_missile_heatup,Smart Missile heatup,multiplier,x,5.5,eDamage,,
@@ -58,44 +58,44 @@ edmg,poison_swamp_dps,Poison Swamp DPS,dps,damage/sec,0,eDamage,,
 edmg,poison_swamp_dc,Poison Swamp DC,effect,x,22.75,eDamage,,
 edmg,inner_land_mines_dps,Inner Land Mines DPS,dps,damage/sec,0,eDamage,,
 edmg,ilm_heat_multiplier,ILM heat multiplier,multiplier,x,0.5,eDamage,,
-edmg,core_multiplier,Core multiplier,multiplier,x,43.15896,eDamage,,
-edmg,uws_total_raw,UWs total raw,raw,damage/sec,4059805883489.505,eDamage,,
+edmg,core_multiplier,Core multiplier,multiplier,x,45.47536,eDamage,,
+edmg,uws_total_raw,UWs total raw,raw,damage/sec,217936463003401.75,eDamage,,
 edmg,chrono_field_multiplier,Chrono Field multiplier,multiplier,x,7.843137254901957,eDamage,,
 edmg,chrono_field_plus_multiplier,Chrono Field+ multiplier,multiplier,x,1,eDamage,,
 edmg,slow_multiplier,Slow multiplier,multiplier,x,7.843137254901957,eDamage,,
 ,,,,,,,,
-ehp,ehp_total_raw,eHP total raw,raw,hp,1751352523997175800,eHP,,
-ehp,health_raw,Health raw,raw,hp,4319885055827.7373,eHP,,
+ehp,ehp_total_raw,eHP total raw,raw,hp,1873480805813280500,eHP,,
+ehp,health_raw,Health raw,raw,hp,4476971785130.564,eHP,,
 ehp,armor_multiplier,Armor multiplier,multiplier,x,13.455460799999999,eHP,,
 ehp,defense_absolute_raw,Defense absolute raw,raw,hp,356307298.3284308,eHP,,
 ehp,defense_percent_multiplier,Defense percent multiplier,multiplier,x,49.99999999999996,eHP,,
-ehp,wall_fortification_multiplier,Wall fortification multiplier,multiplier,x,187.74720000000005,eHP,,
+ehp,wall_fortification_multiplier,Wall fortification multiplier,multiplier,x,194.61600000000007,eHP,,
 ehp,improved_tradeoff_perks_multiplier,Improved trade-off perks multiplier,multiplier,x,2.2222222222222223,eHP,,
 ehp,chrono_field_reduction_multiplier,Chrono Field reduction multiplier,multiplier,x,1.25,eHP,,
 ehp,chain_thunder_multiplier,Chain Thunder multiplier,multiplier,x,1.0169491525423728,eHP,,
-ehp,health_regen_raw,Health regen raw,parsed_raw,hp/sec,309270000000000,eHP,,
-ehp,wall_health_raw,Wall health raw,parsed_raw,hp,1030000000000000,eHP,,
-ehp,wall_fortification_raw,Wall fortification raw,parsed_raw,hp,10910000000000000,eHP,,
-ehp,wall_regen_raw_per_sec,Wall regen per sec raw,raw,hp/sec,1778295444224526.8,eRegen,,
+ehp,health_regen_raw,Health regen raw,parsed_raw,hp/sec,318110000000000,eHP,,
+ehp,wall_health_raw,Wall health raw,parsed_raw,hp,1110000000000000.1,eHP,,
+ehp,wall_fortification_raw,Wall fortification raw,parsed_raw,hp,11720000000000000,eHP,,
+ehp,wall_regen_raw_per_sec,Wall regen per sec raw,raw,hp/sec,1829103885488084.8,eRegen,,
 ,,,,,,,,
-eecon,cpk_average_raw,Average CpK raw,raw,coins/kill,6820579706.662075,eEcon,,
-eecon,coins_per_kill_bonus,Coins per kill bonus,bonus,x,50.33383739999999,eEcon,,
-eecon,free_attack_upgrade,Free attack upgrade,chance,ratio,1.29165,eEcon,,
+eecon,cpk_average_raw,Average CpK raw,raw,coins/kill,6776415320.972244,eEcon,,
+eecon,coins_per_kill_bonus,Coins per kill bonus,bonus,x,72.48072585599999,eEcon,,
+eecon,free_attack_upgrade,Free attack upgrade,chance,ratio,1.296882,eEcon,,
 eecon,free_defense_upgrade,Free defense upgrade,chance,ratio,1.16523,eEcon,,
-eecon,free_utility_upgrade,Free utility upgrade,chance,ratio,1.1870100000000001,eEcon,,
+eecon,free_utility_upgrade,Free utility upgrade,chance,ratio,1.192242,eEcon,,
 eecon,recovery_package_chance,Recovery package chance,chance,ratio,0.835,eEcon,,
-eecon,package_after_boss_score,Package After Boss score,helper_score,score,,eEcon,,
-eecon,package_after_boss_equiv,Package After Boss equivalent,helper_equiv,equiv,,eEcon,,
-eecon,standard_perk_bonus_score,Standard Perk Bonus score,helper_score,score,,eEcon,,
-eecon,standard_perk_bonus_equiv,Standard Perk Bonus equivalent,helper_equiv,equiv,,eEcon,,
-eecon,improved_tradeoff_perks_score,Improved Trade-Off Perks score,helper_score,score,,eEcon,,
-eecon,improved_tradeoff_perks_equiv,Improved Trade-Off Perks equivalent,helper_equiv,equiv,,eEcon,,
-eecon,golden_tower_bonus_score,Golden Tower bonus score,helper_score,score,,eEcon,,
-eecon,golden_tower_bonus_equiv,Golden Tower bonus equivalent,helper_equiv,equiv,,eEcon,,
-eecon,death_wave_coin_bonus_score,Death Wave coin bonus score,helper_score,score,,eEcon,,
-eecon,death_wave_coin_bonus_ratio,Death Wave coin bonus ratio,helper_ratio,ratio,,eEcon,,
-eecon,spotlight_coin_bonus_score,Spotlight coin bonus score,helper_score,score,,eEcon,,
-eecon,spotlight_coin_bonus_ratio,Spotlight coin bonus ratio,helper_ratio,ratio,,eEcon,,
+eecon,package_after_boss_score,Package After Boss score,helper_score,score,1,eEcon,,
+eecon,package_after_boss_equiv,Package After Boss equivalent,helper_equiv,equiv,0.8533333333333333,eEcon,,
+eecon,standard_perk_bonus_score,Standard Perk Bonus score,helper_score,score,25,eEcon,,
+eecon,standard_perk_bonus_equiv,Standard Perk Bonus equivalent,helper_equiv,equiv,0.25,eEcon,,
+eecon,improved_tradeoff_perks_score,Improved Trade-Off Perks score,helper_score,score,10,eEcon,,
+eecon,improved_tradeoff_perks_equiv,Improved Trade-Off Perks equivalent,helper_equiv,equiv,0.1,eEcon,,
+eecon,golden_tower_bonus_score,Golden Tower bonus score,helper_score,score,25,eEcon,,
+eecon,golden_tower_bonus_equiv,Golden Tower bonus equivalent,helper_equiv,equiv,29.325,eEcon,,
+eecon,death_wave_coin_bonus_score,Death Wave coin bonus score,helper_score,score,20,eEcon,,
+eecon,death_wave_coin_bonus_ratio,Death Wave coin bonus ratio,helper_ratio,ratio,2.5,eEcon,,
+eecon,spotlight_coin_bonus_score,Spotlight coin bonus score,helper_score,score,20,eEcon,,
+eecon,spotlight_coin_bonus_ratio,Spotlight coin bonus ratio,helper_ratio,ratio,3,eEcon,,
 ,,,,,,,,
 ,,,,,,,,
 ,,,,,,,,
@@ -167,9 +167,9 @@ eecon,eecon_guess_ignore_uw_target_levels,eEcon ignore UW target levels,guess,bo
 eecon,eecon_guess_keep_gt_bh_dw_cd_synced,eEcon keep GT/BH/DW cooldown synced,guess,boolean,false,eEcon,active,Cooldown-sync modelling assumption.
 eecon,eecon_guess_enemies_killed_per_second_gt_plus,eEcon enemies killed per second GT+,guess,count,8,eEcon,optional,Conditional GT+ assumption; consume only if GT+ is relevant/unlocked.
 eecon,eecon_guess_boss_spawns_every_waves,eEcon boss spawns every waves,guess,waves,9,eEcon,active,Run mechanics assumption.
-eecon,eecon_guess_extra_orb_pct_enemies_tagged,eEcon extra orb percent enemies tagged,guess,ratio,0.87,eEcon,active,Direct econ assumption for extra-orb tagging.
+eecon,eecon_guess_extra_orb_pct_enemies_tagged,eEcon extra orb percent enemies tagged,guess,ratio,0.83,eEcon,active,Direct econ assumption for extra-orb tagging.
 eecon,eecon_guess_cards_enabled,eEcon cards enabled,guess,boolean,true,eEcon,active,Direct card-state assumption for eEcon calculations.
-eecon,eecon_guess_compare_masteries_at,eEcon compare masteries at,guess,level,6.857142857142857,eEcon,optional,"Mastery comparison helper; useful for optimiser context, not base tower state."
+eecon,eecon_guess_compare_masteries_at,eEcon compare masteries at,guess,level,6,eEcon,optional,"Mastery comparison helper; useful for optimiser context, not base tower state."
 ,,,,,,,,
 uw,uw_death_wave_damage,Death Wave final damage,uw_stat,damage,85,eDamage,active,Final UW stat from EP.
 uw,uw_death_wave_quantity,Death Wave final quantity,uw_stat,count,3,eDamage,active,Final UW stat from EP.
@@ -212,41 +212,41 @@ edmg,edmg_perk_chain_lightning_damage_active,eDamage perk Chain Lightning damage
 edmg,edmg_perk_extra_inner_mines_value,eDamage perk Extra Inner Mines value,guess,count,2,eDamage,optional,Conditional ILM perk value from EP.
 edmg,edmg_perk_extra_inner_mines_active,eDamage perk Extra Inner Mines active,guess,boolean,true,eDamage,optional,Conditional ILM perk active flag from EP.
 ,,,,,,,,
-eecon,eecon_perk_coins_quantity,eEcon perk Coins quantity,guess,count,5,eEcon,active,eEcon perk assumption from EP.
-eecon,eecon_perk_coins_value,eEcon perk Coins value,guess,x,2.1875,eEcon,active,eEcon perk assumption from EP.
-eecon,eecon_perk_coins_active,eEcon perk Coins active,guess,boolean,true,eEcon,active,eEcon perk active flag from EP.
-eecon,eecon_perk_free_upgrades_quantity,eEcon perk Free Upgrades quantity,guess,count,5,eEcon,active,eEcon perk assumption from EP.
-eecon,eecon_perk_free_upgrades_value,eEcon perk Free Upgrades value,guess,ratio,0.3125,eEcon,active,eEcon perk assumption from EP.
-eecon,eecon_perk_free_upgrades_active,eEcon perk Free Upgrades active,guess,boolean,true,eEcon,active,eEcon perk active flag from EP.
-eecon,eecon_perk_coin_health_tradeoff_value,eEcon perk coin/health tradeoff value,guess,x,1.9800000000000002,eEcon,active,eEcon perk assumption from EP.
-eecon,eecon_perk_coin_health_tradeoff_active,eEcon perk coin/health tradeoff active,guess,boolean,true,eEcon,active,eEcon perk active flag from EP.
-eecon,eecon_perk_golden_tower_bonus_value,eEcon perk Golden Tower bonus value,guess,x,1.5,eEcon,active,Parsed numeric perk value from EP text.
-eecon,eecon_perk_golden_tower_bonus_active,eEcon perk Golden Tower bonus active,guess,boolean,true,eEcon,active,eEcon perk active flag from EP.
-eecon,eecon_perk_black_hole_duration_value,eEcon perk Black Hole duration value,guess,seconds,12,eEcon,active,Parsed numeric duration from EP text.
-eecon,eecon_perk_black_hole_duration_active,eEcon perk Black Hole duration active,guess,boolean,true,eEcon,active,eEcon perk active flag from EP.
-eecon,eecon_perk_death_wave_quantity_value,eEcon perk Death Wave quantity value,guess,count,1,eEcon,active,Parsed numeric perk value from EP text.
-eecon,eecon_perk_death_wave_quantity_active,eEcon perk Death Wave quantity active,guess,boolean,true,eEcon,active,eEcon perk active flag from EP.
+eecon,eecon_perk_coins_quantity,eEcon perk Coins quantity,guess,count,Substat Compared To:,eEcon,active,eEcon perk assumption from EP.
+eecon,eecon_perk_coins_value,eEcon perk Coins value,guess,x,,eEcon,active,eEcon perk assumption from EP.
+eecon,eecon_perk_coins_active,eEcon perk Coins active,guess,boolean,Ancestral,eEcon,active,eEcon perk active flag from EP.
+eecon,eecon_perk_free_upgrades_quantity,eEcon perk Free Upgrades quantity,guess,count,Black Hole Digestor,eEcon,active,eEcon perk assumption from EP.
+eecon,eecon_perk_free_upgrades_value,eEcon perk Free Upgrades value,guess,ratio,,eEcon,active,eEcon perk assumption from EP.
+eecon,eecon_perk_free_upgrades_active,eEcon perk Free Upgrades active,guess,boolean,0,eEcon,active,eEcon perk active flag from EP.
+eecon,eecon_perk_coin_health_tradeoff_value,eEcon perk coin/health tradeoff value,guess,x,,eEcon,active,eEcon perk assumption from EP.
+eecon,eecon_perk_coin_health_tradeoff_active,eEcon perk coin/health tradeoff active,guess,boolean,-20,eEcon,active,eEcon perk active flag from EP.
+eecon,eecon_perk_golden_tower_bonus_value,eEcon perk Golden Tower bonus value,guess,x,,eEcon,active,Parsed numeric perk value from EP text.
+eecon,eecon_perk_golden_tower_bonus_active,eEcon perk Golden Tower bonus active,guess,boolean,0.6,eEcon,active,eEcon perk active flag from EP.
+eecon,eecon_perk_black_hole_duration_value,eEcon perk Black Hole duration value,guess,seconds,0.1707,eEcon,active,Parsed numeric duration from EP text.
+eecon,eecon_perk_black_hole_duration_active,eEcon perk Black Hole duration active,guess,boolean,0.08,eEcon,active,eEcon perk active flag from EP.
+eecon,eecon_perk_death_wave_quantity_value,eEcon perk Death Wave quantity value,guess,count,0.5026,eEcon,active,Parsed numeric perk value from EP text.
+eecon,eecon_perk_death_wave_quantity_active,eEcon perk Death Wave quantity active,guess,boolean,0,eEcon,active,eEcon perk active flag from EP.
 ,,,,,,,,
-uw,uw_gt_coin_bonus,Golden Tower coin bonus,uw_stat,x,29.325,eEcon,active,eEcon final UW/econ summary.
-uw,uw_gt_duration,Golden Tower duration,uw_stat,seconds,42,eEcon,active,eEcon final Golden Tower duration.
-uw,uw_gt_cooldown,Golden Tower cooldown,uw_stat,seconds,75.3,eEcon,active,eEcon final Golden Tower cooldown.
-uw,uw_gt_uptime,Golden Tower uptime,uw_stat,ratio,0.5577689243027889,eEcon,active,eEcon final uptime summary.
-uw,uw_bh_coin_bonus,Black Hole coin bonus,uw_stat,x,11,eEcon,active,eEcon final UW/econ summary.
-uw,uw_bh_duration,Black Hole duration,uw_stat,seconds,44.6,eEcon,active,eEcon final Black Hole duration.
-uw,uw_bh_cooldown,Black Hole cooldown,uw_stat,seconds,75.3,eEcon,active,eEcon final Black Hole cooldown.
-uw,uw_bh_uptime,Black Hole uptime,uw_stat,ratio,0.5922974767596282,eEcon,active,eEcon final uptime summary.
-uw,uw_dw_coin_bonus,Death Wave coin bonus,uw_stat,x,2.5,eEcon,active,eEcon final UW/econ summary.
-uw,uw_dw_quantity,Death Wave quantity,uw_stat,count,7,eEcon,active,eEcon final Death Wave quantity.
-uw,uw_dw_cooldown,Death Wave cooldown,uw_stat,seconds,75.3,eEcon,active,eEcon final Death Wave cooldown.
-uw,uw_dw_uptime,Death Wave uptime,uw_stat,ratio,0.37184594953519257,eEcon,active,eEcon final uptime summary.
-uw,uw_sl_coin_bonus,Spotlight coin bonus,uw_stat,x,3,eEcon,active,eEcon final UW/econ summary.
-uw,uw_sl_angle,Spotlight angle,uw_stat,degrees,55.25,eEcon,active,eEcon final Spotlight angle.
-uw,uw_sl_quantity,Spotlight quantity,uw_stat,count,3,eEcon,active,eEcon final Spotlight quantity.
-uw,uw_sl_uptime,Spotlight uptime,uw_stat,ratio,0.46041666666666664,eEcon,active,eEcon final uptime summary.
-uw,bot_golden_bot_coin_bonus,Golden Bot coin bonus,uw_stat,x,5.736111111111115,eEcon,active,eEcon final bot/econ summary.
-uw,bot_golden_bot_duration,Golden Bot duration,uw_stat,seconds,36,eEcon,active,eEcon final Golden Bot duration.
-uw,bot_golden_bot_cooldown,Golden Bot cooldown,uw_stat,seconds,50,eEcon,active,eEcon final Golden Bot cooldown.
-uw,bot_golden_bot_uptime,Golden Bot uptime,uw_stat,ratio,0.72,eEcon,active,eEcon final uptime summary.
+uw,uw_gt_coin_bonus,Golden Tower coin bonus,uw_stat,x,,eEcon,active,eEcon final UW/econ summary.
+uw,uw_gt_duration,Golden Tower duration,uw_stat,seconds,,eEcon,active,eEcon final Golden Tower duration.
+uw,uw_gt_cooldown,Golden Tower cooldown,uw_stat,seconds,,eEcon,active,eEcon final Golden Tower cooldown.
+uw,uw_gt_uptime,Golden Tower uptime,uw_stat,ratio,,eEcon,active,eEcon final uptime summary.
+uw,uw_bh_coin_bonus,Black Hole coin bonus,uw_stat,x,,eEcon,active,eEcon final UW/econ summary.
+uw,uw_bh_duration,Black Hole duration,uw_stat,seconds,,eEcon,active,eEcon final Black Hole duration.
+uw,uw_bh_cooldown,Black Hole cooldown,uw_stat,seconds,,eEcon,active,eEcon final Black Hole cooldown.
+uw,uw_bh_uptime,Black Hole uptime,uw_stat,ratio,,eEcon,active,eEcon final uptime summary.
+uw,uw_dw_coin_bonus,Death Wave coin bonus,uw_stat,x,,eEcon,active,eEcon final UW/econ summary.
+uw,uw_dw_quantity,Death Wave quantity,uw_stat,count,,eEcon,active,eEcon final Death Wave quantity.
+uw,uw_dw_cooldown,Death Wave cooldown,uw_stat,seconds,,eEcon,active,eEcon final Death Wave cooldown.
+uw,uw_dw_uptime,Death Wave uptime,uw_stat,ratio,,eEcon,active,eEcon final uptime summary.
+uw,uw_sl_coin_bonus,Spotlight coin bonus,uw_stat,x,,eEcon,active,eEcon final UW/econ summary.
+uw,uw_sl_angle,Spotlight angle,uw_stat,degrees,,eEcon,active,eEcon final Spotlight angle.
+uw,uw_sl_quantity,Spotlight quantity,uw_stat,count,,eEcon,active,eEcon final Spotlight quantity.
+uw,uw_sl_uptime,Spotlight uptime,uw_stat,ratio,,eEcon,active,eEcon final uptime summary.
+uw,bot_golden_bot_coin_bonus,Golden Bot coin bonus,uw_stat,x,,eEcon,active,eEcon final bot/econ summary.
+uw,bot_golden_bot_duration,Golden Bot duration,uw_stat,seconds,,eEcon,active,eEcon final Golden Bot duration.
+uw,bot_golden_bot_cooldown,Golden Bot cooldown,uw_stat,seconds,,eEcon,active,eEcon final Golden Bot cooldown.
+uw,bot_golden_bot_uptime,Golden Bot uptime,uw_stat,ratio,,eEcon,active,eEcon final uptime summary.
 ,,,,,,,,
 ,,,,,,,,
 ,,,,,,,,
