@@ -26,8 +26,8 @@ context,eecon_tier_num,eEcon tier number derived,derived,tier,,derived,,
 context,preset_alignment_status,Preset alignment status,derived,text,mixed,derived,,
 context,tier_alignment_status,Tier alignment status,derived,text,mixed,derived,,
 ,,,,,,,,
-edmg,edmg_total_raw,eDMG/sec total raw,raw,damage/sec,6.325272957092625e+35,eDamage,,
-edmg,base_damage_raw,Base damage,raw,damage,79196176585259340,eDamage,,
+edmg,edmg_total_raw,eDMG/sec total raw,raw,damage/sec,1.348233952529553e+36,eDamage,,
+edmg,base_damage_raw,Base damage,raw,damage,131993627642098940,eDamage,,
 edmg,crit_chance,Critical chance,chance,ratio,1.07,eDamage,,
 edmg,crit_factor,Critical factor,multiplier,x,232.73494079999998,eDamage,,
 edmg,super_crit_chance,Super crit chance,chance,ratio,0.369,eDamage,,
@@ -42,10 +42,10 @@ edmg,bullets_per_second,Bullets per second,rate,1/sec,378.7546325016116,eDamage,
 edmg,range_m,Range metres,raw,m,193.03812268119242,eDamage,,
 edmg,damage_per_meter,Damage per metre,bonus,%/m,0.14205312,eDamage,,
 edmg,range_dpm_effective,Range DPM effective,multiplier,x,7.855416901451537,eDamage,,
-edmg,super_tower_bonus,Super Tower bonus,multiplier,x,18.442548394097223,eDamage,,
-edmg,super_tower_uw,Super Tower UW,multiplier,x,2.8937500000000003,eDamage,,
+edmg,super_tower_bonus,Super Tower bonus,multiplier,x,21.931058072916667,eDamage,,
+edmg,super_tower_uw,Super Tower UW,multiplier,x,3.2725000000000004,eDamage,,
 edmg,max_rend_multiplier,Max rend multiplier,multiplier,x,1,eDamage,,
-edmg,bullet_damage_multiplier,Bullet damage multiplier,multiplier,x,6587049.673052947,eDamage,,
+edmg,bullet_damage_multiplier,Bullet damage multiplier,multiplier,x,7833026.424653306,eDamage,,
 edmg,disco_uw_multiplier,Disco UW multiplier,multiplier,x,2.446901003635631,eDamage,,
 edmg,avg_time_boost,Average time boost,multiplier,x,0.8034894398530763,eDamage,,
 edmg,spotlight_multiplier,Spotlight multiplier,multiplier,x,64.26199337385025,eDamage,,
@@ -59,7 +59,7 @@ edmg,poison_swamp_dc,Poison Swamp DC,effect,x,22.75,eDamage,,
 edmg,inner_land_mines_dps,Inner Land Mines DPS,dps,damage/sec,0,eDamage,,
 edmg,ilm_heat_multiplier,ILM heat multiplier,multiplier,x,0.5,eDamage,,
 edmg,core_multiplier,Core multiplier,multiplier,x,45.47536,eDamage,,
-edmg,uws_total_raw,UWs total raw,raw,damage/sec,224678850949952.44,eDamage,,
+edmg,uws_total_raw,UWs total raw,raw,damage/sec,287342245816344.75,eDamage,,
 edmg,chrono_field_multiplier,Chrono Field multiplier,multiplier,x,7.843137254901957,eDamage,,
 edmg,chrono_field_plus_multiplier,Chrono Field+ multiplier,multiplier,x,1,eDamage,,
 edmg,slow_multiplier,Slow multiplier,multiplier,x,7.843137254901957,eDamage,,
@@ -78,7 +78,7 @@ ehp,wall_health_raw,Wall health raw,parsed_raw,hp,1110000000000000.1,eHP,,
 ehp,wall_fortification_raw,Wall fortification raw,parsed_raw,hp,11720000000000000,eHP,,
 ehp,wall_regen_raw_per_sec,Wall regen per sec raw,raw,hp/sec,1829103885488084.8,eRegen,,
 ,,,,,,,,
-eecon,cpk_average_raw,Average CpK raw,raw,coins/kill,7364157849.272001,eEcon,,
+eecon,cpk_average_raw,Average CpK raw,raw,coins/kill,7574441025.374665,eEcon,,
 eecon,coins_per_kill_bonus,Coins per kill bonus,bonus,x,73.49089800937502,eEcon,,
 eecon,free_attack_upgrade,Free attack upgrade,chance,ratio,1.296882,eEcon,,
 eecon,free_defense_upgrade,Free defense upgrade,chance,ratio,1.16523,eEcon,,
@@ -180,10 +180,10 @@ uw,uw_chain_lightning_chance,Chain Lightning final chance,uw_stat,ratio,0.314,eD
 uw,uw_smart_missile_damage,Smart Missile final damage,uw_stat,damage,,eDamage,optional,Blank when Smart Missile is unavailable/not relevant.
 uw,uw_smart_missile_quantity,Smart Missile final quantity,uw_stat,count,,eDamage,optional,Blank when Smart Missile is unavailable/not relevant.
 uw,uw_smart_missile_cooldown,Smart Missile final cooldown,uw_stat,seconds,,eDamage,optional,Blank when Smart Missile is unavailable/not relevant.
-uw,uw_spotlight_bonus,Spotlight final bonus,uw_stat,x,138.40161456763855,eDamage,active,Final UW stat from EP.
+uw,uw_spotlight_bonus,Spotlight final bonus,uw_stat,x,452.9192836725972,eDamage,active,Final UW stat from EP.
 uw,uw_spotlight_angle,Spotlight final angle,uw_stat,degrees,55.25,eDamage,active,Final UW stat from EP.
 uw,uw_spotlight_quantity,Spotlight final quantity,uw_stat,count,3,eDamage,active,Final UW stat from EP.
-uw,uw_spotlight_missiles_damage,Spotlight Missiles final damage,uw_stat,damage,1384.0161456763853,eDamage,active,Final UW stat from EP.
+uw,uw_spotlight_missiles_damage,Spotlight Missiles final damage,uw_stat,damage,4529.192836725972,eDamage,active,Final UW stat from EP.
 uw,uw_spotlight_missiles_quantity,Spotlight Missiles final quantity,uw_stat,count,1,eDamage,active,Final UW stat from EP.
 uw,uw_spotlight_missiles_cooldown,Spotlight Missiles final cooldown,uw_stat,seconds,19,eDamage,active,Final UW timing stat from EP.
 uw,uw_inner_land_mines_damage,Inner Land Mines final damage,uw_stat,damage,,eDamage,optional,Blank when ILM is unavailable/not relevant.
