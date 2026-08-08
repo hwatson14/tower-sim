@@ -10,7 +10,6 @@ Domain helpers live in their real owners (evaluators.compare, input.loader).
 """
 from __future__ import annotations
 
-import csv
 import json
 import math
 import re
@@ -108,6 +107,11 @@ from simulators.geometry import (
 from input.state_types import ScenarioProjectionState, ScenarioRuntimeInputs
 from qe.models import BoundStatInputs, StatRow, bind_state_identity
 from qe.materializer import materialized_surface_id_for_contract, query_evidence_surface_id_for_contract
+from qe.kb_surfaces import (
+    CONTRIBUTOR_ROUTING_CLOSURE_SOURCE_ID,
+    load_contributor_routing_closure_rows,
+    load_module_unique_runtime_catalog_rows,
+)
 
 BOSS_WAVE_SOURCE_REPLACEMENT = 'replacement'
 BOSS_WAVE_FIELD_MAP_PATH = ROOT / 'app' / 'boss_waves_phase2a_field_map.yaml'
@@ -4925,12 +4929,6 @@ _CURRENT_SCOPE_EFFECT_FAMILY_STATBOOK_SOURCE_FAMILIES: dict[str, tuple[str, ...]
 
 
 _CURRENT_SCOPE_EFFECT_FAMILY_PASSING_VERDICTS = {'pass', 'pass_with_compare_limitations'}
-_CURRENT_SCOPE_EFFECT_ROUTE_CLOSURE_LEDGER = (
-    ROOT / 'kb' / 'ledgers' / 'tables' / 'contributor-routing-closure.csv'
-)
-_CURRENT_SCOPE_MODULE_UNIQUE_RUNTIME_CATALOG = (
-    ROOT / 'kb' / 'modules' / 'contracts' / 'module-unique-runtime-catalog.csv'
-)
 
 
 def _current_scope_slug_text(value: object) -> str:
@@ -4938,21 +4936,20 @@ def _current_scope_slug_text(value: object) -> str:
 
 
 def _current_scope_effect_route_rows_by_source_family() -> dict[str, list[dict[str, str]]]:
-    with _CURRENT_SCOPE_EFFECT_ROUTE_CLOSURE_LEDGER.open(encoding='utf-8', newline='') as handle:
-        rows_by_family: dict[str, list[dict[str, str]]] = {}
-        for row in csv.DictReader(handle):
-            source_family = str(row.get('source_family') or '').strip()
-            if not source_family:
-                continue
-            rows_by_family.setdefault(source_family, []).append(
-                {
-                    'source_family': source_family,
-                    'contributor_id': str(row.get('contributor_id') or '').strip(),
-                    'destination_object_type': str(row.get('destination_object_type') or '').strip(),
-                    'destination_id': str(row.get('destination_id') or '').strip(),
-                    'registration_status': str(row.get('registration_status') or '').strip(),
-                }
-            )
+    rows_by_family: dict[str, list[dict[str, str]]] = {}
+    for row in load_contributor_routing_closure_rows():
+        source_family = str(row.get('source_family') or '').strip()
+        if not source_family:
+            continue
+        rows_by_family.setdefault(source_family, []).append(
+            {
+                'source_family': source_family,
+                'contributor_id': str(row.get('contributor_id') or '').strip(),
+                'destination_object_type': str(row.get('destination_object_type') or '').strip(),
+                'destination_id': str(row.get('destination_id') or '').strip(),
+                'registration_status': str(row.get('registration_status') or '').strip(),
+            }
+        )
     return rows_by_family
 
 
@@ -5086,15 +5083,14 @@ def _current_scope_query_book_surface_evidence(
 
 
 def _current_scope_module_unique_catalog() -> dict[str, dict[str, str]]:
-    with _CURRENT_SCOPE_MODULE_UNIQUE_RUNTIME_CATALOG.open(encoding='utf-8', newline='') as handle:
-        return {
-            _current_scope_slug_text(row.get('module_name')): {
-                str(key): str(value or '')
-                for key, value in dict(row or {}).items()
-            }
-            for row in csv.DictReader(handle)
-            if _current_scope_slug_text(row.get('module_name'))
+    return {
+        _current_scope_slug_text(row.get('module_name')): {
+            str(key): str(value or '')
+            for key, value in dict(row or {}).items()
         }
+        for row in load_module_unique_runtime_catalog_rows()
+        if _current_scope_slug_text(row.get('module_name'))
+    }
 
 
 def _current_scope_module_payload_context(
@@ -5343,7 +5339,7 @@ def _current_scope_effect_individual_route_evidence(
     return {
         'status': 'closed' if route_rows and not unregistered else 'needs_work',
         'family': str(family),
-        'ledger': 'kb/ledgers/tables/contributor-routing-closure.csv',
+        'ledger': CONTRIBUTOR_ROUTING_CLOSURE_SOURCE_ID,
         'source_families': list(route_source_family_ids),
         'route_contributor_count': len(route_rows),
         'registered_route_contributor_count': int(status_counts.get('registered') or 0),
@@ -5965,7 +5961,7 @@ def _current_scope_effect_family_evidence_summary(
         'route_closure_closed_source_family_count': route_closure.get('closed_source_family_count'),
         'route_closure_open_source_families': list(route_closure.get('open_source_families') or []),
         'individual_route_evidence_status': individual_route_evidence_status,
-        'individual_route_ledger': 'kb/ledgers/tables/contributor-routing-closure.csv',
+        'individual_route_ledger': CONTRIBUTOR_ROUTING_CLOSURE_SOURCE_ID,
         'unique_source_family_route_count': len(unique_individual_route_rows),
         'unique_source_family_registered_route_count': int(
             unique_individual_route_status_counts.get('registered') or 0
@@ -7305,7 +7301,11 @@ def _build_replacement_operator_table_and_summary(
         ScenarioSurvivabilityTransforms,
         evaluate_overlay_row,
     )
-    from simulators.scenario import normalize_els_reduction_to_fraction, overheat_enemy_skip_decay_schedule
+    from simulators.scenario import (
+        normalize_els_reduction_to_fraction,
+        overheat_enemy_skip_decay_schedule,
+        tournament_bc_magnitude_schedule,
+    )
 
     loadout_profile_preset = str(config.get('loadout_profile_preset') or preset_name)
     workshop_levels, track_max_levels = _boss_wave_workshop_level_inputs(account_state, preset_name=loadout_profile_preset)
@@ -7599,6 +7599,23 @@ def _build_replacement_operator_table_and_summary(
     primitives['incoming_damage_multiplier'] = float(incoming_mult)
     primitives['boss_health_multiplier'] = float(boss_health_multiplier)
     primitives['boss_wave_pressure_factor'] = float(boss_wave_pressure_factor)
+    tournament_heat_schedules: dict[str, dict[int, float]] = {}
+    tournament_heat_source = ''
+    dynamic_boss_hit_interval_from_tournament_heat = False
+    dynamic_boss_contact_time_from_tournament_heat = False
+    if str(config.get('mode_id') or '') == 'tournament':
+        tournament_heat_schedules = {
+            'enemy_attack_speed': tournament_bc_magnitude_schedule('enemy_attack_speed'),
+            'enemy_speed': tournament_bc_magnitude_schedule('enemy_speed'),
+        }
+        tournament_heat_source = 'kb.tournaments.tables.battle-condition-magnitudes.csv'
+        dynamic_boss_hit_interval_from_tournament_heat = (
+            str(boss_hit_interval_source) != 'runtime_input_boss_hit_interval_seconds'
+        )
+        dynamic_boss_contact_time_from_tournament_heat = (
+            str(boss_time_to_contact_source) != 'runtime_input_boss_time_to_contact_seconds'
+            and boss_time_to_contact_seconds is not None
+        )
     wall_thorns_damage_increase_per_hit = _boss_wave_wall_thorns_damage_increase_per_hit(
         account_state,
         preset_name=loadout_profile_preset,
@@ -7612,6 +7629,25 @@ def _build_replacement_operator_table_and_summary(
     scenario = ScenarioOverlayInputs(
         scenario_key='boss_waves_replacement_product',
         tier_column=str(config['tier_column']),
+        tournament_heat_schedules=tournament_heat_schedules,
+        tournament_heat_source=tournament_heat_source,
+        dynamic_boss_hit_interval_from_tournament_heat=dynamic_boss_hit_interval_from_tournament_heat,
+        dynamic_boss_contact_time_from_tournament_heat=dynamic_boss_contact_time_from_tournament_heat,
+        boss_hit_interval_base_seconds=2.0,
+        boss_hit_interval_slow_aura_mastery_multiplier=float(
+            boss_hit_interval_components.get('slow_aura_mastery_attack_interval_multiplier') or 1.0
+        ),
+        boss_contact_base_seconds=(
+            float(boss_time_to_contact_components.get('base_seconds'))
+            if boss_time_to_contact_components.get('base_seconds') is not None
+            else None
+        ),
+        boss_contact_chrono_field_average_slow_fraction=float(
+            boss_time_to_contact_components.get('chrono_field_average_slow_fraction') or 0.0
+        ),
+        boss_contact_slow_aura_fraction=float(boss_time_to_contact_components.get('slow_aura_fraction') or 0.0),
+        boss_contact_boss_speed_multiplier=float(boss_time_to_contact_components.get('boss_speed_multiplier') or 1.0),
+        boss_contact_energy_net_hold_seconds=float(boss_time_to_contact_components.get('energy_net_hold_seconds') or 0.0),
         tournament_perks_enabled=bool(config['perks_enabled']),
         tower_damage_decay_start_wave=tower_damage_decay_start_wave if tower_damage_decay_fraction > 0.0 else 0,
         tower_damage_decay_fraction_per_step=tower_damage_decay_fraction,
@@ -7790,6 +7826,10 @@ def _build_replacement_operator_table_and_summary(
         'enemy_level_skip_decay_start_wave': overheat_start_wave if (skip_decay_fraction > 0.0 and skip_decay_interval > 0) or skip_decay_schedule else 0,
         'enemy_level_skip_decay_schedule': skip_decay_schedule,
         'enemy_level_skip_decay_source': skip_decay_source,
+        'tournament_heat_schedule_source': tournament_heat_source,
+        'tournament_heat_schedules': tournament_heat_schedules,
+        'dynamic_boss_hit_interval_from_tournament_heat': dynamic_boss_hit_interval_from_tournament_heat,
+        'dynamic_boss_contact_time_from_tournament_heat': dynamic_boss_contact_time_from_tournament_heat,
         'tower_damage_decay_fraction_per_step': tower_damage_decay_fraction,
         'tower_damage_decay_start_wave': tower_damage_decay_start_wave if tower_damage_decay_fraction > 0.0 else 0,
         'tower_health_decay_fraction_per_step': tower_health_decay_fraction,
@@ -9388,14 +9428,15 @@ def _replacement_operator_row_from_overlay(
 ) -> dict[str, object]:
     summary = overlay.summary_combat
     boss_damage = overlay.boss_damage_breakdown
-    boss_time_to_contact = combat.boss_time_to_contact_seconds
+    heat = dict(getattr(overlay, 'heat', {}) or {})
+    boss_time_to_contact = heat.get('boss_time_to_contact_seconds', combat.boss_time_to_contact_seconds)
+    boss_hit_interval = heat.get('boss_hit_interval_seconds', combat.boss_hit_interval_seconds)
     boss_ttk = summary.ttk_seconds
     boss_killed_before_contact = (
         boss_time_to_contact is not None
         and boss_ttk is not None
         and float(boss_ttk) <= float(boss_time_to_contact)
     )
-    heat = dict(getattr(overlay, 'heat', {}) or {})
     tower_damage_decay_multiplier = float(heat.get('tower_damage_decay_multiplier') or 1.0)
     return {
         'display_wave': overlay.display_wave,
@@ -9416,8 +9457,8 @@ def _replacement_operator_row_from_overlay(
         'boss_wall_thorns_damage_to_boss_pct': boss_damage.thorns_damage_pct,
         'boss_expected_wall_thorns_damage_from_hits_pct': boss_damage.thorns_expected_damage_pct_from_hits,
         'boss_wall_thorns_contact_kill_seconds': summary.contact_thorns_kill_seconds,
-        'boss_time_to_contact_seconds': combat.boss_time_to_contact_seconds,
-        'boss_hit_interval_seconds': combat.boss_hit_interval_seconds,
+        'boss_time_to_contact_seconds': boss_time_to_contact,
+        'boss_hit_interval_seconds': boss_hit_interval,
         'energy_shield_enabled': bool(primitives.get('energy_shield_enabled')),
         'energy_shield_effective_charge_count': float(primitives.get('energy_shield_effective_charge_count') or 0.0),
         'energy_shields_down_fraction': float(primitives.get('energy_shields_down_fraction') or 0.0),

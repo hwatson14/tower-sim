@@ -82,7 +82,18 @@ class ScenarioOverlayInputs:
     scenario_key: str
     tier_column: str
     battle_conditions: tuple[str, ...] = ()
-    heat: Mapping[str, float] = field(default_factory=dict)
+    heat: Mapping[str, object] = field(default_factory=dict)
+    tournament_heat_schedules: Mapping[str, Mapping[int, float]] = field(default_factory=dict)
+    tournament_heat_source: str = ""
+    dynamic_boss_hit_interval_from_tournament_heat: bool = False
+    dynamic_boss_contact_time_from_tournament_heat: bool = False
+    boss_hit_interval_base_seconds: float = 2.0
+    boss_hit_interval_slow_aura_mastery_multiplier: float = 1.0
+    boss_contact_base_seconds: float | None = None
+    boss_contact_chrono_field_average_slow_fraction: float = 0.0
+    boss_contact_slow_aura_fraction: float = 0.0
+    boss_contact_boss_speed_multiplier: float = 1.0
+    boss_contact_energy_net_hold_seconds: float = 0.0
     tournament_perks_enabled: bool = True
     removed_perk_ids: tuple[str, ...] = ()
     attack_skip_chance_delta: float = 0.0
@@ -203,7 +214,7 @@ class ScenarioOverlayRow:
     display_wave: int
     scenario_key: str
     battle_conditions: tuple[str, ...]
-    heat: Mapping[str, float]
+    heat: Mapping[str, object]
     tournament_perks_enabled: bool
     active_perk_counts: Mapping[str, int]
     active_perk_contributions: Mapping[str, float]
@@ -519,13 +530,32 @@ def _decay_multiplier_for_wave(
     return steps, max(0.0, 1.0 - (fraction * steps))
 
 
+def _schedule_value_for_wave(schedule: Mapping[int, float] | None, display_wave: int) -> tuple[int, float]:
+    if not schedule:
+        return 0, 0.0
+    normalized: dict[int, float] = {}
+    for threshold, value in dict(schedule).items():
+        try:
+            normalized[max(0, int(threshold))] = float(value)
+        except (TypeError, ValueError):
+            continue
+    if not normalized:
+        return 0, 0.0
+    active_thresholds = [threshold for threshold in normalized if threshold <= int(display_wave)]
+    if not active_thresholds:
+        threshold = min(normalized)
+        return int(threshold), float(normalized[threshold])
+    threshold = max(active_thresholds)
+    return int(threshold), float(normalized[threshold])
+
+
 def _row_overheat_inputs(
     *,
     row: CommonTrajectoryRow,
     scenario: ScenarioOverlayInputs,
     transforms: ScenarioSurvivabilityTransforms,
     combat: CombatInputs,
-) -> tuple[ScenarioSurvivabilityTransforms, CombatInputs, Mapping[str, float]]:
+) -> tuple[ScenarioSurvivabilityTransforms, CombatInputs, Mapping[str, object]]:
     damage_steps, damage_multiplier = _decay_multiplier_for_wave(
         display_wave=row.display_wave,
         start_wave=scenario.tower_damage_decay_start_wave,
@@ -550,12 +580,50 @@ def _row_overheat_inputs(
             row_combat,
             continuous_boss_damage_per_second=max(0.0, float(row_combat.continuous_boss_damage_per_second or 0.0)) * damage_multiplier,
         )
-    return row_transforms, row_combat, {
+    heat: dict[str, float | str] = {
         "tower_damage_decay_steps": float(damage_steps),
         "tower_damage_decay_multiplier": float(damage_multiplier),
         "tower_health_decay_steps": float(health_steps),
         "tower_health_decay_multiplier": float(health_multiplier),
     }
+    schedules = {str(key): dict(value) for key, value in dict(scenario.tournament_heat_schedules or {}).items()}
+    if schedules:
+        if scenario.tournament_heat_source:
+            heat["tournament_heat_source"] = str(scenario.tournament_heat_source)
+        enemy_attack_threshold, enemy_attack_speed = _schedule_value_for_wave(
+            schedules.get("enemy_attack_speed"),
+            row.display_wave,
+        )
+        enemy_speed_threshold, enemy_speed = _schedule_value_for_wave(schedules.get("enemy_speed"), row.display_wave)
+        heat.update({
+            "tournament_enemy_attack_speed_threshold_wave": float(enemy_attack_threshold),
+            "tournament_enemy_attack_speed_increase_fraction": float(max(0.0, enemy_attack_speed)),
+            "tournament_enemy_speed_threshold_wave": float(enemy_speed_threshold),
+            "tournament_enemy_speed_increase_fraction": float(max(0.0, enemy_speed)),
+        })
+        if bool(scenario.dynamic_boss_hit_interval_from_tournament_heat):
+            base = max(0.0, float(scenario.boss_hit_interval_base_seconds))
+            slow_aura_mastery = max(0.0, float(scenario.boss_hit_interval_slow_aura_mastery_multiplier))
+            row_hit_interval = (base / max(0.01, 1.0 + max(0.0, float(enemy_attack_speed)))) * slow_aura_mastery
+            row_combat = replace(row_combat, boss_hit_interval_seconds=row_hit_interval)
+            heat["boss_hit_interval_seconds"] = float(row_hit_interval)
+        if bool(scenario.dynamic_boss_contact_time_from_tournament_heat) and scenario.boss_contact_base_seconds is not None:
+            base_contact = max(0.0, float(scenario.boss_contact_base_seconds))
+            cf_slow = _bounded_fraction(float(scenario.boss_contact_chrono_field_average_slow_fraction))
+            slow_aura = _bounded_fraction(float(scenario.boss_contact_slow_aura_fraction))
+            boss_speed = max(0.0, float(scenario.boss_contact_boss_speed_multiplier))
+            speed_remaining = max(
+                0.01,
+                (1.0 - cf_slow) * (1.0 - slow_aura) * max(0.0, 1.0 + float(enemy_speed)) * boss_speed,
+            )
+            hold = max(0.0, float(scenario.boss_contact_energy_net_hold_seconds))
+            row_contact_time = (base_contact / speed_remaining) + hold
+            row_combat = replace(row_combat, boss_time_to_contact_seconds=row_contact_time)
+            heat.update({
+                "boss_time_to_contact_seconds": float(row_contact_time),
+                "boss_contact_speed_remaining_fraction": float(speed_remaining),
+            })
+    return row_transforms, row_combat, heat
 
 
 def _active_perk_state(row: CommonTrajectoryRow, scenario: ScenarioOverlayInputs) -> tuple[dict[str, int], dict[str, float]]:

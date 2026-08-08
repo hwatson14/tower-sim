@@ -103,8 +103,8 @@ def test_runtime_state_parses_v28_dissonant_pbs_from_player_stuff() -> None:
     assert state.dissonance_pbs_by_tier["Tier 14"] == {
         "attack": 5000,
         "defense": 5000,
-        "utility": 4402,
-        "ultimate_weapons": 4727,
+        "utility": 4477,
+        "ultimate_weapons": 5000,
     }
     assert state.tier_progression_waves["Tier 1"] == 10210
     assert state.tier_progression_waves["Tier 19"] == 303

@@ -369,6 +369,66 @@ def test_table2_applies_explicit_overheat_damage_and_health_decay_per_row():
     )
 
 
+def test_table2_tournament_heat_schedules_apply_supported_row_local_timing_effects():
+    from qe.run_plan import CommonTrajectoryInputs, build_common_trajectory
+    from simulators.evaluator_kernel import ScenarioOverlayInputs, build_scenario_overlay_table
+
+    table1 = build_common_trajectory(
+        CommonTrajectoryInputs(
+            start_wave=1,
+            end_wave=20,
+            boss_interval_waves=10,
+            tier_column="Tier 1",
+            survivability_contributors=_contributors(),
+        )
+    )
+    baseline = build_scenario_overlay_table(
+        table1,
+        scenario=ScenarioOverlayInputs("baseline", "Tier 1"),
+        combat=_combat(
+            plasma_cannon_effect_pct=0.0,
+            orb_boss_total_damage_pct=0.0,
+            electron_total_damage_pct=0.0,
+            tower_thorns_damage_pct=0.0,
+            boss_time_to_contact_seconds=10.0,
+            boss_hit_interval_seconds=2.0,
+            max_ttk_seconds=60.0,
+        ),
+    ).rows[-1]
+    heated = build_scenario_overlay_table(
+        table1,
+        scenario=ScenarioOverlayInputs(
+            "heated",
+            "Tier 1",
+            tournament_heat_schedules={
+                "enemy_attack_speed": {0: 0.05, 20: 1.0},
+                "enemy_speed": {0: 0.2, 20: 1.0},
+            },
+            tournament_heat_source="kb.test",
+            dynamic_boss_hit_interval_from_tournament_heat=True,
+            dynamic_boss_contact_time_from_tournament_heat=True,
+            boss_contact_base_seconds=10.0,
+        ),
+        combat=_combat(
+            plasma_cannon_effect_pct=0.0,
+            orb_boss_total_damage_pct=0.0,
+            electron_total_damage_pct=0.0,
+            tower_thorns_damage_pct=0.0,
+            boss_time_to_contact_seconds=10.0,
+            boss_hit_interval_seconds=2.0,
+            max_ttk_seconds=60.0,
+        ),
+    ).rows[-1]
+
+    assert heated.heat["tournament_heat_source"] == "kb.test"
+    assert "tournament_boss_ultimate_overheal_fraction" not in heated.heat
+    assert heated.heat["tournament_enemy_attack_speed_increase_fraction"] == pytest.approx(1.0)
+    assert heated.heat["tournament_enemy_speed_increase_fraction"] == pytest.approx(1.0)
+    assert heated.heat["boss_hit_interval_seconds"] == pytest.approx(1.0)
+    assert heated.heat["boss_time_to_contact_seconds"] == pytest.approx(5.0)
+    assert heated.enemy_health == pytest.approx(baseline.enemy_health)
+
+
 def test_table1_rederives_survivability_from_evolving_workshop_and_perk_state():
     from qe.run_plan import CommonTrajectoryInputs, SurvivabilityContributorBundle, build_common_trajectory
     from simulators.evaluator_kernel import ScenarioOverlayInputs, build_scenario_overlay_table

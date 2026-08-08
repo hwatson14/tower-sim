@@ -968,6 +968,30 @@ nodes:
     verification_status: verified
     blocker_reason: ''
     notes: Module assertion source for Project Funding cash-digit multiplier.
+  - node_id: source_input::module:Multiverse Nexus
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: verified
+    blocker_reason: ''
+    notes: Module assertion source for Multiverse Nexus synchronized cooldown offset.
+  - node_id: source_input::module:Om Chip
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: verified
+    blocker_reason: ''
+    notes: Module assertion source for Om Chip reflected Spotlight effects.
+  - node_id: source_input::module:Singularity Harness
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: verified
+    blocker_reason: ''
+    notes: Module assertion source for Singularity Harness bot-range bonus.
   - node_id: source_input::manual_advisory:module.project_funding.current_cash
     node_kind: source_input
     family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
@@ -1032,6 +1056,38 @@ nodes:
     verification_status: verified
     blocker_reason: ''
     notes: Project Funding cash-digit multiplier percent; requires explicit current-cash factor before formula application.
+  - node_id: state::module.multiverse_nexus.synced_uw_cooldown_offset_s
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: debug_only
+    verification_status: verified
+    blocker_reason: ''
+    notes: Multiverse Nexus synchronized UW cooldown offset.
+  - node_id: state::module.om_chip.boss_reflection_multiplier
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: debug_only
+    verification_status: verified
+    blocker_reason: ''
+    notes: Om Chip reflected Spotlight damage multiplier.
+  - node_id: state::module.om_chip.reflected_damage_taken_mult_x
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: debug_only
+    verification_status: verified
+    blocker_reason: ''
+    notes: Om Chip reflected Spotlight damage-taken multiplier route.
+  - node_id: state::module.singularity_harness.bot_range_bonus_m
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: debug_only
+    verification_status: verified
+    blocker_reason: ''
+    notes: Singularity Harness unlocked-bot range bonus.
   - node_id: support_surface::module.project_funding.current_cash
     node_kind: surface
     family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
@@ -3517,6 +3573,34 @@ edges:
     publication_relevance: support_only
     verification_status: verified
     notes: Module assertions govern Project Funding cash-digit multiplier publication.
+  - upstream_node_id: source_input::module:Multiverse Nexus
+    downstream_node_id: state::module.multiverse_nexus.synced_uw_cooldown_offset_s
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [module_assertions, assist_slot_choice]
+    publication_relevance: support_only
+    verification_status: verified
+    notes: Module assertions govern Multiverse Nexus synchronized cooldown publication.
+  - upstream_node_id: source_input::module:Om Chip
+    downstream_node_id: state::module.om_chip.boss_reflection_multiplier
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [module_assertions, assist_slot_choice]
+    publication_relevance: support_only
+    verification_status: verified
+    notes: Module assertions govern Om Chip boss-reflection publication.
+  - upstream_node_id: source_input::module:Om Chip
+    downstream_node_id: state::module.om_chip.reflected_damage_taken_mult_x
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [module_assertions, assist_slot_choice]
+    publication_relevance: support_only
+    verification_status: verified
+    notes: Module assertions govern the Om Chip damage-taken multiplier route.
+  - upstream_node_id: source_input::module:Singularity Harness
+    downstream_node_id: state::module.singularity_harness.bot_range_bonus_m
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [module_assertions, assist_slot_choice]
+    publication_relevance: support_only
+    verification_status: verified
+    notes: Module assertions govern Singularity Harness bot-range publication.
   - upstream_node_id: source_input::manual_advisory:module.project_funding.current_cash
     downstream_node_id: support_surface::module.project_funding.current_cash
     invalidation_semantics: recompute_downstream

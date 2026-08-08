@@ -9,6 +9,27 @@ from qe.models import StatRow
 import qe.query_derived_composites as derived
 
 
+def test_ep_sync_reuses_exact_periodic_calculation() -> None:
+    args = (
+        True, 21.0, 71.0, 168.0, 1.2,
+        True, 11.0, 30.0, 49.0,
+        True, 2.5, 5.0, 167.0,
+        True, 6.0, 20.0, 52.0,
+    )
+    derived._ep_sync.cache_clear()
+
+    first = derived._ep_sync(*args)
+    after_first = derived._ep_sync.cache_info()
+    second = derived._ep_sync(*args)
+    after_second = derived._ep_sync.cache_info()
+
+    assert second == first
+    assert after_first.misses == 1
+    assert after_second.hits == 1
+    assert after_second.maxsize == 128
+    derived._ep_sync.cache_clear()
+
+
 @pytest.mark.parametrize('source_key', ['canonical_stat::tower_hp', 'state::tower.hp'])
 def test_publish_derived_composites_normalizes_contributor_surface_key(source_key: str) -> None:
     normalized_key = normalize_surface_id_to_contract(source_key)

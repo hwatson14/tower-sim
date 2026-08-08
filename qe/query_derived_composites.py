@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import math
 import re
+from functools import lru_cache
 from typing import Dict, Any, Iterable
 
 from qe.compat.legacy_surface_ids import (
@@ -659,6 +660,7 @@ def _avg_blocks(vec: list[float], width: int) -> list[float]:
     return [sum(vec[i:i+width]) / len(vec[i:i+width]) for i in range(0, len(vec), width)]
 
 
+@lru_cache(maxsize=128)
 def _ep_sync(hasgt: bool, gtm: float, gtd: float, gtcd: float, gtgc: float, hasbh: bool, bhm: float, bhd: float, bhcd: float, hasdw: bool, dwm: float, dwd: float, dwcd: float, hasgb: bool, gbm: float, gbd: float, gbcd: float) -> float:
     nGT = int(round(gtcd)) if hasgt and gtcd > 0 else 1
     nBH = int(round(bhcd)) if hasbh and bhcd > 0 else 1

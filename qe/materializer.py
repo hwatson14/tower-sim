@@ -63,6 +63,22 @@ _COMPATIBILITY_SURFACE_ID_ALIASES = {
     ): 'state::module.being_annihilator.guaranteed_supercrits_after_supercrit_attacks',
     legacy_mechanic_surface_id('module.dimension_core.max_shock_stacks'): 'state::module.dimension_core.max_shock_stacks',
     legacy_mechanic_surface_id('module.project_funding.cash_digit_multiplier_pct'): 'state::module.project_funding.cash_digit_multiplier_pct',
+    _raw_surface_id_for_alias(
+        'mechanic_param',
+        'module.multiverse_nexus.synced_uw_cooldown_offset_s',
+    ): 'state::module.multiverse_nexus.synced_uw_cooldown_offset_s',
+    _raw_surface_id_for_alias(
+        'mechanic_param',
+        'module.om_chip.boss_reflection_multiplier',
+    ): 'state::module.om_chip.boss_reflection_multiplier',
+    _raw_surface_id_for_alias(
+        'mechanic_param',
+        'module.om_chip.reflected_damage_taken_mult_x',
+    ): 'state::module.om_chip.reflected_damage_taken_mult_x',
+    _raw_surface_id_for_alias(
+        'mechanic_param',
+        'module.singularity_harness.bot_range_bonus_m',
+    ): 'state::module.singularity_harness.bot_range_bonus_m',
     legacy_mechanic_surface_id('shock.damage_multiplier'): 'state::shock.damage_multiplier',
     _raw_surface_id_for_alias('cosmetic_bonus', 'cosmetic_bonus.theme_song_coin_multiplier'): legacy_cosmetic_surface_id('cosmetic_bonus.theme_song_coin_multiplier'),
     _raw_surface_id_for_alias('account_context', 'account_context.coin_multiplier_display'): legacy_context_surface_id('account_context.coin_multiplier_display'),

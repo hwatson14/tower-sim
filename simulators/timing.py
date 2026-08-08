@@ -2411,11 +2411,14 @@ def farming_econ_timing_readiness_summary(
     approve_tracker_empirical_kill_density_transform: bool = False,
     observed_coins_per_hour: float = 210_000_000_000_000.0,
     observed_run_hours: float = 5.5,
-    observed_final_wave: int = 5500,
+    observed_final_wave: int | None = None,
     observed_tier: int = 14,
     preset_name: str = "Farming",
 ) -> dict[str, object]:
     """Expose farming econ timing readiness without claiming a CPH formula."""
+
+    observed_final_wave_supplied = observed_final_wave is not None
+    observed_final_wave_value = int(observed_final_wave) if observed_final_wave_supplied else 5500
 
     def _row(surface_id: str) -> Mapping[str, object]:
         raw = statbook_rows.get(surface_id) if isinstance(statbook_rows, Mapping) else None
@@ -2570,6 +2573,38 @@ def farming_econ_timing_readiness_summary(
     estimated_wave_skip_expected_skip_multiplier = None
     estimated_wave_skip_expected_skipped_waves = None
     effective_game_speed_multiplier = None
+
+    def _estimate_run_hours_for_target_wave(target_wave_value: object) -> tuple[float | None, float | None, float | None]:
+        try:
+            wave_value = max(0.0, float(target_wave_value))
+            projected_duration_value = float(projected_duration)
+        except (TypeError, ValueError):
+            return None, None, None
+        try:
+            skip_multiplier = 1.0 + (max(0.0, float(wave_skip_pct or 0.0)) / 100.0)
+            mastery_double_chance = max(0.0, float(wave_skip_mastery_pct or 0.0)) / 100.0
+            skip_multiplier *= 1.0 + mastery_double_chance
+            if skip_multiplier <= 0.0:
+                skip_multiplier = 1.0
+            intro_waves_for_target = min(
+                max(0.0, float(intro_sprint_waves or 0.0)),
+                wave_value,
+            )
+            played_waves = max(0.0, (wave_value - intro_waves_for_target) / skip_multiplier)
+            skipped_waves = max(0.0, wave_value - intro_waves_for_target - played_waves)
+            if not effective_game_speed_multiplier or effective_game_speed_multiplier <= 0.0:
+                return None, played_waves, skipped_waves
+            return (
+                played_waves
+                * projected_duration_value
+                / 3600.0
+                / float(effective_game_speed_multiplier),
+                played_waves,
+                skipped_waves,
+            )
+        except (TypeError, ValueError):
+            return None, None, None
+
     try:
         estimated_run_hours_from_current_timing = (
             float(projected_duration) * float(target_wave)
@@ -3234,12 +3269,12 @@ def farming_econ_timing_readiness_summary(
             "observed_median_duration_hours": observed_median_duration_hours,
             "observed_median_coins_per_run": observed_median_coins_per_run,
             "observed_median_coins_per_hour": observed_median_coins_per_hour,
-            "anchor_observed_final_wave": int(observed_final_wave),
+            "anchor_observed_final_wave": observed_final_wave_value,
             "anchor_observed_run_hours": float(observed_run_hours),
             "anchor_observed_coins_per_hour": float(observed_coins_per_hour),
             "observed_to_anchor_wave_ratio": _ratio(
                 observed_median_wave,
-                float(observed_final_wave),
+                float(observed_final_wave_value),
             ),
             "observed_to_anchor_duration_ratio": _ratio(
                 observed_median_duration_hours,
@@ -3772,10 +3807,33 @@ def farming_econ_timing_readiness_summary(
         else {}
     )
     tracker_anchor_hint = dict(tracker_trend.get("calibration_anchor_hint") or {})
+    current_estimate_target_wave = target_wave
+    if observed_final_wave_supplied and observed_final_wave_value > 0:
+        current_estimate_target_wave = observed_final_wave_value
+    (
+        current_estimate_run_hours,
+        current_estimate_played_waves,
+        current_estimate_skipped_waves,
+    ) = _estimate_run_hours_for_target_wave(current_estimate_target_wave)
+    current_estimate_coin_eligible_waves = None
+    try:
+        current_estimate_target_wave_value = max(0.0, float(current_estimate_target_wave))
+        current_estimate_intro_waves = min(
+            max(0.0, float(intro_sprint_waves or 0.0)),
+            current_estimate_target_wave_value,
+        )
+        current_estimate_coin_eligible_waves = max(
+            0.0,
+            current_estimate_target_wave_value - current_estimate_intro_waves,
+        )
+    except (TypeError, ValueError):
+        current_estimate_coin_eligible_waves = None
     current_timing_run_hours = _positive_float(
-        estimated_run_hours_after_wave_skip_intro_and_game_speed
+        current_estimate_run_hours
+        if current_estimate_run_hours is not None
+        else estimated_run_hours_after_wave_skip_intro_and_game_speed
     )
-    target_wave_value = _positive_float(target_wave)
+    target_wave_value = _positive_float(current_estimate_target_wave)
     current_displayed_waves_per_hour = None
     if current_timing_run_hours is not None and target_wave_value is not None:
         current_displayed_waves_per_hour = target_wave_value / current_timing_run_hours
@@ -3814,10 +3872,10 @@ def farming_econ_timing_readiness_summary(
                 latest_current_timing_coins_per_hour = (
                     latest_current_timing_coins_per_run / current_timing_run_hours
                 )
-            if coin_eligible_displayed_waves_after_intro_at_target is not None:
+            if current_estimate_coin_eligible_waves is not None:
                 latest_intro_excluded_coins_per_run = (
                     latest_projected_coins_per_wave
-                    * float(coin_eligible_displayed_waves_after_intro_at_target)
+                    * float(current_estimate_coin_eligible_waves)
                 )
                 if current_timing_run_hours is not None:
                     latest_intro_excluded_coins_per_hour = (
@@ -3906,7 +3964,15 @@ def farming_econ_timing_readiness_summary(
             "coins_per_hour = tracker_density_coins_per_wave * "
             "target_displayed_waves / current_timing_run_hours"
         ),
-        "target_wave": target_wave,
+        "target_wave": current_estimate_target_wave,
+        "statbook_target_wave": target_wave,
+        "current_estimate_played_waves_after_wave_skip_intro": (
+            current_estimate_played_waves
+        ),
+        "current_estimate_expected_skipped_waves": current_estimate_skipped_waves,
+        "current_estimate_coin_eligible_displayed_waves_after_intro": (
+            current_estimate_coin_eligible_waves
+        ),
         "current_timing_run_hours": current_timing_run_hours,
         "current_displayed_waves_per_hour": current_displayed_waves_per_hour,
         "selected_projected_coins_per_wave": selected_coins_per_wave,
@@ -4241,7 +4307,7 @@ def farming_econ_timing_readiness_summary(
             "source": "user_reported_2026-06-13",
             "tier": int(observed_tier),
             "preset": preset_name,
-            "observed_final_wave": int(observed_final_wave),
+            "observed_final_wave": observed_final_wave_value,
             "observed_run_hours": float(observed_run_hours),
             "observed_coins_per_hour": float(observed_coins_per_hour),
             "implied_coins_per_run": coins_per_run,

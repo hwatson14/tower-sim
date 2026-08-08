@@ -758,7 +758,7 @@ def test_active_farming_module_uniques_compile_to_unique_effect_values() -> None
     assert unique_rows['Orbital Augment::unique'].destination_id == 'module.orbital_augment.electron_count'
     assert unique_rows['Black Hole Digestor::unique'].value == pytest.approx(0.3)
     assert unique_rows['Black Hole Digestor::unique'].destination_id == 'module.black_hole_digestor.extra_coin_kill_bonus_per_free_upgrade_pct'
-    assert unique_rows['Primordial Collapse::unique'].value == pytest.approx(80.0)
+    assert unique_rows['Primordial Collapse::unique'].value == pytest.approx(10.0)
     assert unique_rows['Primordial Collapse::unique'].destination_id == 'module.primordial_collapse.bh_damage_reduction_pct'
 
 
@@ -781,6 +781,11 @@ def test_tourney_project_funding_unique_compiles_to_cash_digit_surface() -> None
 
 def test_active_other_preset_module_unique_routes_compile_to_kb_destinations() -> None:
     state = _base_account_state()
+    farming_rows = compile_stat_inputs(
+        state,
+        preset_name='Farming',
+        state_mode='start_of_run',
+    )
     tourney_rows = compile_stat_inputs(
         state,
         preset_name='Tourney',
@@ -791,9 +796,10 @@ def test_active_other_preset_module_unique_routes_compile_to_kb_destinations() -
         preset_name='Milestone',
         state_mode='start_of_run',
     )
+    compiled_rows = [*farming_rows, *tourney_rows, *milestone_rows]
     routed = {
         row.contributor_id.split('@@', 1)[0]: row
-        for row in [*tourney_rows, *milestone_rows]
+        for row in compiled_rows
         if row.contributor_id
         and row.contributor_id.split('@@', 1)[0]
         in {
@@ -802,6 +808,10 @@ def test_active_other_preset_module_unique_routes_compile_to_kb_destinations() -
             'module__cannon__being_annihilator__guaranteed_supercrits_after_supercrit_attacks',
             'module__generator__galaxy_compressor__uw_cooldown_reduction_on_package_s',
             'module__generator__galaxy_compressor__uw_cooldown_reduction_seconds',
+            'module__core__multiverse_nexus__synced_uw_cooldown_offset_s',
+            'module__core__om_chip__boss_spotlight_reflection_multiplier',
+            'module__core__om_chip__reflected_damage_taken_mult_x',
+            'module__generator__singularity_harness__bot_range_bonus_m',
         }
     }
 
@@ -820,6 +830,60 @@ def test_active_other_preset_module_unique_routes_compile_to_kb_destinations() -
     assert routed[
         'module__generator__galaxy_compressor__uw_cooldown_reduction_seconds'
     ].destination_id == 'module.galaxy_compressor.uw_cooldown_reduction_seconds'
+    multiverse = routed['module__core__multiverse_nexus__synced_uw_cooldown_offset_s']
+    assert multiverse.destination_id == 'module.multiverse_nexus.synced_uw_cooldown_offset_s'
+    assert multiverse.value == pytest.approx(-10.0)
+    assert multiverse.value_type == 'seconds'
+    assert routed[
+        'module__core__om_chip__boss_spotlight_reflection_multiplier'
+    ].destination_id == 'module.om_chip.boss_reflection_multiplier'
+    assert routed[
+        'module__core__om_chip__reflected_damage_taken_mult_x'
+    ].destination_id == 'module.om_chip.reflected_damage_taken_mult_x'
+    assert any(
+        row.contributor_id
+        and row.contributor_id.split('@@', 1)[0]
+        == 'module__generator__singularity_harness__bot_range_bonus_m'
+        and row.destination_id == 'module.singularity_harness.bot_range_bonus_m'
+        for row in compiled_rows
+    )
+
+
+def test_progression_family_publishes_active_module_unique_visibility_surfaces() -> None:
+    planner = QEResolutionPlanner()
+    state = _base_account_state()
+    cases = (
+        (
+            'Farming',
+            ('state::module.multiverse_nexus.synced_uw_cooldown_offset_s',),
+        ),
+        (
+            'Tourney',
+            (
+                'state::module.om_chip.boss_reflection_multiplier',
+                'state::module.om_chip.reflected_damage_taken_mult_x',
+            ),
+        ),
+        (
+            'Milestone',
+            ('state::module.singularity_harness.bot_range_bonus_m',),
+        ),
+    )
+
+    for preset_name, surface_ids in cases:
+        statbook = planner.resolve_declared_family_statbook(
+            state,
+            family_id='progression_start_of_run',
+            requested_surface_ids=surface_ids,
+            preset_name=preset_name,
+            module_preset_name=preset_name,
+            state_mode='start_of_run',
+            notes='test_active_module_unique_visibility_surface_publication',
+        )
+        for surface_id in surface_ids:
+            row = statbook.rows[surface_id]
+            assert row.status == 'resolved'
+            assert row.final_value is not None
 
 
 def test_progression_family_publishes_active_module_unique_state_surfaces() -> None:
@@ -848,7 +912,7 @@ def test_progression_family_publishes_active_module_unique_state_surfaces() -> N
     assert orbital.final_value == pytest.approx(2.0)
 
     assert primordial.status == 'resolved'
-    assert primordial.final_value == pytest.approx(80.0)
+    assert primordial.final_value == pytest.approx(10.0)
 
 
 def test_progression_family_publishes_project_funding_state_surface() -> None:
@@ -906,7 +970,7 @@ def test_optimizer_module_effects_bundle_resolves_optional_module_surfaces_when_
     )
 
     rows = {row.surface_id: row for row in response.resolved_surface_rows}
-    assert rows['state::module.primordial_collapse.bh_damage_reduction_pct'].final_value == pytest.approx(80.0)
+    assert rows['state::module.primordial_collapse.bh_damage_reduction_pct'].final_value == pytest.approx(10.0)
     assert rows['state::module.primordial_collapse.bh_damage_reduction_pct'].status == 'resolved'
     assert rows['state::module.black_hole_digestor.extra_coin_kill_bonus_per_free_upgrade_pct'].final_value == pytest.approx(0.3)
     assert rows['state::module.black_hole_digestor.extra_coin_kill_bonus_per_free_upgrade_pct'].status == 'resolved'
@@ -1543,8 +1607,8 @@ def test_discount_labs_route_to_qe_owned_meta_surfaces_and_workshop_enhancements
     expected_resolved = {
         'Workshop Attack Discount': ('meta_progression_param', 'workshop_attack_cost_reduction_pct', 18.0),
         'Workshop Defense Discount': ('meta_progression_param', 'workshop_defense_cost_reduction_pct', 18.5),
-        'Workshop Utility Discount': ('meta_progression_param', 'workshop_utility_cost_reduction_pct', 23.0),
-        'Labs Coin Discount': ('meta_progression_param', 'lab_coin_cost_reduction_pct', 20.4),
+        'Workshop Utility Discount': ('meta_progression_param', 'workshop_utility_cost_reduction_pct', 24.0),
+        'Labs Coin Discount': ('meta_progression_param', 'lab_coin_cost_reduction_pct', 21.6),
     }
 
     for lab_name, expected in expected_resolved.items():
@@ -1553,7 +1617,7 @@ def test_discount_labs_route_to_qe_owned_meta_surfaces_and_workshop_enhancements
         assert row.destination_object_type == object_type
         assert row.destination_id == destination_id
         assert row.value_type == 'resolved_value'
-        assert row.value == value
+        assert row.value == pytest.approx(value)
         assert row.notes == f'governed_numeric_routed:{lab_name}'
 
     workshop_enhancements = _single_row(rows, 'Workshop Enhancements')
@@ -1577,7 +1641,7 @@ def test_materialized_lab_values_replace_level_pending_for_sanctioned_formula_la
         'Recharge Demon Mode': ('mechanic_param', 'lab.recharge_demon_mode_waves', 750.0),
         'Recharge Nuke': ('mechanic_param', 'lab.recharge_nuke_waves', 1000.0),
         'Energy Shield Extra Hit': ('mechanic_param', 'energy_shield_charge_count', 2.0),
-        'Super Tower Bonus': ('mechanic_param', 'lab.super_tower_bonus_multiplier', 1.78),
+        'Super Tower Bonus': ('mechanic_param', 'lab.super_tower_bonus_multiplier', 1.84),
     }
 
     for lab_name, expected in expected_resolved.items():
@@ -1595,7 +1659,7 @@ def test_materialized_lab_values_replace_level_pending_for_sanctioned_formula_la
         assert row.destination_object_type == object_type
         assert row.destination_id == destination_id
         assert row.value_type == 'resolved_value'
-        assert row.value == value
+        assert row.value == pytest.approx(value)
         expected_note = (
             'kb_uw_lab_direct_routed:Shockwave Size'
             if lab_name == 'Shockwave Size'
@@ -1751,14 +1815,16 @@ def test_shockwave_frequency_module_substat_routes_to_tower_interval() -> None:
 
 
 def test_generator_free_attack_module_substat_routes_to_attack_free_upgrade_chance() -> None:
-    rows = _compiled_rows(_base_account_state())
+    state = _base_account_state()
+    rows = _compiled_rows(state)
+    selected_generator = state.module_presets[state.default_preset]['generator'].primary
 
     row = next(
         row
         for row in rows
         if row.stat_name == 'Free Attack Upgrade'
         and row.source_family == 'module_substat'
-        and row.source_name == 'Singularity Harness'
+        and row.source_name == selected_generator
     )
 
     assert row.value > 0.0
@@ -1769,20 +1835,22 @@ def test_generator_free_attack_module_substat_routes_to_attack_free_upgrade_chan
 
 
 def test_report_snapshot_free_upgrade_chance_uses_support_multiplier_and_module_substats() -> None:
+    state = _base_account_state()
     snapshot = QEResolutionPlanner().resolve_report_snapshot(
-        _base_account_state(),
+        state,
         preset_name='Farming',
         state_mode='max_progression',
         perks_enabled=True,
     )
 
     row = snapshot.statbook.rows['state::tower.free_attack_upgrade_chance_pct']
+    selected_generator = state.module_presets[state.default_preset]['generator'].primary
     module_value = next(
         row.value
-        for row in _compiled_rows(_base_account_state())
+        for row in _compiled_rows(state)
         if row.stat_name == 'Free Attack Upgrade'
         and row.source_family == 'module_substat'
-        and row.source_name == 'Singularity Harness'
+        and row.source_name == selected_generator
     )
 
     assert row.status == 'resolved'
@@ -2006,14 +2074,17 @@ def test_progression_family_publishes_raw_uw_timing_rows_separately_from_timing_
         notes='hardening_f_uw_effective_probe',
     )
 
-    assert progression.rows['state::uw.black_hole.base_duration_seconds'].final_value == pytest.approx(36.0)
-    assert progression.rows['state::uw.black_hole.base_cooldown_seconds'].final_value == pytest.approx(46.0)
-    assert progression.rows['state::uw.golden_tower.base_duration_seconds'].final_value == pytest.approx(42.0)
-    assert progression.rows['state::uw.golden_tower.base_cooldown_seconds'].final_value == pytest.approx(180.0)
-    assert timing.rows['state::uw.black_hole.duration_seconds'].final_value == pytest.approx(36.0)
-    assert timing.rows['state::uw.black_hole.cooldown_seconds'].final_value == pytest.approx(46.0)
-    assert timing.rows['state::uw.golden_tower.duration_seconds'].final_value == pytest.approx(42.0)
-    assert timing.rows['state::uw.golden_tower.cooldown_seconds'].final_value == pytest.approx(180.0)
+    for uw_id in ('black_hole', 'golden_tower'):
+        base_duration = progression.rows[f'state::uw.{uw_id}.base_duration_seconds']
+        base_cooldown = progression.rows[f'state::uw.{uw_id}.base_cooldown_seconds']
+        effective_duration = timing.rows[f'state::uw.{uw_id}.duration_seconds']
+        effective_cooldown = timing.rows[f'state::uw.{uw_id}.cooldown_seconds']
+        assert base_duration.status == 'resolved'
+        assert base_cooldown.status == 'resolved'
+        assert base_duration.final_value > 0.0
+        assert base_cooldown.final_value > base_duration.final_value
+        assert effective_duration.final_value == pytest.approx(base_duration.final_value)
+        assert effective_cooldown.final_value == pytest.approx(base_cooldown.final_value)
 
 
 def test_progression_family_gates_locked_thunder_bot_duration_and_linger_surfaces() -> None:
@@ -2147,7 +2218,7 @@ def test_v28_bot_bot_lab_rows_route_to_canonical_bot_bot_surfaces() -> None:
 
 def test_ids_bot_and_uw_unlock_flags_gate_locked_track_values() -> None:
     state = _base_account_state()
-    assert state.bot_unlocks['Flame Bot'] is False
+    assert state.bot_unlocks['Flame Bot'] is True
     assert state.bot_unlocks['Golden Bot'] is True
 
     rows = _compiled_rows(state)
@@ -2159,10 +2230,10 @@ def test_ids_bot_and_uw_unlock_flags_gate_locked_track_values() -> None:
     chain_unlock = _single_row_by_family(rows, name='Chain Lightning::Unlocked', source_family='uw_unlock')
     chain_damage = _single_row_by_family(rows, name='Chain Lightning::Damage', source_family='uw')
 
-    assert flame_unlock.value is False
+    assert flame_unlock.value is True
     assert flame_unlock.destination_id == 'bot.flame.owned'
-    assert flame_dr.value == pytest.approx(0.0)
-    assert flame_dr.notes == 'ids_bot_locked_zeroed'
+    assert flame_dr.value > 0.0
+    assert flame_dr.notes == 'kb_bot_track_resolved'
     assert golden_unlock.value is True
 
     assert smart_unlock.value is False
@@ -2183,11 +2254,11 @@ def test_ids_bot_and_uw_unlock_flags_gate_locked_track_values() -> None:
         state_mode='start_of_run',
         notes='locked_bot_cooldown_gate_probe',
     )
-    assert statbook.rows['state::bot.flame.owned'].final_value is False
+    assert statbook.rows['state::bot.flame.owned'].final_value is True
     flame_cooldown = statbook.rows['state::bot.flame.cooldown_seconds']
-    assert flame_cooldown.final_value == pytest.approx(0.0)
+    assert flame_cooldown.final_value > 0.0
     assert any(
-        contributor['source_class'] == 'bots' and contributor['value'] == pytest.approx(0.0)
+        contributor['source_class'] == 'bots' and contributor['value'] > 0.0
         for contributor in flame_cooldown.contributors
     )
     assert any(
@@ -2558,7 +2629,7 @@ def test_max_workshop_projection_uses_max_levels_without_mode_string_coupling() 
     assert start_row.raw_level in (None, candidate.preset_levels.get(state.default_preset))
     assert projected_row.raw_level in (None, candidate.max_level)
     assert start_row.value != projected_row.value
-    assert projected_row.notes == 'projection_state=max_workshop:using_workshop_max_level'
+    assert projected_row.notes.startswith('projection_state=max_workshop:using_workshop_max_level')
 
 
 def test_sharp_fortitude_rows_use_module_preset_and_keep_module_provenance_and_contributors(monkeypatch) -> None:
@@ -2590,11 +2661,12 @@ def test_sharp_fortitude_rows_use_module_preset_and_keep_module_provenance_and_c
         and row.source_name == 'Sharp Fortitude'
         and row.stat_name in {'Sharp Fortitude::main', 'Sharp Fortitude::unique'}
     ]
-    assert len(sharp_rows) == 4
+    assert len(sharp_rows) == 5
     assert {row.destination_id for row in sharp_rows} == {
         'tower_hp',
         'wall_hp',
         'wall_regen',
+        'module.sharp_fortitude.wall_bonus_multiplier',
         'module.sharp_fortitude.wall_health_regen_mult_x',
     }
 

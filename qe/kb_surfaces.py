@@ -25,6 +25,10 @@ _WORKSHOP_FORMULAS_PATH = _ROOT / 'kb' / 'global-rules' / 'tables' / 'workshop-f
 _RUNTIME_FORMULA_AUTHORITY_PATH = _ROOT / 'kb' / 'global-rules' / 'tables' / 'runtime-formula-authority.csv'
 _CANONICAL_FORMULA_REGISTRY_PATH = _ROOT / 'kb' / 'formulas' / 'tables' / 'canonical-formula-registry.csv'
 _DISSONANT_RUN_RESTRICTIONS_PATH = _ROOT / 'kb' / 'global-rules' / 'contracts' / 'dissonant-run-restrictions.yaml'
+CONTRIBUTOR_ROUTING_CLOSURE_SOURCE_ID = 'kb/ledgers/tables/contributor-routing-closure.csv'
+MODULE_UNIQUE_RUNTIME_CATALOG_SOURCE_ID = 'kb/modules/contracts/module-unique-runtime-catalog.csv'
+_CONTRIBUTOR_ROUTING_CLOSURE_PATH = _ROOT / CONTRIBUTOR_ROUTING_CLOSURE_SOURCE_ID
+_MODULE_UNIQUE_RUNTIME_CATALOG_PATH = _ROOT / MODULE_UNIQUE_RUNTIME_CATALOG_SOURCE_ID
 _YAML_LOADER = getattr(yaml, 'CSafeLoader', yaml.SafeLoader)
 _CANONICAL_DOMAIN_ALIASES: dict[str, set[str]] = {
     'lab': {'labs'},
@@ -39,6 +43,24 @@ RUNTIME_CALLABLE_GENERATOR_KINDS: frozenset[str] = frozenset({
 def _read_csv(path: Path) -> list[dict]:
     with open(path, newline='', encoding='utf-8') as f:
         return list(csv.DictReader(f))
+
+
+@lru_cache(maxsize=1)
+def load_contributor_routing_closure_rows() -> tuple[dict[str, str], ...]:
+    """Return the QE-owned contributor routing ledger used by publication diagnostics."""
+    return tuple(
+        {str(key): str(value or '') for key, value in row.items()}
+        for row in _read_csv(_CONTRIBUTOR_ROUTING_CLOSURE_PATH)
+    )
+
+
+@lru_cache(maxsize=1)
+def load_module_unique_runtime_catalog_rows() -> tuple[dict[str, str], ...]:
+    """Return the QE-owned module runtime catalog used by publication diagnostics."""
+    return tuple(
+        {str(key): str(value or '') for key, value in row.items()}
+        for row in _read_csv(_MODULE_UNIQUE_RUNTIME_CATALOG_PATH)
+    )
 
 
 @lru_cache(maxsize=1)

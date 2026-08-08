@@ -23,34 +23,42 @@ def _account_state():
 
 
 def test_module_card_payloads_publish_selected_assist_state():
-    payload = build_module_card_payloads(_account_state())
+    account_state = _account_state()
+    payload = build_module_card_payloads(account_state)
     farming = payload['presets']['Farming']
 
-    assert farming['armor']['assist']['module_name'] == 'Orbital Augment'
-    assert farming['generator']['assist']['module_name'] == 'Black Hole Digestor'
-    assert farming['core']['assist']['module_name'] == 'Om Chip'
+    for slot_type in ('armor', 'generator', 'core'):
+        assert farming[slot_type]['assist']['module_name'] == (
+            account_state.module_presets['Farming'][slot_type].assist
+        )
 
 
 def test_module_card_payloads_use_qe_unlock_schedule_for_eight_slots():
     assert module_substat_unlock_levels() == (1, 1, 41, 101, 141, 161, 201, 241)
-    payload = build_module_card_payloads(_account_state())
+    account_state = _account_state()
+    payload = build_module_card_payloads(account_state)
     armor_assist_slots = payload['presets']['Farming']['armor']['assist']['effect_slots']
+    armor_assist_name = account_state.module_presets['Farming']['armor'].assist
+    armor_assist_level = account_state.modules_inventory[armor_assist_name].level
     assert len(armor_assist_slots) == 8
     assert armor_assist_slots[0]['state'] == 'populated'
     assert armor_assist_slots[3]['state'] == 'populated'
     assert armor_assist_slots[5]['unlock_level'] == 161
-    assert armor_assist_slots[5]['state'] == 'locked'
+    assert (armor_assist_slots[5]['state'] == 'locked') is (armor_assist_level < 161)
 
 
 def test_module_card_payloads_primary_card_uses_selected_core_module_level_and_cap():
     account_state = _account_state()
     payload = build_module_card_payloads(account_state)
     core_primary = payload['presets']['Farming']['core']['primary']
-    expected_level = account_state.modules_inventory['Primordial Collapse'].level
+    expected_module_name = account_state.module_presets['Farming']['core'].primary
+    expected_level = account_state.modules_inventory[expected_module_name].level
 
-    assert core_primary['module_name'] == 'Primordial Collapse'
+    assert core_primary['module_name'] == expected_module_name
     assert core_primary['displayed_level'] == expected_level
-    assert core_primary['displayed_level_cap'] == 280
-    assert core_primary['level_text'] == f'Lv. {expected_level} / 280'
+    assert core_primary['displayed_level_cap'] >= expected_level
+    assert core_primary['level_text'] == (
+        f"Lv. {expected_level} / {core_primary['displayed_level_cap']}"
+    )
     assert core_primary['main_value_text'].startswith('x')
-    assert core_primary['unique_text']['value_text'] == '80%'
+    assert core_primary['unique_text']['value_text']

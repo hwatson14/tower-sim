@@ -173,6 +173,7 @@ _INPUT_FILE_ALLOWLIST = {
     "loader.py",
     "manual_inputs.contract.yaml",
     "manual_inputs.yaml",
+    "run_tracker.py",
     "runtime_state.py",
     "state_builder.py",
     "state_types.py",

@@ -30,10 +30,22 @@ def test_v28_module_snapshot_publishes_selected_substat_rows() -> None:
         row for row in rows
         if row.source_family == 'module_substat'
     ]
-    assert len(module_rows) == 39
-    assert any(row.source_name == 'Amplifying Strike' and row.stat_name == 'Critical Factor' for row in module_rows)
-    assert any(row.source_name == 'Primordial Collapse' and row.stat_name == 'Death Wave - Quantity' for row in module_rows)
-    assert any(row.source_name == 'Om Chip' and row.stat_name == 'Spotlight - Bonus' for row in module_rows)
+    selected_module_names = {
+        module_name
+        for selection in state.module_presets[state.default_preset].values()
+        for module_name in (selection.primary, selection.assist)
+        if module_name
+    }
+    expected_substat_count = sum(
+        sum(
+            1
+            for substat in state.modules_inventory[module_name].substats
+            if str(substat.value or '').strip() or str(substat.raw_token or '').strip()
+        )
+        for module_name in selected_module_names
+    )
+    assert len(module_rows) == expected_substat_count
+    assert {row.source_name for row in module_rows} == selected_module_names
 
 
 def test_v28_selected_assist_modules_emit_scaled_assist_rows() -> None:

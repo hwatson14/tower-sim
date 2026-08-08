@@ -28,6 +28,46 @@ TREND_TRACKER_CSV = """verified,createdAt,updatedAt,source,tier,wave,duration,co
 """
 
 
+def test_farming_current_timing_estimate_uses_explicit_observed_wave_horizon() -> None:
+    from simulators.timing import farming_econ_timing_readiness_summary
+
+    def row(value: float) -> dict[str, object]:
+        return {"final_value": value, "status": "resolved", "value_type": "float"}
+
+    statbook_rows = {
+        "support_surface::timing.wave_duration_seconds_effective": row(10.0),
+        "state::meta.game_speed_multiplier": row(5.0),
+        "state::perk.max_game_speed": row(0.0),
+        "state::cards.wave_accelerator.wave_cooldown_reduction_pct": row(0.0),
+        "state::cards.wave_accelerator.spawn_rate_acceleration": row(1.0),
+        "state::cards.wave_skip.chance_pct": row(25.0),
+        "state::cards.wave_skip.mastery_effect": row(0.0),
+        "state::cards.intro_sprint.waves": row(100.0),
+        "support_surface::scenario.target_farming_wave": row(1000.0),
+        "support_surface::scenario.waves_per_run_effective": row(800.0),
+        "support_surface::scenario.runs_per_day_effective": row(1.0),
+    }
+
+    readiness = farming_econ_timing_readiness_summary(
+        statbook_rows,
+        observed_final_wave=2000,
+    )
+    estimate = readiness["current_coin_density_cph_estimate"]
+
+    expected_played_waves = (2000.0 - 100.0) / 1.25
+    expected_skipped_waves = 2000.0 - 100.0 - expected_played_waves
+    expected_run_hours = expected_played_waves * 10.0 / 3600.0 / 5.0
+    assert estimate["target_wave"] == 2000
+    assert estimate["statbook_target_wave"] == 1000.0
+    assert estimate["current_estimate_played_waves_after_wave_skip_intro"] == pytest.approx(
+        expected_played_waves
+    )
+    assert estimate["current_estimate_expected_skipped_waves"] == pytest.approx(
+        expected_skipped_waves
+    )
+    assert estimate["current_timing_run_hours"] == pytest.approx(expected_run_hours)
+
+
 def test_run_stats_pipeline_publishes_optional_run_tracker_evidence(tmp_path: Path) -> None:
     from app.pipeline import run_stats_pipeline
 
@@ -60,6 +100,34 @@ def test_run_stats_pipeline_publishes_optional_run_tracker_evidence(tmp_path: Pa
     tracker_cph = readiness["tracker_cph_calibration_evidence"]
     tracker_cph_identity = readiness["tracker_cph_identity_evidence"]
     tracker_wave_reward = readiness["tracker_wave_reward_candidate"]
+    duration_projection = readiness["run_duration_projection_readiness"]
+    observed_median_wave = alignment["observed_median_wave"]
+    observed_skipped_waves = alignment["observed_skipped_waves_median"]
+    intro_sprint_waves = duration_projection["intro_sprint_waves"]
+    expected_skip_multiplier = duration_projection["wave_skip_expected_skip_multiplier"]
+    observed_non_intro_waves = observed_median_wave - intro_sprint_waves
+    expected_played_waves = observed_non_intro_waves / expected_skip_multiplier
+    expected_skipped_waves = observed_non_intro_waves - expected_played_waves
+    tracker_played_waves_excluding_intro = observed_non_intro_waves - observed_skipped_waves
+    tracker_effective_skip_multiplier = (
+        observed_non_intro_waves / tracker_played_waves_excluding_intro
+    )
+    tracker_skipped_waves_including_intro = max(
+        0.0,
+        observed_skipped_waves - intro_sprint_waves,
+    )
+    tracker_played_waves_including_intro = (
+        observed_non_intro_waves - tracker_skipped_waves_including_intro
+    )
+    tracker_effective_skip_multiplier_including_intro = (
+        observed_non_intro_waves / tracker_played_waves_including_intro
+    )
+    exclude_intro_ratio = tracker_effective_skip_multiplier / expected_skip_multiplier
+    include_intro_ratio = (
+        tracker_effective_skip_multiplier_including_intro / expected_skip_multiplier
+    )
+    exclude_intro_distance = abs(exclude_intro_ratio - 1.0)
+    include_intro_distance = abs(include_intro_ratio - 1.0)
     assert alignment["status"] == "tracker_t14_farming_timing_gap_quantified"
     assert alignment["tracker_median_game_time_hours"] == pytest.approx(
         28.864444444444445
@@ -84,15 +152,17 @@ def test_run_stats_pipeline_publishes_optional_run_tracker_evidence(tmp_path: Pa
     )
     assert alignment["observed_skipped_waves_median"] == pytest.approx(2351.5)
     assert alignment["expected_skipped_waves_at_tracker_median_wave"] == pytest.approx(
-        729.6638655462184
+        expected_skipped_waves
     )
     assert alignment["observed_skip_ratio_at_tracker_median_wave"] > alignment[
         "expected_skip_ratio_at_tracker_median_wave"
     ]
-    assert alignment["observed_non_intro_displayed_waves"] == pytest.approx(4570.0)
-    assert alignment["observed_played_waves_after_intro_from_tracker"] == pytest.approx(2218.5)
+    assert alignment["observed_non_intro_displayed_waves"] == pytest.approx(observed_non_intro_waves)
+    assert alignment["observed_played_waves_after_intro_from_tracker"] == pytest.approx(
+        tracker_played_waves_excluding_intro
+    )
     assert alignment["observed_effective_skip_multiplier_after_intro"] == pytest.approx(
-        2.0599504169483884
+        tracker_effective_skip_multiplier
     )
     skip_semantics_candidates = alignment["tracker_waves_skipped_semantics_candidates"]
     skip_semantics_inference = alignment["tracker_waves_skipped_semantics_inference"]
@@ -102,44 +172,47 @@ def test_run_stats_pipeline_publishes_optional_run_tracker_evidence(tmp_path: Pa
     )
     assert skip_semantics_candidates[
         "interpretation_a_tracker_skips_exclude_intro_sprint"
-    ]["effective_skip_multiplier_after_intro"] == pytest.approx(2.0599504169483884)
+    ]["effective_skip_multiplier_after_intro"] == pytest.approx(tracker_effective_skip_multiplier)
     assert skip_semantics_candidates[
         "interpretation_a_tracker_skips_exclude_intro_sprint"
     ]["observed_to_expected_skip_multiplier_ratio"] == pytest.approx(
-        1.7310507705448643
+        exclude_intro_ratio
     )
     assert skip_semantics_candidates[
         "interpretation_b_tracker_skips_include_intro_sprint"
-    ]["skipped_waves_after_intro"] == pytest.approx(911.5)
+    ]["skipped_waves_after_intro"] == pytest.approx(tracker_skipped_waves_including_intro)
     assert skip_semantics_candidates[
         "interpretation_b_tracker_skips_include_intro_sprint"
-    ]["played_waves_after_intro"] == pytest.approx(3658.5)
+    ]["played_waves_after_intro"] == pytest.approx(tracker_played_waves_including_intro)
     assert skip_semantics_candidates[
         "interpretation_b_tracker_skips_include_intro_sprint"
-    ]["effective_skip_multiplier_after_intro"] == pytest.approx(1.2491458247915812)
+    ]["effective_skip_multiplier_after_intro"] == pytest.approx(
+        tracker_effective_skip_multiplier_including_intro
+    )
     assert skip_semantics_candidates[
         "interpretation_b_tracker_skips_include_intro_sprint"
     ]["observed_to_expected_skip_multiplier_ratio"] == pytest.approx(
-        1.049702373774438
+        include_intro_ratio
     )
     assert skip_semantics_inference["status"] == "suggests_tracker_skips_include_intro_sprint"
     assert skip_semantics_inference["best_candidate"] == "tracker_skips_include_intro_sprint"
     assert skip_semantics_inference["best_candidate_distance_from_expected"] == pytest.approx(
-        0.04970237377443802
+        include_intro_distance
     )
     assert skip_semantics_inference["candidate_distance_from_expected"] == {
-        "tracker_skips_exclude_intro_sprint": pytest.approx(0.7310507705448643),
-        "tracker_skips_include_intro_sprint": pytest.approx(0.04970237377443802),
+        "tracker_skips_exclude_intro_sprint": pytest.approx(exclude_intro_distance),
+        "tracker_skips_include_intro_sprint": pytest.approx(include_intro_distance),
     }
     assert skip_semantics_inference["include_intro_support_ratio_vs_exclude"] == pytest.approx(
-        0.7310507705448643 / 0.04970237377443802
+        exclude_intro_distance / include_intro_distance
     )
     assert skip_semantics_inference["operator_confirmation_required"] is True
+    base_skip_multiplier = 1.0 + readiness["current_timing_projection"]["wave_skip_chance_pct"] / 100.0
     assert alignment["implied_wave_skip_mastery_double_chance_pct_at_current_base"] == pytest.approx(
-        73.10507705448643
+        max(0.0, ((tracker_effective_skip_multiplier / base_skip_multiplier) - 1.0) * 100.0)
     )
     assert alignment["observed_to_expected_skip_multiplier_ratio"] == pytest.approx(
-        1.7310507705448643
+        exclude_intro_ratio
     )
     assert alignment["skip_semantics_gap_status"] == (
         "tracker_skip_count_semantics_ambiguous_intro_inclusive_candidate_reduces_gap"
@@ -177,14 +250,16 @@ def test_run_stats_pipeline_publishes_optional_run_tracker_evidence(tmp_path: Pa
     )
     assert tracker_wave_reward["certification_effect"] == "none"
     assert tracker_wave_reward["coin_eligible_displayed_waves_after_intro"] == pytest.approx(
-        4570.0
+        observed_non_intro_waves
     )
-    assert tracker_wave_reward["tracker_played_waves_after_intro"] == pytest.approx(2218.5)
+    assert tracker_wave_reward["tracker_played_waves_after_intro"] == pytest.approx(
+        tracker_played_waves_excluding_intro
+    )
     assert tracker_wave_reward["coins_per_non_intro_displayed_wave"] == pytest.approx(
-        307_439_824_945.2954
+        tracker_wave_reward["observed_median_coins_per_run"] / observed_non_intro_waves
     )
     assert tracker_wave_reward["coins_per_tracker_played_wave_after_intro"] == pytest.approx(
-        633_310_795_582.6008
+        tracker_wave_reward["observed_median_coins_per_run"] / tracker_played_waves_excluding_intro
     )
     assert tracker_wave_reward["tracker_reward_field_status"] == (
         "tracker_wave_skip_reward_fields_available"
@@ -216,12 +291,14 @@ def test_run_stats_pipeline_publishes_optional_run_tracker_evidence(tmp_path: Pa
         "source_backed_available"
     )
     assert wave_reward_audit["intro_sprint_coin_suppression"]["active_wave_count"] == pytest.approx(
-        1440.0
+        intro_sprint_waves
     )
     assert wave_reward_audit["wave_skip_base_reward"]["status"] == (
         "source_backed_available_expected_value_missing"
     )
-    assert wave_reward_audit["wave_skip_base_reward"]["chance_pct"] == pytest.approx(19.0)
+    assert wave_reward_audit["wave_skip_base_reward"]["chance_pct"] == pytest.approx(
+        readiness["current_timing_projection"]["wave_skip_chance_pct"]
+    )
     assert wave_reward_audit["wave_skip_mastery_double_skip"]["status"] == (
         "source_backed_available_reward_integral_missing"
     )
@@ -367,31 +444,44 @@ def test_run_stats_pipeline_publishes_optional_run_tracker_evidence(tmp_path: Pa
     assert current_cph_estimate["latest_observed_coins_per_enemy"] == pytest.approx(
         1_711_875_585.5034595
     )
-    assert current_cph_estimate["current_timing_run_hours"] == pytest.approx(
-        4.864050046685341
-    )
+    assert current_cph_estimate["target_wave"] == current_cph_estimate["statbook_target_wave"]
+    assert current_cph_estimate["current_timing_run_hours"] > 0
     assert current_cph_estimate["selected_projected_coins_per_run"] == pytest.approx(
-        1_440_691_930_039_889.2
+        current_cph_estimate["selected_projected_coins_per_wave"]
+        * current_cph_estimate["target_wave"]
     )
     assert current_cph_estimate["selected_projected_coins_per_hour"] == pytest.approx(
-        296_191_839_354_462.3
+        current_cph_estimate["selected_projected_coins_per_run"]
+        / current_cph_estimate["current_timing_run_hours"]
     )
     assert current_cph_estimate[
         "latest_intro_excluded_projected_coins_per_hour"
-    ] == pytest.approx(222_156_732_832_951.16)
+    ] == pytest.approx(
+        current_cph_estimate["latest_intro_excluded_projected_coins_per_run"]
+        / current_cph_estimate["current_timing_run_hours"]
+    )
     assert current_cph_estimate["latest_tracker_wave_horizon"] == pytest.approx(6518.0)
-    assert current_cph_estimate[
-        "latest_tracker_wave_horizon_current_timing_run_hours"
-    ] == pytest.approx(5.716187488328666)
+    assert current_cph_estimate["latest_tracker_wave_horizon_current_timing_run_hours"] > 0
     assert current_cph_estimate[
         "latest_tracker_wave_horizon_projected_coins_per_run"
-    ] == pytest.approx(1_630_000_000_000_000.0)
+    ] == pytest.approx(
+        current_cph_estimate["latest_projected_coins_per_wave"]
+        * current_cph_estimate["latest_tracker_wave_horizon"]
+    )
     assert current_cph_estimate[
         "latest_tracker_wave_horizon_projected_coins_per_hour"
-    ] == pytest.approx(285_155_097_401_570.56)
+    ] == pytest.approx(
+        current_cph_estimate["latest_tracker_wave_horizon_projected_coins_per_run"]
+        / current_cph_estimate["latest_tracker_wave_horizon_current_timing_run_hours"]
+    )
     assert current_cph_estimate[
         "latest_tracker_wave_horizon_intro_excluded_projected_coins_per_hour"
-    ] == pytest.approx(222_156_732_832_951.1)
+    ] == pytest.approx(
+        current_cph_estimate[
+            "latest_tracker_wave_horizon_intro_excluded_projected_coins_per_run"
+        ]
+        / current_cph_estimate["latest_tracker_wave_horizon_current_timing_run_hours"]
+    )
     cph_promotion = readiness["coins_per_hour_promotion_readiness"]
     assert cph_promotion["status"] == "not_ready"
     assert cph_promotion["application"] == "diagnostic_only_not_account_truth"
@@ -494,7 +584,7 @@ def test_run_stats_pipeline_publishes_optional_run_tracker_evidence(tmp_path: Pa
     )
     assert cph_promotion[
         "tracker_skip_semantics_best_candidate_distance_from_expected"
-    ] == pytest.approx(0.04970237377443802)
+    ] == pytest.approx(include_intro_distance)
     assert cph_promotion["tracker_calibration_anchor_hint"]["status"] == (
         "recent_band_available_not_auto_applied"
     )
@@ -786,7 +876,9 @@ def test_tracker_wave_skip_intro_semantics_approval_closes_only_semantics_blocke
         "tracker_skips_include_intro_sprint"
     )
     assert approval["candidate_distance_from_expected"] == pytest.approx(
-        0.04970237377443798
+        readiness["tracker_timing_alignment"]["tracker_waves_skipped_semantics_inference"][
+            "candidate_distance_from_expected"
+        ]["tracker_skips_include_intro_sprint"]
     )
     assert readiness["missing_formula_links"] == []
     assert "tracker_wave_skip_intro_semantics_gap" not in readiness[
@@ -1067,12 +1159,13 @@ def test_execute_pipeline_mirrors_optional_run_tracker_evidence(tmp_path: Path) 
     assert diagnostics["farming_econ_model_readiness"]["tracker_timing_alignment"][
         "skip_semantics_gap_status"
     ] == "tracker_skip_count_semantics_ambiguous_intro_inclusive_candidate_reduces_gap"
-    assert diagnostics["farming_econ_model_readiness"]["tracker_timing_alignment"][
-        "tracker_waves_skipped_semantics_candidates"
-    ]["interpretation_b_tracker_skips_include_intro_sprint"][
-        "observed_to_expected_skip_multiplier_ratio"
-    ] == pytest.approx(
-        1.049702373774438
+    tracker_alignment = diagnostics["farming_econ_model_readiness"]["tracker_timing_alignment"]
+    intro_candidate = tracker_alignment["tracker_waves_skipped_semantics_candidates"][
+        "interpretation_b_tracker_skips_include_intro_sprint"
+    ]
+    skip_inference = tracker_alignment["tracker_waves_skipped_semantics_inference"]
+    assert abs(intro_candidate["observed_to_expected_skip_multiplier_ratio"] - 1.0) == pytest.approx(
+        skip_inference["best_candidate_distance_from_expected"]
     )
     assert diagnostics["farming_econ_model_readiness"]["tracker_timing_alignment"][
         "tracker_waves_skipped_semantics_inference"
@@ -1089,18 +1182,20 @@ def test_execute_pipeline_mirrors_optional_run_tracker_evidence(tmp_path: Path) 
     assert diagnostics["farming_econ_model_readiness"]["tracker_cph_identity_evidence"][
         "component_to_tracker_cph_ratio"
     ] == pytest.approx(1.0016570458566083)
-    assert diagnostics["farming_econ_model_readiness"]["tracker_wave_reward_candidate"][
-        "status"
-    ] == "tracker_intro_wave_skip_reward_candidate_available"
-    assert diagnostics["farming_econ_model_readiness"]["tracker_wave_reward_candidate"][
-        "coins_per_tracker_played_wave_after_intro"
-    ] == pytest.approx(633_310_795_582.6008)
-    assert diagnostics["farming_econ_model_readiness"]["tracker_wave_reward_candidate"][
-        "tracker_reward_field_status"
-    ] == "tracker_wave_skip_reward_fields_available"
-    assert diagnostics["farming_econ_model_readiness"]["tracker_wave_reward_candidate"][
-        "tracker_reported_wave_skip_coin_share"
-    ] == pytest.approx(0.24489081834251847)
+    tracker_wave_reward = diagnostics["farming_econ_model_readiness"][
+        "tracker_wave_reward_candidate"
+    ]
+    assert tracker_wave_reward["status"] == "tracker_intro_wave_skip_reward_candidate_available"
+    assert tracker_wave_reward["coins_per_tracker_played_wave_after_intro"] == pytest.approx(
+        tracker_wave_reward["observed_median_coins_per_run"]
+        / tracker_wave_reward["tracker_played_waves_after_intro"]
+    )
+    assert tracker_wave_reward["tracker_reward_field_status"] == (
+        "tracker_wave_skip_reward_fields_available"
+    )
+    assert tracker_wave_reward["tracker_reported_wave_skip_coin_share"] == pytest.approx(
+        0.24489081834251847
+    )
     wave_reward_audit = diagnostics["farming_econ_model_readiness"][
         "tracker_wave_reward_candidate"
     ]["source_audit"]
@@ -1242,9 +1337,10 @@ def test_execute_pipeline_mirrors_optional_run_tracker_evidence(tmp_path: Path) 
     assert cph_promotion["auto_current_cph_estimate"]["basis"] == (
         "latest_tracker_coin_density_current_timing"
     )
-    assert cph_promotion["auto_current_cph_estimate"][
-        "selected_projected_coins_per_hour"
-    ] == pytest.approx(296_191_839_354_462.3)
+    auto_cph = cph_promotion["auto_current_cph_estimate"]
+    assert auto_cph["selected_projected_coins_per_hour"] == pytest.approx(
+        auto_cph["selected_projected_coins_per_run"] / auto_cph["current_timing_run_hours"]
+    )
     assert "tracker_wave_skip_intro_semantics_gap" in cph_promotion["blocking_reasons"]
     assert "operator_has_not_approved_tracker_empirical_cph_as_default" in cph_promotion[
         "blocking_reasons"

@@ -846,6 +846,15 @@ def overheat_enemy_skip_decay_schedule() -> Dict[int, float]:
 
 
 # ═══════════════════════════════════════════════════════════════════════
+def tournament_bc_magnitude_schedule(bc_id: str) -> Dict[int, float]:
+    """Source-owned tournament heat curve keyed by tournament wave."""
+    curve = _load_tournament_bc_magnitudes().get(str(bc_id or "").strip(), {})
+    return {
+        max(0, int(wave)): float(value)
+        for wave, value in sorted(curve.items())
+    }
+
+
 #  Stat engine bridge
 # ═══════════════════════════════════════════════════════════════════════
 

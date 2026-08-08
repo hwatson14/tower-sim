@@ -1280,6 +1280,71 @@ families:
       scenario_scoped: true
       semantics: Project Funding cash-digit damage multiplier percent; current-cash
         runtime factor must remain explicit before downstream formula application.
+    - surface_id: state::module.multiverse_nexus.synced_uw_cooldown_offset_s
+      surface_kind: runtime_mechanic_surface
+      surface_class: surface
+      domain: modules
+      owning_families:
+      - progression_start_of_run
+      - progression_runtime_no_perks
+      - progression_runtime_with_perks
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: false
+      debug_only: true
+      scenario_scoped: true
+      semantics: Multiverse Nexus offset applied to the synchronized Death Wave, Golden
+        Tower, and Black Hole cooldown average.
+    - surface_id: state::module.om_chip.boss_reflection_multiplier
+      surface_kind: runtime_mechanic_surface
+      surface_class: surface
+      domain: modules
+      owning_families:
+      - progression_start_of_run
+      - progression_runtime_no_perks
+      - progression_runtime_with_perks
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: false
+      debug_only: true
+      scenario_scoped: true
+      semantics: Om Chip reflected Spotlight damage multiplier for nearby enemies.
+    - surface_id: state::module.om_chip.reflected_damage_taken_mult_x
+      surface_kind: runtime_mechanic_surface
+      surface_class: surface
+      domain: modules
+      owning_families:
+      - progression_start_of_run
+      - progression_runtime_no_perks
+      - progression_runtime_with_perks
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: false
+      debug_only: true
+      scenario_scoped: true
+      semantics: Om Chip reflected Spotlight damage-taken multiplier route.
+    - surface_id: state::module.singularity_harness.bot_range_bonus_m
+      surface_kind: runtime_mechanic_surface
+      surface_class: surface
+      domain: modules
+      owning_families:
+      - progression_start_of_run
+      - progression_runtime_no_perks
+      - progression_runtime_with_perks
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: false
+      debug_only: true
+      scenario_scoped: true
+      semantics: Singularity Harness range bonus applied to unlocked bots.
     - surface_id: support_surface::module.project_funding.current_cash
       surface_kind: support_surface
       surface_class: surface
@@ -3434,6 +3499,10 @@ families:
       - state::module.being_annihilator.guaranteed_supercrits_after_supercrit_attacks
       - state::module.dimension_core.max_shock_stacks
       - state::module.project_funding.cash_digit_multiplier_pct
+      - state::module.multiverse_nexus.synced_uw_cooldown_offset_s
+      - state::module.om_chip.boss_reflection_multiplier
+      - state::module.om_chip.reflected_damage_taken_mult_x
+      - state::module.singularity_harness.bot_range_bonus_m
       - support_surface::module.project_funding.current_cash
       - state::shock.damage_multiplier
       - state::cards.damage.mastery_effect

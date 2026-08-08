@@ -2670,7 +2670,23 @@ def compile_stat_inputs(
                         unique_value = float(int(unique_value))
                     else:
                         unique_value = unique_value * assist_multiplier_eff
-                unique_value_type = 'multiplier_display' if unique_measure == 'multiplier' else ('pct' if unique_measure == 'pct' else ('count' if unique_measure == 'count' else ('duration_seconds' if unique_measure == 'seconds' else ('resolved_value' if unique_measure in {'m', 'raw'} else ('multiplier_display' if unique_value is not None else 'raw_text')))))
+                unique_value_type = (
+                    'multiplier_display'
+                    if unique_measure == 'multiplier'
+                    else 'pct'
+                    if unique_measure == 'pct'
+                    else 'count'
+                    if unique_measure == 'count'
+                    else 'duration_seconds'
+                    if unique_measure == 'seconds'
+                    else 'seconds'
+                    if unique_measure == 'seconds_offset'
+                    else 'resolved_value'
+                    if unique_measure in {'m', 'raw'}
+                    else 'multiplier_display'
+                    if unique_value is not None
+                    else 'raw_text'
+                )
                 row = StatInput(stat_name=f'{mod_name}::main', source_family='module', source_name=mod_name, value=main_value if main_value is not None else mod.stat, value_type='multiplier_display' if main_value is not None else 'raw_text', stage='loadout_resolved', preset_name=module_preset, provenance='IDS::Modules', notes=(f'module_{role}_main_effect' + (f':assist_multiplier_eff={assist_multiplier_eff}' if role == 'assist' and assist_multiplier_eff is not None else '')))
                 base_contributor = {
                     'cannon': 'module__cannon__damage__pct',

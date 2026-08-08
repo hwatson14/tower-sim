@@ -9,7 +9,7 @@ status:
   confidence:
     high_signal_suites_green: true
     full_suite_recertified_here: true
-    full_suite_latest_result: passed_619_on_2026_06_11
+    full_suite_latest_result: passed_746_on_2026_07_13
     shipped_baseline_differed_before_repair: true
 verified_baseline:
   high_signal_test_command: pytest -q tests/shared/test_import_boundaries.py tests/qe/test_compiler_routing_policy_split.py tests/simulators/test_evaluator_kernel.py tests/simulators/test_boss_waves_parity_shadow.py tests/app/test_main_path_smoke.py tests/app/test_pipeline_functional.py
@@ -23,7 +23,7 @@ verified_baseline:
   - streamlit import/provenance facades advanced in PR #341
   - streamlit helper-local private assertions removed from app smoke coverage
 latest_local_verification:
-  date_local: '2026-06-13'
+  date_local: '2026-07-13'
   current_goal_mode_family_and_boss_wave_evidence:
     result: passed_artifact_audit_after_bot_plus_closure
     commands:
@@ -5244,6 +5244,77 @@ latest_local_verification:
       older Defense-only derived::edamage default was removed because it created a
       policy difference instead of a Dissonance restriction difference; targeted
       app tests passed after the correction.
+  tournament_row_local_heat_and_current_export_rebaseline:
+    result: passed_full_suite
+    commands:
+    - .venv\Scripts\python.exe -m pytest -q tests\app\test_pipeline_functional.py tests\app\test_run_tracker_pipeline_contract.py tests\simulators\test_evaluator_kernel.py
+    - .venv\Scripts\python.exe -m pytest -q tests\simulators\test_core_smoke.py tests\simulators\test_boss_waves_parity_shadow.py tests\app\test_stats_dashboard_contract.py tests\app\test_pipeline_ui_contracts.py tests\qe\test_contracts_models_smoke.py tests\shared\test_import_boundaries.py
+    - .venv\Scripts\python.exe -m pytest -q tests\input\test_ids_parser_headers.py tests\qe\test_generic_perk_multiplier_resolution.py tests\qe\test_module_card_payloads.py tests\qe\test_module_substat_parse_observability.py tests\qe\test_unmapped_surface_reclassifications.py
+    - full execute_pipeline rebuild of committed run_stats, query-row, account-state, and Boss Waves matrix artifacts
+    - .venv\Scripts\python.exe -m pytest -q tests\qe\test_contracts_models_smoke.py tests\qe\test_unmapped_surface_reclassifications.py::test_active_other_preset_module_unique_routes_compile_to_kb_destinations tests\qe\test_unmapped_surface_reclassifications.py::test_progression_family_publishes_active_module_unique_visibility_surfaces
+    - .venv\Scripts\python.exe -m pytest -q tests\app\test_stats_dashboard_contract.py
+    - .venv\Scripts\python.exe -m pytest -q
+    passed:
+      touched_and_timing_contracts: 196
+      cross_layer_contracts: 265
+      current_input_and_qe_rebaseline: 120
+      module_and_contract_closure: 60
+      generated_artifact_contract: 58
+      full_suite: 745
+    note: >
+      Boss Waves tournament rows now apply the existing KB Enemy Attack Speed
+      and Enemy Speed Heat curves at each displayed wave. The supported effects
+      change boss hit cadence and boss contact time through simulator-owned
+      inputs while preserving explicit caller overrides. Boss Ultimate remains
+      deferred: it is not present in the active Heat schedule and does not alter
+      boss health; the explicit boss_terminal_max_wave closure path remains the
+      only current handling. Farming timing diagnostics now report an explicitly
+      supplied observed-wave estimate horizon separately from the statbook target.
+      The July IDS import changed PBs, module selections and levels, lab values,
+      UW timing, and bot unlock state; affected tests now follow imported truth
+      or assert stable routing/formula relationships. App diagnostic KB reads
+      were moved behind QE-owned loaders, and input/run_tracker.py is recorded in
+      the explicit input inventory. The bounded run-stats query now requests the
+      four already-KB-owned Multiverse Nexus, Om Chip, and Singularity Harness
+      unique-effect surfaces; QE types Multiverse Nexus seconds_offset as seconds
+      and materializes the exact raw mechanic-param aliases. Rebuilt diagnostics
+      report zero other-preset missing-query evidence, covered line verification,
+      and proven effect-family carrythrough without adding the surfaces to the
+      Boss Waves hot bundle.
+  p5_ep_sync_exact_result_cache_2026_07_13:
+    result: passed_full_suite
+    commands:
+    - direct project-Python controlled warm A/B with the cache disabled through __wrapped__ versus the retained bounded cache
+    - direct project-Python cold CLI sampling for .venv\Scripts\python.exe -m app.run_stats --out <temp>
+    - warmed cProfile comparison for app.run_stats
+    - bounded artifact byte comparison plus diagnostics comparison with timing-only fields removed
+    - .venv\Scripts\python.exe -m pytest -q tests\qe\test_query_derived_composites_contributor_contracts.py tests\qe\test_contracts_models_smoke.py tests\app\test_input_dashboard_contract.py tests\app\test_stats_dashboard_contract.py
+    - .venv\Scripts\python.exe -m app.run_stats --perk-mode max_progression_policy --out <temp>
+    - .venv\Scripts\python.exe -m pytest -q
+    passed:
+      focused_contracts: 152
+      full_suite: 746
+    measurements:
+      control_warm_median_ms: 2097.19
+      retained_cache_warm_median_ms: 859.92
+      direct_cold_cli_ms:
+      - 2747.12
+      - 2979.34
+      - 2912.18
+      eight_run_cache_hits: 92
+      eight_run_cache_misses: 4
+      pre_profile_function_calls: 3429996
+      post_warmed_profile_function_calls: 1237986
+    note: >
+      QE derived-composite publication called the pure EP sync periodic overlap
+      calculation 12 times per bounded refresh for only four distinct argument
+      tuples. A bounded lru_cache(maxsize=128) now reuses the exact existing
+      result; misses still execute the original formula and floating-point
+      accumulation order. Every non-diagnostic bounded artifact remained
+      byte-for-byte identical, and diagnostics matched after timing telemetry
+      was removed. P5 remains open because both current cold and warm timings
+      remain above the v49 interactive targets. The next measured costs are
+      farming sync-window integration, QE resolution, and final publication.
 remaining_max_wave_completion:
   date_local: '2026-06-12'
   status: tracked_not_complete
@@ -5271,6 +5342,8 @@ remaining_max_wave_completion:
     - start-of-run Rend Armor Chance and Rend Armor Multiplier now resolve from KB/QE-owned zero workshop state instead of publishing mapped_not_resolved, while max progression keeps the existing 36% and x0.3672 values
     - Interest / Wave query rows now resolve as 7.16% for Farming and Tourney instead of carrying a false partially_resolved status from an unconsumed zero vault contributor
     - source-owned enemy-speed movement now feeds Boss Waves boss contact timing through simulators.timing; diagnostics publish enemy-speed fraction, boss-speed multiplier, and combined movement-speed multiplier while non-boss fleet pressure remains an unsupported terminal-pressure id when active
+    - tournament Enemy Attack Speed and Enemy Speed Heat magnitudes now resolve row-locally from the KB schedule into Boss Waves hit cadence and contact timing; explicit caller overrides still win, and Boss Ultimate is intentionally excluded from active Heat application
+    - bounded run-stats module visibility includes the four existing Multiverse Nexus, Om Chip, and Singularity Harness unique-effect surfaces through declared QE query ownership and dependency edges; regenerated diagnostics have zero other-preset missing-query evidence and proven effect-family carrythrough
     - explicit terminal-pressure max-wave inputs remain optional scenario overrides, but separate non-boss pressure formula discovery is out of current scope; boss-contact waves are the sanctioned proxy/test surface for now
     - boss-specific deferred pressure now has an exact explicit closure field (`boss_terminal_max_wave`) mapped to `boss_ultimate_deferred`; the source-owned Boss Ultimate formula remains deferred
     - explicit terminal-pressure max-wave inputs can also be supplied as comparison-only Boss Waves matrix overlays from CLI and Streamlit, so observed fleet/elite/protector/armored/boss terminal waves can be tested without replacing default account truth
@@ -6180,7 +6253,17 @@ v49_program:
     - 570.16
     - 95.76
     - 101.1
-    interpretation: sanctioned-path YAML and contract loading plus import-thinning, surface-id caching, bound-input reuse, input-loader hardening, default dependency-registry reuse, shared YAML contract caching, compiler cold-path hardening, and bounded write-path contract normalization improved the hot path materially. The current bounded contract still includes dashboard artifact writes, and the fresh CLI path has now moved to roughly 0.93s-1.05s but remains above the preserved v49 interactive target band even though repeated in-process session runs are much faster. Boss Waves is now product-complete on the repaired worktree baseline with explicit payload contract, stable summary, execution diagnostics, canonical resolved run context, actual boss cadence separated from checkpoint sampling, and no live delta fallback; Tourney now fails closed when the required tournament-wave context is unavailable instead of silently using a misleading surrogate. The remaining open performance problem is now concentrated in the run_stats path rather than the earlier boss-wave cadence/context defects, with residual cost dominated by cold YAML/contract work and compile_stat_inputs startup cost
+    current_ep_sync_cache_2026_07_13:
+      control_warm_median_ms: 2097.19
+      retained_cache_warm_median_ms: 859.92
+      direct_cold_cli_ms:
+      - 2747.12
+      - 2979.34
+      - 2912.18
+      cache_probe_hits: 92
+      cache_probe_misses: 4
+      semantic_result: non_diagnostic_artifacts_byte_identical_and_diagnostics_equal_without_timing_fields
+    interpretation: sanctioned-path caching, compiler/session reuse, publication hardening, and write-path cleanup have materially reduced repeated costs without changing authority or outputs. The current July snapshot still measures roughly 2.75s-2.98s for a fresh CLI run and 0.86s for the controlled warmed median after the bounded EP sync cache, so P5 remains open against the preserved interactive target band. The next measured warm costs are farming sync-window integration, QE resolution, and final dashboard publication; those require a new bounded profile-driven tranche rather than an inferred shortcut. Boss Waves remains replacement-owned, Tourney still fails closed when required context is absent, and Boss Ultimate remains explicitly deferred.
     visual_semantic_repair_2026_04_14: primary Stats surfaces now pass the repaired operator-facing contract in the harnessed live UI, including preset-driven view-state updates, grouped Modules summary plus cards, no mojibake in Stats/Boss Waves surfaces, normalized max-2-decimal formatting on primary tables, truthful cumulative Bot/Guardian spend, explicit workshop cap wiring for Defense %, Shockwave Interval, and Wall Rebuild, and surface-specific reconciliation semantics. Full pytest is green on this repaired baseline.
     machine:
       os: Windows 10 Pro x64
