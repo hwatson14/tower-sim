@@ -228,6 +228,14 @@ def build_compare_status_summary(ep_compare: dict) -> dict:
         alignment_status = 'no_formula_mismatches_but_compare_scope_incomplete'
     else:
         alignment_status = 'unresolved_ep_alignment_gaps'
+    export_qa = next(
+        (
+            dict(payload.get('ep_export_qa') or {})
+            for payload in ep_compare.values()
+            if payload.get('ep_export_qa')
+        ),
+        {'status': 'not_reported', 'blank_required_value_count': None, 'error_value_count': None},
+    )
     return {
         'ep_compare_count': len(ep_compare),
         'ep_compare_status_counts': dict(sorted(status_counts.items())),
@@ -249,6 +257,7 @@ def build_compare_status_summary(ep_compare: dict) -> dict:
         'ep_stage_scope_unaccounted_destinations': unaccounted_stage_scope_destinations,
         'ep_non_comparable_count': non_comparable_count,
         'ep_missing_from_package_count': missing_from_package_count,
+        'ep_export_qa': export_qa,
     }
 
 
@@ -301,11 +310,21 @@ def classify_compare_status(destination: str, contract: dict, package_row, ep_en
     return 'mismatch', delta, rel_pct, notes
 
 
-def _known_export_defect_notes(destination: str, status: str) -> list[str]:
-    note = EP_KNOWN_EXPORT_DEFECT_NOTES.get(destination)
-    if note is None or status != 'mismatch':
+def _known_export_defect_notes(destination: str, status: str, ep_entry: dict | None = None) -> list[str]:
+    if status != 'mismatch':
         return []
-    return [note]
+    notes = []
+    note = EP_KNOWN_EXPORT_DEFECT_NOTES.get(destination)
+    if note is not None:
+        notes.append(note)
+    export_qa = (ep_entry or {}).get('ep_export_qa') or {}
+    if export_qa.get('status') == 'invalid':
+        notes.append(
+            'ep_export_drift:source_snapshot_self_reports_'
+            f"blank_required_value_count_{export_qa.get('blank_required_value_count')}_"
+            f"error_value_count_{export_qa.get('error_value_count')}"
+        )
+    return notes
 
 
 def annotate_compare_display_fields(
@@ -362,7 +381,7 @@ def build_ep_compare(ep_oracle, statbook_rows_by_preset, formula_ledger, package
         pkg_snapshot = contributor_snapshot(pkg)
         contract = formula_contract(formula_ledger, dest)
         status, delta, rel_pct, notes = classify_compare_status(dest, contract, pkg, ep, stage_context, normalize_compare_values)
-        compare_notes = assumption_notes + notes + _known_export_defect_notes(dest, status)
+        compare_notes = assumption_notes + notes + _known_export_defect_notes(dest, status, ep)
         known_export_defect = _compare_notes_have_known_export_defect(compare_notes)
         kb_alignment_status = _kb_alignment_status_from_compare_payload(
             status,
@@ -390,6 +409,7 @@ def build_ep_compare(ep_oracle, statbook_rows_by_preset, formula_ledger, package
             'delta': delta,
             'relative_delta_pct': rel_pct,
             'status': status,
+            'ep_compare_known_export_defect': known_export_defect,
             'kb_alignment_status': kb_alignment_status,
             'verdict': _compare_verdict_from_alignment(kb_alignment_status),
             'compare_notes': compare_notes,
@@ -2330,6 +2350,28 @@ def _load_ep_oracle(ep_path: Path):
     label_idx = column_names.get('label', 2)
     value_idx = column_names.get('value', 3)
     source_idx = column_names.get('source_tab', column_names.get('import', 4))
+    qa_counts = {
+        'blank_required_value_count': None,
+        'error_value_count': None,
+    }
+    for _, row in df.iterrows():
+        key = str(row.iloc[key_idx]).strip() if len(row) > key_idx else ''
+        if key not in qa_counts:
+            continue
+        value_raw = row.iloc[value_idx] if len(row) > value_idx else None
+        parsed, _ = _parse_ep_value(value_raw)
+        qa_counts[key] = None if parsed is None else int(parsed)
+    reported_counts = [value for value in qa_counts.values() if value is not None]
+    export_qa = {
+        **qa_counts,
+        'status': (
+            'not_reported'
+            if not reported_counts
+            else 'invalid'
+            if any(value > 0 for value in reported_counts)
+            else 'valid'
+        ),
+    }
     out = {}
     for _, row in df.iterrows():
         if len(row) <= max(key_idx, label_idx, value_idx):
@@ -2350,6 +2392,7 @@ def _load_ep_oracle(ep_path: Path):
                 'ep_value_raw': value_raw,
                 'ep_value_parsed': parsed,
                 'ep_value_type': kind,
+                'ep_export_qa': export_qa,
             }
     return out
 
@@ -2369,8 +2412,19 @@ def _load_csv_rows(path: Path) -> list[dict]:
 
 def _build_kb_incomplete_areas(stat_inputs, statbook_publishable_dict, formula_ledger):
     active_unmapped_inputs = []
+    inactive_unmapped_inputs = []
     for row in stat_inputs:
         routing_class = classify_input_routing(row)
+        if routing_class == 'inactive_zero_level_unmapped':
+            inactive_unmapped_inputs.append({
+                'source_family': row.source_family,
+                'stat_name': row.stat_name,
+                'value_type': row.value_type,
+                'value': row.value,
+                'contributor_id': row.contributor_id,
+                'routing_class': routing_class,
+            })
+            continue
         if routing_class != 'truly_unrouted_unknown':
             continue
         if row.source_family == 'raw':
@@ -2383,6 +2437,7 @@ def _build_kb_incomplete_areas(stat_inputs, statbook_publishable_dict, formula_l
             'routing_class': routing_class,
         })
     active_unmapped_inputs.sort(key=lambda item: (item['source_family'], item['stat_name']))
+    inactive_unmapped_inputs.sort(key=lambda item: (item['source_family'], item['stat_name']))
     active_unmapped_by_family = {}
     for item in active_unmapped_inputs:
         fam = item['source_family']
@@ -2416,6 +2471,7 @@ def _build_kb_incomplete_areas(stat_inputs, statbook_publishable_dict, formula_l
     return {
         'summary': {
             'active_unmapped_input_count': len(active_unmapped_inputs),
+            'inactive_unmapped_input_count': len(inactive_unmapped_inputs),
             'resolved_unknown_schema_unit_count': len(resolved_unknown_schema_units),
             'ambiguous_relic_semantic_hint_count': len(ambiguous_relic_semantics),
         },
@@ -2425,10 +2481,12 @@ def _build_kb_incomplete_areas(stat_inputs, statbook_publishable_dict, formula_l
         ] + active_unmapped_inputs[:12]),
         'active_unmapped_by_family': active_unmapped_by_family,
         'active_unmapped_inputs': active_unmapped_inputs,
+        'inactive_unmapped_inputs': inactive_unmapped_inputs,
         'resolved_unknown_schema_units': resolved_unknown_schema_units,
         'ambiguous_relic_semantic_hints': ambiguous_relic_semantics,
         'notes': [
             'Active unmapped inputs are true unknown/unrouted calculator inputs without a destination contract in the current package.',
+            'Inactive unmapped inputs are preserved zero-level labs; they become active blockers automatically if their imported level becomes non-zero.',
             'Resolved rows with schema.unit=unknown are publishable bridges, but not convergence-grade clean contracts.',
             'ambiguous_relic_semantic_hints lists KB registry rows that still admit multiple semantic interpretations and may need future wiki-backed tightening.',
         ],

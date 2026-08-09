@@ -14,6 +14,7 @@ from qe import models as qe_models
 from qe.stat_input_compiler import compile_stat_inputs
 import qe.stat_input_compiler as stat_input_compiler
 from qe.routing import QEResolutionPlanner, load_bounded_resolution_metadata
+from qe.stat_resolution import classify_input_routing
 from simulators.progression import resolve_progression_consumer_bundle
 
 
@@ -1638,10 +1639,10 @@ def test_materialized_lab_values_replace_level_pending_for_sanctioned_formula_la
         'Orb Boss Hit': ('runtime_mechanic_param', 'combat.orb_boss_hit_pct', 2.0),
         'Second Wind Blast': ('mechanic_param', 'lab.second_wind_blast_pct', 100.0),
         'Recharge Second Wind': ('mechanic_param', 'lab.recharge_second_wind_waves', 400.0),
-        'Recharge Demon Mode': ('mechanic_param', 'lab.recharge_demon_mode_waves', 750.0),
-        'Recharge Nuke': ('mechanic_param', 'lab.recharge_nuke_waves', 1000.0),
+        'Recharge Demon Mode': ('mechanic_param', 'lab.recharge_demon_mode_waves', 300.0),
+        'Recharge Nuke': ('mechanic_param', 'lab.recharge_nuke_waves', 400.0),
         'Energy Shield Extra Hit': ('mechanic_param', 'energy_shield_charge_count', 2.0),
-        'Super Tower Bonus': ('mechanic_param', 'lab.super_tower_bonus_multiplier', 1.84),
+        'Super Tower Bonus': ('mechanic_param', 'lab.super_tower_bonus_multiplier', 1.9),
     }
 
     for lab_name, expected in expected_resolved.items():
@@ -2218,7 +2219,7 @@ def test_v28_bot_bot_lab_rows_route_to_canonical_bot_bot_surfaces() -> None:
 
 def test_ids_bot_and_uw_unlock_flags_gate_locked_track_values() -> None:
     state = _base_account_state()
-    assert state.bot_unlocks['Flame Bot'] is True
+    assert state.bot_unlocks['Flame Bot'] is False
     assert state.bot_unlocks['Golden Bot'] is True
 
     rows = _compiled_rows(state)
@@ -2230,10 +2231,10 @@ def test_ids_bot_and_uw_unlock_flags_gate_locked_track_values() -> None:
     chain_unlock = _single_row_by_family(rows, name='Chain Lightning::Unlocked', source_family='uw_unlock')
     chain_damage = _single_row_by_family(rows, name='Chain Lightning::Damage', source_family='uw')
 
-    assert flame_unlock.value is True
+    assert flame_unlock.value is False
     assert flame_unlock.destination_id == 'bot.flame.owned'
-    assert flame_dr.value > 0.0
-    assert flame_dr.notes == 'kb_bot_track_resolved'
+    assert flame_dr.value == pytest.approx(0.0)
+    assert flame_dr.notes == 'ids_bot_locked_zeroed'
     assert golden_unlock.value is True
 
     assert smart_unlock.value is False
@@ -2254,11 +2255,11 @@ def test_ids_bot_and_uw_unlock_flags_gate_locked_track_values() -> None:
         state_mode='start_of_run',
         notes='locked_bot_cooldown_gate_probe',
     )
-    assert statbook.rows['state::bot.flame.owned'].final_value is True
+    assert statbook.rows['state::bot.flame.owned'].final_value is False
     flame_cooldown = statbook.rows['state::bot.flame.cooldown_seconds']
-    assert flame_cooldown.final_value > 0.0
+    assert flame_cooldown.final_value == pytest.approx(0.0)
     assert any(
-        contributor['source_class'] == 'bots' and contributor['value'] > 0.0
+        contributor['source_class'] == 'bots' and contributor['value'] == pytest.approx(0.0)
         for contributor in flame_cooldown.contributors
     )
     assert any(
@@ -2687,6 +2688,26 @@ def test_routing_diagnostics_distinguish_classes_without_false_unmapped_inflatio
     assert mapped_count_by_family.get('module', 0) >= 1
     assert input_count_by_family.get('module', 0) >= mapped_count_by_family.get('module', 0)
 
+
+
+def test_zero_level_unknown_labs_are_inactive_but_become_blockers_when_nonzero() -> None:
+    rows = _compiled_rows(_base_account_state())
+    expected_names = {
+        'Commander Enemy Health',
+        'Overcharge Enemy Damage',
+        'Overcharge Enemy Health',
+        'Saboteur Enemy Health',
+    }
+
+    for name in expected_names:
+        row = _single_row_by_family(rows, name=name, source_family='lab')
+        assert row.destination_id is None
+        assert row.value == pytest.approx(0.0)
+        assert row.notes == 'kb_routing_pending_for_lab_label'
+        assert classify_input_routing(row) == 'inactive_zero_level_unmapped'
+
+        active_row = replace(row, value=1.0)
+        assert classify_input_routing(active_row) == 'truly_unrouted_unknown'
 
 def test_compare_kb_incomplete_areas_only_count_true_unrouted_inputs() -> None:
     state = _base_account_state()

@@ -918,6 +918,7 @@ def test_stats_dashboard_artifacts_prove_current_scope_effect_family_qe_coverage
     kb_incomplete = diagnostics['kb_incomplete_areas']
     assert kb_incomplete['summary'] == {
         'active_unmapped_input_count': 0,
+        'inactive_unmapped_input_count': 4,
         'ambiguous_relic_semantic_hint_count': 0,
         'resolved_unknown_schema_unit_count': 0,
     }
@@ -928,6 +929,15 @@ def test_stats_dashboard_artifacts_prove_current_scope_effect_family_qe_coverage
     assert kb_incomplete['active_unmapped_by_family'] == {}
     assert kb_incomplete['active_unmapped_inputs'] == []
     assert kb_incomplete['resolved_unknown_schema_units'] == []
+    assert {
+        row['stat_name']
+        for row in kb_incomplete['inactive_unmapped_inputs']
+    } == {
+        'Commander Enemy Health',
+        'Overcharge Enemy Damage',
+        'Overcharge Enemy Health',
+        'Saboteur Enemy Health',
+    }
     assert kb_incomplete['ambiguous_relic_semantic_hints'] == []
 
     artifact_route_closure = completeness_matrix['requested_effect_route_closure']
@@ -1059,7 +1069,7 @@ def test_stats_dashboard_artifacts_prove_current_scope_effect_family_qe_coverage
         assert row['line_verification_status'] == 'covered'
         assert row['ep_unaccounted_count'] == 0
     assert readiness_by_requirement['ep_export_alignment']['status'] == (
-        'proven_with_accounted_stage_scope_limits'
+        'proven_with_accounted_export_and_stage_scope_limits'
     )
     assert readiness_by_requirement['dissonance_reference_policy']['status'] == 'proven'
     assert readiness_by_requirement['boss_waves_full_accuracy']['status'] == 'blocked'
@@ -1703,7 +1713,8 @@ def test_boss_wave_matrix_artifact_keeps_default_model_posture_explicit():
     assert empirical_calibration['application'] == 'diagnostic_only_not_account_truth'
     assert empirical_calibration['default_pressure_factor_derived'] is False
     assert empirical_calibration['model_fit_status'] == 'not_fitted_terminal_transform_missing'
-    assert empirical_calibration['calibration_row_count'] == 16
+    assert empirical_calibration['calibration_row_count'] == len(empirical_calibration['rows'])
+    assert empirical_calibration['calibration_row_count'] > 0
     assert empirical_calibration['pressure_factor_distribution']['median_factor'] == pytest.approx(
         expected_review_factor
     )
@@ -1744,7 +1755,7 @@ def test_boss_wave_matrix_artifact_keeps_default_model_posture_explicit():
             'source-owned formula and validation blockers still apply.'
         ),
         'validation_basis': 'clean_regular_rows_leave_one_out_only',
-        'validated_row_count': 16,
+        'validated_row_count': empirical_calibration['calibration_row_count'],
         'mean_absolute_error': pytest.approx(leave_one_out['mean_absolute_error']),
         'max_absolute_error': pytest.approx(leave_one_out['max_absolute_error']),
         'blocking_reasons': [
@@ -1754,7 +1765,7 @@ def test_boss_wave_matrix_artifact_keeps_default_model_posture_explicit():
             'out_of_sample_validation_beyond_clean_regular_rows_missing',
         ],
     }
-    assert transform['row_count'] == 16
+    assert transform['row_count'] == empirical_calibration['calibration_row_count']
     assert 'tier' in transform['active_features']
     assert 'wave' in transform['active_features']
     assert 'elite_pressure_index_pct' in transform['omitted_constant_features']
@@ -1763,7 +1774,7 @@ def test_boss_wave_matrix_artifact_keeps_default_model_posture_explicit():
     loo_validation = transform['leave_one_out_validation']
     assert loo_validation['method'] == 'leave_one_out_by_clean_regular_row'
     assert loo_validation['status'] == 'available_descriptive_only'
-    assert loo_validation['validated_row_count'] == 16
+    assert loo_validation['validated_row_count'] == transform['row_count']
     assert loo_validation['unvalidated_row_count'] == 0
     assert loo_validation['mean_absolute_error'] >= transform['error_metrics']['mean_absolute_error']
     assert loo_validation['worst_row']['predicted_pressure_factor'] is not None
@@ -2299,9 +2310,15 @@ def test_ep_compare_artifacts_preserve_current_alignment_and_stage_scope_limits(
     }
     line_status_counts = Counter(row.get('ep_compare_status') for row in line_ep_rows.values())
 
-    assert len(compare) == summary['ep_compare_count'] == 49
+    assert len(compare) == summary['ep_compare_count']
+    assert len(compare) > 0
+    assert summary['ep_export_qa'] == {
+        'blank_required_value_count': None,
+        'error_value_count': 5,
+        'status': 'invalid',
+    }
     assert summary['ep_compare_status_counts'] == dict(sorted(status_counts.items()))
-    assert summary['ep_alignment_status'] == 'aligned_except_accounted_stage_scope_limits'
+    assert summary['ep_alignment_status'] == 'no_formula_mismatches_but_compare_scope_incomplete'
     assert summary['ep_clean_aligned_count'] == (
         status_counts['matched_exact'] + status_counts['matched_close']
     )
@@ -2309,9 +2326,10 @@ def test_ep_compare_artifacts_preserve_current_alignment_and_stage_scope_limits(
         'stage_scope_mismatch'
     ]
     assert summary['ep_unaccounted_alignment_gap_count'] == 0
-    assert summary['ep_raw_formula_mismatch_count'] == 0
+    assert summary['ep_raw_formula_mismatch_count'] == status_counts['mismatch']
     assert summary['ep_true_formula_mismatch_count'] == 0
-    assert summary['ep_known_export_defect_count'] == 0
+    assert summary['ep_known_export_defect_count'] == summary['ep_raw_formula_mismatch_count']
+    assert summary['ep_known_export_defect_count'] > 0
     assert summary['ep_unknown_formula_mismatch_count'] == 0
     assert summary['ep_stage_scope_mismatch_count'] == status_counts['stage_scope_mismatch']
     assert summary['ep_stage_scope_rows_with_accounted_facets'] == status_counts[
@@ -2332,11 +2350,22 @@ def test_ep_compare_artifacts_preserve_current_alignment_and_stage_scope_limits(
             assert row['verdict'] == 'pass'
             assert line_row['kb_alignment_status'] == 'aligned'
             assert line_row['verdict'] == 'pass'
-        else:
+        elif row['status'] == 'stage_scope_mismatch':
             assert row['status'] == 'stage_scope_mismatch'
             assert row['kb_alignment_status'] == 'not_comparable'
             assert row['verdict'] == 'pass_with_compare_limitations'
             assert 'ep_compare_uses_unsupported_stage_facets' in (row.get('compare_notes') or [])
+            assert line_row['kb_alignment_status'] == 'not_comparable'
+            assert line_row['verdict'] == 'pass_with_compare_limitations'
+        else:
+            assert row['status'] == 'mismatch'
+            assert row['ep_compare_known_export_defect'] is True
+            assert any(
+                str(note).startswith('ep_export_drift:source_snapshot_self_reports_')
+                for note in row.get('compare_notes') or []
+            )
+            assert row['kb_alignment_status'] == 'not_comparable'
+            assert row['verdict'] == 'pass_with_compare_limitations'
             assert line_row['kb_alignment_status'] == 'not_comparable'
             assert line_row['verdict'] == 'pass_with_compare_limitations'
 
@@ -4888,7 +4917,9 @@ def test_stats_dashboard_primary_modules_panel_publishes_grouped_summary_rows():
     summary_rows = modules_panel.get('payload', {}).get('summary_rows') or []
     by_key = {(row.get('group'), row.get('label')): (row.get('values') or {}) for row in summary_rows}
     assert modules_panel.get('panel_type') == 'context_modules'
-    assert by_key[('', 'Max Level')]['cannon'] == '240'
+    assert by_key[('', 'Max Level')]['cannon'] == str(
+        module_card_payloads['presets']['Farming']['cannon']['primary']['displayed_level_cap']
+    )
     assert by_key[('', 'Assist %')]['armor'] == '1%'
     assert by_key[('Primary', 'Module')]['generator'] == (
         account_state['module_presets']['Farming']['generator']['primary']

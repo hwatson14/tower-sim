@@ -190,8 +190,16 @@ def test_enemy_skip_max_progression_uses_single_enhancement_and_correct_assist_s
 
     assert len(attack_enhancements) == 1
     assert len(health_enhancements) == 1
-    assert sorted(c.get('value') for c in attack_modules) == pytest.approx([0.6, 8.0])
-    assert sorted(c.get('value') for c in health_modules) == pytest.approx([0.6, 8.0])
+    attack_primary = next(c for c in attack_modules if c.get('notes', '').endswith('_primary'))
+    attack_assist = next(c for c in attack_modules if c.get('notes', '').endswith('_assist'))
+    health_primary = next(c for c in health_modules if c.get('notes', '').endswith('_primary'))
+    health_assist = next(c for c in health_modules if c.get('notes', '').endswith('_assist'))
+    assist_scale = state.module_system_state['generator'].substat_cap
+    assert assist_scale is not None
+    assert attack_assist['value'] == pytest.approx(attack_primary['value'] * assist_scale)
+    assert health_assist['value'] == pytest.approx(health_primary['value'] * assist_scale)
+    assert attack_primary['value'] == pytest.approx(health_primary['value'])
+    assert attack_assist['value'] == pytest.approx(health_assist['value'])
     assert attack_row.final_value > 0.0
     assert health_row.final_value == pytest.approx(attack_row.final_value)
 

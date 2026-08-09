@@ -38,8 +38,7 @@ def test_module_card_payloads_use_qe_unlock_schedule_for_eight_slots():
     account_state = _account_state()
     payload = build_module_card_payloads(account_state)
     armor_assist_slots = payload['presets']['Farming']['armor']['assist']['effect_slots']
-    armor_assist_name = account_state.module_presets['Farming']['armor'].assist
-    armor_assist_level = account_state.modules_inventory[armor_assist_name].level
+    armor_assist_level = account_state.module_system_state['armor'].assist_level
     assert len(armor_assist_slots) == 8
     assert armor_assist_slots[0]['state'] == 'populated'
     assert armor_assist_slots[3]['state'] == 'populated'

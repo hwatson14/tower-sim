@@ -490,6 +490,16 @@ def test_card_mastery_registry_effects_have_declared_mechanic_params():
     assert bad_metadata == {}
 
 
+def test_inner_land_mines_extra_sets_has_count_schema() -> None:
+    mechanic_entries = _contract_entries_from_yaml(
+        ROOT / 'kb' / 'global-rules' / 'contracts' / 'mechanic-params.yaml'
+    )
+
+    entry = mechanic_entries['uw.inner_land_mines.extra_sets']
+    assert entry['unit'] == 'count'
+    assert entry['resolver'] == 'integer_count_param'
+
+
 def test_thunder_bot_linger_split_keeps_upgrade_slow_and_lab_duration():
     from qe.stat_input_compiler import BOT_UPGRADE_BINDINGS
 
@@ -1142,17 +1152,18 @@ def test_report_snapshot_resolves_raw_text_passthrough_surfaces() -> None:
         perks_enabled=False,
     )
 
-    expected_values = {
-        "state::capability.target_priority": "2",
-        "state::capability.perks.first_choice": "1",
-        "state::capability.perks.auto_pick_ranking": "12",
-        "state::meta.account_context.farming_tier": "Tier 14",
+    expected_sources = {
+        "state::capability.target_priority": "Target Priority",
+        "state::capability.perks.first_choice": "First Perk Choice",
+        "state::capability.perks.auto_pick_ranking": "Auto Pick Ranking",
+        "state::meta.account_context.farming_tier": "Farming Tier",
     }
 
-    for surface_id, expected_value in expected_values.items():
+    for surface_id, expected_source in expected_sources.items():
         row = snapshot.statbook.rows[surface_id]
         assert row.status == "resolved"
-        assert row.final_value == expected_value
+        assert row.contributors[0]["source_name"] == expected_source
+        assert row.final_value == str(row.contributors[0]["value"])
         assert "raw_text" in row.schema["expected_input_semantics"]
 
 

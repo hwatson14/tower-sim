@@ -679,6 +679,13 @@ def classify_input_routing(row: StatInput) -> str:
         return 'capability_policy'
     if note.startswith('governed_numeric_pending_'):
         return 'governed_numeric_pending_value'
+    if (
+        row.source_family == 'lab'
+        and note == 'kb_routing_pending_for_lab_label'
+        and row.value is not None
+        and float(row.value) == 0.0
+    ):
+        return 'inactive_zero_level_unmapped'
     if row.destination_object_type in {'runtime_mechanic_param', 'mechanic_param', 'account_flag'} and row.destination_id:
         return 'intentionally_non_publish_runtime_only'
     if row.destination_id:

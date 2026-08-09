@@ -262,6 +262,10 @@ domains:
     unit: count
     resolver: integer_count_param
     status: keep_now
+  - id: uw.inner_land_mines.extra_sets
+    unit: count
+    resolver: integer_count_param
+    status: keep_now
   - id: uw.inner_land_mines.cooldown_seconds
     unit: seconds
     resolver: cooldown_param

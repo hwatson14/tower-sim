@@ -897,9 +897,9 @@ def test_run_stats_progression_bundle__applies_exact_max_rend_formula():
 
     start_resolved = {row.surface_id: row for row in start_response.resolved_surface_rows}
     assert start_resolved['state::tower.rend_armor_chance_pct'].status == 'resolved'
-    assert start_resolved['state::tower.rend_armor_chance_pct'].final_value == pytest.approx(0.0)
+    assert start_resolved['state::tower.rend_armor_chance_pct'].final_value == pytest.approx(0.12)
     assert start_resolved['state::tower.rend_armor_multiplier'].status == 'resolved'
-    assert start_resolved['state::tower.rend_armor_multiplier'].final_value == pytest.approx(0.0)
+    assert start_resolved['state::tower.rend_armor_multiplier'].final_value == pytest.approx(0.001224)
 
     response = resolve_run_stats_progression_bundle(
         account_state=state,

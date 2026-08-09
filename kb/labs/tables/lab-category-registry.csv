@@ -145,6 +145,10 @@ Vampire Enemy Health,enemies_research,enemies,enemy,ids_exact_name + wiki_catego
 Scatter Enemy Attack,enemies_research,enemies,enemy,ids_exact_name + wiki_category_model,high,
 Scatter Enemy Health,enemies_research,enemies,enemy,ids_exact_name + wiki_category_model,high,
 Ranged Enemy Range,enemies_research,enemies,enemy,ids_exact_name + wiki_category_model,high,
+Overcharge Enemy Health,enemies_research,enemies,enemy,ids_exact_name,medium,Category only; mechanic formula absent from active v49 KB.
+Overcharge Enemy Damage,enemies_research,enemies,enemy,ids_exact_name,medium,Category only; mechanic formula absent from active v49 KB.
+Commander Enemy Health,enemies_research,enemies,enemy,ids_exact_name,medium,Category only; mechanic formula absent from active v49 KB.
+Saboteur Enemy Health,enemies_research,enemies,enemy,ids_exact_name,medium,Category only; mechanic formula absent from active v49 KB.
 Common Drop Chance,module_research,modules,module,ids_exact_name + wiki_category_model,high,
 Reroll Shards,module_research,modules,module,ids_exact_name + wiki_category_model,high,
 Daily Mission Shards,module_research,modules,module,ids_exact_name + wiki_category_model,high,

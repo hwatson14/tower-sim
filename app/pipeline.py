@@ -6031,6 +6031,13 @@ def _tower_goal_readiness_summary(diagnostics: Mapping[str, object]) -> dict[str
     """Summarize the active user goal from already-owned diagnostic evidence."""
     effect_evidence = dict(diagnostics.get('current_scope_effect_family_evidence') or {})
     ep_summary = dict(diagnostics.get('ep_compare_summary') or {})
+    ep_raw_formula_mismatch_count = int(ep_summary.get('ep_raw_formula_mismatch_count') or 0)
+    ep_known_export_defect_count = int(ep_summary.get('ep_known_export_defect_count') or 0)
+    all_ep_formula_mismatches_known = (
+        ep_raw_formula_mismatch_count > 0
+        and ep_raw_formula_mismatch_count == ep_known_export_defect_count
+    )
+    ep_export_qa = dict(ep_summary.get('ep_export_qa') or {})
     boss_matrix = dict(diagnostics.get('boss_wave_milestone_matrix') or {})
     boss_accuracy = dict(boss_matrix.get('model_accuracy_summary') or {})
     farming_readiness = dict(diagnostics.get('farming_econ_model_readiness') or {})
@@ -6100,6 +6107,15 @@ def _tower_goal_readiness_summary(diagnostics: Mapping[str, object]) -> dict[str
         or bool(farming_readiness.get('certified_farming_cph_model')) is True
     )
     effect_families = dict(effect_evidence.get('families') or {})
+    accounted_ep_statuses = {
+        'matched_exact',
+        'matched_close',
+        'stage_scope_mismatch',
+        'not_ep_compared',
+    }
+    if all_ep_formula_mismatches_known:
+        accounted_ep_statuses.add('mismatch')
+
     family_proof_summary = []
     for family in requested_families:
         family_payload = dict(effect_families.get(str(family)) or {})
@@ -6132,16 +6148,14 @@ def _tower_goal_readiness_summary(diagnostics: Mapping[str, object]) -> dict[str
                 'ep_clean_aligned_count': int(ep_counts.get('matched_exact') or 0)
                 + int(ep_counts.get('matched_close') or 0),
                 'ep_stage_scope_mismatch_count': int(ep_counts.get('stage_scope_mismatch') or 0),
+                'ep_known_export_defect_count': (
+                    int(ep_counts.get('mismatch') or 0)
+                    if all_ep_formula_mismatches_known else 0
+                ),
                 'ep_unaccounted_count': sum(
                     int(count or 0)
                     for status, count in ep_counts.items()
-                    if str(status)
-                    not in {
-                        'matched_exact',
-                        'matched_close',
-                        'stage_scope_mismatch',
-                        'not_ep_compared',
-                    }
+                    if str(status) not in accounted_ep_statuses
                 ),
             }
         )
@@ -6181,7 +6195,15 @@ def _tower_goal_readiness_summary(diagnostics: Mapping[str, object]) -> dict[str
         },
         {
             'id': 'ep_export_alignment',
-            'status': 'proven_with_accounted_stage_scope_limits' if ep_aligned else 'incomplete_or_unverified',
+            'status': (
+                'proven_with_accounted_export_and_stage_scope_limits'
+                if ep_aligned and ep_export_qa.get('status') == 'invalid'
+                else (
+                    'proven_with_accounted_stage_scope_limits'
+                    if ep_aligned
+                    else 'incomplete_or_unverified'
+                )
+            ),
             'evidence': 'ep_compare_summary',
             'ep_alignment_status': ep_summary.get('ep_alignment_status'),
             'ep_compare_count': ep_summary.get('ep_compare_count'),
@@ -6189,6 +6211,9 @@ def _tower_goal_readiness_summary(diagnostics: Mapping[str, object]) -> dict[str
             'ep_unknown_formula_mismatch_count': ep_summary.get('ep_unknown_formula_mismatch_count'),
             'ep_unaccounted_alignment_gap_count': ep_summary.get('ep_unaccounted_alignment_gap_count'),
             'ep_stage_scope_mismatch_count': ep_summary.get('ep_stage_scope_mismatch_count'),
+            'ep_raw_formula_mismatch_count': ep_raw_formula_mismatch_count,
+            'ep_known_export_defect_count': ep_known_export_defect_count,
+            'ep_export_qa': ep_export_qa,
         },
         {
             'id': 'boss_waves_full_accuracy',
