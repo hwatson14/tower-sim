@@ -351,8 +351,8 @@ medals,medal_contract_version,Medal planning contract version,context,text,v2.0,
 medals,medal_source_status,Medal source status,derived,text,OK,Home / _IDS / DVT_Bot,active,Must be OK before optimisation.
 medals,bot_source_version,Bot source version,context,text,v3.3.0,_IDS,active,Home-selected EP bot source version.
 medals,bot_range_relic_m,Bot range relic,raw,m,10,_IDS,active,Permanent relic bonus applied to every bot range.
-medals,bot_unlocked_count,Current unlocked bot count,derived,count,1,_IDS,active,Used to reconcile refundable unlock spend.
-medals,bot_unlock_refundable_spend,Current refundable bot unlock spend,derived,medals,150,_IDS / game unlock curve,active,Refundable in a bot respec.
+medals,bot_unlocked_count,Current unlocked bot count,derived,count,2,_IDS,active,Used to reconcile refundable unlock spend.
+medals,bot_unlock_refundable_spend,Current refundable bot unlock spend,derived,medals,450,_IDS / game unlock curve,active,Refundable in a bot respec.
 medals,bot_flame_unlocked,Flame Bot unlocked,raw,boolean,false,_IDS,active,Live unlock state.
 medals,bot_flame_dr_level,Flame Bot Damage reduction medal level,raw,level,0,_IDS,active,Live medal level.
 medals,bot_flame_cooldown_level,Flame Bot Cooldown medal level,raw,level,0,_IDS,active,Live medal level.
@@ -373,7 +373,7 @@ medals,bot_amplify_duration_level,Amplify Bot Duration medal level,raw,level,0,_
 medals,bot_amplify_cooldown_level,Amplify Bot Cooldown medal level,raw,level,0,_IDS,active,Live medal level.
 medals,bot_amplify_bonus_level,Amplify Bot Bonus medal level,raw,level,0,_IDS,active,Live medal level.
 medals,bot_amplify_range_level,Amplify Bot Range medal level,raw,level,0,_IDS,active,Live medal level.
-medals,bot_bot_unlocked,Bot Bot unlocked,raw,boolean,false,_IDS,active,Live unlock state.
+medals,bot_bot_unlocked,Bot Bot unlocked,raw,boolean,true,_IDS,active,Live unlock state.
 medals,bot_bot_duration_level,Bot Bot Duration medal level,raw,level,0,_IDS,active,Live medal level.
 medals,bot_bot_cooldown_level,Bot Bot Cooldown medal level,raw,level,0,_IDS,active,Live medal level.
 medals,bot_bot_bonus_level,Bot Bot Bonus medal level,raw,level,0,_IDS,active,Live medal level.
@@ -382,7 +382,7 @@ medals,bot_flame_plus_unlocked,Wildfire unlocked,raw,boolean,false,_IDS,optional
 medals,bot_thunder_plus_unlocked,Titan Shock unlocked,raw,boolean,false,_IDS,optional,Bot+ is excluded unless this becomes TRUE.
 medals,bot_golden_plus_unlocked,Bonus Cell unlocked,raw,boolean,false,_IDS,optional,Bot+ is excluded unless this becomes TRUE.
 medals,bot_amplify_plus_unlocked,Echoing Shot unlocked,raw,boolean,false,_IDS,optional,Bot+ is excluded unless this becomes TRUE.
-medals,bot_bot_plus_unlocked,Maximum Power unlocked,raw,boolean,false,_IDS,optional,Bot+ is excluded unless this becomes TRUE.
+medals,bot_bot_plus_unlocked,Maximum Power unlocked,raw,boolean,true,_IDS,optional,Bot+ is excluded unless this becomes TRUE.
 medals,lab_flame_bot_cooldown,Flame Bot cooldown lab,raw,level,25,_IDS,active,Live supporting lab level.
 medals,lab_thunder_bot_cooldown,Thunder Bot cooldown lab,raw,level,0,_IDS,active,Live supporting lab level.
 medals,lab_golden_bot_cooldown,Golden Bot cooldown lab,raw,level,25,_IDS,active,Live supporting lab level.
@@ -396,4 +396,4 @@ medals,bot_thunder_refundable_stat_spend,Thunder Bot refundable stat spend,deriv
 medals,bot_golden_refundable_stat_spend,Golden Bot refundable stat spend,derived,medals,38920,EP Export / DVT_Bot,active,Exact cumulative medal spend for current stat levels.
 medals,bot_amplify_refundable_stat_spend,Amplify Bot refundable stat spend,derived,medals,0,EP Export / DVT_Bot,active,Exact cumulative medal spend for current stat levels.
 medals,bot_bot_refundable_stat_spend,Bot Bot refundable stat spend,derived,medals,0,EP Export / DVT_Bot,active,Exact cumulative medal spend for current stat levels.
-medals,bot_refundable_spend_total,Total refundable bot medal spend,derived,medals,39070,EP Export,active,Canonical bot-respec refund pool before adding unspent medals.
+medals,bot_refundable_spend_total,Total refundable bot medal spend,derived,medals,39370,EP Export,active,Canonical bot-respec refund pool before adding unspent medals.
