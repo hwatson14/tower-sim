@@ -1,101 +1,101 @@
 Oracle Outputs (Effective Paths),,,,,,,,
-EP id,11p5lVYXSHfYFrRuhYl7t7rOXgws7u0dMr3f4Ea8Hmn0,,,,,,,
-EP Base URL,https://docs.google.com/spreadsheets/d/11p5lVYXSHfYFrRuhYl7t7rOXgws7u0dMr3f4Ea8Hmn0,,,,,,,
+EP id,12uNWEfmoaU4ObrqpgT5dZhXsNuWpdSxS9JSxBKaDNQU,,,,,,,
+EP Base URL,https://docs.google.com/spreadsheets/d/12uNWEfmoaU4ObrqpgT5dZhXsNuWpdSxS9JSxBKaDNQU,,,,,,,
 Note: Machine-facing EP bridge for TowerSim. Do not optimise for visual review. Use key/type/unit/value as the stable contract.,,,,,,,,
 Types: raw=direct numeric source; parsed_raw=numeric parsed from EP notation; multiplier=effective factor; chance=probability/percent; rate=frequency/per-second; dps=damage contribution; bonus=bonus value; effect=non-multiplier effect value; preset/scenario=context fields; helper_score/equiv/ratio=EP helper metric.,,,,,,,,
 suite,key,label,type,unit,value,source_tab,status,audit_note
-qa,blank_required_value_count,Blank required values in export rows,raw,count,3,EP Export,,
-qa,error_value_count,Error values in export rows,raw,count,3,EP Export,,
+qa,blank_required_value_count,Blank required values in export rows,raw,count,0,EP Export,,
+qa,error_value_count,Error values in export rows,raw,count,0,EP Export,,
 qa,duplicate_key_count,Duplicate keys in export rows,raw,count,0,EP Export,,
 ,,,,,,,,
-context,edmg_workshop_preset,eDamage workshop preset,preset,text,,eDamage,,
-context,edmg_card_preset,eDamage card preset,preset,text,,eDamage,,
-context,edmg_module_preset,eDamage module preset,preset,text,,eDamage,,
-context,edmg_scenario_or_tier,eDamage scenario or tier,scenario,text,,eDamage,,
-context,edmg_tier_num,eDamage tier number derived,derived,tier,,derived,,
-context,ehp_workshop_preset,eHP workshop preset,preset,text,,eHP,,
-context,ehp_card_preset,eHP card preset,preset,text,,eHP,,
-context,ehp_module_preset,eHP module preset,preset,text,,eHP,,
-context,ehp_scenario_or_tier,eHP scenario or tier,scenario,text,,eHP,,
-context,ehp_tier_num,eHP tier number derived,derived,tier,,derived,,
-context,eecon_workshop_preset,eEcon workshop preset,preset,text,Farming (fixed),eEcon,,
-context,eecon_card_preset,eEcon card preset,preset,text,Farming (fixed),eEcon,,
-context,eecon_module_preset,eEcon module preset,preset,text,Farming (fixed),eEcon,,
-context,eecon_scenario_or_tier,eEcon scenario or tier,scenario,text,,eEcon,,
-context,eecon_tier_num,eEcon tier number derived,derived,tier,,derived,,
+context,edmg_workshop_preset,eDamage workshop preset,preset,text,Utility Disco GC,eDamage,,
+context,edmg_card_preset,eDamage card preset,preset,text,GC Tournament,eDamage,,
+context,edmg_module_preset,eDamage module preset,preset,text,Utility Disco GC,eDamage,,
+context,edmg_scenario_or_tier,eDamage scenario or tier,scenario,text,Tier 15,eDamage,,
+context,edmg_tier_num,eDamage tier number derived,derived,tier,15,derived,,
+context,ehp_workshop_preset,eHP workshop preset,preset,text,eHP Farm,eHP,,
+context,ehp_card_preset,eHP card preset,preset,text,eHP Farm,eHP,,
+context,ehp_module_preset,eHP module preset,preset,text,eHP GComp Farm,eHP,,
+context,ehp_scenario_or_tier,eHP scenario or tier,scenario,text,T14,eHP,,
+context,ehp_tier_num,eHP tier number derived,derived,tier,14,derived,,
+context,eecon_workshop_preset,eEcon workshop preset,preset,text,eHP Farm,eEcon,,
+context,eecon_card_preset,eEcon card preset,preset,text,eHP Farm,eEcon,,
+context,eecon_module_preset,eEcon module preset,preset,text,eHP GComp Farm,eEcon,,
+context,eecon_scenario_or_tier,eEcon scenario or tier,scenario,text,Tier 14,eEcon,,
+context,eecon_tier_num,eEcon tier number derived,derived,tier,14,derived,,
 context,preset_alignment_status,Preset alignment status,derived,text,mixed,derived,,
-context,tier_alignment_status,Tier alignment status,derived,text,aligned,derived,,
+context,tier_alignment_status,Tier alignment status,derived,text,mixed,derived,,
 ,,,,,,,,
-edmg,edmg_total_raw,eDMG/sec total raw,raw,damage/sec,14.105142857142859,eDamage,,
-edmg,base_damage_raw,Base damage,raw,damage,9.698970004336019,eDamage,,
-edmg,crit_chance,Critical chance,chance,ratio,5,eDamage,,
-edmg,crit_factor,Critical factor,multiplier,x,442837555004029760,eDamage,,
-edmg,super_crit_chance,Super crit chance,chance,ratio,1.11,eDamage,,
-edmg,super_crit_multiplier,Super crit multiplier,multiplier,x,258.7166208,eDamage,,
-edmg,crit_multiplier_effective,Crit multiplier effective,multiplier,x,0.369,eDamage,,
-edmg,uw_crit_multiplier_effective,UW crit multiplier effective,multiplier,x,46.67712,eDamage,,
-edmg,multishot_effective,Multishot effective,multiplier,x,4619.348340347879,eDamage,,
-edmg,bounce_shot_effective_ad,Bounce shot effective incl AD,multiplier,x,5797.652464515696,eDamage,,
-edmg,bounce_shot_effective_no_ad,Bounce shot effective excl AD,multiplier,x,6.9399999999999995,eDamage,,
-edmg,rapid_fire_effective,Rapid fire effective,multiplier,x,4.656402616320001,eDamage,,
-edmg,bullets_per_second,Bullets per second,rate,1/sec,4.656402616320001,eDamage,,
-edmg,range_m,Range metres,raw,m,3.995945699295958,eDamage,,
-edmg,damage_per_meter,Damage per metre,bonus,%/m,391.6030635370934,eDamage,,
-edmg,range_dpm_effective,Range DPM effective,multiplier,x,196.39032000000003,eDamage,,
-edmg,super_tower_bonus,Super Tower bonus,multiplier,x,0.11837760000000001,eDamage,,
-edmg,super_tower_uw,Super Tower UW,multiplier,x,6.812053686208001,eDamage,,
-edmg,max_rend_multiplier,Max rend multiplier,multiplier,x,23.949203124999997,eDamage,,
-edmg,bullet_damage_multiplier,Bullet damage multiplier,multiplier,x,3.3249999999999997,eDamage,,
-edmg,disco_uw_multiplier,Disco UW multiplier,multiplier,x,1,eDamage,,
-edmg,avg_time_boost,Average time boost,multiplier,x,8249825.893111711,eDamage,,
-edmg,spotlight_multiplier,Spotlight multiplier,multiplier,x,2.736281204362757,eDamage,,
-edmg,death_wave_dps,Death Wave DPS,dps,damage/sec,0.8034894398530763,eDamage,,
-edmg,chain_lightning_dps,Chain Lightning DPS,dps,damage/sec,83.49249271585109,eDamage,,
-edmg,smart_missile_dps,Smart Missile DPS,dps,damage/sec,14.105142857142859,eDamage,,
-edmg,spotlight_missile_dps,Spotlight Missile DPS,dps,damage/sec,398058641.2085395,eDamage,,
-edmg,smart_missile_heatup,Smart Missile heatup,multiplier,x,0,eDamage,,
-edmg,poison_swamp_dps,Poison Swamp DPS,dps,damage/sec,9399.471572506623,eDamage,,
-edmg,poison_swamp_dc,Poison Swamp DC,effect,x,5.5,eDamage,,
-edmg,inner_land_mines_dps,Inner Land Mines DPS,dps,damage/sec,0,eDamage,,
-edmg,ilm_heat_multiplier,ILM heat multiplier,multiplier,x,22.75,eDamage,,
-edmg,core_multiplier,Core multiplier,multiplier,x,18.75,eDamage,,
-edmg,uws_total_raw,UWs total raw,raw,damage/sec,0.5,eDamage,,
-edmg,chrono_field_multiplier,Chrono Field multiplier,multiplier,x,57.1461888,eDamage,,
-edmg,chrono_field_plus_multiplier,Chrono Field+ multiplier,multiplier,x,662199083990152.6,eDamage,,
-edmg,slow_multiplier,Slow multiplier,multiplier,x,9.389671361502344,eDamage,,
+edmg,edmg_total_raw,eDMG/sec total raw,raw,damage/sec,246.59386784540115,eDamage,,
+edmg,base_damage_raw,Base damage,raw,damage,11,eDamage,,
+edmg,crit_chance,Critical chance,chance,ratio,3.278753600952829,eDamage,,
+edmg,crit_factor,Critical factor,multiplier,x,5,eDamage,,
+edmg,super_crit_chance,Super crit chance,chance,ratio,27588857012.942165,eDamage,,
+edmg,super_crit_multiplier,Super crit multiplier,multiplier,x,0.34,eDamage,,
+edmg,crit_multiplier_effective,Crit multiplier effective,multiplier,x,33.87024,eDamage,,
+edmg,uw_crit_multiplier_effective,UW crit multiplier effective,multiplier,x,0.169,eDamage,,
+edmg,multishot_effective,Multishot effective,multiplier,x,8.988000000000001,eDamage,,
+edmg,bounce_shot_effective_ad,Bounce shot effective incl AD,multiplier,x,27.721999315315205,eDamage,,
+edmg,bounce_shot_effective_no_ad,Bounce shot effective excl AD,multiplier,x,18.97971465994317,eDamage,,
+edmg,rapid_fire_effective,Rapid fire effective,multiplier,x,1,eDamage,,
+edmg,bullets_per_second,Bullets per second,rate,1/sec,1.1363636362792036,eDamage,,
+edmg,range_m,Range metres,raw,m,1.1363636362792036,eDamage,,
+edmg,damage_per_meter,Damage per metre,bonus,%/m,1,eDamage,,
+edmg,range_dpm_effective,Range DPM effective,multiplier,x,154.83582394920407,eDamage,,
+edmg,super_tower_bonus,Super Tower bonus,multiplier,x,98.50801200000002,eDamage,,
+edmg,super_tower_uw,Super Tower UW,multiplier,x,0,eDamage,,
+edmg,max_rend_multiplier,Max rend multiplier,multiplier,x,1,eDamage,,
+edmg,bullet_damage_multiplier,Bullet damage multiplier,multiplier,x,24.125843749999998,eDamage,,
+edmg,disco_uw_multiplier,Disco UW multiplier,multiplier,x,3.3249999999999997,eDamage,,
+edmg,avg_time_boost,Average time boost,multiplier,x,8,eDamage,,
+edmg,spotlight_multiplier,Spotlight multiplier,multiplier,x,33959.499047485915,eDamage,,
+edmg,death_wave_dps,Death Wave DPS,dps,damage/sec,5.70011293381003,eDamage,,
+edmg,chain_lightning_dps,Chain Lightning DPS,dps,damage/sec,1,eDamage,,
+edmg,smart_missile_dps,Smart Missile DPS,dps,damage/sec,246.59386784540115,eDamage,,
+edmg,spotlight_missile_dps,Spotlight Missile DPS,dps,damage/sec,11.333333333333332,eDamage,,
+edmg,smart_missile_heatup,Smart Missile heatup,multiplier,x,2545924.266922702,eDamage,,
+edmg,poison_swamp_dps,Poison Swamp DPS,dps,damage/sec,0,eDamage,,
+edmg,poison_swamp_dc,Poison Swamp DC,effect,x,27533.435507748916,eDamage,,
+edmg,inner_land_mines_dps,Inner Land Mines DPS,dps,damage/sec,5.5,eDamage,,
+edmg,ilm_heat_multiplier,ILM heat multiplier,multiplier,x,0,eDamage,,
+edmg,core_multiplier,Core multiplier,multiplier,x,22.75,eDamage,,
+edmg,uws_total_raw,UWs total raw,raw,damage/sec,119.0512,eDamage,,
+edmg,chrono_field_multiplier,Chrono Field multiplier,multiplier,x,0.5,eDamage,,
+edmg,chrono_field_plus_multiplier,Chrono Field+ multiplier,multiplier,x,64.2043104,eDamage,,
+edmg,slow_multiplier,Slow multiplier,multiplier,x,6912098531811.93,eDamage,,
 ,,,,,,,,
-ehp,ehp_total_raw,eHP total raw,raw,hp,3471538425474813000,eHP,,
-ehp,health_raw,Health raw,raw,hp,6009060332084.5625,eHP,,
-ehp,armor_multiplier,Armor multiplier,multiplier,x,16.895701399999997,eHP,,
-ehp,defense_absolute_raw,Defense absolute raw,raw,hp,327154883.0106501,eHP,,
-ehp,defense_percent_multiplier,Defense percent multiplier,multiplier,x,49.99999999999996,eHP,,
-ehp,wall_fortification_multiplier,Wall fortification multiplier,multiplier,x,209.49840000000006,eHP,,
-ehp,improved_tradeoff_perks_multiplier,Improved trade-off perks multiplier,multiplier,x,2.2222222222222223,eHP,,
-ehp,chrono_field_reduction_multiplier,Chrono Field reduction multiplier,multiplier,x,1.2738853503184715,eHP,,
-ehp,chain_thunder_multiplier,Chain Thunder multiplier,multiplier,x,1.0169491525423728,eHP,,
+ehp,ehp_total_raw,eHP total raw,raw,hp,1.0169491525423728,eHP,,
+ehp,health_raw,Health raw,raw,hp,6.553117480714305,eHP,,
+ehp,armor_multiplier,Armor multiplier,multiplier,x,6308068282031.932,eHP,,
+ehp,defense_absolute_raw,Defense absolute raw,raw,hp,19.0407854,eHP,,
+ehp,defense_percent_multiplier,Defense percent multiplier,multiplier,x,149556517.94772577,eHP,,
+ehp,wall_fortification_multiplier,Wall fortification multiplier,multiplier,x,49.99999999999996,eHP,,
+ehp,improved_tradeoff_perks_multiplier,Improved trade-off perks multiplier,multiplier,x,28.050000000000004,eHP,,
+ehp,chrono_field_reduction_multiplier,Chrono Field reduction multiplier,multiplier,x,2.2222222222222223,eHP,,
+ehp,chain_thunder_multiplier,Chain Thunder multiplier,multiplier,x,1.2903225806451613,eHP,,
 ehp,health_regen_raw,Health regen raw,parsed_raw,hp/sec,660770000000000,eHP,,
-ehp,wall_health_raw,Wall health raw,parsed_raw,hp,2009999999999999.8,eHP,,
-ehp,wall_fortification_raw,Wall fortification raw,parsed_raw,hp,21270000000000000,eHP,,
-ehp,wall_regen_raw_per_sec,Wall regen per sec raw,raw,hp/sec,3799411509705783,eRegen,,
+ehp,wall_health_raw,Wall health raw,parsed_raw,hp,2370000000000000,eHP,,
+ehp,wall_fortification_raw,Wall fortification raw,parsed_raw,hp,25160000000000000,eHP,,
+ehp,wall_regen_raw_per_sec,Wall regen per sec raw,raw,hp/sec,5.750000000000001,eRegen,,
 ,,,,,,,,
-eecon,cpk_average_raw,Average CpK raw,raw,coins/kill,13.15 B,eEcon,,
-eecon,coins_per_kill_bonus,Coins per kill bonus,bonus,x,694593.8391687416,eEcon,,
-eecon,free_attack_upgrade,Free attack upgrade,chance,ratio,#VALUE!,eEcon,,
-eecon,free_defense_upgrade,Free defense upgrade,chance,ratio,#VALUE!,eEcon,,
-eecon,free_utility_upgrade,Free utility upgrade,chance,ratio,#VALUE!,eEcon,,
-eecon,recovery_package_chance,Recovery package chance,chance,ratio,99,eEcon,,
-eecon,package_after_boss_score,Package After Boss score,helper_score,score,,eEcon,,
-eecon,package_after_boss_equiv,Package After Boss equivalent,helper_equiv,equiv,99,eEcon,,
-eecon,standard_perk_bonus_score,Standard Perk Bonus score,helper_score,score,Tourney,eEcon,,
-eecon,standard_perk_bonus_equiv,Standard Perk Bonus equivalent,helper_equiv,equiv,,eEcon,,
-eecon,improved_tradeoff_perks_score,Improved Trade-Off Perks score,helper_score,score,Preset 3,eEcon,,
-eecon,improved_tradeoff_perks_equiv,Improved Trade-Off Perks equivalent,helper_equiv,equiv,,eEcon,,
-eecon,golden_tower_bonus_score,Golden Tower bonus score,helper_score,score,-,eEcon,,
-eecon,golden_tower_bonus_equiv,Golden Tower bonus equivalent,helper_equiv,equiv,45.16,eEcon,,
-eecon,death_wave_coin_bonus_score,Death Wave coin bonus score,helper_score,score,8.000000000000005,eEcon,,
-eecon,death_wave_coin_bonus_ratio,Death Wave coin bonus ratio,helper_ratio,ratio,50,eEcon,,
-eecon,spotlight_coin_bonus_score,Spotlight coin bonus score,helper_score,score,Bonus,eEcon,,
-eecon,spotlight_coin_bonus_ratio,Spotlight coin bonus ratio,helper_ratio,ratio,13153056529.478039,eEcon,,
+eecon,cpk_average_raw,Average CpK raw,raw,coins/kill,16.57 B,eEcon,,
+eecon,coins_per_kill_bonus,Coins per kill bonus,bonus,x,82.8970338735,eEcon,,
+eecon,free_attack_upgrade,Free attack upgrade,chance,ratio,1.403976,eEcon,,
+eecon,free_defense_upgrade,Free defense upgrade,chance,ratio,1.3789049999999998,eEcon,,
+eecon,free_utility_upgrade,Free utility upgrade,chance,ratio,1.217865,eEcon,,
+eecon,recovery_package_chance,Recovery package chance,chance,ratio,0.835,eEcon,,
+eecon,package_after_boss_score,Package After Boss score,helper_score,score,1,eEcon,,
+eecon,package_after_boss_equiv,Package After Boss equivalent,helper_equiv,equiv,0.8533333333333333,eEcon,,
+eecon,standard_perk_bonus_score,Standard Perk Bonus score,helper_score,score,25,eEcon,,
+eecon,standard_perk_bonus_equiv,Standard Perk Bonus equivalent,helper_equiv,equiv,0.25,eEcon,,
+eecon,improved_tradeoff_perks_score,Improved Trade-Off Perks score,helper_score,score,10,eEcon,,
+eecon,improved_tradeoff_perks_equiv,Improved Trade-Off Perks equivalent,helper_equiv,equiv,0.1,eEcon,,
+eecon,golden_tower_bonus_score,Golden Tower bonus score,helper_score,score,25,eEcon,,
+eecon,golden_tower_bonus_equiv,Golden Tower bonus equivalent,helper_equiv,equiv,30.084999999999997,eEcon,,
+eecon,death_wave_coin_bonus_score,Death Wave coin bonus score,helper_score,score,20,eEcon,,
+eecon,death_wave_coin_bonus_ratio,Death Wave coin bonus ratio,helper_ratio,ratio,2.5,eEcon,,
+eecon,spotlight_coin_bonus_score,Spotlight coin bonus score,helper_score,score,20,eEcon,,
+eecon,spotlight_coin_bonus_ratio,Spotlight coin bonus ratio,helper_ratio,ratio,3,eEcon,,
 ,,,,,,,,
 ,,,,,,,,
 ,,,,,,,,
@@ -130,34 +130,34 @@ edmg,edmg_guess_project_funding_cash,eDamage project funding cash,guess,coins,,e
 edmg,edmg_guess_elites_per_wave,eDamage elites per wave,guess,count,,eDamage,active,Run-composition assumption.
 edmg,edmg_guess_ilm_enemies_inside_area,eDamage ILM enemies inside area,guess,count,,eDamage,optional,Conditional ILM assumption; consume only when ILM is relevant/unlocked.
 edmg,edmg_guess_ilm_plus_hits_same_targets,eDamage ILM+ hits same targets,guess,count,,eDamage,optional,Conditional ILM+ assumption; blank when ILM+ is locked/not relevant.
-edmg,edmg_guess_use_max_range_lab,eDamage use max range lab checkbox,guess,boolean,false,eDamage,active,Direct range-lab source checkbox from eDamage!AL69.
-edmg,edmg_guess_range_lab_mode,eDamage range lab mode derived,guess,text,min_range_lab,derived,active,Derived stable enum from edmg_guess_use_max_range_lab.
+edmg,edmg_guess_use_max_range_lab,eDamage use max range lab checkbox,guess,boolean,true,eDamage,active,Direct range-lab source checkbox from eDamage!AL69.
+edmg,edmg_guess_range_lab_mode,eDamage range lab mode derived,guess,text,max_range_lab,derived,active,Derived stable enum from edmg_guess_use_max_range_lab.
 ,,,,,,,,
 ehp,ehp_guess_enemies_attacking_together,eHP enemies attacking together,guess,count,,eHP,active,Direct eHP modelling assumption.
 ehp,ehp_guess_cl_dmg_pct_total,eHP CL damage percent of total,guess,ratio,,eHP,active,Direct eHP modelling assumption for CL contribution.
 ehp,ehp_guess_ignore_target_levels,eHP ignore target levels,guess,boolean,,eHP,active,EP source-state flag; affects interpretation of target-level values.
 ehp,ehp_guess_cards_enabled,eHP cards enabled,guess,boolean,,eHP,active,Direct card-state assumption for eHP calculations.
 ehp,ehp_guess_compare_masteries_at,eHP compare masteries at,guess,level,,eHP,optional,"Mastery comparison helper; useful for optimiser context, not base tower state."
-ehp,ehp_perk_health_quantity,eHP health perk quantity,guess,count,Quantity,eHP,active,Perk assumption quantity.
+ehp,ehp_perk_health_quantity,eHP health perk quantity,guess,count,,eHP,active,Perk assumption quantity.
 ehp,ehp_perk_health_value,eHP health perk value,guess,multiplier,,eHP,active,Perk assumption value.
-ehp,ehp_perk_health_active,eHP health perk active,guess,boolean,Value,eHP,active,Perk active flag.
-ehp,ehp_perk_health_regen_quantity,eHP health regen perk quantity,guess,count,5,eHP,active,Perk assumption quantity.
+ehp,ehp_perk_health_active,eHP health perk active,guess,boolean,,eHP,active,Perk active flag.
+ehp,ehp_perk_health_regen_quantity,eHP health regen perk quantity,guess,count,Quantity,eHP,active,Perk assumption quantity.
 ehp,ehp_perk_health_regen_value,eHP health regen perk value,guess,multiplier,,eHP,active,Perk assumption value.
-ehp,ehp_perk_health_regen_active,eHP health regen perk active,guess,boolean,2.5,eHP,active,Perk active flag.
+ehp,ehp_perk_health_regen_active,eHP health regen perk active,guess,boolean,Value,eHP,active,Perk active flag.
 ehp,ehp_perk_extra_defense_quantity,eHP extra defense perk quantity,guess,count,5,eHP,active,Perk assumption quantity.
 ehp,ehp_perk_extra_defense_value,eHP extra defense perk value,guess,ratio,,eHP,active,Perk assumption value.
-ehp,ehp_perk_extra_defense_active,eHP extra defense perk active,guess,boolean,5.9375,eHP,active,Perk active flag.
+ehp,ehp_perk_extra_defense_active,eHP extra defense perk active,guess,boolean,2.5,eHP,active,Perk active flag.
 ehp,ehp_perk_absolute_defense_quantity,eHP absolute defense perk quantity,guess,count,5,eHP,optional,"Absolute defense usually low-value for TowerSim, retained for EP parity."
 ehp,ehp_perk_absolute_defense_value,eHP absolute defense perk value,guess,multiplier,,eHP,optional,"Absolute defense usually low-value for TowerSim, retained for EP parity."
-ehp,ehp_perk_absolute_defense_active,eHP absolute defense perk active,guess,boolean,0.25,eHP,optional,"Absolute defense usually low-value for TowerSim, retained for EP parity."
+ehp,ehp_perk_absolute_defense_active,eHP absolute defense perk active,guess,boolean,5.9375,eHP,optional,"Absolute defense usually low-value for TowerSim, retained for EP parity."
 ehp,ehp_perk_edmg_tradeoff_value,eHP enemy damage tradeoff value,guess,ratio,,eHP,active,Tradeoff perk value.
-ehp,ehp_perk_edmg_tradeoff_active,eHP enemy damage tradeoff active,guess,boolean,2.1875,eHP,active,Tradeoff perk active flag.
+ehp,ehp_perk_edmg_tradeoff_active,eHP enemy damage tradeoff active,guess,boolean,0.25,eHP,active,Tradeoff perk active flag.
 ehp,ehp_perk_regen_lifesteal_tradeoff_value,eHP regen/lifesteal tradeoff value,guess,ratio,,eHP,optional,Inactive in current EP state; retained as conditional tradeoff setting.
-ehp,ehp_perk_regen_lifesteal_tradeoff_active,eHP regen/lifesteal tradeoff active,guess,boolean,-0.55,eHP,optional,Inactive in current EP state; retained as conditional tradeoff setting.
+ehp,ehp_perk_regen_lifesteal_tradeoff_active,eHP regen/lifesteal tradeoff active,guess,boolean,2.1875,eHP,optional,Inactive in current EP state; retained as conditional tradeoff setting.
 ehp,ehp_perk_coin_health_tradeoff_value,eHP coin/health tradeoff value,guess,multiplier,,eHP,active,Tradeoff perk value.
 ehp,ehp_perk_coin_health_tradeoff_active,eHP coin/health tradeoff active,guess,boolean,-0.55,eHP,active,Tradeoff perk active flag.
 ehp,ehp_perk_regen_health_tradeoff_value,eHP regen/health tradeoff value,guess,multiplier,,eHP,active,Tradeoff perk value.
-ehp,ehp_perk_regen_health_tradeoff_active,eHP regen/health tradeoff active,guess,boolean,1.9800000000000002,eHP,active,Tradeoff perk active flag.
+ehp,ehp_perk_regen_health_tradeoff_active,eHP regen/health tradeoff active,guess,boolean,-0.55,eHP,active,Tradeoff perk active flag.
 ,,,,,,,,
 eecon,eecon_guess_pct_enemies_die_bh_active,eEcon percent enemies die in BH active,guess,ratio,20,eEcon,active,Direct econ assumption for BH kill share.
 eecon,eecon_guess_pct_enemies_die_gb_active,eEcon percent enemies die in GB active,guess,ratio,20,eEcon,active,Direct econ assumption for GB kill share.
@@ -174,19 +174,19 @@ eecon,eecon_guess_compare_masteries_at,eEcon compare masteries at,guess,level,,e
 uw,uw_death_wave_damage,Death Wave final damage,uw_stat,damage,85,eDamage,active,Final UW stat from EP.
 uw,uw_death_wave_quantity,Death Wave final quantity,uw_stat,count,,eDamage,active,Final UW stat from EP.
 uw,uw_death_wave_cooldown,Death Wave final cooldown,uw_stat,seconds,3,eDamage,active,Final UW timing stat from EP.
-uw,uw_chain_lightning_damage,Chain Lightning final damage,uw_stat,damage,915.32,eDamage,active,Final UW stat from EP.
+uw,uw_chain_lightning_damage,Chain Lightning final damage,uw_stat,damage,2296,eDamage,active,Final UW stat from EP.
 uw,uw_chain_lightning_quantity,Chain Lightning final quantity,uw_stat,count,,eDamage,active,Final UW stat from EP.
 uw,uw_chain_lightning_chance,Chain Lightning final chance,uw_stat,ratio,8.6,eDamage,active,Final UW chance stat from EP.
 uw,uw_smart_missile_damage,Smart Missile final damage,uw_stat,damage,,eDamage,optional,Blank when Smart Missile is unavailable/not relevant.
 uw,uw_smart_missile_quantity,Smart Missile final quantity,uw_stat,count,,eDamage,optional,Blank when Smart Missile is unavailable/not relevant.
 uw,uw_smart_missile_cooldown,Smart Missile final cooldown,uw_stat,seconds,,eDamage,optional,Blank when Smart Missile is unavailable/not relevant.
-uw,uw_spotlight_bonus,Spotlight final bonus,uw_stat,x,539.8287423573689,eDamage,active,Final UW stat from EP.
+uw,uw_spotlight_bonus,Spotlight final bonus,uw_stat,x,1106.906683401297,eDamage,active,Final UW stat from EP.
 uw,uw_spotlight_angle,Spotlight final angle,uw_stat,degrees,,eDamage,active,Final UW stat from EP.
-uw,uw_spotlight_quantity,Spotlight final quantity,uw_stat,count,57.35,eDamage,active,Final UW stat from EP.
-uw,uw_spotlight_missiles_damage,Spotlight Missiles final damage,uw_stat,damage,5398.287423573689,eDamage,active,Final UW stat from EP.
+uw,uw_spotlight_quantity,Spotlight final quantity,uw_stat,count,58.1,eDamage,active,Final UW stat from EP.
+uw,uw_spotlight_missiles_damage,Spotlight Missiles final damage,uw_stat,damage,11069.06683401297,eDamage,active,Final UW stat from EP.
 uw,uw_spotlight_missiles_quantity,Spotlight Missiles final quantity,uw_stat,count,,eDamage,active,Final UW stat from EP.
 uw,uw_spotlight_missiles_cooldown,Spotlight Missiles final cooldown,uw_stat,seconds,1,eDamage,active,Final UW timing stat from EP.
-uw,uw_inner_land_mines_damage,Inner Land Mines final damage,uw_stat,damage,10,eDamage,optional,Blank when ILM is unavailable/not relevant.
+uw,uw_inner_land_mines_damage,Inner Land Mines final damage,uw_stat,damage,18.5,eDamage,optional,Blank when ILM is unavailable/not relevant.
 uw,uw_inner_land_mines_quantity,Inner Land Mines final quantity,uw_stat,count,,eDamage,optional,Blank when ILM is unavailable/not relevant.
 uw,uw_inner_land_mines_cooldown,Inner Land Mines final cooldown,uw_stat,seconds,6,eDamage,optional,Blank when ILM is unavailable/not relevant.
 ,,,,,,,,
@@ -349,11 +349,11 @@ ehp,ehp_disco_defense_multiplier,eHP Disco Defense multiplier,multiplier,x,,eHP,
 ,,,,,,,,
 medals,medal_contract_version,Medal planning contract version,context,text,v2.0,Tower Custom Calcs,active,Canonical live interface for Medal Planning and Medal Engine.
 medals,medal_source_status,Medal source status,derived,text,OK,Home / _IDS / DVT_Bot,active,Must be OK before optimisation.
-medals,bot_source_version,Bot source version,context,text,v3.3.0,_IDS,active,Home-selected EP bot source version.
+medals,bot_source_version,Bot source version,context,text,v3.3.1,_IDS,active,Home-selected EP bot source version.
 medals,bot_range_relic_m,Bot range relic,raw,m,10,_IDS,active,Permanent relic bonus applied to every bot range.
-medals,bot_unlocked_count,Current unlocked bot count,derived,count,2,_IDS,active,Used to reconcile refundable unlock spend.
-medals,bot_unlock_refundable_spend,Current refundable bot unlock spend,derived,medals,450,_IDS / game unlock curve,active,Refundable in a bot respec.
-medals,bot_flame_unlocked,Flame Bot unlocked,raw,boolean,false,_IDS,active,Live unlock state.
+medals,bot_unlocked_count,Current unlocked bot count,derived,count,4,_IDS,active,Used to reconcile refundable unlock spend.
+medals,bot_unlock_refundable_spend,Current refundable bot unlock spend,derived,medals,1950,_IDS / game unlock curve,active,Refundable in a bot respec.
+medals,bot_flame_unlocked,Flame Bot unlocked,raw,boolean,true,_IDS,active,Live unlock state.
 medals,bot_flame_dr_level,Flame Bot Damage reduction medal level,raw,level,0,_IDS,active,Live medal level.
 medals,bot_flame_cooldown_level,Flame Bot Cooldown medal level,raw,level,0,_IDS,active,Live medal level.
 medals,bot_flame_damage_level,Flame Bot Damage medal level,raw,level,0,_IDS,active,Live medal level.
@@ -364,36 +364,36 @@ medals,bot_thunder_cooldown_level,Thunder Bot Cooldown medal level,raw,level,0,_
 medals,bot_thunder_linger_level,Thunder Bot Linger medal level,raw,level,0,_IDS,active,Live medal level.
 medals,bot_thunder_range_level,Thunder Bot Range medal level,raw,level,0,_IDS,active,Live medal level.
 medals,bot_golden_unlocked,Golden Bot unlocked,raw,boolean,true,_IDS,active,Live unlock state.
-medals,bot_golden_duration_level,Golden Bot Duration medal level,raw,level,15,_IDS,active,Live medal level.
-medals,bot_golden_cooldown_level,Golden Bot Cooldown medal level,raw,level,15,_IDS,active,Live medal level.
-medals,bot_golden_bonus_level,Golden Bot Bonus medal level,raw,level,28,_IDS,active,Live medal level.
-medals,bot_golden_range_level,Golden Bot Range medal level,raw,level,20,_IDS,active,Live medal level.
-medals,bot_amplify_unlocked,Amplify Bot unlocked,raw,boolean,false,_IDS,active,Live unlock state.
-medals,bot_amplify_duration_level,Amplify Bot Duration medal level,raw,level,0,_IDS,active,Live medal level.
-medals,bot_amplify_cooldown_level,Amplify Bot Cooldown medal level,raw,level,0,_IDS,active,Live medal level.
-medals,bot_amplify_bonus_level,Amplify Bot Bonus medal level,raw,level,0,_IDS,active,Live medal level.
-medals,bot_amplify_range_level,Amplify Bot Range medal level,raw,level,0,_IDS,active,Live medal level.
+medals,bot_golden_duration_level,Golden Bot Duration medal level,raw,level,0,_IDS,active,Live medal level.
+medals,bot_golden_cooldown_level,Golden Bot Cooldown medal level,raw,level,0,_IDS,active,Live medal level.
+medals,bot_golden_bonus_level,Golden Bot Bonus medal level,raw,level,0,_IDS,active,Live medal level.
+medals,bot_golden_range_level,Golden Bot Range medal level,raw,level,0,_IDS,active,Live medal level.
+medals,bot_amplify_unlocked,Amplify Bot unlocked,raw,boolean,true,_IDS,active,Live unlock state.
+medals,bot_amplify_duration_level,Amplify Bot Duration medal level,raw,level,19,_IDS,active,Live medal level.
+medals,bot_amplify_cooldown_level,Amplify Bot Cooldown medal level,raw,level,15,_IDS,active,Live medal level.
+medals,bot_amplify_bonus_level,Amplify Bot Bonus medal level,raw,level,30,_IDS,active,Live medal level.
+medals,bot_amplify_range_level,Amplify Bot Range medal level,raw,level,18,_IDS,active,Live medal level.
 medals,bot_bot_unlocked,Bot Bot unlocked,raw,boolean,true,_IDS,active,Live unlock state.
-medals,bot_bot_duration_level,Bot Bot Duration medal level,raw,level,0,_IDS,active,Live medal level.
+medals,bot_bot_duration_level,Bot Bot Duration medal level,raw,level,7,_IDS,active,Live medal level.
 medals,bot_bot_cooldown_level,Bot Bot Cooldown medal level,raw,level,0,_IDS,active,Live medal level.
-medals,bot_bot_bonus_level,Bot Bot Bonus medal level,raw,level,0,_IDS,active,Live medal level.
-medals,bot_bot_range_level,Bot Bot Range medal level,raw,level,0,_IDS,active,Live medal level.
+medals,bot_bot_bonus_level,Bot Bot Bonus medal level,raw,level,8,_IDS,active,Live medal level.
+medals,bot_bot_range_level,Bot Bot Range medal level,raw,level,17,_IDS,active,Live medal level.
 medals,bot_flame_plus_unlocked,Wildfire unlocked,raw,boolean,false,_IDS,optional,Bot+ is excluded unless this becomes TRUE.
 medals,bot_thunder_plus_unlocked,Titan Shock unlocked,raw,boolean,false,_IDS,optional,Bot+ is excluded unless this becomes TRUE.
 medals,bot_golden_plus_unlocked,Bonus Cell unlocked,raw,boolean,false,_IDS,optional,Bot+ is excluded unless this becomes TRUE.
 medals,bot_amplify_plus_unlocked,Echoing Shot unlocked,raw,boolean,false,_IDS,optional,Bot+ is excluded unless this becomes TRUE.
-medals,bot_bot_plus_unlocked,Maximum Power unlocked,raw,boolean,true,_IDS,optional,Bot+ is excluded unless this becomes TRUE.
+medals,bot_bot_plus_unlocked,Maximum Power unlocked,raw,boolean,false,_IDS,optional,Bot+ is excluded unless this becomes TRUE.
 medals,lab_flame_bot_cooldown,Flame Bot cooldown lab,raw,level,25,_IDS,active,Live supporting lab level.
 medals,lab_thunder_bot_cooldown,Thunder Bot cooldown lab,raw,level,0,_IDS,active,Live supporting lab level.
 medals,lab_golden_bot_cooldown,Golden Bot cooldown lab,raw,level,25,_IDS,active,Live supporting lab level.
-medals,lab_amplify_bot_cooldown,Amplify Bot cooldown lab,raw,level,16,_IDS,active,Live supporting lab level.
-medals,lab_bot_bot_cooldown,Bot Bot cooldown lab,raw,level,22,_IDS,active,Live supporting lab level.
+medals,lab_amplify_bot_cooldown,Amplify Bot cooldown lab,raw,level,19,_IDS,active,Live supporting lab level.
+medals,lab_bot_bot_cooldown,Bot Bot cooldown lab,raw,level,25,_IDS,active,Live supporting lab level.
 medals,lab_golden_bot_duration,Golden Bot duration lab,raw,level,20,_IDS,active,Live supporting lab level.
-medals,lab_amplify_bot_duration,Amplify Bot duration lab,raw,level,2,_IDS,active,Live supporting lab level.
-medals,lab_bot_bot_duration,Bot Bot duration lab,raw,level,7,_IDS,active,Live supporting lab level.
+medals,lab_amplify_bot_duration,Amplify Bot duration lab,raw,level,5,_IDS,active,Live supporting lab level.
+medals,lab_bot_bot_duration,Bot Bot duration lab,raw,level,11,_IDS,active,Live supporting lab level.
 medals,bot_flame_refundable_stat_spend,Flame Bot refundable stat spend,derived,medals,0,EP Export / DVT_Bot,active,Exact cumulative medal spend for current stat levels.
 medals,bot_thunder_refundable_stat_spend,Thunder Bot refundable stat spend,derived,medals,0,EP Export / DVT_Bot,active,Exact cumulative medal spend for current stat levels.
-medals,bot_golden_refundable_stat_spend,Golden Bot refundable stat spend,derived,medals,38920,EP Export / DVT_Bot,active,Exact cumulative medal spend for current stat levels.
-medals,bot_amplify_refundable_stat_spend,Amplify Bot refundable stat spend,derived,medals,0,EP Export / DVT_Bot,active,Exact cumulative medal spend for current stat levels.
+medals,bot_golden_refundable_stat_spend,Golden Bot refundable stat spend,derived,medals,0,EP Export / DVT_Bot,active,Exact cumulative medal spend for current stat levels.
+medals,bot_amplify_refundable_stat_spend,Amplify Bot refundable stat spend,derived,medals,42760,EP Export / DVT_Bot,active,Exact cumulative medal spend for current stat levels.
 medals,bot_bot_refundable_stat_spend,Bot Bot refundable stat spend,derived,medals,0,EP Export / DVT_Bot,active,Exact cumulative medal spend for current stat levels.
-medals,bot_refundable_spend_total,Total refundable bot medal spend,derived,medals,39370,EP Export,active,Canonical bot-respec refund pool before adding unspent medals.
+medals,bot_refundable_spend_total,Total refundable bot medal spend,derived,medals,44710,EP Export,active,Canonical bot-respec refund pool before adding unspent medals.
