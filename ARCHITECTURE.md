@@ -317,6 +317,7 @@ Locked-foundation rules:
 - `app/` must not read KB reference tables or ledgers directly.
 - `app/` must not assemble dashboard/domain payloads from raw runtime fragments when a sanctioned lower-layer builder exists.
 - `app/publication.py` is a thin persistence/render wrapper; publication payload assembly belongs to sanctioned lower-layer owners.
+- `app/tools/` may contain standalone operator/tool entrypoints only when they orchestrate lower-layer owners and do not become production Streamlit or pipeline truth paths.
 
 ### Generated artifact contracts
 Generated outputs are governed as distinct contracts. They must not be treated as interchangeable.

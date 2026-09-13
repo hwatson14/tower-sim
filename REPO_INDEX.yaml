@@ -166,6 +166,11 @@ app:
     layer: app/
     note: thin artifact writer/render wrapper; dashboard payload assembly delegated to qe.publication
 
+  app/tools/:
+    status: active_candidate
+    layer: app/tools/
+    note: standalone operator tools only; module reroll tool orchestrates QE-owned calculator sources and writes quarantined experimental reports without Streamlit or production pipeline routing
+
 # ─── input/ ───────────────────────────────────────────────────────────────────
 
 input:
@@ -283,6 +288,11 @@ qe:
   qe/query_routing.py:
     status: active_candidate
     layer: qe/
+
+  qe/module_reroll/:
+    status: active_candidate
+    layer: qe/module_reroll/
+    note: experimental QE-owned module reroll calculator mechanics and KB source loading; not used by production query/app paths
 
   qe/query_state_mode_policy.py:
     status: active_candidate
