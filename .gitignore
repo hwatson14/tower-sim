@@ -24,6 +24,7 @@ build/
 dist/
 *.egg-info/
 .pytest-tmp-*/
+.pytest_tmp*/
 tsim_*/
 
 # Coverage
@@ -38,5 +39,6 @@ htmlcov/
 /out_module_test/
 /out_runpy_test/
 /out_script_test/
+/out_*/
 
 /.claude/worktrees
